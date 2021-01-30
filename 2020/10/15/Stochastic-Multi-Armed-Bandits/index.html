@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="The multi-arm bandit problem (MAB) models a casino with $k$ machines, where the reward of each machine is controlled by a fixed and unknown distribution. The player (agent) observes independent random">
+  <meta name="description" content="The multi-arm bandit problem (MAB) models a casino with \(k\) machines, where the reward of each machine is controlled by a fixed and unknown distribution. The player (agent) observes independent rand">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Stochastic Multi-Armed Bandits">
 <meta property="og:url" content="http://example.com/2020/10/15/Stochastic-Multi-Armed-Bandits/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="The multi-arm bandit problem (MAB) models a casino with $k$ machines, where the reward of each machine is controlled by a fixed and unknown distribution. The player (agent) observes independent random">
+<meta property="og:description" content="The multi-arm bandit problem (MAB) models a casino with \(k\) machines, where the reward of each machine is controlled by a fixed and unknown distribution. The player (agent) observes independent rand">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://jmichaux.github.io/assets/week6/octopus-bandit.jpeg">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StochasticMultiArmBandit.png">
@@ -197,108 +197,164 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>The multi-arm bandit problem (MAB) models a casino with $k$ machines, where the reward of each machine is controlled by a fixed and unknown distribution. The player (agent) observes independent random rewards from generated from the distribution of a machine each time it pulls its arm. Because of limited budget, the player can only play the machines $T$ times. The goal of the player is to maximize its expected gain.</p>
-<p>There is an inherent exploration-exploitation nature of the problem. The player has to explore what is a good machine while simultaneously exploits what seems to be a good machine. </p>
-<div style="text-align:center"><img src="https://jmichaux.github.io/assets/week6/octopus-bandit.jpeg" /></div>
-
-
-<h3 id="Formulation"><a href="#Formulation" class="headerlink" title="Formulation"></a>Formulation</h3><p>We study the restricted case where the reward distribution of each machine is bounded on $[0, 1]$. Define </p>
-<ol>
-<li>$D_i:$ the reward distribution on $[0, 1]$ of the $i$-th machine, where $i \in [k]$,</li>
-<li>$\mu_i:$ the expected reward of the $i$-th machine, where $i \in [k]$,</li>
-<li>$\mu^* = \max_{i \in [k]} \mu_i$,</li>
-<li>$i^*:$ the index of the machine with highest expected reward,</li>
-<li>$\Delta_i = \mu^* - \mu_i$.</li>
+        <p>The multi-arm bandit problem (MAB) models a casino with <span class="math inline">\(k\)</span> machines, where the reward of each machine is controlled by a fixed and unknown distribution. The player (agent) observes independent random rewards from generated from the distribution of a machine each time it pulls its arm. Because of limited budget, the player can only play the machines <span class="math inline">\(T\)</span> times. The goal of the player is to maximize its expected gain.</p>
+<p>There is an inherent exploration-exploitation nature of the problem. The player has to explore what is a good machine while simultaneously exploits what seems to be a good machine.</p>
+<div style="text-align:center">
+<img src="https://jmichaux.github.io/assets/week6/octopus-bandit.jpeg" />
+</div>
+<h3 id="formulation">Formulation</h3>
+<p>We study the restricted case where the reward distribution of each machine is bounded on <span class="math inline">\([0, 1]\)</span>. Define</p>
+<ol type="1">
+<li><span class="math inline">\(D_i:\)</span> the reward distribution on <span class="math inline">\([0, 1]\)</span> of the <span class="math inline">\(i\)</span>-th machine, where <span class="math inline">\(i \in [k]\)</span>,</li>
+<li><span class="math inline">\(\mu_i:\)</span> the expected reward of the <span class="math inline">\(i\)</span>-th machine, where <span class="math inline">\(i \in [k]\)</span>,</li>
+<li><span class="math inline">\(\mu^* = \max_{i \in [k]} \mu_i\)</span>,</li>
+<li><span class="math inline">\(i^*:\)</span> the index of the machine with highest expected reward,</li>
+<li><span class="math inline">\(\Delta_i = \mu^* - \mu_i\)</span>.</li>
 </ol>
-<p>Let $\vec Y_i$ be the random reward vector whose elements are i.i.d. random variables from $D_i$: </p>
-<ol start="6">
-<li>$\vec Y_i = (Y_{i, 1}, Y_{i, 2}, …, Y_{i, T})$</li>
+<p>Let <span class="math inline">\(\vec Y_i\)</span> be the random reward vector whose elements are i.i.d. random variables from <span class="math inline">\(D_i\)</span>:</p>
+<ol start="6" type="1">
+<li><span class="math inline">\(\vec Y_i = (Y_{i, 1}, Y_{i, 2}, ..., Y_{i, T})\)</span></li>
 </ol>
-<p>Denote $Y$ be the matrix of the random variables</p>
-<ol start="7">
-<li>$$<br> Y = \begin{bmatrix}<pre><code> \vec Y_1 \\
- \vec Y_2 \\
- ... \\
- \vec Y_k
-</code></pre>
- \end{bmatrix}<br>$$</li>
+<p>Denote <span class="math inline">\(Y\)</span> be the matrix of the random variables</p>
+<ol start="7" type="1">
+<li><span class="math display">\[
+ Y = \begin{bmatrix}
+     \vec Y_1 \\
+     \vec Y_2 \\
+     ... \\
+     \vec Y_k
+ \end{bmatrix}
+\]</span></li>
 </ol>
 <p>Each time the player pulls the arm, it observes one random variable from the matrix. Specially, let</p>
-<ol start="8">
-<li>$I_t:$ the machine played at the $t$-th trial,</li>
-<li> $N_i(t):$ the number of times the machine $i$ is played up to trial $t$.</li>
+<ol start="8" type="1">
+<li><span class="math inline">\(I_t:\)</span> the machine played at the <span class="math inline">\(t\)</span>-th trial,</li>
+<li><span class="math inline">\(N_i(t):\)</span> the number of times the machine <span class="math inline">\(i\)</span> is played up to trial <span class="math inline">\(t\)</span>.</li>
 </ol>
-<p>Before trial $t$, the number of random variables observed in $\vec Y_{I_t}$ is $N_{I_t} (t - 1)$. At trial $t$, a new random variable in $\vec Y_{I_t}$ is observed, and $N_{I_t} (t) = N_{I_t} (t - 1) + 1$. Hence, the newly observed random variable is $Y_{I_t, N_{I_t} (t)}$. For convenience, we define </p>
-<ol start="11">
-<li> $X_{t} \doteq Y_{I_t, N_{I_t} (t)}:$ the rewards obtained at the $t$-th trial. </li>
+<p>Before trial <span class="math inline">\(t\)</span>, the number of random variables observed in <span class="math inline">\(\vec Y_{I_t}\)</span> is <span class="math inline">\(N_{I_t} (t - 1)\)</span>. At trial <span class="math inline">\(t\)</span>, a new random variable in <span class="math inline">\(\vec Y_{I_t}\)</span> is observed, and <span class="math inline">\(N_{I_t} (t) = N_{I_t} (t - 1) + 1\)</span>. Hence, the newly observed random variable is <span class="math inline">\(Y_{I_t, N_{I_t} (t)}\)</span>. For convenience, we define</p>
+<ol start="11" type="1">
+<li><span class="math inline">\(X_{t} \doteq Y_{I_t, N_{I_t} (t)}:\)</span> the rewards obtained at the <span class="math inline">\(t\)</span>-th trial.</li>
 </ol>
 <div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StochasticMultiArmBandit.png" width="500" height="250" />
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StochasticMultiArmBandit.png" width="500" height="250" /></p>
 </div>
-
-
-<p>When the player chooses a machine $I_t$ on trial $t$, it is based on the history of his play, which consists of his past decisions, and the corresponding observed rewards:</p>
-<ol>
-<li> $H_t: { (I_1, X_1), (I_2, X_2), …, (I_{t -1}, X_{t - 1}) }$ the history up to trial $t$. </li>
+<p>When the player chooses a machine <span class="math inline">\(I_t\)</span> on trial <span class="math inline">\(t\)</span>, it is based on the history of his play, which consists of his past decisions, and the corresponding observed rewards:</p>
+<ol type="1">
+<li><span class="math inline">\(H_t: \{ (I_1, X_1), (I_2, X_2), ..., (I_{t -1}, X_{t - 1}) \}\)</span> the history up to trial <span class="math inline">\(t\)</span>.</li>
 </ol>
-<p>The strategy the player uses at trial $t$ is considered as a functions from $H_t$ to $[k]$: </p>
-<ol start="11">
-<li>$\phi_t: H_t \rightarrow [k]$ a function that chooses a machine based on the history at trial $t$</li>
+<p>The strategy the player uses at trial <span class="math inline">\(t\)</span> is considered as a functions from <span class="math inline">\(H_t\)</span> to <span class="math inline">\([k]\)</span>:</p>
+<ol start="11" type="1">
+<li><span class="math inline">\(\phi_t: H_t \rightarrow [k]\)</span> a function that chooses a machine based on the history at trial <span class="math inline">\(t\)</span></li>
 </ol>
 <p>We define the policy as the strategies the player uses over all trials:</p>
-<ol start="12">
-<li>$\phi = (\phi_1, \phi_2, …, \phi_T):$ policy, the strategy for the pulling arms by the player</li>
+<ol start="12" type="1">
+<li><span class="math inline">\(\phi = (\phi_1, \phi_2, ..., \phi_T):\)</span> policy, the strategy for the pulling arms by the player</li>
 </ol>
-<p>The goal is to find a policy that maximizes the expected rewards, or equivalently, the one that minimizes the expected regret<br>$$ \small<br>\mathbb{R}(\phi) = T \cdot \mu^* - \mathbb{E}[\sum_{t = 1}^T X_t ]<br>$$</p>
-<p>By definition of $N_i(t)$’s, we have $\sum_{i = 1}^k N_i(T) = T$. Then the regret can be written as<br>$$<br>\mathbb{R}(\phi) = \mathbb{E}[\sum_{i = 1}^k N_i(T)] \cdot \mu^* - \sum_{i = 1}^k \mathbb{E}[N_i(T) ] \cdot \mu_i = \sum_{i : \Delta_i &gt; 0} \mathbb{E}[N_i(T) ] \cdot \Delta_i<br>$$</p>
-<h3 id="The-Upper-Confidence-Bound-UCB-Algorithm"><a href="#The-Upper-Confidence-Bound-UCB-Algorithm" class="headerlink" title="The Upper Confidence Bound (UCB) Algorithm"></a>The Upper Confidence Bound (UCB) Algorithm</h3><p>When making decision at trial $t$, a good indicator of a machine’s performance is its empirical reward:<br>$$<br>\hat \mu_{i, N_i(t - 1)} \doteq  \sum_{\tau = 1}^{N_i(t - 1) } \frac{1}{ N_i(t - 1) } Y_{i, \tau}<br>$$</p>
-<p>But this might not reflect the true value of its expectation $\mu_i$ because of sampling variation. The UCB algorithm takes the variation into consideration. </p>
-<p><strong><em>Fact.</em></strong> <em>Hoeffding Inequality.</em> <em>Let $Z_1, Z_2, …, Z_s$ be i.i.d. copies of random variable $Z$ on $[a, b]$. Then</em><br>$$<br>\Pr[ \frac{1}{s} \sum_{\tau = 1}^s Z_\tau - E[Z] \ge r] \le \exp(- \frac{2 s r^2}{(b - a)^2 } )<br>$$<br><em>where r &gt; 0</em>. </p>
-<p>Now, consider a <strong>fixed</strong> $s$ ($1 \le s \le T$) and a failure probability $\delta &gt; 0$.  Applying Hoeffding inequality with $Z_1 = Y_{i, 1}, Z_2 = Y_{i, 2}, …, Z_s = Y_{i, s}$, $a = 0, b = 1$ and $r = \sqrt { \log \frac{1}{\delta} \over 2  s }$, we get<br>$$ \small<br>\Pr \left[ \hat \mu_{i, s} - \mu_i \ge \sqrt { \log \frac{1}{\delta} \over 2  s } \right] \le \delta<br>$$</p>
-<p>Similarly, by applying Hoeffding inequality with $Z_1 = -Y_{i, 1}, Z_2 = -Y_{i, 2}, …, Z_s = -Y_{i, s}$, $a = -1, b = 0$ and $r = \sqrt { \log \frac{1}{\delta} \over 2  s }$, we have<br>$$ \small<br>\Pr \left[ \mu_i - \hat \mu_{i, s} \ge \sqrt { \log \frac{1}{\delta} \over 2  s } \right] \le \delta<br>$$</p>
-<p>Inspired by this, the UCB defines the upper and lower bounds for the expected reward of the $i$-th machine as follows:<br>$$ \small<br>UB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} + \sqrt { \log t^\alpha \over 2  N_i(t - 1) } \<br>LB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} - \sqrt { \log t^\alpha \over 2  N_i(t - 1) } \<br>$$<br>where $\alpha &gt; 0$ is a parameter to be set. By convention here that if $N_i(t - 1) = 0$, $\sqrt { \log t^\alpha \over 2  N_i(t - 1) } = \infty$. </p>
-<p>The UCB algorithms chooses just the machine with highest upper bound. The lower bound is needed for its analysis. </p>
+<p>The goal is to find a policy that maximizes the expected rewards, or equivalently, the one that minimizes the expected regret <span class="math display">\[ \small
+\mathbb{R}(\phi) = T \cdot \mu^* - \mathbb{E}[\sum_{t = 1}^T X_t ]
+\]</span></p>
+<p>By definition of <span class="math inline">\(N_i(t)\)</span>'s, we have <span class="math inline">\(\sum_{i = 1}^k N_i(T) = T\)</span>. Then the regret can be written as <span class="math display">\[
+\mathbb{R}(\phi) = \mathbb{E}[\sum_{i = 1}^k N_i(T)] \cdot \mu^* - \sum_{i = 1}^k \mathbb{E}[N_i(T) ] \cdot \mu_i = \sum_{i : \Delta_i &gt; 0} \mathbb{E}[N_i(T) ] \cdot \Delta_i
+\]</span></p>
+<h3 id="the-upper-confidence-bound-ucb-algorithm">The Upper Confidence Bound (UCB) Algorithm</h3>
+<p>When making decision at trial <span class="math inline">\(t\)</span>, a good indicator of a machine's performance is its empirical reward: <span class="math display">\[ 
+\hat \mu_{i, N_i(t - 1)} \doteq  \sum_{\tau = 1}^{N_i(t - 1) } \frac{1}{ N_i(t - 1) } Y_{i, \tau}
+\]</span></p>
+<p>But this might not reflect the true value of its expectation <span class="math inline">\(\mu_i\)</span> because of sampling variation. The UCB algorithm takes the variation into consideration.</p>
+<p><strong><em>Fact.</em></strong> <em>Hoeffding Inequality.</em> <em>Let <span class="math inline">\(Z_1, Z_2, ..., Z_s\)</span> be i.i.d. copies of random variable <span class="math inline">\(Z\)</span> on <span class="math inline">\([a, b]\)</span>. Then</em> <span class="math display">\[
+\Pr[ \frac{1}{s} \sum_{\tau = 1}^s Z_\tau - E[Z] \ge r] \le \exp(- \frac{2 s r^2}{(b - a)^2 } )
+\]</span> <em>where r &gt; 0</em>.</p>
+<p>Now, consider a <strong>fixed</strong> <span class="math inline">\(s\)</span> (<span class="math inline">\(1 \le s \le T\)</span>) and a failure probability <span class="math inline">\(\delta &gt; 0\)</span>. Applying Hoeffding inequality with <span class="math inline">\(Z_1 = Y_{i, 1}, Z_2 = Y_{i, 2}, ..., Z_s = Y_{i, s}\)</span>, <span class="math inline">\(a = 0, b = 1\)</span> and <span class="math inline">\(r = \sqrt { \log \frac{1}{\delta} \over 2 s }\)</span>, we get <span class="math display">\[ \small
+\Pr \left[ \hat \mu_{i, s} - \mu_i \ge \sqrt { \log \frac{1}{\delta} \over 2  s } \right] \le \delta
+\]</span></p>
+<p>Similarly, by applying Hoeffding inequality with <span class="math inline">\(Z_1 = -Y_{i, 1}, Z_2 = -Y_{i, 2}, ..., Z_s = -Y_{i, s}\)</span>, <span class="math inline">\(a = -1, b = 0\)</span> and <span class="math inline">\(r = \sqrt { \log \frac{1}{\delta} \over 2 s }\)</span>, we have <span class="math display">\[ \small
+\Pr \left[ \mu_i - \hat \mu_{i, s} \ge \sqrt { \log \frac{1}{\delta} \over 2  s } \right] \le \delta
+\]</span></p>
+<p>Inspired by this, the UCB defines the upper and lower bounds for the expected reward of the <span class="math inline">\(i\)</span>-th machine as follows: <span class="math display">\[ \small
+UB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} + \sqrt { \log t^\alpha \over 2  N_i(t - 1) } \\
+LB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} - \sqrt { \log t^\alpha \over 2  N_i(t - 1) } \\
+\]</span> where <span class="math inline">\(\alpha &gt; 0\)</span> is a parameter to be set. By convention here that if <span class="math inline">\(N_i(t - 1) = 0\)</span>, <span class="math inline">\(\sqrt { \log t^\alpha \over 2 N_i(t - 1) } = \infty\)</span>.</p>
+<p>The UCB algorithms chooses just the machine with highest upper bound. The lower bound is needed for its analysis.</p>
 <blockquote>
-<p><strong><em>UCB algorithm</em></strong>  </p>
-<ol>
-<li>For $t \leftarrow 1$ to $T$ do    </li>
-<li>$\qquad$ Choose $I_t = \arg \max_{i \in [k] } UB_i ( t )$   </li>
-<li>$\qquad$ Observe a reward $X_t$  </li>
-</ol>
+<p><strong><em>UCB algorithm</em></strong><br />
+1. For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span> do<br />
+2. <span class="math inline">\(\qquad\)</span> Choose <span class="math inline">\(I_t = \arg \max_{i \in [k] } UB_i ( t )\)</span><br />
+3. <span class="math inline">\(\qquad\)</span> Observe a reward <span class="math inline">\(X_t\)</span></p>
 </blockquote>
-<p>Intuitively, there are two cases when $UB_i ( t )$ is high:</p>
-<ol>
-<li>The value $\mu_i$ is high;</li>
-<li>The $i$-th machine is under-explored.</li>
+<p>Intuitively, there are two cases when <span class="math inline">\(UB_i ( t )\)</span> is high:</p>
+<ol type="1">
+<li>The value <span class="math inline">\(\mu_i\)</span> is high;</li>
+<li>The <span class="math inline">\(i\)</span>-th machine is under-explored.</li>
 </ol>
-<p><strong><em>Caveat:</em> <em>The reader might start to think that at trial $t$, it holds that $\Pr[\mu_i \ge UB_i(t) ]$ (or $\Pr[\mu_i \le LB_i(t) ]$) is bounded by $\frac{1}{t^\alpha}$, according to Hoeffding inequality. It is not. Hoeffding inequality requires the number of samples to be a fixed number. On the other hand, $N_i(t - 1)$ is a random variable that depends on the history of the game. We will discuss this later.</em></strong></p>
-<p>The following theorem states that the expected regret of UCB algorithm grows logarithmically with $T$. </p>
-<p><strong><em>Theorem.</em></strong> <em>If $\alpha &gt; 2$, the regret of the UCB algorithm is bounded by</em><br>$$ \small<br>\mathbb{R}(\phi) \le  \log T \cdot ( \sum_{i : \Delta_i &gt; 0 } \frac{2 \alpha }{\Delta_i } ) + \frac{\alpha}{ \alpha - 2 } \sum_{i : \Delta_i &gt; 0 } \Delta_i<br>$$</p>
+<p><strong><em>Caveat:</em> <em>The reader might start to think that at trial <span class="math inline">\(t\)</span>, it holds that <span class="math inline">\(\Pr[\mu_i \ge UB_i(t) ]\)</span> (or <span class="math inline">\(\Pr[\mu_i \le LB_i(t) ]\)</span>) is bounded by <span class="math inline">\(\frac{1}{t^\alpha}\)</span>, according to Hoeffding inequality. It is not. Hoeffding inequality requires the number of samples to be a fixed number. On the other hand, <span class="math inline">\(N_i(t - 1)\)</span> is a random variable that depends on the history of the game. We will discuss this later.</em></strong></p>
+<p>The following theorem states that the expected regret of UCB algorithm grows logarithmically with <span class="math inline">\(T\)</span>.</p>
+<p><strong><em>Theorem.</em></strong> <em>If <span class="math inline">\(\alpha &gt; 2\)</span>, the regret of the UCB algorithm is bounded by</em> <span class="math display">\[ \small
+\mathbb{R}(\phi) \le  \log T \cdot ( \sum_{i : \Delta_i &gt; 0 } \frac{2 \alpha }{\Delta_i } ) + \frac{\alpha}{ \alpha - 2 } \sum_{i : \Delta_i &gt; 0 } \Delta_i
+\]</span></p>
 <p><em>Proof:</em></p>
-<p>We will show that for $i : \Delta_i &gt; 0$,<br>$$ \small<br>\mathbb{E} [n_{i, T}] \le \frac{ \alpha \log T }{ \Delta_i^2} + \frac{\alpha}{\alpha - 2}<br>$$</p>
-<p>The key for the proof relies on a sufficient condition that the $i$-th machine will not be chosen at trial $t$: </p>
+<p>We will show that for <span class="math inline">\(i : \Delta_i &gt; 0\)</span>, <span class="math display">\[ \small
+\mathbb{E} [n_{i, T}] \le \frac{ \alpha \log T }{ \Delta_i^2} + \frac{\alpha}{\alpha - 2} 
+\]</span></p>
+<p>The key for the proof relies on a sufficient condition that the <span class="math inline">\(i\)</span>-th machine will not be chosen at trial <span class="math inline">\(t\)</span>:</p>
 <blockquote>
-<p>if the following events happen at trial $t$, machine $i$ will not be chosen:</p>
-<ol>
-<li>$A_t: 2 \sqrt { \alpha \log t \over 2  N_i(t - 1) } \le \Delta_i$  </li>
-<li>$B_t: UB_{ i^* } ( t ) &gt; \mu^*$  </li>
-<li>$C_t: \mu_i &gt; LB_i ( t )$</li>
-</ol>
+<p>if the following events happen at trial <span class="math inline">\(t\)</span>, machine <span class="math inline">\(i\)</span> will not be chosen: 1. <span class="math inline">\(A_t: 2 \sqrt { \alpha \log t \over 2 N_i(t - 1) } \le \Delta_i\)</span><br />
+2. <span class="math inline">\(B_t: UB_{ i^* } ( t ) &gt; \mu^*\)</span><br />
+3. <span class="math inline">\(C_t: \mu_i &gt; LB_i ( t )\)</span></p>
 </blockquote>
-<p>This condition essentially prevents $UB_i(t)$ from exceeding $\mu^*$ while assures $UB_{i^*}(t)$ is higher than $\mu^*$. </p>
-<p>$$ \small<br>UB_i ( t ) = LB_i ( t ) + 2 \sqrt { \alpha \log t \over 2  N_i(t - 1) } &lt; \mu_i + \Delta_i = \mu^* &lt; UB_{ i^* } ( t )<br>$$</p>
-<p>Let $\beta = \lceil \frac{2 \alpha \log T}{\Delta_i^2}  \rceil$. Note that  $A_t = { N_i(t - 1) \ge  \frac{2 \alpha \log t}{\Delta_i^2} }  \subset {  N_i(t - 1) \ge \beta }$. Now,<br>$$<br>{I_t = i } \subset \overline{ A_t \cap B_t \cap C_t } = \bar A_t \cup \bar B_t \cup \bar C_t<br>$$</p>
-<p>and<br>$$<br>\begin{array}{ll}<br>    \mathbb{E}[n_{i, T}]    &amp;=  \mathbb{E}[ \sum_{t = 1}^T \mathfrak{1} {I_t = i} ]  \<br>                            &amp;=  \mathbb{E} [ \sum_{t = 1}^T \mathfrak{1} {I_t = i, \bar A_t }+ \sum_{t = 1}^T \mathfrak{1} {I_t = i, A_t } ]  \<br>                            &amp;\le  \mathbb{E} [ \sum_{t = 1}^T \mathfrak{1} {I_t = i, \  N_i(t) &lt; \beta } ] + \sum_{t = 1}^T \mathbb{E} [\mathfrak{1} {I_t = i, A_t } ]  \<br>                            &amp;\le \beta + \sum_{t = \beta + 1}^T \Pr[ {I_t = i} \cap A_t ] \<br>                            &amp;\le \beta + \sum_{t = \beta + 1}^T ( \Pr[ \bar B_t \cap A_t ] + \Pr[ \bar C_t \cap A_t ] ) \<br>                            &amp;\le \beta + \sum_{t = \beta + 1}^T ( \Pr[ \bar B_t ] + \Pr[ \bar C_t ] ) \<br>\end{array}<br>$$</p>
-<p>It is non-trivial to bound $\Pr[\bar B_t]$. For a fixed $1 \le s \le t - 1$, define the event<br>$$<br>M_s : \frac{1}{s} \sum_{\tau = 1}^s Y_{i^*, \tau} + \sqrt{ \frac{\alpha \log t}{2 s} } \le \mu^*<br>$$</p>
-<p>Since $s$ is fixed, by Hoeffding inequality, $\Pr[M_s] \le \frac{1}{t^\alpha}$. Then<br>$$ \small<br>\begin{aligned}<br>    \bar B_t = \left{ \mu_{ {i^*}, N_{i^*} (t - 1)} + \sqrt { \alpha \log t \over 2  N_{i^*} (t - 1) }  \le \mu^* \right} \subset \cup_{s = 1}^{t - 1} M_s<br>\end{aligned}<br>$$</p>
-<p>and<br>$$<br>\Pr[ \bar B_t ] \le \Pr[ \cup_{s = 1}^{t - 1} M_s ] \le \sum_{s = 1}^{t - 1} \Pr[M_s] &lt; t^{\alpha - 1}<br>$$</p>
-<p>and<br>$$<br>\sum_{t = \beta + 1}^T \Pr[ \bar B_t ] &lt; \sum_{t = \beta + 1}^T t^{\alpha - 1} &lt; \int_{t = 1}^\infty \frac{1}{ x^{\alpha - 1} } dx  = \frac{1}{\alpha - 2} x^{-(\alpha - 2)} \mid_{t = 1}^\infty  = \frac{1}{\alpha - 2}<br>$$</p>
-<p>Similarly, we have<br>$$<br>\sum_{t = \beta + 1}^T \Pr[ \bar C_t ] &lt; \frac{1}{\alpha - 2}<br>$$</p>
-<p>Finally,<br>$$<br>\begin{aligned} \small<br>    \mathbb{E} [n_{i, T}]<br>                &amp;\le \beta + \frac{2}{\alpha - 2} \<br>                &amp;\le \frac{2 \alpha \log T}{\Delta_i^2} + 1 + \frac{2}{\alpha - 2} \<br>                &amp;= \frac{2 \alpha \log T}{\Delta_i^2} + \frac{\alpha }{\alpha - 2}<br>\end{aligned}<br>$$</p>
-<p><strong><em>Remark:</em></strong> <em>Can we bound  $\Pr[ \bar B_t ]$ as follows:</em><br>$$<br>\begin{array}{ll}<br>    \Pr[\bar B_t] &amp;= \sum_{\tau = 1}^{t - 1} \Pr[UB_{ i^* } ( t ) &lt; \mu^* \mid n_{i^*, t} = \tau] \cdot \Pr[n_{i^*, t} = \tau]\<br>    &amp;= \sum_{\tau = 1}^{t - 1} \frac{1}{t^\alpha} \cdot \Pr[n_{i^*, t} = \tau] \<br>    &amp;= \frac{1}{t^\alpha}<br>\end{array}<br>$$</p>
-<p>When we know $n_{i^*, t} = \tau$ for some $\tau$, the $n_{i^*, t}$ rewards from machine $i^*$ can’t be viewed as independent samples. E.g., if $t$ is large, the best machines has much larger expected reward than others, and $n_{i^*, t}$ is very small compared to $t$. Then it is likely machine $i^*$ generates bad rewards in the history. The reward sequence of $i^*$ can’t be viewed as a sequence of independent samples from distribution $D_{i^*}$.</p>
-<p>$\blacksquare$</p>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>[1] D. Katselis, B. Miranda, and H. Hu, “Lecture 8: Multi-Armed Bandits”, ECE586 MDPs and Reinforcement Learning, Spring 2019, University of Illinois at Urbana-Champaign.<br>[2] S. Bubeck and N. Cesa-Bianchi, “Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,” arXiv:1204.5721 [cs, stat], Nov. 2012, Accessed: Oct. 19, 2020. </p>
+<p>This condition essentially prevents <span class="math inline">\(UB_i(t)\)</span> from exceeding <span class="math inline">\(\mu^*\)</span> while assures <span class="math inline">\(UB_{i^*}(t)\)</span> is higher than <span class="math inline">\(\mu^*\)</span>.</p>
+<p><span class="math display">\[ \small
+UB_i ( t ) = LB_i ( t ) + 2 \sqrt { \alpha \log t \over 2  N_i(t - 1) } &lt; \mu_i + \Delta_i = \mu^* &lt; UB_{ i^* } ( t )
+\]</span></p>
+<p>Let <span class="math inline">\(\beta = \lceil \frac{2 \alpha \log T}{\Delta_i^2} \rceil\)</span>. Note that <span class="math inline">\(A_t = \{ N_i(t - 1) \ge \frac{2 \alpha \log t}{\Delta_i^2} \} \subset \{ N_i(t - 1) \ge \beta \}\)</span>. Now, <span class="math display">\[
+\{I_t = i \} \subset \overline{ A_t \cap B_t \cap C_t } = \bar A_t \cup \bar B_t \cup \bar C_t
+\]</span></p>
+<p>and <span class="math display">\[
+\begin{array}{ll} 
+    \mathbb{E}[n_{i, T}]    &amp;=  \mathbb{E}[ \sum_{t = 1}^T \mathfrak{1} \{I_t = i\} ]  \\
+                            &amp;=  \mathbb{E} [ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, \bar A_t \}+ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, A_t \} ]  \\
+                            &amp;\le  \mathbb{E} [ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, \  N_i(t) &lt; \beta \} ] + \sum_{t = 1}^T \mathbb{E} [\mathfrak{1} \{I_t = i, A_t \} ]  \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T \Pr[ \{I_t = i\} \cap A_t ] \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T ( \Pr[ \bar B_t \cap A_t ] + \Pr[ \bar C_t \cap A_t ] ) \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T ( \Pr[ \bar B_t ] + \Pr[ \bar C_t ] ) \\
+\end{array}
+\]</span></p>
+<p>It is non-trivial to bound <span class="math inline">\(\Pr[\bar B_t]\)</span>. For a fixed <span class="math inline">\(1 \le s \le t - 1\)</span>, define the event <span class="math display">\[
+M_s : \frac{1}{s} \sum_{\tau = 1}^s Y_{i^*, \tau} + \sqrt{ \frac{\alpha \log t}{2 s} } \le \mu^*
+\]</span></p>
+<p>Since <span class="math inline">\(s\)</span> is fixed, by Hoeffding inequality, <span class="math inline">\(\Pr[M_s] \le \frac{1}{t^\alpha}\)</span>. Then <span class="math display">\[ \small
+\begin{aligned}
+    \bar B_t = \left\{ \mu_{ {i^*}, N_{i^*} (t - 1)} + \sqrt { \alpha \log t \over 2  N_{i^*} (t - 1) }  \le \mu^* \right\} \subset \cup_{s = 1}^{t - 1} M_s
+\end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+\Pr[ \bar B_t ] \le \Pr[ \cup_{s = 1}^{t - 1} M_s ] \le \sum_{s = 1}^{t - 1} \Pr[M_s] &lt; t^{\alpha - 1}
+\]</span></p>
+<p>and <span class="math display">\[
+\sum_{t = \beta + 1}^T \Pr[ \bar B_t ] &lt; \sum_{t = \beta + 1}^T t^{\alpha - 1} &lt; \int_{t = 1}^\infty \frac{1}{ x^{\alpha - 1} } dx  = \frac{1}{\alpha - 2} x^{-(\alpha - 2)} \mid_{t = 1}^\infty  = \frac{1}{\alpha - 2}
+\]</span></p>
+<p>Similarly, we have <span class="math display">\[ 
+\sum_{t = \beta + 1}^T \Pr[ \bar C_t ] &lt; \frac{1}{\alpha - 2}
+\]</span></p>
+<p>Finally, <span class="math display">\[
+\begin{aligned} \small
+    \mathbb{E} [n_{i, T}] 
+                &amp;\le \beta + \frac{2}{\alpha - 2} \\
+                &amp;\le \frac{2 \alpha \log T}{\Delta_i^2} + 1 + \frac{2}{\alpha - 2} \\
+                &amp;= \frac{2 \alpha \log T}{\Delta_i^2} + \frac{\alpha }{\alpha - 2} 
+\end{aligned}
+\]</span></p>
+<p><strong><em>Remark:</em></strong> <em>Can we bound <span class="math inline">\(\Pr[ \bar B_t ]\)</span> as follows:</em> <span class="math display">\[
+\begin{array}{ll} 
+    \Pr[\bar B_t] &amp;= \sum_{\tau = 1}^{t - 1} \Pr[UB_{ i^* } ( t ) &lt; \mu^* \mid n_{i^*, t} = \tau] \cdot \Pr[n_{i^*, t} = \tau]\\
+    &amp;= \sum_{\tau = 1}^{t - 1} \frac{1}{t^\alpha} \cdot \Pr[n_{i^*, t} = \tau] \\
+    &amp;= \frac{1}{t^\alpha} 
+\end{array}
+\]</span></p>
+<p>When we know <span class="math inline">\(n_{i^*, t} = \tau\)</span> for some <span class="math inline">\(\tau\)</span>, the <span class="math inline">\(n_{i^*, t}\)</span> rewards from machine <span class="math inline">\(i^*\)</span> can't be viewed as independent samples. E.g., if <span class="math inline">\(t\)</span> is large, the best machines has much larger expected reward than others, and <span class="math inline">\(n_{i^*, t}\)</span> is very small compared to <span class="math inline">\(t\)</span>. Then it is likely machine <span class="math inline">\(i^*\)</span> generates bad rewards in the history. The reward sequence of <span class="math inline">\(i^*\)</span> can't be viewed as a sequence of independent samples from distribution <span class="math inline">\(D_{i^*}\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h2 id="reference">Reference</h2>
+<p>[1] D. Katselis, B. Miranda, and H. Hu, “Lecture 8: Multi-Armed Bandits”, ECE586 MDPs and Reinforcement Learning, Spring 2019, University of Illinois at Urbana-Champaign.<br />
+[2] S. Bubeck and N. Cesa-Bianchi, “Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,” arXiv:1204.5721 [cs, stat], Nov. 2012, Accessed: Oct. 19, 2020.</p>
 
     </div>
 
@@ -379,7 +435,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Formulation"><span class="nav-number">1.</span> <span class="nav-text">Formulation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Upper-Confidence-Bound-UCB-Algorithm"><span class="nav-number">2.</span> <span class="nav-text">The Upper Confidence Bound (UCB) Algorithm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number"></span> <span class="nav-text">Reference</span></a></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#formulation"><span class="nav-number">1.</span> <span class="nav-text">Formulation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#the-upper-confidence-bound-ucb-algorithm"><span class="nav-number">2.</span> <span class="nav-text">The Upper Confidence Bound (UCB) Algorithm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number"></span> <span class="nav-text">Reference</span></a></div>
       </div>
       <!--/noindex-->
 

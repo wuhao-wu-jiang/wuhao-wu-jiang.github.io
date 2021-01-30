@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Given a dense graph $G &#x3D; \langle V,E \rangle$ and relative error threshold $\epsilon$,  we want to get a spare graph $G’ &#x3D; \langle V, E’ \rangle$, such that $G’(S, \bar{S}) \in (1 \pm \epsilon) G(S, \">
+  <meta name="description" content="Given a dense graph \(G &#x3D; \langle V,E \rangle\) and relative error threshold \(\epsilon\), we want to get a spare graph \(G&#39; &#x3D; \langle V, E&#39; \rangle\), such that \(G&#39;(S, \bar{S}) \in (1 \p">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Graph Sparsification">
 <meta property="og:url" content="http://example.com/2018/07/21/Graph%20Sparsification/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Given a dense graph $G &#x3D; \langle V,E \rangle$ and relative error threshold $\epsilon$,  we want to get a spare graph $G’ &#x3D; \langle V, E’ \rangle$, such that $G’(S, \bar{S}) \in (1 \pm \epsilon) G(S, \">
+<meta property="og:description" content="Given a dense graph \(G &#x3D; \langle V,E \rangle\) and relative error threshold \(\epsilon\), we want to get a spare graph \(G&#39; &#x3D; \langle V, E&#39; \rangle\), such that \(G&#39;(S, \bar{S}) \in (1 \p">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2018-07-21T09:52:33.000Z">
 <meta property="article:modified_time" content="2018-07-22T03:11:24.000Z">
@@ -196,31 +196,34 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Given a dense graph $G = \langle V,E \rangle$ and relative error threshold $\epsilon$,  we want to get a spare graph $G’ = \langle V, E’ \rangle$, such that $G’(S, \bar{S}) \in (1 \pm \epsilon) G(S, \bar{S})$ for any cut $(S, \bar{S}) \in V \times V$, where $G’(S, \bar{S})$ stands for the number of edges between $S$ and $S’$ in $G’$. </p>
-<p>$G’$ can be constructed as follows: </p>
+        <p>Given a dense graph <span class="math inline">\(G = \langle V,E \rangle\)</span> and relative error threshold <span class="math inline">\(\epsilon\)</span>, we want to get a spare graph <span class="math inline">\(G&#39; = \langle V, E&#39; \rangle\)</span>, such that <span class="math inline">\(G&#39;(S, \bar{S}) \in (1 \pm \epsilon) G(S, \bar{S})\)</span> for any cut <span class="math inline">\((S, \bar{S}) \in V \times V\)</span>, where <span class="math inline">\(G&#39;(S, \bar{S})\)</span> stands for the number of edges between <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> in <span class="math inline">\(G&#39;\)</span>.</p>
+<p><span class="math inline">\(G&#39;\)</span> can be constructed as follows:</p>
 <blockquote>
-<ol>
-<li><p>Keep all vertices $V$ in $G’$, </p>
-</li>
-<li><p>Keep each edge $e \in E$ in $G’$ with probability $p$. If an edge is kept, set its weight to $1/p$. </p>
-</li>
+<ol type="1">
+<li><p>Keep all vertices <span class="math inline">\(V\)</span> in <span class="math inline">\(G&#39;\)</span>,</p></li>
+<li><p>Keep each edge <span class="math inline">\(e \in E\)</span> in <span class="math inline">\(G&#39;\)</span> with probability <span class="math inline">\(p\)</span>. If an edge is kept, set its weight to <span class="math inline">\(1/p\)</span>.</p></li>
 </ol>
 </blockquote>
-<p>We will determine the value of $p$ later. </p>
-<p>There are many possible $G’$’s – precisely, $2^{|E|}$ of $G’$’s. At the first glimpse, it not clear what we get out of them. However, we will show that for a large fraction of them satisfy our requirement. In other words, we get a <em>good</em> $G’$ with high probability. </p>
-<p>To show this, first observe that each edge has expected weight $p \cdot 1 / p + (1 - p) \cdot 0 = 1$. Therefore, by linearity of expectation, the expected value of each cut in $G’$ equals to its value in $G$, i.e., $E[G’(S, \bar{S})] = G(S, \bar{S})$, for $\forall (S, \bar{S}) \in V \times V$. </p>
-<p>By proper choice of $p$, all $G’(S, \bar{S})$ will concentrate around its expectation. Moreover, the more edges a cut $(S, \bar{S}) \in G$ has, the more likely its expectation has a smaller deviation. This motivates that $p$ is set according to the min-cut of $G$. </p>
-<p>Throughout discussion below, we denote $n$ as the number of vertices, $m$ the number of edges, and $c^*$ the min-cut value in $G$. </p>
-<h4 id="Two-Important-Results"><a href="#Two-Important-Results" class="headerlink" title="Two Important Results"></a>Two Important Results</h4><p>The first one is the famous combinatorial ramification of Karger Algorithm.</p>
-<p><strong>Theorem 1</strong>. The number of cuts whose weight are within $\alpha c^*$ is upper bounded by $n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2}$, where $\alpha \ge 1, 2 \alpha \in N^+$.</p>
-<p> Define $f(x)$ ($x \in R, x \ge 1$) the number of cuts in $G’$ with value $x c^*$, where $x c^*$ is an integer. $F(\alpha) = \sum_{x \le \alpha} f(x)$ is bounded by $n^{2\alpha}$.</p>
-<p>The second is Chernoff Bound. </p>
-<p><strong>Theorem 2</strong>. Let ${ X_i }$ be a set of random variables and $X \doteq \Sigma X_i$, $E[X] = \mu$, then $Pr[|X - \mu| \ge \epsilon \mu] \le 2 \exp(- \epsilon^2 \mu /3)$.</p>
-<p>By Chernoff bound, the probability that a min-cut derivate more than $\epsilon c^*$ is bounded by $2 \exp (-\epsilon^2 p c^* / 3)$. Similarly, the  bound for a cut with value $\alpha c^*$ is $2 \exp (-\epsilon^2 \alpha p c^* / 3)$. </p>
-<p>Denote $c’ = cp$. It follows by union bound that the probability that some cut deviate more than $\epsilon$ times it expected value is at most $\sum_x f(x) \cdot 2 \exp(-\epsilon^2xc’/3)$.</p>
-<p>It can be shown that to maximum this value, we need $F(\alpha)$ takes the value $n^{2 \alpha}$ any for $\alpha \ge 1, 2\alpha \in N^+$. Hence the sum is less than<br>$$<br>2f(1)e^{-\epsilon^2 c’ /3} + 2 \int_{x = 1}^\infty {\partial n^{2x} \over \partial x} e^{-\epsilon^2 x c’/ 3} dx<br>$$</p>
-<p>That is<br>$$<br>2 n^2 e^{-\epsilon^2 c’ /3}(1 + {\ln n^2 \over \epsilon^2 c’ /3 - \ln n^2})<br>$$</p>
-<p>If we let $p = 3(d + 2) \ln n / (\epsilon^2 c)$ for some parameter d, then the bound becomes $O(n^{-d})$.</p>
+<p>We will determine the value of <span class="math inline">\(p\)</span> later.</p>
+<p>There are many possible <span class="math inline">\(G&#39;\)</span>'s -- precisely, <span class="math inline">\(2^{|E|}\)</span> of <span class="math inline">\(G&#39;\)</span>'s. At the first glimpse, it not clear what we get out of them. However, we will show that for a large fraction of them satisfy our requirement. In other words, we get a <em>good</em> <span class="math inline">\(G&#39;\)</span> with high probability.</p>
+<p>To show this, first observe that each edge has expected weight <span class="math inline">\(p \cdot 1 / p + (1 - p) \cdot 0 = 1\)</span>. Therefore, by linearity of expectation, the expected value of each cut in <span class="math inline">\(G&#39;\)</span> equals to its value in <span class="math inline">\(G\)</span>, i.e., <span class="math inline">\(E[G&#39;(S, \bar{S})] = G(S, \bar{S})\)</span>, for <span class="math inline">\(\forall (S, \bar{S}) \in V \times V\)</span>.</p>
+<p>By proper choice of <span class="math inline">\(p\)</span>, all <span class="math inline">\(G&#39;(S, \bar{S})\)</span> will concentrate around its expectation. Moreover, the more edges a cut <span class="math inline">\((S, \bar{S}) \in G\)</span> has, the more likely its expectation has a smaller deviation. This motivates that <span class="math inline">\(p\)</span> is set according to the min-cut of <span class="math inline">\(G\)</span>.</p>
+<p>Throughout discussion below, we denote <span class="math inline">\(n\)</span> as the number of vertices, <span class="math inline">\(m\)</span> the number of edges, and <span class="math inline">\(c^*\)</span> the min-cut value in <span class="math inline">\(G\)</span>.</p>
+<h4 id="two-important-results">Two Important Results</h4>
+<p>The first one is the famous combinatorial ramification of Karger Algorithm.</p>
+<p><strong>Theorem 1</strong>. The number of cuts whose weight are within <span class="math inline">\(\alpha c^*\)</span> is upper bounded by <span class="math inline">\(n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2}\)</span>, where <span class="math inline">\(\alpha \ge 1, 2 \alpha \in N^+\)</span>.</p>
+<p>Define <span class="math inline">\(f(x)\)</span> (<span class="math inline">\(x \in R, x \ge 1\)</span>) the number of cuts in <span class="math inline">\(G&#39;\)</span> with value <span class="math inline">\(x c^*\)</span>, where <span class="math inline">\(x c^*\)</span> is an integer. <span class="math inline">\(F(\alpha) = \sum_{x \le \alpha} f(x)\)</span> is bounded by <span class="math inline">\(n^{2\alpha}\)</span>.</p>
+<p>The second is Chernoff Bound.</p>
+<p><strong>Theorem 2</strong>. Let <span class="math inline">\(\{ X_i \}\)</span> be a set of random variables and <span class="math inline">\(X \doteq \Sigma X_i\)</span>, <span class="math inline">\(E[X] = \mu\)</span>, then <span class="math inline">\(Pr[|X - \mu| \ge \epsilon \mu] \le 2 \exp(- \epsilon^2 \mu /3)\)</span>.</p>
+<p>By Chernoff bound, the probability that a min-cut derivate more than <span class="math inline">\(\epsilon c^*\)</span> is bounded by <span class="math inline">\(2 \exp (-\epsilon^2 p c^* / 3)\)</span>. Similarly, the bound for a cut with value <span class="math inline">\(\alpha c^*\)</span> is <span class="math inline">\(2 \exp (-\epsilon^2 \alpha p c^* / 3)\)</span>.</p>
+<p>Denote <span class="math inline">\(c&#39; = cp\)</span>. It follows by union bound that the probability that some cut deviate more than <span class="math inline">\(\epsilon\)</span> times it expected value is at most <span class="math inline">\(\sum_x f(x) \cdot 2 \exp(-\epsilon^2xc&#39;/3)\)</span>.</p>
+<p>It can be shown that to maximum this value, we need <span class="math inline">\(F(\alpha)\)</span> takes the value <span class="math inline">\(n^{2 \alpha}\)</span> any for <span class="math inline">\(\alpha \ge 1, 2\alpha \in N^+\)</span>. Hence the sum is less than <span class="math display">\[
+2f(1)e^{-\epsilon^2 c&#39; /3} + 2 \int_{x = 1}^\infty {\partial n^{2x} \over \partial x} e^{-\epsilon^2 x c&#39;/ 3} dx
+\]</span></p>
+<p>That is <span class="math display">\[
+2 n^2 e^{-\epsilon^2 c&#39; /3}(1 + {\ln n^2 \over \epsilon^2 c&#39; /3 - \ln n^2}) 
+\]</span></p>
+<p>If we let <span class="math inline">\(p = 3(d + 2) \ln n / (\epsilon^2 c)\)</span> for some parameter d, then the bound becomes <span class="math inline">\(O(n^{-d})\)</span>.</p>
 
     </div>
 
@@ -305,7 +308,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Two-Important-Results"><span class="nav-number">1.</span> <span class="nav-text">Two Important Results</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#two-important-results"><span class="nav-number">1.</span> <span class="nav-text">Two Important Results</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

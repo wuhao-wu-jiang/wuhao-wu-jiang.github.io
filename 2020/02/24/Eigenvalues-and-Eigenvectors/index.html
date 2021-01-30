@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Eigenvector and EigenvaluesTheorem. Given a symmetric matrix $A \in \mathbb{R}^{n \times n}$ that is positive semi-definitive, there exists an orthogonal matrix $V \in \mathbb{R}^{n \times n}$, such t">
+  <meta name="description" content="Eigenvector and Eigenvalues Theorem. Given a symmetric matrix \(A \in \mathbb{R}^{n \times n}\) that is positive semi-definitive, there exists an orthogonal matrix \(V \in \mathbb{R}^{n \times n}\),">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Eigenvalues, Eigenvectors and SVD">
 <meta property="og:url" content="http://example.com/2020/02/24/Eigenvalues-and-Eigenvectors/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Eigenvector and EigenvaluesTheorem. Given a symmetric matrix $A \in \mathbb{R}^{n \times n}$ that is positive semi-definitive, there exists an orthogonal matrix $V \in \mathbb{R}^{n \times n}$, such t">
+<meta property="og:description" content="Eigenvector and Eigenvalues Theorem. Given a symmetric matrix \(A \in \mathbb{R}^{n \times n}\) that is positive semi-definitive, there exists an orthogonal matrix \(V \in \mathbb{R}^{n \times n}\),">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-02-24T10:57:00.000Z">
 <meta property="article:modified_time" content="2020-02-24T12:20:37.116Z">
@@ -188,43 +188,124 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="Eigenvector-and-Eigenvalues"><a href="#Eigenvector-and-Eigenvalues" class="headerlink" title="Eigenvector and Eigenvalues"></a>Eigenvector and Eigenvalues</h2><p><strong><em>Theorem. Given a symmetric matrix $A \in \mathbb{R}^{n \times n}$ that is positive semi-definitive, there exists an orthogonal matrix $V \in \mathbb{R}^{n \times n}$, such that</em></strong><br>$$<br>A = V \Sigma V^T<br>$$<br><strong><em>where $\Sigma \in \mathbb{R}^{n \times n}$ is a diagonal matrix with all diagonal elements non-negative.</em></strong></p>
-<p>We need the following lemma for the proof. </p>
-<p><strong>Lemma: If a function $f: S \rightarrow \mathbb{R}$ is continuous on a closed set $S$, then it takes maximum value at some point of $S$.</strong></p>
-<p><em>Proof.</em><br>Consider the maximization problem:<br>$$<br>\begin{aligned}<br>&amp;\max &amp; \frac{1}{2} x^T A x \<br>&amp;s.t. &amp;  x^T x = 1<br>\end{aligned}<br>$$</p>
-<p>*<strong>Question to ponder:</strong> Explain the geometric meaning of the term $x^T A x$.* </p>
-<p>The corresponding Lagrange function is given by<br>$$<br>L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1)<br>$$</p>
-<p>Taking derivative with respect to $x$ gives<br>$$<br>\frac{\partial L}{\partial x} = Ax - \lambda x<br>$$</p>
-<p><strong><em>Existence of maximum solution:</em></strong><br>Note that ${ x : x^T x = 1 }$ is defined the boundary of the unit cycle, which is a closed set. Combined with the fact that $f$ is a continuous function, it takes its maximum value at some point in ${ x : x^T x = 1 }$. Denote this point $v_1 \in { x : x^T x = 1 }$. </p>
-<p><strong><em>Gradient at the maximum point:</em></strong> At this point, it holds that<br>$$<br>\frac{\partial L}{\partial x} \mid_{x = v_1} = Av_1 - \lambda v_1 = 0<br>$$</p>
-<p>which implies that $v_1$ is an eigenvector of $A$. Denote its associated eigenvalue $\lambda_1$. </p>
-<p>*<strong>Question to ponder:</strong> Prove that $\lambda_1$ is the largest eigenvalue.*</p>
-<p>After finding $v_1$, consider a new optimization problem:<br>$$<br>\begin{aligned}<br>&amp;\max   &amp; \frac{1}{2} x^T A x \<br>&amp;s.t.   &amp;  x^T x = 1 \<br>&amp;       &amp;  v_1^T x = 0<br>\end{aligned}<br>$$</p>
-<p>That is, we want to find a new unit vector that is orthogonal to $v_1$ while maximizing $\frac{1}{2} x^T A x$. </p>
-<p><strong><em>Existence of maximum solution.</em></strong> By the lemma and the facts: </p>
-<ol>
-<li>${x : x^T x = 1} \cap { x : v_1^T x = 0 }$ is closed.   </li>
-<li>$\frac{1}{2} x^T A x$ is continuous. </li>
-</ol>
-<p>Denote this maximum point $v_2$. Now consider the new Lagrange function for the optimization<br>$$<br>L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1) - \beta(v_1^T x - 0)<br>$$</p>
-<p><strong><em>Gradient at the maximum point:</em></strong> At this point, it holds that<br>$$<br>\frac{\partial L}{\partial x} \mid_{x = v_2} = Av_2 - \lambda v_2 - \beta v_1 = 0<br>$$</p>
-<p>Left multiplying $v_1^T$ gives<br>$$<br>(v_1^T A)v_2 - \lambda v_1^T v_2 - \beta v_1^T v_1 = (A v_1)^T v_2  - \beta = \lambda_1 v_1^T v_2 - \beta = -\beta = 0<br>$$<br>where $v_1^T A = (A v_1)^T$ follows from the symmetry of $A$, i.e., $A = A^T$. </p>
-<p>Therefore,<br>$$<br>Av_2 - \lambda v_2 = 0<br>$$</p>
-<p>It concludes that $v_2$ is an eigenvector of $A$. Denote its associated eigenvalue $\lambda_2$. </p>
-<p>In a similar manner, we can define<br>$$<br>\begin{aligned}<br>&amp;\max   &amp; \frac{1}{2} x^T A x \<br>&amp;s.t.   &amp;  x^T x = 1 \<br>&amp;       &amp;  v_1^T x = 0 \<br>&amp;       &amp;  v_2^T x = 0 \<br>\end{aligned}<br>$$</p>
-<p>There exists an optimal point $v_3$. The derivative of Lagrange function at this point is<br>$$<br>\frac{\partial L}{\partial x} \mid_{x = v_3} = Av_3 - \lambda v_3 - \beta_1 v_1 - \beta_2 v_2 = 0<br>$$</p>
-<p>for some parameters $\lambda, \beta_1, \beta_2$. Left multiplying $v_1^T$ or $v_2^T$ gives $\beta_1 = 0$ and $\beta_2 = 0$ so that $v_3$ is an eigenvector of $A$. </p>
-<p>Following the procedure, we can find $n$ eigenvectors $v_1, v_2, …, v_n$ of $A$. Define<br>$$<br>\Sigma =<br>\begin{aligned}<br>    \left[<br>    \begin{matrix}<br>    &amp;\lambda_1 &amp;    &amp;   \<br>    &amp;          &amp;\lambda_2 &amp; \<br>    &amp;           &amp;   &amp;   … \<br>    &amp;           &amp;    &amp;      &amp; \lambda_n<br>    \end{matrix}<br>    \right]<br>\end{aligned}<br>\qquad<br>V =<br>\begin{aligned}<br>    \left[<br>    \begin{matrix}<br>    v_1, v_2, …, v_n<br>    \end{matrix}<br>    \right]<br>\end{aligned}<br>$$</p>
-<p>Then<br>$$<br>A V = V \Sigma<br>$$</p>
-<p>Hence,<br>$$<br>A = V \Sigma V^{-1} = V \Sigma V^T<br>$$</p>
-<p>$\square$</p>
-<h2 id="SVD"><a href="#SVD" class="headerlink" title="SVD"></a>SVD</h2><p>In general, a matrix $A \in \mathbb{R}^{m \times n}$ takes a vector $x \in \mathbb{R}^n$ to a vector $Ax \in \mathbb{R}^m$. It is natural to ask, is there a vector $x$, such that its length is enlarged by the largest factor after the transformation:<br>$$<br>\max_{x \in \mathbb{R}^n } \frac{ ||Ax || }{ ||x|| }<br>$$</p>
-<p>As $||x||$ is a number, $\frac{ ||Ax || }{ ||x|| } = || A \frac{x}{||x||} ||$. This is equivalent to find a unit vector $x$ that maximize its length (or equivalently, the square of its length) after the transformation<br>$$<br>\begin{aligned}<br>&amp;\max &amp; \frac{1}{2} x^T A^T Ax \<br>&amp;s.t. &amp;  x^T x = 1<br>\end{aligned}<br>$$</p>
-<p>In this case, the objective function is $||Ax||^2 = (Ax)^T (Ax) = x^T A^T A x$. </p>
-<p>Following similar process of previous section, we can find a set of eigenvectors $v_1, v_2, …, v_n$ of $A^T A$. Define $U \in \mathbb{R}^{m \times n}$<br>$$<br>U = A V { \sqrt{\Sigma^{-1} } } = AV<br>\begin{aligned}<br>    \left[<br>    \begin{matrix}<br>    &amp;\sqrt { 1 / \lambda_1} &amp;    &amp;   \<br>    &amp;          &amp;\sqrt { 1 / \lambda_2} &amp; \<br>    &amp;           &amp;   &amp;   … \<br>    &amp;           &amp;    &amp;      &amp; \sqrt { 1 / \lambda_n}<br>    \end{matrix}<br>    \right]<br>\end{aligned}<br>$$</p>
-<p>Then $U { \sqrt \Sigma } V^T = A$, which is exactly the SVD. </p>
-<p>Finally, we can verify that the columns of $U$ are perpendicular, $\forall i \neq j, i, j \in [n]$,<br>$$<br>u_i^T u_j = (\sqrt { 1 / \lambda_i} A V_i)^T (\sqrt { 1 / \lambda_j} A V_j) = \sqrt { 1 / \lambda_i} \sqrt { 1 / \lambda_j} v_i^T A^T A v_j  = 0<br>$$</p>
-<p>as $v_i$ and $v_j$ are orthogonal eigenvectors of $A^T A$. </p>
+        <h2 id="eigenvector-and-eigenvalues">Eigenvector and Eigenvalues</h2>
+<p><strong><em>Theorem. Given a symmetric matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> that is positive semi-definitive, there exists an orthogonal matrix <span class="math inline">\(V \in \mathbb{R}^{n \times n}\)</span>, such that</em></strong> <span class="math display">\[
+A = V \Sigma V^T 
+\]</span> <strong><em>where <span class="math inline">\(\Sigma \in \mathbb{R}^{n \times n}\)</span> is a diagonal matrix with all diagonal elements non-negative.</em></strong></p>
+<p>We need the following lemma for the proof.</p>
+<p><strong>Lemma: If a function <span class="math inline">\(f: S \rightarrow \mathbb{R}\)</span> is continuous on a closed set <span class="math inline">\(S\)</span>, then it takes maximum value at some point of <span class="math inline">\(S\)</span>.</strong></p>
+<p><em>Proof.</em> Consider the maximization problem: <span class="math display">\[
+\begin{aligned}
+&amp;\max &amp; \frac{1}{2} x^T A x \\
+&amp;s.t. &amp;  x^T x = 1
+\end{aligned}
+\]</span></p>
+<p><em><strong>Question to ponder:</strong> Explain the geometric meaning of the term <span class="math inline">\(x^T A x\)</span>.</em></p>
+<p>The corresponding Lagrange function is given by <span class="math display">\[
+L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1)
+\]</span></p>
+<p>Taking derivative with respect to <span class="math inline">\(x\)</span> gives <span class="math display">\[
+\frac{\partial L}{\partial x} = Ax - \lambda x
+\]</span></p>
+<p><strong><em>Existence of maximum solution:</em></strong> Note that <span class="math inline">\(\{ x : x^T x = 1 \}\)</span> is defined the boundary of the unit cycle, which is a closed set. Combined with the fact that <span class="math inline">\(f\)</span> is a continuous function, it takes its maximum value at some point in <span class="math inline">\(\{ x : x^T x = 1 \}\)</span>. Denote this point <span class="math inline">\(v_1 \in \{ x : x^T x = 1 \}\)</span>.</p>
+<p><strong><em>Gradient at the maximum point:</em></strong> At this point, it holds that <span class="math display">\[
+\frac{\partial L}{\partial x} \mid_{x = v_1} = Av_1 - \lambda v_1 = 0
+\]</span></p>
+<p>which implies that <span class="math inline">\(v_1\)</span> is an eigenvector of <span class="math inline">\(A\)</span>. Denote its associated eigenvalue <span class="math inline">\(\lambda_1\)</span>.</p>
+<p><em><strong>Question to ponder:</strong> Prove that <span class="math inline">\(\lambda_1\)</span> is the largest eigenvalue.</em></p>
+<p>After finding <span class="math inline">\(v_1\)</span>, consider a new optimization problem: <span class="math display">\[
+\begin{aligned}
+&amp;\max   &amp; \frac{1}{2} x^T A x \\
+&amp;s.t.   &amp;  x^T x = 1 \\
+&amp;       &amp;  v_1^T x = 0
+\end{aligned}
+\]</span></p>
+<p>That is, we want to find a new unit vector that is orthogonal to <span class="math inline">\(v_1\)</span> while maximizing <span class="math inline">\(\frac{1}{2} x^T A x\)</span>.</p>
+<p><strong><em>Existence of maximum solution.</em></strong> By the lemma and the facts: 1. <span class="math inline">\(\{x : x^T x = 1\} \cap \{ x : v_1^T x = 0 \}\)</span> is closed.<br />
+2. <span class="math inline">\(\frac{1}{2} x^T A x\)</span> is continuous.</p>
+<p>Denote this maximum point <span class="math inline">\(v_2\)</span>. Now consider the new Lagrange function for the optimization <span class="math display">\[
+L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1) - \beta(v_1^T x - 0)
+\]</span></p>
+<p><strong><em>Gradient at the maximum point:</em></strong> At this point, it holds that <span class="math display">\[
+\frac{\partial L}{\partial x} \mid_{x = v_2} = Av_2 - \lambda v_2 - \beta v_1 = 0
+\]</span></p>
+<p>Left multiplying <span class="math inline">\(v_1^T\)</span> gives <span class="math display">\[
+(v_1^T A)v_2 - \lambda v_1^T v_2 - \beta v_1^T v_1 = (A v_1)^T v_2  - \beta = \lambda_1 v_1^T v_2 - \beta = -\beta = 0
+\]</span> where <span class="math inline">\(v_1^T A = (A v_1)^T\)</span> follows from the symmetry of <span class="math inline">\(A\)</span>, i.e., <span class="math inline">\(A = A^T\)</span>.</p>
+<p>Therefore, <span class="math display">\[
+Av_2 - \lambda v_2 = 0
+\]</span></p>
+<p>It concludes that <span class="math inline">\(v_2\)</span> is an eigenvector of <span class="math inline">\(A\)</span>. Denote its associated eigenvalue <span class="math inline">\(\lambda_2\)</span>.</p>
+<p>In a similar manner, we can define <span class="math display">\[
+\begin{aligned}
+&amp;\max   &amp; \frac{1}{2} x^T A x \\
+&amp;s.t.   &amp;  x^T x = 1 \\
+&amp;       &amp;  v_1^T x = 0 \\
+&amp;       &amp;  v_2^T x = 0 \\
+\end{aligned}
+\]</span></p>
+<p>There exists an optimal point <span class="math inline">\(v_3\)</span>. The derivative of Lagrange function at this point is <span class="math display">\[
+\frac{\partial L}{\partial x} \mid_{x = v_3} = Av_3 - \lambda v_3 - \beta_1 v_1 - \beta_2 v_2 = 0
+\]</span></p>
+<p>for some parameters <span class="math inline">\(\lambda, \beta_1, \beta_2\)</span>. Left multiplying <span class="math inline">\(v_1^T\)</span> or <span class="math inline">\(v_2^T\)</span> gives <span class="math inline">\(\beta_1 = 0\)</span> and <span class="math inline">\(\beta_2 = 0\)</span> so that <span class="math inline">\(v_3\)</span> is an eigenvector of <span class="math inline">\(A\)</span>.</p>
+<p>Following the procedure, we can find <span class="math inline">\(n\)</span> eigenvectors <span class="math inline">\(v_1, v_2, ..., v_n\)</span> of <span class="math inline">\(A\)</span>. Define <span class="math display">\[
+\Sigma =
+\begin{aligned}
+    \left[
+    \begin{matrix}
+    &amp;\lambda_1 &amp;    &amp;   \\
+    &amp;          &amp;\lambda_2 &amp; \\
+    &amp;           &amp;   &amp;   ... \\
+    &amp;           &amp;    &amp;      &amp; \lambda_n 
+    \end{matrix} 
+    \right]
+\end{aligned}
+\qquad
+V =
+\begin{aligned}
+    \left[
+    \begin{matrix}
+    v_1, v_2, ..., v_n
+    \end{matrix} 
+    \right]
+\end{aligned}
+\]</span></p>
+<p>Then <span class="math display">\[
+A V = V \Sigma
+\]</span></p>
+<p>Hence, <span class="math display">\[
+A = V \Sigma V^{-1} = V \Sigma V^T
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="svd">SVD</h2>
+<p>In general, a matrix <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> takes a vector <span class="math inline">\(x \in \mathbb{R}^n\)</span> to a vector <span class="math inline">\(Ax \in \mathbb{R}^m\)</span>. It is natural to ask, is there a vector <span class="math inline">\(x\)</span>, such that its length is enlarged by the largest factor after the transformation: <span class="math display">\[
+\max_{x \in \mathbb{R}^n } \frac{ ||Ax || }{ ||x|| }
+\]</span></p>
+<p>As <span class="math inline">\(||x||\)</span> is a number, <span class="math inline">\(\frac{ ||Ax || }{ ||x|| } = || A \frac{x}{||x||} ||\)</span>. This is equivalent to find a unit vector <span class="math inline">\(x\)</span> that maximize its length (or equivalently, the square of its length) after the transformation <span class="math display">\[
+\begin{aligned}
+&amp;\max &amp; \frac{1}{2} x^T A^T Ax \\
+&amp;s.t. &amp;  x^T x = 1
+\end{aligned}
+\]</span></p>
+<p>In this case, the objective function is <span class="math inline">\(||Ax||^2 = (Ax)^T (Ax) = x^T A^T A x\)</span>.</p>
+<p>Following similar process of previous section, we can find a set of eigenvectors <span class="math inline">\(v_1, v_2, ..., v_n\)</span> of <span class="math inline">\(A^T A\)</span>. Define <span class="math inline">\(U \in \mathbb{R}^{m \times n}\)</span> <span class="math display">\[
+U = A V { \sqrt{\Sigma^{-1} } } = AV 
+\begin{aligned}
+    \left[
+    \begin{matrix}
+    &amp;\sqrt { 1 / \lambda_1} &amp;    &amp;   \\
+    &amp;          &amp;\sqrt { 1 / \lambda_2} &amp; \\
+    &amp;           &amp;   &amp;   ... \\
+    &amp;           &amp;    &amp;      &amp; \sqrt { 1 / \lambda_n} 
+    \end{matrix} 
+    \right]
+\end{aligned}
+\]</span></p>
+<p>Then <span class="math inline">\(U { \sqrt \Sigma } V^T = A\)</span>, which is exactly the SVD.</p>
+<p>Finally, we can verify that the columns of <span class="math inline">\(U\)</span> are perpendicular, <span class="math inline">\(\forall i \neq j, i, j \in [n]\)</span>, <span class="math display">\[
+u_i^T u_j = (\sqrt { 1 / \lambda_i} A V_i)^T (\sqrt { 1 / \lambda_j} A V_j) = \sqrt { 1 / \lambda_i} \sqrt { 1 / \lambda_j} v_i^T A^T A v_j  = 0
+\]</span></p>
+<p>as <span class="math inline">\(v_i\)</span> and <span class="math inline">\(v_j\)</span> are orthogonal eigenvectors of <span class="math inline">\(A^T A\)</span>.</p>
 
     </div>
 
@@ -305,7 +386,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Eigenvector-and-Eigenvalues"><span class="nav-number">1.</span> <span class="nav-text">Eigenvector and Eigenvalues</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVD"><span class="nav-number">2.</span> <span class="nav-text">SVD</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#eigenvector-and-eigenvalues"><span class="nav-number">1.</span> <span class="nav-text">Eigenvector and Eigenvalues</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#svd"><span class="nav-number">2.</span> <span class="nav-text">SVD</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

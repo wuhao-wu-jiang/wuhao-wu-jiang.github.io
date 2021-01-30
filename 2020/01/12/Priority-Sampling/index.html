@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Suppose there are a set of $n$ items with nonnegative weights $w_1, w_2, …, w_n$. We want to maintain a subset of samples $S \subset [n]$ in order to answer queries like given arbitrary $I \subset [n]">
+  <meta name="description" content="Suppose there are a set of \(n\) items with nonnegative weights \(w_1, w_2, ..., w_n\). We want to maintain a subset of samples \(S \subset [n]\) in order to answer queries like given arbitrary \(I \s">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Priority Sampling">
 <meta property="og:url" content="http://example.com/2020/01/12/Priority-Sampling/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Suppose there are a set of $n$ items with nonnegative weights $w_1, w_2, …, w_n$. We want to maintain a subset of samples $S \subset [n]$ in order to answer queries like given arbitrary $I \subset [n]">
+<meta property="og:description" content="Suppose there are a set of \(n\) items with nonnegative weights \(w_1, w_2, ..., w_n\). We want to maintain a subset of samples \(S \subset [n]\) in order to answer queries like given arbitrary \(I \s">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-01-12T03:32:57.000Z">
 <meta property="article:modified_time" content="2020-01-23T04:27:41.438Z">
@@ -194,55 +194,125 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Suppose there are a set of $n$ items with nonnegative weights $w_1, w_2, …, w_n$. We want to maintain a subset of samples $S \subset [n]$ in order to answer queries like given arbitrary $I \subset [n]$ , what is $\sum_{i \in I} w_i$?</p>
-<p>A trivial solution is to set $S = [n]$ and we can answer the query exactly. This is an overkill if our goal is to only answer the query approximately. </p>
-<p>Alternatively, we can sample each item $i \in [n]$ independently with probability $p_i$ (to be determined), and maintain a random variable<br>$$<br>\begin{aligned}<br>X_i =<br>    \begin{cases}<br>        \frac{w_i}{p_i} &amp; i \text{ is chosen} \<br>        0               &amp;   \text{ else }<br>    \end{cases}<br>\end{aligned}<br>$$</p>
-<p>Note that<br>$$<br>E \left[ X_i \right] = w_i<br>$$</p>
-<p>And therefore,<br>$$<br>E \left[\sum_{i \in I} X_i \right] = \sum_{i \in I} E[X_i] = \sum_{i \in I} w_i<br>$$</p>
-<p>One possible materialization of this sampling scheme is called <em>threshold sampling</em>. First a threshold $T$ is selected. Then each $i \in [n]$ is kept with probability with $p_i = \min { 1 , \frac{w_i}{T} }$. In particular, for each $i \in [n]$, we sample a uniform random variable $u_i \in [0, 1]$, and set<br>$$<br>\begin{aligned}<br>X_i =<br>    \begin{cases}<br>        \max { w_i, T } &amp; u_i &lt; \frac{w_i}{T} \<br>        0               &amp;   \text{ else }<br>    \end{cases}<br>\end{aligned}<br>$$</p>
-<p>Note that for $i \in [n]$ such that $w_i &gt; T$, it always holds that $u_i &lt; \frac{w_i}{T}$ and the definition reduce to $X_i = w_i$. For $i \in [n]$ such that $w_i &lt; T$,<br>$$<br>\begin{aligned}<br>X_i =<br>    \begin{cases}<br>        T = \frac{w_i}{p_i} &amp; u_i &lt; \frac{w_i}{T} = p_i \<br>        0               &amp;   \text{ else }<br>    \end{cases}<br>\end{aligned}<br>$$</p>
-<p>(Note that we take $u_i &lt; \frac{w_i}{T}$ instead of $u_i \le \frac{w_i}{T}$ here). Clearly, in this case we have $E[X_i] = \frac{w_i}{T} T = w_i$. </p>
-<p>We consider the space usage of <em>threshold sampling</em>. Denote $S$ the set of items with $X_i \neq 0$. Then the expected size of $S$ is given by<br>$$<br>\sum_{i = 1}^n p_i = \sum_{i = 1}^n \min \left{ 1 , \frac{w_i}{T} \right}<br>$$</p>
-<p>The problem with threshold sampling is that it is hard to control the memory usage of the sample set $S$. If the $n$ items are known offline, and we would like $|S| \approx k$ for some integer $k \le n$, then we can search for some $T$ such that<br>$$<br>\sum_{i = 1}^n p_i = k<br>$$</p>
-<p>Then $|S| = k$ in expectation. </p>
-<p>The question is, is it possible to force $|S|= k$ exactly? Further, what if the items come online (one by one)? </p>
-<h3 id="Priority-Sampling"><a href="#Priority-Sampling" class="headerlink" title="Priority Sampling"></a>Priority Sampling</h3><p><em>Priority sampling</em> achieves this. First recall that in <em>threshold sampling</em> we decide whether to keep $i$ by checking whether a uniform sampled real number $u_i$ is less than $\frac{w_i}{T}$:<br>$$<br>u_i &lt; \frac{w_i}{T}<br>$$</p>
-<p>This is equivalent to<br>$$<br>T &lt; \frac{w_i}{u_i}<br>$$</p>
-<p>Define the <em>priority</em> of an item $i \in [n]$ as $q_i = \frac{w_i}{u_i}$. Note that $q_i$ is a random variable. In <em>threshold sampling</em>, item $i$ is kept with weight $\max { w_i, T }$ if<br>$$<br>T &lt; q_i<br>$$</p>
-<p>Now, instead of using a fixed value of $T$, the <em>Priority sampling</em> sets<br>$$<br>T = (k + 1) \text{-th largest } { q_i }<br>$$</p>
-<p>By the definition of $T$, only the $k$ items with largest priorities $q_i$’s are kept in the sample set $S$:<br>$$<br>S = { k \text{ items with largest } q_i \text{ ‘s } }<br>$$</p>
-<p>It can be seen that $S$ and $T$ can be easily maintained by a binary heap when the items come in stream fashion. </p>
-<p>The challenge is not to analyze the behaviors of the r.v.’s:<br>$$<br>\begin{aligned}<br>X_i =<br>    \begin{cases}<br>        \max { w_i, T } &amp; T &lt; \frac{w_i}{u_i} \equiv u_i &lt; \frac{w_i}{T} \<br>        0               &amp;   \text{ else }<br>    \end{cases}<br>\end{aligned}<br>$$</p>
-<p>since now $T$ is its self a random variable. </p>
-<p>We claim that it still holds<br><em>Theorem 1</em><br>$$<br>E[X_i] = w_i<br>$$</p>
-<p>The trick is to conditioned $X_i$ on the $k$-th and $k+1$-th largest priority of the rest items. Define the random variables<br>$$<br>L = (k + 1) \text{-th largest } { q_j }_{j \neq i} \<br>U = (k) \text{-th largest } { q_j }_{j \neq i}<br>$$</p>
-<p>Consider the case $L = a$ and $U = b$, where $a \le b$. There two possible cases</p>
-<ol>
-<li><p>If $w_i &gt; b$, then $T = b$ and surely $\frac{w_i}{u_i} &gt; T$ holds. In this case  $X_i = w_i$ and<br> $$</p>
-<pre><code> E[X_i | U = b] = w_i
-</code></pre>
-<p> $$</p>
-</li>
-<li><p>If $w_i &lt; b$, then there are four sub-cases:</p>
+        <p>Suppose there are a set of <span class="math inline">\(n\)</span> items with nonnegative weights <span class="math inline">\(w_1, w_2, ..., w_n\)</span>. We want to maintain a subset of samples <span class="math inline">\(S \subset [n]\)</span> in order to answer queries like given arbitrary <span class="math inline">\(I \subset [n]\)</span> , what is <span class="math inline">\(\sum_{i \in I} w_i\)</span>?</p>
+<p>A trivial solution is to set <span class="math inline">\(S = [n]\)</span> and we can answer the query exactly. This is an overkill if our goal is to only answer the query approximately.</p>
+<p>Alternatively, we can sample each item <span class="math inline">\(i \in [n]\)</span> independently with probability <span class="math inline">\(p_i\)</span> (to be determined), and maintain a random variable <span class="math display">\[
+\begin{aligned}
+X_i = 
+    \begin{cases}
+        \frac{w_i}{p_i} &amp; i \text{ is chosen} \\
+        0               &amp;   \text{ else }
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p>Note that <span class="math display">\[
+E \left[ X_i \right] = w_i
+\]</span></p>
+<p>And therefore, <span class="math display">\[
+E \left[\sum_{i \in I} X_i \right] = \sum_{i \in I} E[X_i] = \sum_{i \in I} w_i
+\]</span></p>
+<p>One possible materialization of this sampling scheme is called <em>threshold sampling</em>. First a threshold <span class="math inline">\(T\)</span> is selected. Then each <span class="math inline">\(i \in [n]\)</span> is kept with probability with <span class="math inline">\(p_i = \min \{ 1 , \frac{w_i}{T} \}\)</span>. In particular, for each <span class="math inline">\(i \in [n]\)</span>, we sample a uniform random variable <span class="math inline">\(u_i \in [0, 1]\)</span>, and set <span class="math display">\[
+\begin{aligned}
+X_i = 
+    \begin{cases}
+        \max \{ w_i, T \} &amp; u_i &lt; \frac{w_i}{T} \\
+        0               &amp;   \text{ else }
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p>Note that for <span class="math inline">\(i \in [n]\)</span> such that <span class="math inline">\(w_i &gt; T\)</span>, it always holds that <span class="math inline">\(u_i &lt; \frac{w_i}{T}\)</span> and the definition reduce to <span class="math inline">\(X_i = w_i\)</span>. For <span class="math inline">\(i \in [n]\)</span> such that <span class="math inline">\(w_i &lt; T\)</span>, <span class="math display">\[
+\begin{aligned}
+X_i = 
+    \begin{cases}
+        T = \frac{w_i}{p_i} &amp; u_i &lt; \frac{w_i}{T} = p_i \\
+        0               &amp;   \text{ else }
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p>(Note that we take <span class="math inline">\(u_i &lt; \frac{w_i}{T}\)</span> instead of <span class="math inline">\(u_i \le \frac{w_i}{T}\)</span> here). Clearly, in this case we have <span class="math inline">\(E[X_i] = \frac{w_i}{T} T = w_i\)</span>.</p>
+<p>We consider the space usage of <em>threshold sampling</em>. Denote <span class="math inline">\(S\)</span> the set of items with <span class="math inline">\(X_i \neq 0\)</span>. Then the expected size of <span class="math inline">\(S\)</span> is given by <span class="math display">\[
+\sum_{i = 1}^n p_i = \sum_{i = 1}^n \min \left\{ 1 , \frac{w_i}{T} \right\}
+\]</span></p>
+<p>The problem with threshold sampling is that it is hard to control the memory usage of the sample set <span class="math inline">\(S\)</span>. If the <span class="math inline">\(n\)</span> items are known offline, and we would like <span class="math inline">\(|S| \approx k\)</span> for some integer <span class="math inline">\(k \le n\)</span>, then we can search for some <span class="math inline">\(T\)</span> such that <span class="math display">\[
+\sum_{i = 1}^n p_i = k
+\]</span></p>
+<p>Then <span class="math inline">\(|S| = k\)</span> in expectation.</p>
+<p>The question is, is it possible to force <span class="math inline">\(|S|= k\)</span> exactly? Further, what if the items come online (one by one)?</p>
+<h3 id="priority-sampling">Priority Sampling</h3>
+<p><em>Priority sampling</em> achieves this. First recall that in <em>threshold sampling</em> we decide whether to keep <span class="math inline">\(i\)</span> by checking whether a uniform sampled real number <span class="math inline">\(u_i\)</span> is less than <span class="math inline">\(\frac{w_i}{T}\)</span>: <span class="math display">\[
+u_i &lt; \frac{w_i}{T}
+\]</span></p>
+<p>This is equivalent to <span class="math display">\[
+T &lt; \frac{w_i}{u_i}
+\]</span></p>
+<p>Define the <em>priority</em> of an item <span class="math inline">\(i \in [n]\)</span> as <span class="math inline">\(q_i = \frac{w_i}{u_i}\)</span>. Note that <span class="math inline">\(q_i\)</span> is a random variable. In <em>threshold sampling</em>, item <span class="math inline">\(i\)</span> is kept with weight <span class="math inline">\(\max \{ w_i, T \}\)</span> if <span class="math display">\[
+T &lt; q_i
+\]</span></p>
+<p>Now, instead of using a fixed value of <span class="math inline">\(T\)</span>, the <em>Priority sampling</em> sets <span class="math display">\[
+T = (k + 1) \text{-th largest } \{ q_i \}
+\]</span></p>
+<p>By the definition of <span class="math inline">\(T\)</span>, only the <span class="math inline">\(k\)</span> items with largest priorities <span class="math inline">\(q_i\)</span>'s are kept in the sample set <span class="math inline">\(S\)</span>: <span class="math display">\[
+S = \{ k \text{ items with largest } q_i \text{ &#39;s } \}
+\]</span></p>
+<p>It can be seen that <span class="math inline">\(S\)</span> and <span class="math inline">\(T\)</span> can be easily maintained by a binary heap when the items come in stream fashion.</p>
+<p>The challenge is not to analyze the behaviors of the r.v.'s: <span class="math display">\[
+\begin{aligned}
+X_i = 
+    \begin{cases}
+        \max \{ w_i, T \} &amp; T &lt; \frac{w_i}{u_i} \equiv u_i &lt; \frac{w_i}{T} \\
+        0               &amp;   \text{ else }
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p>since now <span class="math inline">\(T\)</span> is its self a random variable.</p>
+<p>We claim that it still holds<br />
+<em>Theorem 1</em> <span class="math display">\[
+E[X_i] = w_i
+\]</span></p>
+<p>The trick is to conditioned <span class="math inline">\(X_i\)</span> on the <span class="math inline">\(k\)</span>-th and <span class="math inline">\(k+1\)</span>-th largest priority of the rest items. Define the random variables <span class="math display">\[
+L = (k + 1) \text{-th largest } \{ q_j \}_{j \neq i} \\
+U = (k) \text{-th largest } \{ q_j \}_{j \neq i}
+\]</span></p>
+<p>Consider the case <span class="math inline">\(L = a\)</span> and <span class="math inline">\(U = b\)</span>, where <span class="math inline">\(a \le b\)</span>. There two possible cases</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(w_i &gt; b\)</span>, then <span class="math inline">\(T = b\)</span> and surely <span class="math inline">\(\frac{w_i}{u_i} &gt; T\)</span> holds. In this case <span class="math inline">\(X_i = w_i\)</span> and <span class="math display">\[
+     E[X_i | U = b] = w_i
+ \]</span></p></li>
+<li><p>If <span class="math inline">\(w_i &lt; b\)</span>, then there are four sub-cases:</p>
 <ul>
-<li><p>$\frac{w_i}{u_i} \le a$, then $T = b$ and $i$ is not selected into $S$. Therefore $X_i = 0$.   </p>
-</li>
-<li><p>$a &lt; \frac{w_i}{u_i} &lt; b$, now $\frac{w_i}{u_i}$ becomes the $k+1$-th largest priority of all items and $T = \frac{w_i}{u_i}$. In this case $i$ is not selected into $S$, and $X_i = 0$ (since $\frac{w_i}{u_i} &lt; T$ does not hold). </p>
-</li>
-<li><p>$\frac{w_i}{u_i} = b$, then there is a tie and $T = b$ in this case. Depending on how the tie is broken, either $i$ is put into $S$ or not. But in both cases, $X_i = 0$ since $\frac{w_i}{u_i} &lt; T$ does not hold. </p>
-</li>
-<li><p>$\frac{w_i}{u_i} &gt; b$, then $T = b$ and $i$ is put into $S$. As $w_i &lt; T$, we have $X_i = T = b$. </p>
-<p>Therefore,<br>$$<br>   E[X_i | U = b] = b \cdot \Pr\left[ \frac{w_i}{u_i} &gt; b \mid w_i &lt; b \wedge U = b \right] = b \cdot \frac{w_i}{b} = w_i<br>$$</p>
-</li>
+<li><p><span class="math inline">\(\frac{w_i}{u_i} \le a\)</span>, then <span class="math inline">\(T = b\)</span> and <span class="math inline">\(i\)</span> is not selected into <span class="math inline">\(S\)</span>. Therefore <span class="math inline">\(X_i = 0\)</span>.</p></li>
+<li><p><span class="math inline">\(a &lt; \frac{w_i}{u_i} &lt; b\)</span>, now <span class="math inline">\(\frac{w_i}{u_i}\)</span> becomes the <span class="math inline">\(k+1\)</span>-th largest priority of all items and <span class="math inline">\(T = \frac{w_i}{u_i}\)</span>. In this case <span class="math inline">\(i\)</span> is not selected into <span class="math inline">\(S\)</span>, and <span class="math inline">\(X_i = 0\)</span> (since <span class="math inline">\(\frac{w_i}{u_i} &lt; T\)</span> does not hold).</p></li>
+<li><p><span class="math inline">\(\frac{w_i}{u_i} = b\)</span>, then there is a tie and <span class="math inline">\(T = b\)</span> in this case. Depending on how the tie is broken, either <span class="math inline">\(i\)</span> is put into <span class="math inline">\(S\)</span> or not. But in both cases, <span class="math inline">\(X_i = 0\)</span> since <span class="math inline">\(\frac{w_i}{u_i} &lt; T\)</span> does not hold.</p></li>
+<li><p><span class="math inline">\(\frac{w_i}{u_i} &gt; b\)</span>, then <span class="math inline">\(T = b\)</span> and <span class="math inline">\(i\)</span> is put into <span class="math inline">\(S\)</span>. As <span class="math inline">\(w_i &lt; T\)</span>, we have <span class="math inline">\(X_i = T = b\)</span>.</p></li>
 </ul>
-</li>
+<p>Therefore, <span class="math display">\[
+     E[X_i | U = b] = b \cdot \Pr\left[ \frac{w_i}{u_i} &gt; b \mid w_i &lt; b \wedge U = b \right] = b \cdot \frac{w_i}{b} = w_i
+ \]</span></p></li>
 </ol>
-<p>In conclusion,<br>$$<br>E[X_i] = E[E[X_i | U]]  = w_i<br>$$</p>
-<p><em>Theorem 2</em>.<br>For $I \subset [n]$,<br>$$<br>\begin{aligned}<br>    E\left[ \prod_{i \in I} X_i \right] =<br>    \begin{cases}<br>         \prod_{i \in I} w_i     &amp; \text{ if } |I| \le k \<br>         0                      &amp; else<br>    \end{cases}<br>\end{aligned}<br>$$ </p>
-<p><em>Proof:</em> Clearly, when $|I| &gt; k$, then $\exists i \in I$, such that $q_i$ is not one of the $k$ largest priorities. Hence $X_i = 0$ for sure. </p>
-<p>If $|I| \le k$, we show the claims holds by induction. The base case of $|I| = 1$ reduces to <em>Theorem 1</em>. Suppose that the claim hold for $|I| \le t &lt; k$, we show it holds for $|I| = t + 1$. </p>
-<p>Similarly to <em>Theorem 1</em>, define $U$ to be the $k + 1 - |I|$-th largest priority in $[n] \setminus I$. Conditioning on $U = b$, then we can divide $I$ into two sets: $I_1 = { i \in I :   w_i &gt; b}$ and $I_2 = I \setminus I_1$.  For $i \in I_1$, we have $X_i = w_i$ by definition. Now consider $I_2$. Let $j = \arg \min_{i \in I_2} q_i$.<br>If $q_j \le b$, then it holds that $b \ge T \ge q_j$ and $X_j = 0$. In this case it does not contribute to $\prod_{i \in I} X_i$. Hence<br>$$<br>\begin{aligned}<br>E \left[ \prod_{i \in I} X_i \mid U = b \right]<br>    &amp;= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \Pr \left[ \frac{w_i}{u_i} &gt; b \right] ) \<br>    &amp;= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \frac{w_i}{b} ) \<br>    &amp;= \prod_{i \in I} w_i<br>\end{aligned}<br>$$</p>
-<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><ol>
+<p>In conclusion, <span class="math display">\[
+E[X_i] = E[E[X_i | U]]  = w_i
+\]</span></p>
+<p><em>Theorem 2</em>. For <span class="math inline">\(I \subset [n]\)</span>, <span class="math display">\[
+\begin{aligned}
+    E\left[ \prod_{i \in I} X_i \right] =
+    \begin{cases}
+         \prod_{i \in I} w_i     &amp; \text{ if } |I| \le k \\
+         0                      &amp; else 
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p><em>Proof:</em> Clearly, when <span class="math inline">\(|I| &gt; k\)</span>, then <span class="math inline">\(\exists i \in I\)</span>, such that <span class="math inline">\(q_i\)</span> is not one of the <span class="math inline">\(k\)</span> largest priorities. Hence <span class="math inline">\(X_i = 0\)</span> for sure.</p>
+<p>If <span class="math inline">\(|I| \le k\)</span>, we show the claims holds by induction. The base case of <span class="math inline">\(|I| = 1\)</span> reduces to <em>Theorem 1</em>. Suppose that the claim hold for <span class="math inline">\(|I| \le t &lt; k\)</span>, we show it holds for <span class="math inline">\(|I| = t + 1\)</span>.</p>
+<p>Similarly to <em>Theorem 1</em>, define <span class="math inline">\(U\)</span> to be the <span class="math inline">\(k + 1 - |I|\)</span>-th largest priority in <span class="math inline">\([n] \setminus I\)</span>. Conditioning on <span class="math inline">\(U = b\)</span>, then we can divide <span class="math inline">\(I\)</span> into two sets: <span class="math inline">\(I_1 = \{ i \in I : w_i &gt; b\}\)</span> and <span class="math inline">\(I_2 = I \setminus I_1\)</span>. For <span class="math inline">\(i \in I_1\)</span>, we have <span class="math inline">\(X_i = w_i\)</span> by definition. Now consider <span class="math inline">\(I_2\)</span>. Let <span class="math inline">\(j = \arg \min_{i \in I_2} q_i\)</span>. If <span class="math inline">\(q_j \le b\)</span>, then it holds that <span class="math inline">\(b \ge T \ge q_j\)</span> and <span class="math inline">\(X_j = 0\)</span>. In this case it does not contribute to <span class="math inline">\(\prod_{i \in I} X_i\)</span>. Hence <span class="math display">\[
+\begin{aligned}
+E \left[ \prod_{i \in I} X_i \mid U = b \right] 
+    &amp;= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \Pr \left[ \frac{w_i}{u_i} &gt; b \right] ) \\
+    &amp;= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \frac{w_i}{b} ) \\
+    &amp;= \prod_{i \in I} w_i
+\end{aligned}
+\]</span></p>
+<h3 id="reference">Reference</h3>
+<ol type="1">
 <li>Nick Duffield, Carsten Lund, and Mikkel Thorup. Priority sampling for estimation fo arbitrary subset sums. Journal of ACM, 2007</li>
 <li>Chandra Chekuri, Lecture note, CS 598: Algorithms for Big Data</li>
 </ol>
@@ -326,7 +396,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Priority-Sampling"><span class="nav-number">1.</span> <span class="nav-text">Priority Sampling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">2.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#priority-sampling"><span class="nav-number">1.</span> <span class="nav-text">Priority Sampling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reference"><span class="nav-number">2.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

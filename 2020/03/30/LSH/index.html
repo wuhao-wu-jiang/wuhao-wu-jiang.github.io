@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Given a set $S \subset U$ of $n$ points, a metric $d$ defined on $U$, and a query point $v$, the nearest neighbor search (NNS) problem finds $v$’s nearest point in $S$:$$u &#x3D; \arg\min_{s \in S} d(v, s)">
+  <meta name="description" content="Given a set \(S \subset U\) of \(n\) points, a metric \(d\) defined on \(U\), and a query point \(v\), the nearest neighbor search (NNS) problem finds \(v\)&#39;s nearest point in \(S\): \[ u &#x3D; \arg\min_">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LSH">
 <meta property="og:url" content="http://example.com/2020/03/30/LSH/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Given a set $S \subset U$ of $n$ points, a metric $d$ defined on $U$, and a query point $v$, the nearest neighbor search (NNS) problem finds $v$’s nearest point in $S$:$$u &#x3D; \arg\min_{s \in S} d(v, s)">
+<meta property="og:description" content="Given a set \(S \subset U\) of \(n\) points, a metric \(d\) defined on \(U\), and a query point \(v\), the nearest neighbor search (NNS) problem finds \(v\)&#39;s nearest point in \(S\): \[ u &#x3D; \arg\min_">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-03-30T05:14:46.000Z">
 <meta property="article:modified_time" content="2020-05-03T12:17:23.000Z">
@@ -194,85 +194,153 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p><strong><em>Given a set $S \subset U$ of $n$ points, a metric $d$ defined on $U$, and a query point $v$, the nearest neighbor search (NNS) problem finds $v$’s nearest point in $S$:</em></strong><br>$$<br>u = \arg\min_{s \in S} d(v, s)<br>$$<br>Potential applications include web search and clustering.</p>
-<p>If $U$ is a Euclidean space $\mathcal{R}^d$ for some $d$, the hardness of NNS depends largely on the value of $d$. Suppose $d = 1$, then we can pre-process the points by building a balanced binary search tree on $S$. Finding the nearest point to $v \notin S$ reduces to searching for its predecessor and successor, which takes $O(\log n)$ time. For $d = 2$, we can construct a Voronoi diagram.</p>
-<p>For higher dimensions $d$ it is not easy to extend the index structures. A naïve search loops over all points and takes $O(nd)$ time. It is natural to ask whether we can do better. If we are willing to sacrifice accuracy for efficiency, this is possible. Instead of finding the exact nearest neighbor, we relax our goal to finding an approximate nearest neighbor whose distance is within $1 + \epsilon$ of the minimum one. </p>
-<p>One possible solution is  Johnson–Lindenstrauss decomposition. We can generate a matrix $A \in R^{ O( \frac{ \log n }{ \epsilon^2 } )\times d}$ and multiply it with every element in $S$. The mapping $u \rightarrow Au$ preserves pair-wise distance up to a relative error of $\epsilon$. The pre-processing takes $O( \frac{n d \log n}{\epsilon^2} )$ time.  To answer an query, we map $v$ to $Av$, which takes $O(\frac{ d\log n }{ \epsilon^2 } )$ time. Then we perform a loop over all elements of ${ Au : u \in S}$, which takes $O(\frac{ n \log n }{ \epsilon^2 } )$ time. Therefore, the total time complexity is $O(\frac{ (n + d) \log n }{ \epsilon^2 } )$. </p>
-<h3 id="Hashing"><a href="#Hashing" class="headerlink" title="Hashing"></a>Hashing</h3><p>[1] solves the problem by hashing. We call the pair of points that are close to each other the <em>similar pair</em> and the pair that are far from each other the <em>dissimilar pair</em>. Intuitively, we want similar pairs to be hashed to the same bucket and that dissimilar pairs to be hashed to different buckets. </p>
-<p>Instead of finding the $(1 + \epsilon)$ approximate nearest neighbor directly, [1] further reduces it to the $(c, r)$-approximate neighbor search (ANNS$(c, r)$) problem, which is defined as follows:</p>
-<p><strong><em>Given a query point $v$, if $\exists s \in S$, then return a point $u$, such that</em></strong><br>$$<br>d(v, u) \le c \cdot r<br>$$</p>
-<p>The reduction from $1 + \epsilon$ to ANNS($c, r$) is not easy. Here we show one that returns the $(1 + \epsilon)^2$ approximate nearest neighbor. Let $d_{\max} = \max_{s, s’} d(s, s’)$ and $d_{\min} = \min_{s, s’} d(s, s’)$. We build a set of structures that answers ANNS($1 + \epsilon$, r) queries for the values of $r$:<br>$$<br>d_{\min}, \ d_{\min} (1 + \epsilon ), \ d_{min} (1 + \epsilon)^2,\ …,\ d_{\max}<br>$$</p>
-<p>Then given the query point $v$, we do a binary search to find the smallest $r$ that returns a point. This imposes an additional cost of $\ln {\ln \frac{d_{\max} }{d_{\min} } \over \ln (1 + \epsilon) }$.</p>
-<p>||<br>|:-:|<br>| $\text{NNS} \longrightarrow (1+\epsilon) \text{NNS} \longrightarrow \text{ANNS}(c, r) \longrightarrow (r, cr, p_1, p_2)\text{-LSH} \longrightarrow \text{Boosting Probability}$                   |<br>| The Problem Reduction Chain   |<br>||</p>
-<h3 id="r-cr-p-1-p-2-Locality-Sensitive-Hashing-Family"><a href="#r-cr-p-1-p-2-Locality-Sensitive-Hashing-Family" class="headerlink" title="$(r, cr, p_1, p_2)$-Locality Sensitive Hashing Family"></a>$(r, cr, p_1, p_2)$-Locality Sensitive Hashing Family</h3><p>Now we show how to solve the ANNS$(c, r)$ problem with hashing. Designing a perfecting hashing that solves the problem directly is not easy. It is desirable to have some hashing which successes with some probability and then boost its probability systematically. To achieve this, we introduce the idea of $(r, cr, p_1, p_2)$-locality sensitive hashing family.</p>
-<p><strong><em>Given a set of point $V$, a metric $d(\cdot , \cdot)$ defined on $V$, a collection of hash function $\mathcal{H} = { h: V \rightarrow Z}$ is called $(r, cr, p_1, p_2)$ locality sensitive  if for any $v, u \in V$ and an $h$ sampled uniformly from $\mathcal{H}$, it holds that</em></strong></p>
-<ol>
-<li>If $d(v, u) &lt; r$, then $\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge p_1$.</li>
-<li>If $d(v, u) \ge cr$, then $\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le p_2$</li>
+        <p><strong><em>Given a set <span class="math inline">\(S \subset U\)</span> of <span class="math inline">\(n\)</span> points, a metric <span class="math inline">\(d\)</span> defined on <span class="math inline">\(U\)</span>, and a query point <span class="math inline">\(v\)</span>, the nearest neighbor search (NNS) problem finds <span class="math inline">\(v\)</span>'s nearest point in <span class="math inline">\(S\)</span>:</em></strong> <span class="math display">\[
+u = \arg\min_{s \in S} d(v, s)
+\]</span> Potential applications include web search and clustering.</p>
+<p>If <span class="math inline">\(U\)</span> is a Euclidean space <span class="math inline">\(\mathcal{R}^d\)</span> for some <span class="math inline">\(d\)</span>, the hardness of NNS depends largely on the value of <span class="math inline">\(d\)</span>. Suppose <span class="math inline">\(d = 1\)</span>, then we can pre-process the points by building a balanced binary search tree on <span class="math inline">\(S\)</span>. Finding the nearest point to <span class="math inline">\(v \notin S\)</span> reduces to searching for its predecessor and successor, which takes <span class="math inline">\(O(\log n)\)</span> time. For <span class="math inline">\(d = 2\)</span>, we can construct a Voronoi diagram.</p>
+<p>For higher dimensions <span class="math inline">\(d\)</span> it is not easy to extend the index structures. A naïve search loops over all points and takes <span class="math inline">\(O(nd)\)</span> time. It is natural to ask whether we can do better. If we are willing to sacrifice accuracy for efficiency, this is possible. Instead of finding the exact nearest neighbor, we relax our goal to finding an approximate nearest neighbor whose distance is within <span class="math inline">\(1 + \epsilon\)</span> of the minimum one.</p>
+<p>One possible solution is Johnson–Lindenstrauss decomposition. We can generate a matrix <span class="math inline">\(A \in R^{ O( \frac{ \log n }{ \epsilon^2 } )\times d}\)</span> and multiply it with every element in <span class="math inline">\(S\)</span>. The mapping <span class="math inline">\(u \rightarrow Au\)</span> preserves pair-wise distance up to a relative error of <span class="math inline">\(\epsilon\)</span>. The pre-processing takes <span class="math inline">\(O( \frac{n d \log n}{\epsilon^2} )\)</span> time. To answer an query, we map <span class="math inline">\(v\)</span> to <span class="math inline">\(Av\)</span>, which takes <span class="math inline">\(O(\frac{ d\log n }{ \epsilon^2 } )\)</span> time. Then we perform a loop over all elements of <span class="math inline">\(\{ Au : u \in S\}\)</span>, which takes <span class="math inline">\(O(\frac{ n \log n }{ \epsilon^2 } )\)</span> time. Therefore, the total time complexity is <span class="math inline">\(O(\frac{ (n + d) \log n }{ \epsilon^2 } )\)</span>.</p>
+<h3 id="hashing">Hashing</h3>
+<p>[1] solves the problem by hashing. We call the pair of points that are close to each other the <em>similar pair</em> and the pair that are far from each other the <em>dissimilar pair</em>. Intuitively, we want similar pairs to be hashed to the same bucket and that dissimilar pairs to be hashed to different buckets.</p>
+<p>Instead of finding the <span class="math inline">\((1 + \epsilon)\)</span> approximate nearest neighbor directly, [1] further reduces it to the <span class="math inline">\((c, r)\)</span>-approximate neighbor search (ANNS<span class="math inline">\((c, r)\)</span>) problem, which is defined as follows:</p>
+<p><strong><em>Given a query point <span class="math inline">\(v\)</span>, if <span class="math inline">\(\exists s \in S\)</span>, then return a point <span class="math inline">\(u\)</span>, such that</em></strong> <span class="math display">\[
+d(v, u) \le c \cdot r
+\]</span></p>
+<p>The reduction from <span class="math inline">\(1 + \epsilon\)</span> to ANNS(<span class="math inline">\(c, r\)</span>) is not easy. Here we show one that returns the <span class="math inline">\((1 + \epsilon)^2\)</span> approximate nearest neighbor. Let <span class="math inline">\(d_{\max} = \max_{s, s&#39;} d(s, s&#39;)\)</span> and <span class="math inline">\(d_{\min} = \min_{s, s&#39;} d(s, s&#39;)\)</span>. We build a set of structures that answers ANNS(<span class="math inline">\(1 + \epsilon\)</span>, r) queries for the values of <span class="math inline">\(r\)</span>: <span class="math display">\[
+d_{\min}, \ d_{\min} (1 + \epsilon ), \ d_{min} (1 + \epsilon)^2,\ ...,\ d_{\max}
+\]</span></p>
+<p>Then given the query point <span class="math inline">\(v\)</span>, we do a binary search to find the smallest <span class="math inline">\(r\)</span> that returns a point. This imposes an additional cost of <span class="math inline">\(\ln {\ln \frac{d_{\max} }{d_{\min} } \over \ln (1 + \epsilon) }\)</span>.</p>
+<table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\text{NNS} \longrightarrow (1+\epsilon) \text{NNS} \longrightarrow \text{ANNS}(c, r) \longrightarrow (r, cr, p_1, p_2)\text{-LSH} \longrightarrow \text{Boosting Probability}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">The Problem Reduction Chain</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-cr-p_1-p_2-locality-sensitive-hashing-family"><span class="math inline">\((r, cr, p_1, p_2)\)</span>-Locality Sensitive Hashing Family</h3>
+<p>Now we show how to solve the ANNS<span class="math inline">\((c, r)\)</span> problem with hashing. Designing a perfecting hashing that solves the problem directly is not easy. It is desirable to have some hashing which successes with some probability and then boost its probability systematically. To achieve this, we introduce the idea of <span class="math inline">\((r, cr, p_1, p_2)\)</span>-locality sensitive hashing family.</p>
+<p><strong><em>Given a set of point <span class="math inline">\(V\)</span>, a metric <span class="math inline">\(d(\cdot , \cdot)\)</span> defined on <span class="math inline">\(V\)</span>, a collection of hash function <span class="math inline">\(\mathcal{H} = \{ h: V \rightarrow Z\}\)</span> is called <span class="math inline">\((r, cr, p_1, p_2)\)</span> locality sensitive if for any <span class="math inline">\(v, u \in V\)</span> and an <span class="math inline">\(h\)</span> sampled uniformly from <span class="math inline">\(\mathcal{H}\)</span>, it holds that</em></strong></p>
+<ol type="1">
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge p_1\)</span>.</li>
+<li>If <span class="math inline">\(d(v, u) \ge cr\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le p_2\)</span></li>
 </ol>
-<p>where $p_2 &lt; p_1 \le 1$. Intuitively, pairs near to each other should be more likely to collide. Hence $p_1 = p_2^{\rho}$ for some $\rho = \log p_1 / \log p_2 &lt; 1$.</p>
-<p>Ideally, we have $p_1 \approx 1$ and $p_2 \approx 0$. For other cases we can magnify the gap between $p_1$ and $p_2$ and boost $p_1$ to approximate $1$ and $p_2$ to approximate $0$. The hardness of the boosting highly depends on the value of $c$.</p>
-<h4 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h4><p>Suppose that $U = {0, 1}^d$, $d(u, v) = u \oplus v = |u - v|<em>1$ and $\mathcal{H} = { h_i (u) = u_i }</em>{i \in [d]}$, where $h_i$ selects the $i$th bit of $u$. Picking an $h$ uniformly from $\mathcal{H}$ and applying $h$ to $u$ is equivalent to selecting a bit uniformly from $u$. Therefore,</p>
-<ol>
-<li>If $d(v, u) &lt; r$ ($u$ and $v$ has less then $r$ common bits), then $\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge \frac{d - r}{d} = 1 - \frac{r}{d} =  p_1$.</li>
-<li>If $d(v, u) \ge cr$, then $\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le \frac{d - cr}{d} = 1 - \frac{cr}{d} =  p_2$</li>
+<p>where <span class="math inline">\(p_2 &lt; p_1 \le 1\)</span>. Intuitively, pairs near to each other should be more likely to collide. Hence <span class="math inline">\(p_1 = p_2^{\rho}\)</span> for some <span class="math inline">\(\rho = \log p_1 / \log p_2 &lt; 1\)</span>.</p>
+<p>Ideally, we have <span class="math inline">\(p_1 \approx 1\)</span> and <span class="math inline">\(p_2 \approx 0\)</span>. For other cases we can magnify the gap between <span class="math inline">\(p_1\)</span> and <span class="math inline">\(p_2\)</span> and boost <span class="math inline">\(p_1\)</span> to approximate <span class="math inline">\(1\)</span> and <span class="math inline">\(p_2\)</span> to approximate <span class="math inline">\(0\)</span>. The hardness of the boosting highly depends on the value of <span class="math inline">\(c\)</span>.</p>
+<h4 id="example">Example</h4>
+<p>Suppose that <span class="math inline">\(U = \{0, 1\}^d\)</span>, <span class="math inline">\(d(u, v) = u \oplus v = |u - v|_1\)</span> and <span class="math inline">\(\mathcal{H} = \{ h_i (u) = u_i \}_{i \in [d]}\)</span>, where <span class="math inline">\(h_i\)</span> selects the <span class="math inline">\(i\)</span>th bit of <span class="math inline">\(u\)</span>. Picking an <span class="math inline">\(h\)</span> uniformly from <span class="math inline">\(\mathcal{H}\)</span> and applying <span class="math inline">\(h\)</span> to <span class="math inline">\(u\)</span> is equivalent to selecting a bit uniformly from <span class="math inline">\(u\)</span>. Therefore,</p>
+<ol type="1">
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span> (<span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> has less then <span class="math inline">\(r\)</span> common bits), then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge \frac{d - r}{d} = 1 - \frac{r}{d} = p_1\)</span>.</li>
+<li>If <span class="math inline">\(d(v, u) \ge cr\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le \frac{d - cr}{d} = 1 - \frac{cr}{d} = p_2\)</span></li>
 </ol>
-<p>Now $p_1 \approx \exp(- r / d)$ and $p_2 \approx \exp(- cr / d)$. Hence $\rho \approx \frac{1}{c}$. Indeed it can be proven rigorously that<br>$$<br>\rho = \frac{\ln (1 - \frac{r}{d}) }{ \ln (1 - \frac{cr}{d}) } \le \frac{1}{c}<br>$$</p>
-<p>as $( 1 - \frac{r}{d})^c \ge 1 - \frac{cr}{d}$. There are many ways to prove this. Since we are dealing with probability, we give a probabilistic interpretation of this inequality. Suppose that are $c$ independent events each happening with probability $\frac{r}{d}$. Then the probability that at least one of them happens is given by<br>$$<br>1 - \Pr[\textbf{none of them happens } ] = 1 - (1 - \frac{r}{d})^c<br>$$</p>
-<p>On the other hand, by union bound, this is upper bounded by $\frac{cr}{d}$.</p>
-<h3 id="Boosting-the-Probabilities"><a href="#Boosting-the-Probabilities" class="headerlink" title="Boosting the Probabilities"></a>Boosting the Probabilities</h3><p>We would like the boost the probability such that $p_1 \approx 1$ and $p_2 \approx 0$. We follow a two-step approach. First we sample $k$ (to be determined) hash functions independently from $\mathcal{H}$ can concatenate them as a single hash function $g$:<br>$$<br>g(v) = [h_1(v),  h_2(v), … ,h_k(v)]<br>$$</p>
-<p>Here $g$ hash a point $v$ to a $k$ dimensional vector. After this,  $g(v) = g(u)$ happens only if $h_i(v) = h_i(u)$ for all $i \in [k]$. By independence of $h_i$’s, </p>
-<ol>
-<li><p>If $d(v, u) \ge cr$, the collision probability of $u$ with $v$ drops to $p_2^k$:<br> $$<br> \Pr [ g(v) = g(u) ] \le p_2^k<br> $$</p>
-</li>
-<li><p>On the other hand, if $d(v, u) &lt; r$, the collision probability also drops to $p_1^k = (p_2^k)^\rho$<br> $$<br> \Pr [ g(v) = g(u) ] \ge  p_1^k = p_2^{\rho k} = (p_2^{k})^\rho<br> $$<br> which is relatively small and not desirable.</p>
-</li>
+<p>Now <span class="math inline">\(p_1 \approx \exp(- r / d)\)</span> and <span class="math inline">\(p_2 \approx \exp(- cr / d)\)</span>. Hence <span class="math inline">\(\rho \approx \frac{1}{c}\)</span>. Indeed it can be proven rigorously that <span class="math display">\[
+\rho = \frac{\ln (1 - \frac{r}{d}) }{ \ln (1 - \frac{cr}{d}) } \le \frac{1}{c}
+\]</span></p>
+<p>as <span class="math inline">\(( 1 - \frac{r}{d})^c \ge 1 - \frac{cr}{d}\)</span>. There are many ways to prove this. Since we are dealing with probability, we give a probabilistic interpretation of this inequality. Suppose that are <span class="math inline">\(c\)</span> independent events each happening with probability <span class="math inline">\(\frac{r}{d}\)</span>. Then the probability that at least one of them happens is given by <span class="math display">\[
+1 - \Pr[\textbf{none of them happens } ] = 1 - (1 - \frac{r}{d})^c
+\]</span></p>
+<p>On the other hand, by union bound, this is upper bounded by <span class="math inline">\(\frac{cr}{d}\)</span>.</p>
+<h3 id="boosting-the-probabilities">Boosting the Probabilities</h3>
+<p>We would like the boost the probability such that <span class="math inline">\(p_1 \approx 1\)</span> and <span class="math inline">\(p_2 \approx 0\)</span>. We follow a two-step approach. First we sample <span class="math inline">\(k\)</span> (to be determined) hash functions independently from <span class="math inline">\(\mathcal{H}\)</span> can concatenate them as a single hash function <span class="math inline">\(g\)</span>: <span class="math display">\[
+g(v) = [h_1(v),  h_2(v), ... ,h_k(v)]
+\]</span></p>
+<p>Here <span class="math inline">\(g\)</span> hash a point <span class="math inline">\(v\)</span> to a <span class="math inline">\(k\)</span> dimensional vector. After this, <span class="math inline">\(g(v) = g(u)\)</span> happens only if <span class="math inline">\(h_i(v) = h_i(u)\)</span> for all <span class="math inline">\(i \in [k]\)</span>. By independence of <span class="math inline">\(h_i\)</span>'s,</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(d(v, u) \ge cr\)</span>, the collision probability of <span class="math inline">\(u\)</span> with <span class="math inline">\(v\)</span> drops to <span class="math inline">\(p_2^k\)</span>: <span class="math display">\[
+ \Pr [ g(v) = g(u) ] \le p_2^k
+ \]</span></p></li>
+<li><p>On the other hand, if <span class="math inline">\(d(v, u) &lt; r\)</span>, the collision probability also drops to <span class="math inline">\(p_1^k = (p_2^k)^\rho\)</span> <span class="math display">\[
+ \Pr [ g(v) = g(u) ] \ge  p_1^k = p_2^{\rho k} = (p_2^{k})^\rho
+ \]</span> which is relatively small and not desirable.</p></li>
 </ol>
-<p>We need a second level of boosting to increase the collision probability of similar pairs. Instead of using only one function $g$, we use a collection of independent copies:<br>$$<br>g_1, g_2, …, g_l<br>$$</p>
-<p>where $l$ is the number to be determined. Now, </p>
+<p>We need a second level of boosting to increase the collision probability of similar pairs. Instead of using only one function <span class="math inline">\(g\)</span>, we use a collection of independent copies: <span class="math display">\[
+g_1, g_2, ..., g_l
+\]</span></p>
+<p>where <span class="math inline">\(l\)</span> is the number to be determined. Now,</p>
 <ul>
-<li>If $d(v, u) &lt; r$, the probability that at least one of the $g_i(u)$ equals to $g_i(v)$ is given by<br>  $$<br>  \begin{aligned}<pre><code>  \Pr \left[ \exists i \in [l], \ s.t., \ g_i(u) = g_i(v) \right] 
-      &amp;= 1 - (1 - p_1^k)^l  \\
-      &amp;= 1 - (1 - (p_2^k)^\rho)^l \\
-      &amp;\ge 1 - \exp( - (p_2^k)^\rho l )
-</code></pre>
-  \end{aligned}<br>  $$</li>
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span>, the probability that at least one of the <span class="math inline">\(g_i(u)\)</span> equals to <span class="math inline">\(g_i(v)\)</span> is given by <span class="math display">\[
+  \begin{aligned}
+      \Pr \left[ \exists i \in [l], \ s.t., \ g_i(u) = g_i(v) \right] 
+          &amp;= 1 - (1 - p_1^k)^l  \\
+          &amp;= 1 - (1 - (p_2^k)^\rho)^l \\
+          &amp;\ge 1 - \exp( - (p_2^k)^\rho l )
+  \end{aligned}
+  \]</span></li>
 </ul>
-<p>We can take   </p>
-<ol>
-<li><p>$p_2^k = \frac{1}{n}$, i.e., $k = \frac{\log n }{ \log 1 / p_2 }$.</p>
-</li>
-<li><p>$\exp( - (p_2^k)^\rho l ) = \frac{1}{n}$, i.e., $l = \frac{1}{(p_2^k)^\rho } \ln n = n^\rho \ln n$.</p>
-</li>
+<p>We can take</p>
+<ol type="1">
+<li><p><span class="math inline">\(p_2^k = \frac{1}{n}\)</span>, i.e., <span class="math inline">\(k = \frac{\log n }{ \log 1 / p_2 }\)</span>.</p></li>
+<li><p><span class="math inline">\(\exp( - (p_2^k)^\rho l ) = \frac{1}{n}\)</span>, i.e., <span class="math inline">\(l = \frac{1}{(p_2^k)^\rho } \ln n = n^\rho \ln n\)</span>.</p></li>
 </ol>
-<p>For a fixed query point $q$ and for any fixed $i \in [l]$,  by linearity of expectation,  the expected number of dissimilar collision is given by</p>
-<p>$$<br>\begin{aligned}<br>    E \left[ |{ u \in S: d(q, u) \ge cr \wedge g_i(q) = g_i(u)  }| \right]<br>        &amp;= \sum_{ u \in S : \  d(q, u) \ge cr } \Pr[g_i(v)= g_i(u)] \<br>        &amp;\le n \cdot \frac{1}{n} = 1<br>\end{aligned}<br>$$</p>
-<p>Therefore, there are $l$ of dissimilar collisions over all $i \in [l]$. This implies an expected overhead of $l$ examinations of dissimilar points. However, by Markov inequality, the number of such points is less than $2l$ with probability at least $1 / 2$. The time for examination of dissimilar point is  $O(ld) = O(d n^\rho \ln n)$.</p>
-<h3 id="Time-and-Space"><a href="#Time-and-Space" class="headerlink" title="Time and Space"></a>Time and Space</h3><p>Now, given a query point $q$, computing $g_i(q)$ for a fixed $i$ takes $O(k)$ time. Computing $l$ of them takes $O(kl)$ time. In expectation, there are $l$ dissimilar collision points with $q$. Checking one collision point takes $O(d)$ time. Therefore, the expected query time is given by (note that we stop upon finding the first ANN of $q$):</p>
-<p>$$<br>\begin{aligned}<br>    O(kl + dl)<br>    &amp;= O(\frac{\ln n}{\ln \frac{1}{p_2}} n^\rho \ln n + d n^\rho \ln n) \<br>    &amp;= O(n^{ \rho} \ln^2 n / \ln \frac{1}{p_2} + d n^\rho \ln n) \<br>    &amp;= \tilde{O}( n^\rho )<br>\end{aligned}<br>$$</p>
-<p>As for the space usage, for each point $u$ in $S$, we need to compute $g_i(u)$ and store this value (we need to store this, because $g_i(u)$ is self could be a large number and when putting ${ g_i(u) : u \in S}$ into a hash table, we need to treat $g_i(u)$ as the key and store it for later collision comparison. But is it possible that when there is a collision, we re-compute this value again to avoid storing it ?). We need to repeat this for $l$ hash functions. Therefore, the space usage is given by<br>$$<br>O(nkl) = O(n^{1 + \rho} \ln^2 n / \ln \frac{1}{p_2})<br>$$</p>
-<h3 id="Another-Boosting-Scheme"><a href="#Another-Boosting-Scheme" class="headerlink" title="Another Boosting Scheme"></a>Another Boosting Scheme</h3><p>In last section, we have a scheme that checks $O(n^\rho \ln n)$ dissimilar points in expectation. In this section we achieve it with high probability. </p>
-<ol>
-<li>First, to reduce the collision probability of dis-similar pairs, we concatenate $k$ functions from $\mathcal{H}$. This gives a<br>$$<pre><code> (r, cr, p_1^k, p_2^k)
-</code></pre>
-$$<br>locative sensitive hash function. We determine the value of $k$ later. <!-- We pick $k = \frac{\ln n}{\ln \frac{1}{p_2} }$, such that $p_2^k = 1 / n$. In expectation, at most $1$ dis-similar collision occurs.  --></li>
-<li>Second, to boost the collision probability of similar pairs, we use $l$ concatenated hash functions independently. The probability at least one collision occurs is given by<br>$$<pre><code> 1 - (1 - p_1^k)^l \ge 1 - e^&#123;-p_1^k \cdot l&#125; 
-</code></pre>
-$$<br>We require this to happen with constant probability $1 - \frac{1}{e}$, hence we need to set $l = \frac{1}{p_1^k} = (\frac{1}{p_2^k})^\rho$.<!-- where $l = n^\rho$. The final equality holds since $p_1^k \cdot l = p_2^{k \cdot \rho} \cdot l = n^{-\rho} \cdot l = 1$ --></li>
-<li>Now consider a query point $q$. We compute $g_1(q), g_2(q), …, g_l(q)$ and check the points $u$’s such that $g_i(u) = g_i(q)$ for some $i \in [l]$. Note that we check at most the first $4 n p_2^k l + 1$ points we found. Why $4 n p_2^k l + 1$? In expectation, there are $n p_2^k l$ dissimilar collisions. By Markov inequality, the probability of dissimilar collisions is no more than $4l$ is at most $1 / 4$. By union bound,<br> $$<br> \begin{aligned}<pre><code> &amp;\Pr[\exists \text&#123; more than &#125; 4l \text&#123; bad collision &#125; \vee \nexists \text&#123; good collision &#125;] \\
- &amp;\le \frac&#123;1&#125;&#123;e&#125; + \frac&#123;1&#125;&#123;4&#125; \\
- &amp;\le \frac&#123;1&#125;&#123;2.5&#125; + \frac&#123;1&#125;&#123;4&#125; \\
- &amp;= \frac&#123;5&#125;&#123;16&#125;
-</code></pre>
- \end{aligned}<br> $$</li>
+<p>For a fixed query point <span class="math inline">\(q\)</span> and for any fixed <span class="math inline">\(i \in [l]\)</span>, by linearity of expectation, the expected number of dissimilar collision is given by</p>
+<p><span class="math display">\[
+\begin{aligned}
+    E \left[ |\{ u \in S: d(q, u) \ge cr \wedge g_i(q) = g_i(u)  \}| \right] 
+        &amp;= \sum_{ u \in S : \  d(q, u) \ge cr } \Pr[g_i(v)= g_i(u)] \\
+        &amp;\le n \cdot \frac{1}{n} = 1
+\end{aligned}
+\]</span></p>
+<p>Therefore, there are <span class="math inline">\(l\)</span> of dissimilar collisions over all <span class="math inline">\(i \in [l]\)</span>. This implies an expected overhead of <span class="math inline">\(l\)</span> examinations of dissimilar points. However, by Markov inequality, the number of such points is less than <span class="math inline">\(2l\)</span> with probability at least <span class="math inline">\(1 / 2\)</span>. The time for examination of dissimilar point is <span class="math inline">\(O(ld) = O(d n^\rho \ln n)\)</span>.</p>
+<h3 id="time-and-space">Time and Space</h3>
+<p>Now, given a query point <span class="math inline">\(q\)</span>, computing <span class="math inline">\(g_i(q)\)</span> for a fixed <span class="math inline">\(i\)</span> takes <span class="math inline">\(O(k)\)</span> time. Computing <span class="math inline">\(l\)</span> of them takes <span class="math inline">\(O(kl)\)</span> time. In expectation, there are <span class="math inline">\(l\)</span> dissimilar collision points with <span class="math inline">\(q\)</span>. Checking one collision point takes <span class="math inline">\(O(d)\)</span> time. Therefore, the expected query time is given by (note that we stop upon finding the first ANN of <span class="math inline">\(q\)</span>):</p>
+<p><span class="math display">\[
+\begin{aligned}
+    O(kl + dl) 
+    &amp;= O(\frac{\ln n}{\ln \frac{1}{p_2}} n^\rho \ln n + d n^\rho \ln n) \\
+    &amp;= O(n^{ \rho} \ln^2 n / \ln \frac{1}{p_2} + d n^\rho \ln n) \\
+    &amp;= \tilde{O}( n^\rho )
+\end{aligned}
+\]</span></p>
+<p>As for the space usage, for each point <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span>, we need to compute <span class="math inline">\(g_i(u)\)</span> and store this value (we need to store this, because <span class="math inline">\(g_i(u)\)</span> is self could be a large number and when putting <span class="math inline">\(\{ g_i(u) : u \in S\}\)</span> into a hash table, we need to treat <span class="math inline">\(g_i(u)\)</span> as the key and store it for later collision comparison. But is it possible that when there is a collision, we re-compute this value again to avoid storing it ?). We need to repeat this for <span class="math inline">\(l\)</span> hash functions. Therefore, the space usage is given by <span class="math display">\[
+O(nkl) = O(n^{1 + \rho} \ln^2 n / \ln \frac{1}{p_2})
+\]</span></p>
+<h3 id="another-boosting-scheme">Another Boosting Scheme</h3>
+<p>In last section, we have a scheme that checks <span class="math inline">\(O(n^\rho \ln n)\)</span> dissimilar points in expectation. In this section we achieve it with high probability.</p>
+<ol type="1">
+<li>First, to reduce the collision probability of dis-similar pairs, we concatenate <span class="math inline">\(k\)</span> functions from <span class="math inline">\(\mathcal{H}\)</span>. This gives a <span class="math display">\[
+     (r, cr, p_1^k, p_2^k)
+\]</span> locative sensitive hash function. We determine the value of <span class="math inline">\(k\)</span> later. <!-- We pick $k = \frac{\ln n}{\ln \frac{1}{p_2} }$, such that $p_2^k = 1 / n$. In expectation, at most $1$ dis-similar collision occurs.  --></li>
+<li>Second, to boost the collision probability of similar pairs, we use <span class="math inline">\(l\)</span> concatenated hash functions independently. The probability at least one collision occurs is given by <span class="math display">\[
+     1 - (1 - p_1^k)^l \ge 1 - e^{-p_1^k \cdot l} 
+\]</span> We require this to happen with constant probability <span class="math inline">\(1 - \frac{1}{e}\)</span>, hence we need to set <span class="math inline">\(l = \frac{1}{p_1^k} = (\frac{1}{p_2^k})^\rho\)</span>. <!-- where $l = n^\rho$. The final equality holds since $p_1^k \cdot l = p_2^{k \cdot \rho} \cdot l = n^{-\rho} \cdot l = 1$ --></li>
+<li>Now consider a query point <span class="math inline">\(q\)</span>. We compute <span class="math inline">\(g_1(q), g_2(q), ..., g_l(q)\)</span> and check the points <span class="math inline">\(u\)</span>'s such that <span class="math inline">\(g_i(u) = g_i(q)\)</span> for some <span class="math inline">\(i \in [l]\)</span>. Note that we check at most the first <span class="math inline">\(4 n p_2^k l + 1\)</span> points we found. Why <span class="math inline">\(4 n p_2^k l + 1\)</span>? In expectation, there are <span class="math inline">\(n p_2^k l\)</span> dissimilar collisions. By Markov inequality, the probability of dissimilar collisions is no more than <span class="math inline">\(4l\)</span> is at most <span class="math inline">\(1 / 4\)</span>. By union bound, <span class="math display">\[
+ \begin{aligned}
+     &amp;\Pr[\exists \text{ more than } 4l \text{ bad collision } \vee \nexists \text{ good collision }] \\
+     &amp;\le \frac{1}{e} + \frac{1}{4} \\
+     &amp;\le \frac{1}{2.5} + \frac{1}{4} \\
+     &amp;= \frac{5}{16}
+ \end{aligned}
+ \]</span></li>
 </ol>
-<p>Therefore, the boosting strategy successes with constant probability. Now consider the running time of such boosting strategy. When a query point $q$ comes, we need to compute $g_1(q), g_2(q), …, g_l(q)$, which takes time $kl$. Further, the strategy checks at most $4 n p_2^k l + 1$ points and checking each point takes $O(d)$ time. The overall time used is<br>$$<br>O(kl + (4 n p_2^k l + 1)d)<br>$$</p>
-<p>To minimize the running time, we need to choose proper value of $k$, such that<br>$$<br>k = 4np_2^k d \rightarrow \ln k + k \ln \frac{1}{p_2} = \ln (4nd)<br>$$</p>
-<p>It suffice to take $k = \frac{\ln 4nd}{ \ln \frac{1}{p_2} }$. It follows that<br>$$<br>p_2^k = \frac{1}{4nd} \<br>l = \left( \frac{1}{p_2^k} \right)^\rho = (4nd)^\rho<br>$$</p>
-<p>and the running time is given by<br>$$<br>O\left( (4nd)^\rho \frac{\ln (4nd)}{\ln \frac{1}{p_2} } \right)<br>$$</p>
-<p>As $n \succ d$, this is equivalent to<br>$$<br>O\left( (4nd)^\rho \frac{\ln n}{\ln \frac{1}{p_2} } \right)<br>$$</p>
-<p>We can repeat the above steps by $\ln n / \ln \frac{16}{5}$ times, to boost the success probability to $1 - \frac{1}{n}$. The overall running time is given by<br>$$<br>O\left( (4nd)^\rho \frac{\ln^2 n}{\ln \frac{1}{p_2} } \right)<br>$$</p>
-<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><ol>
+<p>Therefore, the boosting strategy successes with constant probability. Now consider the running time of such boosting strategy. When a query point <span class="math inline">\(q\)</span> comes, we need to compute <span class="math inline">\(g_1(q), g_2(q), ..., g_l(q)\)</span>, which takes time <span class="math inline">\(kl\)</span>. Further, the strategy checks at most <span class="math inline">\(4 n p_2^k l + 1\)</span> points and checking each point takes <span class="math inline">\(O(d)\)</span> time. The overall time used is <span class="math display">\[
+O(kl + (4 n p_2^k l + 1)d)
+\]</span></p>
+<p>To minimize the running time, we need to choose proper value of <span class="math inline">\(k\)</span>, such that <span class="math display">\[
+k = 4np_2^k d \rightarrow \ln k + k \ln \frac{1}{p_2} = \ln (4nd) 
+\]</span></p>
+<p>It suffice to take <span class="math inline">\(k = \frac{\ln 4nd}{ \ln \frac{1}{p_2} }\)</span>. It follows that <span class="math display">\[
+p_2^k = \frac{1}{4nd} \\
+l = \left( \frac{1}{p_2^k} \right)^\rho = (4nd)^\rho 
+\]</span></p>
+<p>and the running time is given by <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln (4nd)}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<p>As <span class="math inline">\(n \succ d\)</span>, this is equivalent to <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln n}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<p>We can repeat the above steps by <span class="math inline">\(\ln n / \ln \frac{16}{5}\)</span> times, to boost the success probability to <span class="math inline">\(1 - \frac{1}{n}\)</span>. The overall running time is given by <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln^2 n}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<h3 id="reference">Reference</h3>
+<ol type="1">
 <li>Indyk, P. and Motwani, R., 1998, May. Approximate nearest neighbors: towards removing the curse of dimensionality. In Proceedings of the thirtieth annual ACM symposium on Theory of computing (pp. 604-613).</li>
 </ol>
 
@@ -355,7 +423,7 @@ $$<br>We require this to happen with constant probability $1 - \frac{1}{e}$, hen
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hashing"><span class="nav-number">1.</span> <span class="nav-text">Hashing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#r-cr-p-1-p-2-Locality-Sensitive-Hashing-Family"><span class="nav-number">2.</span> <span class="nav-text">$(r, cr, p_1, p_2)$-Locality Sensitive Hashing Family</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Example"><span class="nav-number">2.1.</span> <span class="nav-text">Example</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Boosting-the-Probabilities"><span class="nav-number">3.</span> <span class="nav-text">Boosting the Probabilities</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Time-and-Space"><span class="nav-number">4.</span> <span class="nav-text">Time and Space</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Another-Boosting-Scheme"><span class="nav-number">5.</span> <span class="nav-text">Another Boosting Scheme</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#hashing"><span class="nav-number">1.</span> <span class="nav-text">Hashing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#r-cr-p_1-p_2-locality-sensitive-hashing-family"><span class="nav-number">2.</span> <span class="nav-text">\((r, cr, p_1, p_2)\)-Locality Sensitive Hashing Family</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#example"><span class="nav-number">2.1.</span> <span class="nav-text">Example</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#boosting-the-probabilities"><span class="nav-number">3.</span> <span class="nav-text">Boosting the Probabilities</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#time-and-space"><span class="nav-number">4.</span> <span class="nav-text">Time and Space</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#another-boosting-scheme"><span class="nav-number">5.</span> <span class="nav-text">Another Boosting Scheme</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

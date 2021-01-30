@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="DeterminantWhen studying linear algebra, the determinant function $\det(\cdot)$ is a horrifying subject. We try to give a friendly approach to it in this article.  I think it is the study of the volum">
+  <meta name="description" content="Determinant When studying linear algebra, the determinant function \(\det(\cdot)\) is a horrifying subject. We try to give a friendly approach to it in this article. I think it is the study of the v">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Determinant, Cross Product and Cramer&#39;s-Rule">
 <meta property="og:url" content="http://example.com/2020/02/18/Determinant,%20Cross%20Product%20and%20Cramer's-Rule/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="DeterminantWhen studying linear algebra, the determinant function $\det(\cdot)$ is a horrifying subject. We try to give a friendly approach to it in this article.  I think it is the study of the volum">
+<meta property="og:description" content="Determinant When studying linear algebra, the determinant function \(\det(\cdot)\) is a horrifying subject. We try to give a friendly approach to it in this article. I think it is the study of the v">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity1.jpg">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity2.jpg">
@@ -199,66 +199,138 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="Determinant"><a href="#Determinant" class="headerlink" title="Determinant"></a><strong><em>Determinant</em></strong></h3><p>When studying linear algebra, the determinant function $\det(\cdot)$ is a horrifying subject. We try to give a friendly approach to it in this article. </p>
-<p>I think it is the study of the volume of the parallelotope specified by $v_1, v_2, … ,v_n \in \mathbb{R}^n$ that gives it away. The parallelotope is defined as the set<br>$$<br>\left{ \sum_{i \in [n]} \lambda_i v_i :  \lambda_i \in [0, 1], \forall i \in [n] \right}<br>$$</p>
-<p>Let’s denote $f(v_1, v_2, … ,v_n) : \mathbb{R}^{n \times n} \rightarrow \mathbb{R}$ the singed volume function, i.e., $|f(v_1, v_2, … ,v_n)|$ gives the volume of the parallelotope. We will show how to determine the sign of $f$ later. At this point, we do not know how $\det(\cdot)$ is related to the volume. Therefore, we use the notation $f$ instead.</p>
-<p>We show how to derive the formula of $f$ by its properties. The two key properties associated with volume are </p>
-<ol>
-<li><p>$f$ is multi-linear. Specially, it is a linear function in any dimension when other dimensions are fixed: </p>
+        <h3 id="determinant"><strong><em>Determinant</em></strong></h3>
+<p>When studying linear algebra, the determinant function <span class="math inline">\(\det(\cdot)\)</span> is a horrifying subject. We try to give a friendly approach to it in this article.</p>
+<p>I think it is the study of the volume of the parallelotope specified by <span class="math inline">\(v_1, v_2, ... ,v_n \in \mathbb{R}^n\)</span> that gives it away. The parallelotope is defined as the set <span class="math display">\[
+\left\{ \sum_{i \in [n]} \lambda_i v_i :  \lambda_i \in [0, 1], \forall i \in [n] \right\}
+\]</span></p>
+<p>Let's denote <span class="math inline">\(f(v_1, v_2, ... ,v_n) : \mathbb{R}^{n \times n} \rightarrow \mathbb{R}\)</span> the singed volume function, i.e., <span class="math inline">\(|f(v_1, v_2, ... ,v_n)|\)</span> gives the volume of the parallelotope. We will show how to determine the sign of <span class="math inline">\(f\)</span> later. At this point, we do not know how <span class="math inline">\(\det(\cdot)\)</span> is related to the volume. Therefore, we use the notation <span class="math inline">\(f\)</span> instead.</p>
+<p>We show how to derive the formula of <span class="math inline">\(f\)</span> by its properties. The two key properties associated with volume are</p>
+<ol type="1">
+<li><p><span class="math inline">\(f\)</span> is multi-linear. Specially, it is a linear function in any dimension when other dimensions are fixed:</p>
 <ul>
-<li><p>$f(v_1, v_2, …, cv_i, … ,v_n)=cf(v_1, v_2, … ,v_n)$ for $\forall i \in [n]$ and $c \in \mathbb{R}$. Geometrically, if we scale the $i$-th vector $v_i$ by a factor $c$, then the volume of the parallelotope should change by the same factor.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity1.jpg"><br>In the above example, when $v_2$ is fixed, the area of the parallelogram is determined by its height, i.e., the projection of $v_1$ to the orthogonal direction of $v_2$. When $v_1$ doubles, the length of its projection doubles. </p>
-</li>
-<li><p>$f(v_1, v_2, …, v_i + u_i, … ,v_n)= f(v_1, v_2, …, v_i, … ,v_n) + f(v_1, v_2, …, u_i, … ,v_n)$.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity2.jpg"><br>In the above example, when $v_2$ is fixed, the projection to the orthogonal direction of $v_2$ are additive. In particular, denote $\mathcal{P}(v_1)$ the length of the projection of $v_1$ to the orthogonal direction of $v_2$. Similarly we define $\mathcal{P}(v_2)$ and $\mathcal{P}(v_1 + v_2)$. Then<br>$$<br>\mathcal{P}(v_1 + v_2) = \mathcal{P}(v_1) + \mathcal{P}(v_2)<br>$$</p>
-</li>
-<li><p>Note that the projection of two vector can cancel each other in some cases, in the sense that they points to different direction.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity4.jpg"><br>In the above example, if we write $v_1 = v_{1, 1} e_1 + v_{1, 2} e_2$, then $\mathcal{P} (v_{1, 1} e_1)$ and $\mathcal{P} (v_{1,2} e_2)$ points to opposite directions. This implies that we should give volume a sign. For example, we can define the direction pointed by purple vector points to be positive. The volume of the parallelogram increases if a vector’s projection moves along this direction and decrease otherwise.</p>
-</li>
-</ul>
-</li>
-<li><p>If $v_1, v_2, …, v_n$ are linearly independent, then the parallelotope is contained in a subspace with dimension smaller than $n$ and should have volume zero.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/NonIndependent.jpg"><br>Intuitively, the parallelotope collapses to a lower dimension space. Examples include colinear vectors in two dimension case and the third vector lying in the hyperplane spanned by the other two in the three dimension case.<br>Finally, we emphases an important case here:<br>$$<br>f(…, v_i,…, v_j, … , ) = 0, \textbf{ if } v_i = v_j, \forall i, j \in [n], i \neq j<br>$$</p>
-</li>
+<li><p><span class="math inline">\(f(v_1, v_2, ..., cv_i, ... ,v_n)=cf(v_1, v_2, ... ,v_n)\)</span> for <span class="math inline">\(\forall i \in [n]\)</span> and <span class="math inline">\(c \in \mathbb{R}\)</span>. Geometrically, if we scale the <span class="math inline">\(i\)</span>-th vector <span class="math inline">\(v_i\)</span> by a factor <span class="math inline">\(c\)</span>, then the volume of the parallelotope should change by the same factor. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity1.jpg" /> In the above example, when <span class="math inline">\(v_2\)</span> is fixed, the area of the parallelogram is determined by its height, i.e., the projection of <span class="math inline">\(v_1\)</span> to the orthogonal direction of <span class="math inline">\(v_2\)</span>. When <span class="math inline">\(v_1\)</span> doubles, the length of its projection doubles.</p></li>
+<li><p><span class="math inline">\(f(v_1, v_2, ..., v_i + u_i, ... ,v_n)= f(v_1, v_2, ..., v_i, ... ,v_n) + f(v_1, v_2, ..., u_i, ... ,v_n)\)</span>. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity2.jpg" /> In the above example, when <span class="math inline">\(v_2\)</span> is fixed, the projection to the orthogonal direction of <span class="math inline">\(v_2\)</span> are additive. In particular, denote <span class="math inline">\(\mathcal{P}(v_1)\)</span> the length of the projection of <span class="math inline">\(v_1\)</span> to the orthogonal direction of <span class="math inline">\(v_2\)</span>. Similarly we define <span class="math inline">\(\mathcal{P}(v_2)\)</span> and <span class="math inline">\(\mathcal{P}(v_1 + v_2)\)</span>. Then<br />
+<span class="math display">\[
+\mathcal{P}(v_1 + v_2) = \mathcal{P}(v_1) + \mathcal{P}(v_2)
+\]</span></p></li>
+<li><p>Note that the projection of two vector can cancel each other in some cases, in the sense that they points to different direction. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity4.jpg" /> In the above example, if we write <span class="math inline">\(v_1 = v_{1, 1} e_1 + v_{1, 2} e_2\)</span>, then <span class="math inline">\(\mathcal{P} (v_{1, 1} e_1)\)</span> and <span class="math inline">\(\mathcal{P} (v_{1,2} e_2)\)</span> points to opposite directions. This implies that we should give volume a sign. For example, we can define the direction pointed by purple vector points to be positive. The volume of the parallelogram increases if a vector's projection moves along this direction and decrease otherwise.</p></li>
+</ul></li>
+<li><p>If <span class="math inline">\(v_1, v_2, ..., v_n\)</span> are linearly independent, then the parallelotope is contained in a subspace with dimension smaller than <span class="math inline">\(n\)</span> and should have volume zero. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/NonIndependent.jpg" /> Intuitively, the parallelotope collapses to a lower dimension space. Examples include colinear vectors in two dimension case and the third vector lying in the hyperplane spanned by the other two in the three dimension case.<br />
+Finally, we emphases an important case here: <span class="math display">\[
+f(..., v_i,..., v_j, ... , ) = 0, \textbf{ if } v_i = v_j, \forall i, j \in [n], i \neq j
+\]</span></p></li>
 </ol>
-<p>If we write<br>$$<br>v_i = v_{i, 1} e_1 + v_{i, 2} e_2 + … + v_{i, n} e_n<br>$$</p>
-<p>for all $i \in [n]$, then by linearity<br>$$<br>\begin{aligned}<br>f(v_1, v_2, …, v_n)<br>    &amp;= f( v_{1, 1} e_1 + v_{1, 2} e_2 + … + v_{1, n} e_n, \<br>    &amp;\qquad v_{2, 1} e_1 + v_{2, 2} e_2 + … + v_{2, n} e_n, \<br>    &amp;\qquad …\<br>    &amp;\qquad v_{n, 1} e_1 + v_{n, 2} e_2 + … + v_{n, n} e_n) \<br>    &amp;= \sum_{k_1, k_2, …, k_n \in [n]} v_{1, k_1} v_{2, k_2} … v_{n, k_n} f(e_{k_1}, e_{k_2}, …, e_{k_n})<br>\end{aligned}<br>$$</p>
-<p>Note that if $k_i = k_j$ for $i \neq j$, then $f(e_{k_1}, e_{k_2}, …, e_{k_n}) = 0$. Therefore,<br>$$<br>f(v_1, v_2, …, v_n)  = \sum_{ k  \text{ is a permutation} } v_{1, k_1} v_{2, k_2} … v_{n, k_n} f(e_{k_1}, e_{k_2}, …, e_{k_n})<br>$$</p>
-<p>We are almost done. It is left to determined the value of $f(e_{k_1}, e_{k_2}, …, e_{k_n})$, where $k = (k_1, k_2, …, k_n)$ is a permutation of $(1, 2, …., n)$. Here we claim that is purely determined by the value of $f(e_1, e_2, …, e_n)$. By conversion, we define<br>$$<br>f(e_1, e_2, …, e_n) = 1<br>$$<br>Then we have the key lemma: </p>
-<p><strong><em>Lemma</em></strong><br>$$<br>f(e_{k_1}, e_{k_2}, …, e_{k_n}) = -1<br>$$</p>
-<p>if ${k_1}, {k_2}, …, {k_n}$ can be recovered to $1, 2, …, n$ by odd number of neighboring swaps and<br>$$<br>f(e_{k_1}, e_{k_2}, …, e_{k_n}) = 1<br>$$<br>if ${k_1}, {k_2}, …, {k_n}$ can be recovered to $1, 2, …, n$ by even number of neighboring swaps.</p>
-<p><em>Proof.</em><br>The key is to prove that we swap two neighboring vectors, then the sign of the volume change:<br>$$<br>f(e_{k_1}, e_{k_2}, …, e_{k_{i } }, e_{k_{i + 1} }, …, e_{k_n}) = -f(e_{k_1}, e_{k_2}, …, e_{k_{i + 1 } }, e_{k_{i } }, …, e_{k_n})<br>$$</p>
-<p>This is because<br>$$<br>\begin{aligned}<br>    f(e_{k_1}, e_{k_2}, …, e_{k_{i } } + e_{k_{i + 1} }, e_{k_{i } } + e_{k_{i + 1} }, …, e_{k_n})<br>        &amp;=<br>        f(e_{k_1}, e_{k_2}, …, e_{k_{i } }, e_{k_{i + 1} }, …, e_{k_n})\<br>        &amp;\quad +<br>        f(e_{k_1}, e_{k_2}, …, e_{k_{i + 1 } }, e_{k_{i } }, …, e_{k_n})<br>        \<br>        &amp;= 0<br>\end{aligned}<br>$$</p>
-<p>$\square$</p>
-<h3 id="Cross-Product"><a href="#Cross-Product" class="headerlink" title="Cross Product"></a><strong><em>Cross Product</em></strong></h3><p>If we fix $v_2, v_3, …, v_n$, then $\det(x, v_2, …, v_n): \R^n \rightarrow \R$ is a linear function. Then<br>$$<br>\begin{aligned}<br>    \det(x, v_2, …, v_n) &amp;= \sum_{i = 1}^n \det(x_i e_i, v_2, …, v_n) \<br>    &amp;= \sum_{i = 1}^n x_i \det(e_i, v_2, …, v_n)<br>\end{aligned}<br>$$</p>
-<p>where $x_i$ is the i-th coordinator of $x$. If we write<br>$$<br>d = \left&lt; det(e_1, v_2, …, v_n), det(e_2, v_2, …, v_n), …, det(e_n, v_2, …, v_n)\right&gt;<br>$$</p>
-<p>Then<br>$$<br>\det(x, v_2, …, v_n) = d \cdot x<br>$$</p>
-<p>Indeed, in a similar manner, we can prove that for any $h: \R^{n \times n} \rightarrow \R^n$ linear function, there exists a vector $\vec h$, such that<br>$$<br>h(x) = \vec h \cdot x<br>$$ </p>
-<p>Conventionally, $d$ is called the cross product of $v_2, …, v_n$ is written as<br>$$<br>d = v_2 \times v_3 \times … \times v_n<br>$$</p>
-<p>It has some interesting properties: </p>
-<ol>
-<li><p>$d$ is perpendicular to the subspace spanned by $v_2, …, v_n$, as $d \cdot v_i = \det(v_i, v_2, …, v_n) = 0$ for $2 \le i \le n$. </p>
-</li>
-<li><p>For any $x \in \R^n$, $d \cdot x$ gives the signed volume of the parallelotope spanned by $x, v_2, …, v_n$.   </p>
+<p>If we write <span class="math display">\[
+v_i = v_{i, 1} e_1 + v_{i, 2} e_2 + ... + v_{i, n} e_n
+\]</span></p>
+<p>for all <span class="math inline">\(i \in [n]\)</span>, then by linearity <span class="math display">\[
+\begin{aligned}
+f(v_1, v_2, ..., v_n) 
+    &amp;= f( v_{1, 1} e_1 + v_{1, 2} e_2 + ... + v_{1, n} e_n, \\
+    &amp;\qquad v_{2, 1} e_1 + v_{2, 2} e_2 + ... + v_{2, n} e_n, \\
+    &amp;\qquad ...\\
+    &amp;\qquad v_{n, 1} e_1 + v_{n, 2} e_2 + ... + v_{n, n} e_n) \\
+    &amp;= \sum_{k_1, k_2, ..., k_n \in [n]} v_{1, k_1} v_{2, k_2} ... v_{n, k_n} f(e_{k_1}, e_{k_2}, ..., e_{k_n}) 
+\end{aligned}
+\]</span></p>
+<p>Note that if <span class="math inline">\(k_i = k_j\)</span> for <span class="math inline">\(i \neq j\)</span>, then <span class="math inline">\(f(e_{k_1}, e_{k_2}, ..., e_{k_n}) = 0\)</span>. Therefore, <span class="math display">\[
+f(v_1, v_2, ..., v_n)  = \sum_{ k  \text{ is a permutation} } v_{1, k_1} v_{2, k_2} ... v_{n, k_n} f(e_{k_1}, e_{k_2}, ..., e_{k_n})
+\]</span></p>
+<p>We are almost done. It is left to determined the value of <span class="math inline">\(f(e_{k_1}, e_{k_2}, ..., e_{k_n})\)</span>, where <span class="math inline">\(k = (k_1, k_2, ..., k_n)\)</span> is a permutation of <span class="math inline">\((1, 2, ...., n)\)</span>. Here we claim that is purely determined by the value of <span class="math inline">\(f(e_1, e_2, ..., e_n)\)</span>. By conversion, we define <span class="math display">\[
+f(e_1, e_2, ..., e_n) = 1
+\]</span> Then we have the key lemma:</p>
+<p><strong><em>Lemma</em></strong> <span class="math display">\[
+f(e_{k_1}, e_{k_2}, ..., e_{k_n}) = -1
+\]</span></p>
+<p>if <span class="math inline">\({k_1}, {k_2}, ..., {k_n}\)</span> can be recovered to <span class="math inline">\(1, 2, ..., n\)</span> by odd number of neighboring swaps and <span class="math display">\[
+f(e_{k_1}, e_{k_2}, ..., e_{k_n}) = 1
+\]</span> if <span class="math inline">\({k_1}, {k_2}, ..., {k_n}\)</span> can be recovered to <span class="math inline">\(1, 2, ..., n\)</span> by even number of neighboring swaps.</p>
+<p><em>Proof.</em> The key is to prove that we swap two neighboring vectors, then the sign of the volume change: <span class="math display">\[
+f(e_{k_1}, e_{k_2}, ..., e_{k_{i } }, e_{k_{i + 1} }, ..., e_{k_n}) = -f(e_{k_1}, e_{k_2}, ..., e_{k_{i + 1 } }, e_{k_{i } }, ..., e_{k_n})
+\]</span></p>
+<p>This is because <span class="math display">\[
+\begin{aligned}
+    f(e_{k_1}, e_{k_2}, ..., e_{k_{i } } + e_{k_{i + 1} }, e_{k_{i } } + e_{k_{i + 1} }, ..., e_{k_n})  
+        &amp;=
+        f(e_{k_1}, e_{k_2}, ..., e_{k_{i } }, e_{k_{i + 1} }, ..., e_{k_n})\\
+        &amp;\quad + 
+        f(e_{k_1}, e_{k_2}, ..., e_{k_{i + 1 } }, e_{k_{i } }, ..., e_{k_n})
+        \\
+        &amp;= 0
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="cross-product"><strong><em>Cross Product</em></strong></h3>
+<p>If we fix <span class="math inline">\(v_2, v_3, ..., v_n\)</span>, then <span class="math inline">\(\det(x, v_2, ..., v_n): \R^n \rightarrow \R\)</span> is a linear function. Then <span class="math display">\[
+\begin{aligned}
+    \det(x, v_2, ..., v_n) &amp;= \sum_{i = 1}^n \det(x_i e_i, v_2, ..., v_n) \\
+    &amp;= \sum_{i = 1}^n x_i \det(e_i, v_2, ..., v_n)
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(x_i\)</span> is the i-th coordinator of <span class="math inline">\(x\)</span>. If we write <span class="math display">\[
+d = \left&lt; det(e_1, v_2, ..., v_n), det(e_2, v_2, ..., v_n), ..., det(e_n, v_2, ..., v_n)\right&gt;
+\]</span></p>
+<p>Then <span class="math display">\[
+\det(x, v_2, ..., v_n) = d \cdot x
+\]</span></p>
+<p>Indeed, in a similar manner, we can prove that for any <span class="math inline">\(h: \R^{n \times n} \rightarrow \R^n\)</span> linear function, there exists a vector <span class="math inline">\(\vec h\)</span>, such that <span class="math display">\[
+h(x) = \vec h \cdot x
+\]</span></p>
+<p>Conventionally, <span class="math inline">\(d\)</span> is called the cross product of <span class="math inline">\(v_2, ..., v_n\)</span> is written as <span class="math display">\[
+d = v_2 \times v_3 \times ... \times v_n
+\]</span></p>
+<p>It has some interesting properties:</p>
+<ol type="1">
+<li><p><span class="math inline">\(d\)</span> is perpendicular to the subspace spanned by <span class="math inline">\(v_2, ..., v_n\)</span>, as <span class="math inline">\(d \cdot v_i = \det(v_i, v_2, ..., v_n) = 0\)</span> for <span class="math inline">\(2 \le i \le n\)</span>.</p></li>
+<li><p>For any <span class="math inline">\(x \in \R^n\)</span>, <span class="math inline">\(d \cdot x\)</span> gives the signed volume of the parallelotope spanned by <span class="math inline">\(x, v_2, ..., v_n\)</span>.</p>
 <ul>
-<li>When $n = 2$, the length of $d$ equals to that of $v_2$. </li>
-<li>When $n = 3$, the length of $d$ equals to the area of the parallelogram spanned by $v_2, v_3$. Combined with the fact that $d$ is perpendicular to $v_2, v_3$, we see why $d \cdot x$ gives the volume of the parallelotope spanned by $x, v_2, v_3$: it takes the projection of $x$ to the direction that is perpendicular to $v_2$ and $v_3$, scaled by a factor of the area spanned by $v_2$ and $v_3$.  </li>
-</ul>
+<li>When <span class="math inline">\(n = 2\)</span>, the length of <span class="math inline">\(d\)</span> equals to that of <span class="math inline">\(v_2\)</span>.</li>
+<li>When <span class="math inline">\(n = 3\)</span>, the length of <span class="math inline">\(d\)</span> equals to the area of the parallelogram spanned by <span class="math inline">\(v_2, v_3\)</span>. Combined with the fact that <span class="math inline">\(d\)</span> is perpendicular to <span class="math inline">\(v_2, v_3\)</span>, we see why <span class="math inline">\(d \cdot x\)</span> gives the volume of the parallelotope spanned by <span class="math inline">\(x, v_2, v_3\)</span>: it takes the projection of <span class="math inline">\(x\)</span> to the direction that is perpendicular to <span class="math inline">\(v_2\)</span> and <span class="math inline">\(v_3\)</span>, scaled by a factor of the area spanned by <span class="math inline">\(v_2\)</span> and <span class="math inline">\(v_3\)</span>.<br />
 </li>
-<li><p>The direction given of $d$ is given by right hand rule, when $n = 2$ or $n = 3$. </p>
-</li>
+</ul></li>
+<li><p>The direction given of <span class="math inline">\(d\)</span> is given by right hand rule, when <span class="math inline">\(n = 2\)</span> or <span class="math inline">\(n = 3\)</span>.</p></li>
 </ol>
-<p>$\square$</p>
-<h3 id="Cramer’s-Rule"><a href="#Cramer’s-Rule" class="headerlink" title="Cramer’s Rule"></a><strong><em>Cramer’s Rule</em></strong></h3><p>Cramer’s rule is a formula for solving linear equations. In particular, given an invertible matrix $A \in \R^{n \times n}$, and vector $b \in \R^n$, then the solution for the equation<br>$$<br>Ax = b<br>$$</p>
-<p>is given by ($\forall i \in [n]$),<br>$$<br>x_i = \frac{\det(A_i) }{\det (A)}<br>$$</p>
-<p>where $x_i$ is the i-th coordinate of $x$ and $A_i$ is the matrix formed by replacing $A$’s the $i$-th column by column vector $b$.</p>
-<p>To understand the formula, we view $A$ as a mapping $T: \R^n \rightarrow \R^n$ that takes $e_i (i \in [n])$ to $A[:,i]$, i.e.,<br>$$<br>T(e_i) = A[:, i]<br>$$</p>
-<p>where $A[:, i]$ is the i-th column of $A$. The image of the hypercube<br>$$<br>\left{ \sum_{i \in [n]} \lambda_i e_i :  \lambda_i \in [0, 1], \forall i \in [n] \right}<br>$$</p>
-<p>is given as<br>$$<br>\left{ \sum_{i \in [n]} \lambda_i A[:, i] :  \lambda_i \in [0, 1], \forall i \in [n] \right}<br>$$</p>
-<p>Original the hypercube has volume 1. After the transformation it has volume $\det(A)$. One interesting fact about linear transformation is that it preserves volumes ratio. Define $\mathbb{V}(\cdot)$ the volume of a parallelotope. </p>
-<p><em>Fact.</em> For any parallelotope $P$, its volume under transformation $T$ is given by<br>$$<br>\det(A) \mathbb{V}(P) = \mathbb{V}(T(P))<br>$$</p>
-<p>Now, we rewrite the Cramer’s rule as<br>$$<br>\det(A) x_i = \det(A_i)<br>$$</p>
-<p>Its meaning is clear: there is a parallelotope $P$ whose volume is $x_i$ and after the transformation it has volume $\det(A_i)$. </p>
-<p>It is left to verify that the parallelotope indeed exists.<br>We observe that $\det(A_i)$ can be viewed as the volume of the following parallelotope formed by<br>$$<br>\left{ \sum_{j \in [n], j \neq i} \lambda_j A[:, j] +\lambda_i b_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right}<br>$$</p>
-<p>But this parallel0tope is the image of<br>$$<br>\left{ \sum_{j \in [n], j \neq i} \lambda_j e_j +\lambda_i x_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right}<br>$$</p>
-<p>as<br>$$<br>\begin{aligned}<br>    &amp; T \left( \left{ \sum_{j \in [n], j \neq i} \lambda_j e_j +\lambda_i x_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right} \right) \<br>    &amp;= \left{ \sum_{j \in [n], j \neq i} \lambda_j T(e_j) +\lambda_i T(x_i):  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right} \<br>    &amp;= \left{ \sum_{j \in [n], j \neq i} \lambda_j A[:, j] +\lambda_i b_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right}<br>\end{aligned}<br>$$</p>
-<p>$\square$</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="cramers-rule"><strong><em>Cramer's Rule</em></strong></h3>
+<p>Cramer's rule is a formula for solving linear equations. In particular, given an invertible matrix <span class="math inline">\(A \in \R^{n \times n}\)</span>, and vector <span class="math inline">\(b \in \R^n\)</span>, then the solution for the equation <span class="math display">\[
+Ax = b
+\]</span></p>
+<p>is given by (<span class="math inline">\(\forall i \in [n]\)</span>), <span class="math display">\[
+x_i = \frac{\det(A_i) }{\det (A)}
+\]</span></p>
+<p>where <span class="math inline">\(x_i\)</span> is the i-th coordinate of <span class="math inline">\(x\)</span> and <span class="math inline">\(A_i\)</span> is the matrix formed by replacing <span class="math inline">\(A\)</span>'s the <span class="math inline">\(i\)</span>-th column by column vector <span class="math inline">\(b\)</span>.</p>
+<p>To understand the formula, we view <span class="math inline">\(A\)</span> as a mapping <span class="math inline">\(T: \R^n \rightarrow \R^n\)</span> that takes <span class="math inline">\(e_i (i \in [n])\)</span> to <span class="math inline">\(A[:,i]\)</span>, i.e., <span class="math display">\[
+T(e_i) = A[:, i]
+\]</span></p>
+<p>where <span class="math inline">\(A[:, i]\)</span> is the i-th column of <span class="math inline">\(A\)</span>. The image of the hypercube <span class="math display">\[
+\left\{ \sum_{i \in [n]} \lambda_i e_i :  \lambda_i \in [0, 1], \forall i \in [n] \right\}
+\]</span></p>
+<p>is given as <span class="math display">\[
+\left\{ \sum_{i \in [n]} \lambda_i A[:, i] :  \lambda_i \in [0, 1], \forall i \in [n] \right\}
+\]</span></p>
+<p>Original the hypercube has volume 1. After the transformation it has volume <span class="math inline">\(\det(A)\)</span>. One interesting fact about linear transformation is that it preserves volumes ratio. Define <span class="math inline">\(\mathbb{V}(\cdot)\)</span> the volume of a parallelotope.</p>
+<p><em>Fact.</em> For any parallelotope <span class="math inline">\(P\)</span>, its volume under transformation <span class="math inline">\(T\)</span> is given by <span class="math display">\[
+\det(A) \mathbb{V}(P) = \mathbb{V}(T(P))
+\]</span></p>
+<p>Now, we rewrite the Cramer's rule as <span class="math display">\[
+\det(A) x_i = \det(A_i)
+\]</span></p>
+<p>Its meaning is clear: there is a parallelotope <span class="math inline">\(P\)</span> whose volume is <span class="math inline">\(x_i\)</span> and after the transformation it has volume <span class="math inline">\(\det(A_i)\)</span>.</p>
+<p>It is left to verify that the parallelotope indeed exists. We observe that <span class="math inline">\(\det(A_i)\)</span> can be viewed as the volume of the following parallelotope formed by <span class="math display">\[
+\left\{ \sum_{j \in [n], j \neq i} \lambda_j A[:, j] +\lambda_i b_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right\}
+\]</span></p>
+<p>But this parallel0tope is the image of <span class="math display">\[
+\left\{ \sum_{j \in [n], j \neq i} \lambda_j e_j +\lambda_i x_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right\}
+\]</span></p>
+<p>as <span class="math display">\[
+\begin{aligned}
+    &amp; T \left( \left\{ \sum_{j \in [n], j \neq i} \lambda_j e_j +\lambda_i x_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right\} \right) \\
+    &amp;= \left\{ \sum_{j \in [n], j \neq i} \lambda_j T(e_j) +\lambda_i T(x_i):  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right\} \\
+    &amp;= \left\{ \sum_{j \in [n], j \neq i} \lambda_j A[:, j] +\lambda_i b_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right\}
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
 
     </div>
 
@@ -339,7 +411,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Determinant"><span class="nav-number">1.</span> <span class="nav-text">Determinant</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cross-Product"><span class="nav-number">2.</span> <span class="nav-text">Cross Product</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cramer%E2%80%99s-Rule"><span class="nav-number">3.</span> <span class="nav-text">Cramer’s Rule</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#determinant"><span class="nav-number">1.</span> <span class="nav-text">Determinant</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cross-product"><span class="nav-number">2.</span> <span class="nav-text">Cross Product</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cramers-rule"><span class="nav-number">3.</span> <span class="nav-text">Cramer&#39;s Rule</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="A zero-sum game is a game in which a player’s payoff implies the loss of another player. It is specified by a matrix $A \in R^{n \times m}$. The row player can choose from rows ${1, 2, …, n}$ and the">
+  <meta name="description" content="A zero-sum game is a game in which a player&#39;s payoff implies the loss of another player. It is specified by a matrix \(A \in R^{n \times m}\). The row player can choose from rows \(\{1, 2, ..., n\}\)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Minimax Theorem">
 <meta property="og:url" content="http://example.com/2019/10/28/Minimax-Theorem/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="A zero-sum game is a game in which a player’s payoff implies the loss of another player. It is specified by a matrix $A \in R^{n \times m}$. The row player can choose from rows ${1, 2, …, n}$ and the">
+<meta property="og:description" content="A zero-sum game is a game in which a player&#39;s payoff implies the loss of another player. It is specified by a matrix \(A \in R^{n \times m}\). The row player can choose from rows \(\{1, 2, ..., n\}\)">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2019-10-28T07:54:52.000Z">
 <meta property="article:modified_time" content="2019-10-28T09:00:38.000Z">
@@ -188,19 +188,56 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>A zero-sum game is a game in which a player’s payoff implies the loss of another player. It is specified by a matrix $A \in R^{n \times m}$. The row player can choose from rows ${1, 2, …, n}$ and the column player chooses from columns ${1, 2, …, m}$. The entry $a_{ij}$ of $A$ is the payoff when the row player chooses $i$ and the column player chooses $j$. In such case the column player loses $a_{ij}$. </p>
-<p>If one player makes a choice first and the other play follows, then the second player can always respond according the first player choice, to maximize its payoff or minimize its loss. </p>
-<p>To make the game more fair, we require the row player to act with strategy $x \in R^n$, i.e., a distribution on the the rows, and the column player to act with strategy $y \in R^m$. At each round, the row player and column player act independently. Then the expected payoff is<br>$$<br>x^TAy<br>$$</p>
-<p>But what is some player knows the other’s strategy? In this scenario, the row player choose its strategy $x$ first and the column player responds by a strategy $y$, or vise versa. Note that at each round they still act independently according to their strategies. The question is, whether the order of choosing a strategy implies a difference in the expected payoff.</p>
-<p>First we write down what the expected payoff is. If the row player commit to a strategy $x$ first, the column player will choose a distribution $y$ minimize it expected loss:<br>$$<br>\min_y x^T A y<br>$$<br>As $x$ is known, this is equivalent to choosing the column with minimum value:<br>$$<br>\min_{j \in [m]} x^T A e_j<br>$$</p>
-<p>Understanding the expected behavior of the column player, the row player should choose a strategy $x$, such that in the worst case, its expected payoff is maximized:<br>$$<br>\max_{x} (\min_y x^T A y) = \max_{x} (\min_{j \in [m]} x^T A e_j)<br>$$</p>
-<p>Similarly, if the column player play first, the expected payoff is<br>$$<br> \min_y (\max_{x} x^T A y) = \min_{y} (\max_{i \in [n]} e_i^T A y)<br>$$</p>
-<p>The minimax-theorem states that<br>$$<br>\begin{aligned}<br>&amp;\max_{x} (\min_y x^T A y)<br>&amp;= \max_{x} (\min_{j \in [m]} x^T A e_j) \<br>= &amp;\min_y (\max_{x} x^T A y)<br>&amp;= \min_{y} (\max_{i \in [n]} e_i^T A y)<br>\end{aligned}<br>$$</p>
-<p>The proof is not difficult, by formulating the two optimizing problems as linear programming, and observing that they are dual to each other. If the row player goes first,<br>$$<br>\begin{aligned}<br>&amp;\max v \<br>&amp;v  -  \sum_{i = 1}^n a_{ij} x_i \le 0  &amp; \forall j \in [m] \<br>&amp;\sum_{i = 1}^n x_i = 1 \<br>&amp;x_i \ge 0 &amp; \forall i \in [n]<br>\end{aligned}<br>$$</p>
-<p>To upper bound $v$, we introduce a variable $u \in R$. By noticing $\sum_{j = 1}^m y_j = 1$ and $y_j \ge 0$, we have </p>
-<p>$$<br>\begin{aligned}<br>u&amp;\ge \sum_{j = 1}^m y_j (v  -  \sum_{i = 1}^n a_{ij} x_i) + u(\sum_{i = 1}^n x_i) \<br>&amp;= v (\sum_{j = 1}^m y_j) + \sum_{i = 1}^n x_i( u - \sum_{j = 1}^m a_{ij} y_j) \<br>&amp;\ge v<br>\end{aligned}<br>$$</p>
-<p>which gives the dual program:<br>$$<br>\begin{aligned}<br>&amp;\min u \<br>&amp;u  -  \sum_{j = 1}^m a_{ij} y_j \ge 0  &amp; \forall i \in [n] \<br>&amp;\sum_{i = 1}^m y_j = 1 \<br>&amp;y_j \ge 0 &amp; \forall j \in [m]<br>\end{aligned}<br>$$</p>
-<p>Strong duality tells us that the optimal value of the two program equals. </p>
+        <p>A zero-sum game is a game in which a player's payoff implies the loss of another player. It is specified by a matrix <span class="math inline">\(A \in R^{n \times m}\)</span>. The row player can choose from rows <span class="math inline">\(\{1, 2, ..., n\}\)</span> and the column player chooses from columns <span class="math inline">\(\{1, 2, ..., m\}\)</span>. The entry <span class="math inline">\(a_{ij}\)</span> of <span class="math inline">\(A\)</span> is the payoff when the row player chooses <span class="math inline">\(i\)</span> and the column player chooses <span class="math inline">\(j\)</span>. In such case the column player loses <span class="math inline">\(a_{ij}\)</span>.</p>
+<p>If one player makes a choice first and the other play follows, then the second player can always respond according the first player choice, to maximize its payoff or minimize its loss.</p>
+<p>To make the game more fair, we require the row player to act with strategy <span class="math inline">\(x \in R^n\)</span>, i.e., a distribution on the the rows, and the column player to act with strategy <span class="math inline">\(y \in R^m\)</span>. At each round, the row player and column player act independently. Then the expected payoff is <span class="math display">\[
+x^TAy
+\]</span></p>
+<p>But what is some player knows the other's strategy? In this scenario, the row player choose its strategy <span class="math inline">\(x\)</span> first and the column player responds by a strategy <span class="math inline">\(y\)</span>, or vise versa. Note that at each round they still act independently according to their strategies. The question is, whether the order of choosing a strategy implies a difference in the expected payoff.</p>
+<p>First we write down what the expected payoff is. If the row player commit to a strategy <span class="math inline">\(x\)</span> first, the column player will choose a distribution <span class="math inline">\(y\)</span> minimize it expected loss: <span class="math display">\[
+\min_y x^T A y
+\]</span> As <span class="math inline">\(x\)</span> is known, this is equivalent to choosing the column with minimum value: <span class="math display">\[
+\min_{j \in [m]} x^T A e_j
+\]</span></p>
+<p>Understanding the expected behavior of the column player, the row player should choose a strategy <span class="math inline">\(x\)</span>, such that in the worst case, its expected payoff is maximized: <span class="math display">\[
+\max_{x} (\min_y x^T A y) = \max_{x} (\min_{j \in [m]} x^T A e_j)
+\]</span></p>
+<p>Similarly, if the column player play first, the expected payoff is <span class="math display">\[
+ \min_y (\max_{x} x^T A y) = \min_{y} (\max_{i \in [n]} e_i^T A y)
+\]</span></p>
+<p>The minimax-theorem states that <span class="math display">\[
+\begin{aligned}
+&amp;\max_{x} (\min_y x^T A y) 
+&amp;= \max_{x} (\min_{j \in [m]} x^T A e_j) \\
+= &amp;\min_y (\max_{x} x^T A y) 
+&amp;= \min_{y} (\max_{i \in [n]} e_i^T A y)
+\end{aligned}
+\]</span></p>
+<p>The proof is not difficult, by formulating the two optimizing problems as linear programming, and observing that they are dual to each other. If the row player goes first, <span class="math display">\[
+\begin{aligned}
+&amp;\max v \\
+&amp;v  -  \sum_{i = 1}^n a_{ij} x_i \le 0  &amp; \forall j \in [m] \\
+&amp;\sum_{i = 1}^n x_i = 1 \\
+&amp;x_i \ge 0 &amp; \forall i \in [n]
+\end{aligned}
+\]</span></p>
+<p>To upper bound <span class="math inline">\(v\)</span>, we introduce a variable <span class="math inline">\(u \in R\)</span>. By noticing <span class="math inline">\(\sum_{j = 1}^m y_j = 1\)</span> and <span class="math inline">\(y_j \ge 0\)</span>, we have</p>
+<p><span class="math display">\[
+\begin{aligned}
+u&amp;\ge \sum_{j = 1}^m y_j (v  -  \sum_{i = 1}^n a_{ij} x_i) + u(\sum_{i = 1}^n x_i) \\
+&amp;= v (\sum_{j = 1}^m y_j) + \sum_{i = 1}^n x_i( u - \sum_{j = 1}^m a_{ij} y_j) \\
+&amp;\ge v
+\end{aligned}
+\]</span></p>
+<p>which gives the dual program: <span class="math display">\[
+\begin{aligned}
+&amp;\min u \\
+&amp;u  -  \sum_{j = 1}^m a_{ij} y_j \ge 0  &amp; \forall i \in [n] \\
+&amp;\sum_{i = 1}^m y_j = 1 \\
+&amp;y_j \ge 0 &amp; \forall j \in [m]
+\end{aligned}
+\]</span></p>
+<p>Strong duality tells us that the optimal value of the two program equals.</p>
 
     </div>
 

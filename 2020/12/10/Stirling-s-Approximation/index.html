@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="The Stirling’s approximation [1] states that $\forall n \in \mathbb{N}^+$,$$\sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ \frac{1}{ 12n + 1 } } \le n! \le \sqrt{2 \pi} \sqrt{n} \left( \frac{n">
+  <meta name="description" content="The Stirling&#39;s approximation [1] states that \(\forall n \in \mathbb{N}^+\), \[ \sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ \frac{1}{ 12n + 1 } } \le n! \le \sqrt{2 \pi} \sqrt{n} \left( \f">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Stirling&#39;s Approximation">
 <meta property="og:url" content="http://example.com/2020/12/10/Stirling-s-Approximation/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="The Stirling’s approximation [1] states that $\forall n \in \mathbb{N}^+$,$$\sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ \frac{1}{ 12n + 1 } } \le n! \le \sqrt{2 \pi} \sqrt{n} \left( \frac{n">
+<meta property="og:description" content="The Stirling&#39;s approximation [1] states that \(\forall n \in \mathbb{N}^+\), \[ \sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ \frac{1}{ 12n + 1 } } \le n! \le \sqrt{2 \pi} \sqrt{n} \left( \f">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/StirlingApproximation/LowerBound.png?raw=true">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/StirlingApproximation/UpperBound1.png?raw=true">
@@ -198,54 +198,157 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>The Stirling’s approximation [1] states that $\forall n \in \mathbb{N}^+$,<br>$$<br>\sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ \frac{1}{ 12n + 1 } } \le n! \le \sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ \frac{1}{ 12n } }.<br>$$</p>
-<p>As $\forall x \in R, e^x \ge 1 + x$, and for $0 &lt; x &lt; 0.5$, $e^x \le 1 + 2 x$, we get $\forall n \in \mathbb{N}^+$,<br>$$<br>\sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n \left( 1 +  \frac{1}{ 12n + 1 } \right) \le n! \le \sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n \left( 1 +  \frac{1}{ 6n } \right).<br>$$</p>
-<p>Asymptotically,<br>$$<br>n! = \sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n \left( 1 +  \Theta \left( \frac{1}{n} \right) \right).<br>$$</p>
-<p>In the remainder of the blog, we try to approach this estimation incrementally. First we have two trivial facts. </p>
-<h3 id="1-n-le-n-n"><a href="#1-n-le-n-n" class="headerlink" title="1. $n! \le n^n$."></a>1. $n! \le n^n$.</h3><h3 id="2-n-ge-n-2-n-2"><a href="#2-n-ge-n-2-n-2" class="headerlink" title="2. $n! \ge (n / 2)^{n / 2}$."></a>2. $n! \ge (n / 2)^{n / 2}$.</h3><p>   <em>Proof:</em> Clearly this holds for even numbers. When $n$ is odd, $\lceil n / 2 \rceil = (n + 1) / 2$. There are $(n + 1) / 2$ numbers in $[n]$ that are $\ge (n + 1) / 2$.<br>   $$<br>   n! \ge \prod_{i = (n + 1) / 2)}^n i \ge \big( (n + 1) / 2) \big)^{ (n + 1) / 2) } \ge (n / 2)^{n / 2}<br>   $$</p>
-<p>   $\square$</p>
-<p>Somewhat unexpectedly, we can combine inequality (1) and (2) to obtain the asymptotical trend of $\log n!$ up to some constant:<br>$$<br>(n / 2) \log_2 n - (n / 2) \le \log_2 n! \le n \log_2 n.<br>$$</p>
-<p>This implies that<br>$$<br>\log_2 n! = \Theta( n \log n).<br>$$</p>
-<p>We proceed to get even sharper bounds. </p>
-<h3 id="3-n-ge-frac-n-n-exp-n-n-e-n"><a href="#3-n-ge-frac-n-n-exp-n-n-e-n" class="headerlink" title="3. $n! \ge \frac{n^n}{ \exp(n) } = (n / e)^n$."></a>3. $n! \ge \frac{n^n}{ \exp(n) } = (n / e)^n$.</h3><p><em>Proof:</em> Using the Taylor expansion for $\exp(x)$ for $\forall x \in \mathbb{R}$, we get<br>$$<br>    \exp(x) = 1 + x + \frac{x^2}{2!} + … + \frac{x^n}{n!} + …<br>$$</p>
-<p>Keeping only the $n$-th term of the expansion, we have<br>$$<br>    n! \ge \frac{x^n}{\exp(x) }.<br>$$</p>
-<p>Taking $x = n$ maximizes the RHS. </p>
-<p>$\square$</p>
-<h3 id="4-n-ge-e-n-e-n"><a href="#4-n-ge-e-n-e-n" class="headerlink" title="4. $n! \ge e ( n / e)^n$."></a>4. $n! \ge e ( n / e)^n$.</h3><p><em>Proof:</em> Using the Taylor expansion for $\exp(x)$ for $\forall x \in \mathbb{R}$, we get<br>$$<br>    \exp(x) = 1 + x + \frac{x^2}{2!} + … + \frac{x^n}{n!} + …<br>$$</p>
-<p>Setting $x = n$, we get<br>$$<br>\exp(n) \ge \frac{n^{n - 1} }{ (n - 1)!} + \frac{ n^n }{n !} = 2 \frac{ n^n }{n !},<br>$$<br>which finishes our proof. </p>
-<p>$\square$</p>
+        <p>The Stirling's approximation [1] states that <span class="math inline">\(\forall n \in \mathbb{N}^+\)</span>, <span class="math display">\[
+\sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ \frac{1}{ 12n + 1 } } \le n! \le \sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ \frac{1}{ 12n } }. 
+\]</span></p>
+<p>As <span class="math inline">\(\forall x \in R, e^x \ge 1 + x\)</span>, and for <span class="math inline">\(0 &lt; x &lt; 0.5\)</span>, <span class="math inline">\(e^x \le 1 + 2 x\)</span>, we get <span class="math inline">\(\forall n \in \mathbb{N}^+\)</span>, <span class="math display">\[
+\sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n \left( 1 +  \frac{1}{ 12n + 1 } \right) \le n! \le \sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n \left( 1 +  \frac{1}{ 6n } \right).
+\]</span></p>
+<p>Asymptotically, <span class="math display">\[
+n! = \sqrt{2 \pi} \sqrt{n} \left( \frac{n}{e} \right)^n \left( 1 +  \Theta \left( \frac{1}{n} \right) \right). 
+\]</span></p>
+<p>In the remainder of the blog, we try to approach this estimation incrementally. First we have two trivial facts.</p>
+<h3 id="n-le-nn.">1. <span class="math inline">\(n! \le n^n\)</span>.</h3>
+<h3 id="n-ge-n-2n-2.">2. <span class="math inline">\(n! \ge (n / 2)^{n / 2}\)</span>.</h3>
+<p><em>Proof:</em> Clearly this holds for even numbers. When <span class="math inline">\(n\)</span> is odd, <span class="math inline">\(\lceil n / 2 \rceil = (n + 1) / 2\)</span>. There are <span class="math inline">\((n + 1) / 2\)</span> numbers in <span class="math inline">\([n]\)</span> that are <span class="math inline">\(\ge (n + 1) / 2\)</span>. <span class="math display">\[
+   n! \ge \prod_{i = (n + 1) / 2)}^n i \ge \big( (n + 1) / 2) \big)^{ (n + 1) / 2) } \ge (n / 2)^{n / 2}
+   \]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Somewhat unexpectedly, we can combine inequality (1) and (2) to obtain the asymptotical trend of <span class="math inline">\(\log n!\)</span> up to some constant: <span class="math display">\[
+(n / 2) \log_2 n - (n / 2) \le \log_2 n! \le n \log_2 n.
+\]</span></p>
+<p>This implies that <span class="math display">\[
+\log_2 n! = \Theta( n \log n).
+\]</span></p>
+<p>We proceed to get even sharper bounds.</p>
+<h3 id="n-ge-fracnn-expn-n-en.">3. <span class="math inline">\(n! \ge \frac{n^n}{ \exp(n) } = (n / e)^n\)</span>.</h3>
+<p><em>Proof:</em> Using the Taylor expansion for <span class="math inline">\(\exp(x)\)</span> for <span class="math inline">\(\forall x \in \mathbb{R}\)</span>, we get <span class="math display">\[
+    \exp(x) = 1 + x + \frac{x^2}{2!} + ... + \frac{x^n}{n!} + ... 
+\]</span></p>
+<p>Keeping only the <span class="math inline">\(n\)</span>-th term of the expansion, we have <span class="math display">\[
+    n! \ge \frac{x^n}{\exp(x) }. 
+\]</span></p>
+<p>Taking <span class="math inline">\(x = n\)</span> maximizes the RHS.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="n-ge-e-n-en.">4. <span class="math inline">\(n! \ge e ( n / e)^n\)</span>.</h3>
+<p><em>Proof:</em> Using the Taylor expansion for <span class="math inline">\(\exp(x)\)</span> for <span class="math inline">\(\forall x \in \mathbb{R}\)</span>, we get <span class="math display">\[
+    \exp(x) = 1 + x + \frac{x^2}{2!} + ... + \frac{x^n}{n!} + ... 
+\]</span></p>
+<p>Setting <span class="math inline">\(x = n\)</span>, we get <span class="math display">\[
+\exp(n) \ge \frac{n^{n - 1} }{ (n - 1)!} + \frac{ n^n }{n !} = 2 \frac{ n^n }{n !},
+\]</span> which finishes our proof.</p>
+<p><span class="math inline">\(\square\)</span></p>
 <p>Next we resort to calculus to get finer estimation.</p>
-<h3 id="5-n-ge-e-n-e-n"><a href="#5-n-ge-e-n-e-n" class="headerlink" title="5. $n! \ge e ( n / e)^n$."></a>5. $n! \ge e ( n / e)^n$.</h3><p><em>Proof:</em> As the figure below shows, $\sum_{i \in [n] } \ln i$ is the sum of areas of a set of rectangles and it upper bounds the area under the curve $y = \log t$:<br>$$<br>\sum_{i \in [n]} \ln i \ge \int_1^n \ln t \ dt = t \ln t \mid_1^n - \int_1^n 1 \ dt = n \ln n - n + 1.<br>$$</p>
-<p>Hence, $n! \ge e (n / e)^n$.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/StirlingApproximation/LowerBound.png?raw=true"></p>
-<p>$\square$</p>
-<h3 id="6-n-le-e-sqrt-n-n-e-n"><a href="#6-n-le-e-sqrt-n-n-e-n" class="headerlink" title="6. $n! \le e \sqrt{n} (n / e)^n$."></a>6. $n! \le e \sqrt{n} (n / e)^n$.</h3><p><em>Proof:</em> For a rectangle, its area can be decomposed into the curvilinear area under $y = \ln t$ and a curvy triangle. To obtain an upper bound for $\sum_{i \in [n] } \ln i$, we want to upper bound the areas of the curvy triangles. </p>
-<p>How are we going to do that? Image that we  put a wall at $t = 1$, and line the curvy triangles up against the wall. By the figure, they take up at most half the area of the rectangle with width $1$ and height $\ln n$. Then</p>
-<p>$$<br>\sum_{i \in [n]} \ln i \le \int_1^n \ln t \ dt + \frac{1}{2} \ln n = n \ln n - n + 1 + \frac{1}{2} \ln n.<br>$$</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/StirlingApproximation/UpperBound1.png?raw=true"></p>
-<p>$\square$</p>
-<p>By inequality (4) and (5), we get<br>$$<br>e ( n / e)^n \le n! \le e \sqrt{n} (n / e)^n.<br>$$</p>
-<p>So<br>$$<br>n! = \Theta ( (n / e)^n ).<br>$$</p>
-<p>Indeed the approximation of $e \sqrt n (n / e)^n$ is quite sharp. If we compute its ratio with the near accurate estimation $\sqrt{2 \pi} \sqrt n (n / e)^n$, we see that the ratio is very close to 1:<br>$$<br>\frac{ e \sqrt n (n / e)^n  }{ \sqrt{2 \pi} \sqrt n (n / e)^n } = \frac{e }{\sqrt{ 2 \pi} } \approx 1.084.<br>$$ </p>
-<p>Therefore, when $n$ is large, $e \sqrt n (n / e)^n$ is within $10%$ of the real value of $n!$. </p>
-<h3 id="7-n-le-e-sqrt-n-n-e-n"><a href="#7-n-le-e-sqrt-n-n-e-n" class="headerlink" title="7. $n! \le e \sqrt{n} (n / e)^n$."></a>7. $n! \le e \sqrt{n} (n / e)^n$.</h3><p>The same inequality can be obtained in the following manner. </p>
-<p><em>Proof:</em> We lower bound the integral by the areas of trapezoids. The trapezoid between $t$ and $t + 1$ has base heights $\ln t$ and $\ln (t + 1)$, and area $\frac{1}{2} (\ln t + \ln (t + 1) )$. Hence, </p>
-<p>$$<br>\begin{aligned}<br>    \sum_{i = 1}^n \ln i &amp;= \frac{1}{2} \sum_{t = 1}^{n - 1} (\ln t + \ln (t + 1) ) + \frac{1}{2} \ln n \<br>    &amp;\le \int_1^n \ln t \ dt + \frac{1}{2} \ln n \<br>    &amp;= n \ln n - n + 1 + \frac{1}{2} \ln n<br>\end{aligned}<br>$$<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/StirlingApproximation/UpperBound0.png?raw=true"></p>
-<p>$\square$</p>
-<h3 id="8-n-in-e-11-12-sqrt-n-left-frac-n-e-right-n-e-1-12n-1-e-12-13-sqrt-n-left-frac-n-e-right-n-e-1-12-n"><a href="#8-n-in-e-11-12-sqrt-n-left-frac-n-e-right-n-e-1-12n-1-e-12-13-sqrt-n-left-frac-n-e-right-n-e-1-12-n" class="headerlink" title="8. $n! \in [e^{11 / 12} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ 1 / (12n + 1)}, e^{12 / 13} \sqrt{n} \left( \frac{n}{e} \right)^n e^{1 / (12 n) }]$"></a>8. $n! \in [e^{11 / 12} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ 1 / (12n + 1)}, e^{12 / 13} \sqrt{n} \left( \frac{n}{e} \right)^n e^{1 / (12 n) }]$</h3><p><em>Proof:</em> Let<br>$$<br>\begin{aligned}<br>    U_k &amp;= \int_k^{k + 1} \ln t \ dt, \<br>    L_k &amp;= \frac{1}{2} \left(\ln k + \ln (k + 1) \right).<br>\end{aligned}<br>$$</p>
-<p>The estimation error in the previous section is determined by the gap between $U_k$ and $L_k$, for $k \in [n - 1]$. To investigate it carefully, define $\forall k \in [n - 1]$,<br>$$<br>    \epsilon_k \doteq U_k - L_k .<br>$$</p>
-<p>Denote $S = \sum_{i \in [n] } \ln i$ and $\hat S = n \ln n - n + 1 + \frac{1}{2} \ln n$. The derivation in the previous section shows<br>$$<br>\hat S - S = \sum_{i = 1}^{n - 1} \epsilon_k.<br>$$</p>
-<p>For a fixed $k$, we can compute $\epsilon_k$ in closed form:<br>$$<br>\begin{aligned}<br>    \epsilon_k<br>        &amp;= t \ln t \mid_k^{k + 1} - t \mid_k^{k + 1} - \frac{1}{2} \left( \ln k + \ln (k + 1) \right) \<br>        &amp;= \ln \frac{ (k + 1)^{k + 1} }{ k^k } \cdot \frac{1}{ k^{\frac{1}{2} } (k + 1)^{\frac{1}{2} } } - 1 \<br>        &amp;= \ln \left( \frac{k + 1}{k } \right)^{ k + \frac{1}{2} } - 1 \<br>        &amp;= \left(  \frac{2k + 1}{2} \right) \cdot \ln \left( \frac{k + 1}{k } \right)- 1 \<br>\end{aligned}<br>$$</p>
-<p>Let $x = \frac{1}{2k + 1}$. As $k + 1 = \frac{1}{2}( (2k + 1) + 1)$, and $k = \frac{1}{2}( (2k + 1) - 1)$, we can write<br>$$<br>    \epsilon_k = \left(  \frac{2k + 1}{2} \right) \cdot \ln \left( \frac{1 + k }{k } \right)- 1 = \frac{1}{2 x} \ln \frac{1 + x}{1 - x} - 1.<br>$$</p>
-<p>Using the Taylor’s expansions for $y = \ln(1 -x)$ and $y = \ln(1 + x)$, we have<br>$$<br>\ln(1 - x) = -(x + \frac{x^2}{2} + \frac{x^3}{3} + …) \<br>\ln(1 + x) = -(-x + \frac{x^2}{2} - \frac{x^3}{3} + …) \<br>$$</p>
-<p>and<br>$$<br>\ln \frac{1 + x}{1 - x} = 2 (x + \frac{x^3}{3} + \frac{x^5}{5} + \frac{x^7}{7} + … ).<br>$$</p>
-<p>It follows that<br>$$<br>\epsilon_k = \frac{x^2}{3} + \frac{x^4}{5} + \frac{x^6}{7} + …<br>$$</p>
-<p>We can upper bound $\epsilon_k$ by<br>$$<br>\begin{aligned}<br>    \epsilon_k<br>        &amp;\le \frac{x^2}{3} ( 1 + x^2 +x^4 + … ) \<br>        &amp;= \frac{x^2}{3} \frac{1}{1 - x^2} \<br>        &amp;= \frac{1}{3} \frac{1}{ (2k + 1)^2 - 1} \<br>        &amp;= \frac{1}{12} \left(\frac{1}{k } - \frac{1}{k + 1} \right).<br>\end{aligned}<br>$$</p>
-<p>Also, we can lower bound $\epsilon_k$ by<br>$$<br>\begin{aligned}<br>    \epsilon_k<br>        &amp;\ge \frac{x^2}{3} ( 1 + x^2 / 3 +x^4 / 3^2 + … ) \<br>        &amp;= \frac{x^2}{3} \frac{1}{1 - x^2 / 3} \<br>        &amp;= \frac{1}{ 3(2k + 1)^2 - 1} \<br>        &amp;= \frac{1}{ 12(k^2 + k + \frac{2}{12} ) } \<br>        &amp;\ge \frac{1}{ 12(k + 1 + \frac{1}{12}) ( k + \frac{1}{12} ) } \<br>        &amp;= \frac{1}{12} \left(\frac{1}{k + \frac{1}{12} } - \frac{1}{k + 1 + \frac{1}{12} } \right).<br>\end{aligned}<br>$$</p>
-<p>Let $A = \sum_{k = 1}^\infty \epsilon_k$ and $R = \sum_{k = n}^\infty \epsilon_k$. Then<br>$$<br>\begin{aligned}<br>    \hat S - S &amp;= A - R \<br>    \implies S &amp;= \hat S - A + R \<br>    \implies S &amp;= n \ln n - n + 1 + \frac{1}{2} \ln n - A + R \<br>    \implies n! &amp;= e^{1 - A} \sqrt{n} \left( \frac{n}{e} \right)^n e^R.<br>\end{aligned}<br>$$</p>
-<p>By previous inequalities, we know<br>$$<br>    \begin{aligned}<br>        A &amp;\ge \frac{1}{12} \sum_{k = 1}^\infty \left( \frac{1}{k + \frac{1}{12} } - \frac{1}{k + 1 + \frac{1}{12} } \right) = \frac{1}{12} \frac{1}{1 + \frac{1}{12} } = \frac{1}{13} \<br>        A &amp;\le \frac{1}{12} \sum_{k = 1}^\infty \left(\frac{1}{k } - \frac{1}{k + 1} \right) = \frac{1}{12}.<br>    \end{aligned}<br>$$</p>
-<p>Similarly, we can get $\frac{1}{12n + 1 } = \frac{1}{12} \frac{1}{n + \frac{1}{12} } \le R \le \frac{1}{12n}$. To finish our proof, we have<br>$$<br>n! \in [e^{11 / 12} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ 1 / (12n + 1)}, e^{12 / 13} \sqrt{n} \left( \frac{n}{e} \right)^n e^{1 / (12 n) }]<br>$$</p>
-<p>$\square$</p>
-<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p>[1] H. Robbins, “A Remark on Stirling’s Formula,” The American Mathematical Monthly, vol. 62, no. 1, pp. 26–29, 1955</p>
+<h3 id="n-ge-e-n-en.-1">5. <span class="math inline">\(n! \ge e ( n / e)^n\)</span>.</h3>
+<p><em>Proof:</em> As the figure below shows, <span class="math inline">\(\sum_{i \in [n] } \ln i\)</span> is the sum of areas of a set of rectangles and it upper bounds the area under the curve <span class="math inline">\(y = \log t\)</span>: <span class="math display">\[
+\sum_{i \in [n]} \ln i \ge \int_1^n \ln t \ dt = t \ln t \mid_1^n - \int_1^n 1 \ dt = n \ln n - n + 1. 
+\]</span></p>
+<p>Hence, <span class="math inline">\(n! \ge e (n / e)^n\)</span>. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/StirlingApproximation/LowerBound.png?raw=true" /></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="n-le-e-sqrtn-n-en.">6. <span class="math inline">\(n! \le e \sqrt{n} (n / e)^n\)</span>.</h3>
+<p><em>Proof:</em> For a rectangle, its area can be decomposed into the curvilinear area under <span class="math inline">\(y = \ln t\)</span> and a curvy triangle. To obtain an upper bound for <span class="math inline">\(\sum_{i \in [n] } \ln i\)</span>, we want to upper bound the areas of the curvy triangles.</p>
+<p>How are we going to do that? Image that we put a wall at <span class="math inline">\(t = 1\)</span>, and line the curvy triangles up against the wall. By the figure, they take up at most half the area of the rectangle with width <span class="math inline">\(1\)</span> and height <span class="math inline">\(\ln n\)</span>. Then</p>
+<p><span class="math display">\[
+\sum_{i \in [n]} \ln i \le \int_1^n \ln t \ dt + \frac{1}{2} \ln n = n \ln n - n + 1 + \frac{1}{2} \ln n. 
+\]</span></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/StirlingApproximation/UpperBound1.png?raw=true" /></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>By inequality (4) and (5), we get <span class="math display">\[
+e ( n / e)^n \le n! \le e \sqrt{n} (n / e)^n.
+\]</span></p>
+<p>So <span class="math display">\[
+n! = \Theta ( (n / e)^n ). 
+\]</span></p>
+<p>Indeed the approximation of <span class="math inline">\(e \sqrt n (n / e)^n\)</span> is quite sharp. If we compute its ratio with the near accurate estimation <span class="math inline">\(\sqrt{2 \pi} \sqrt n (n / e)^n\)</span>, we see that the ratio is very close to 1: <span class="math display">\[
+\frac{ e \sqrt n (n / e)^n  }{ \sqrt{2 \pi} \sqrt n (n / e)^n } = \frac{e }{\sqrt{ 2 \pi} } \approx 1.084.
+\]</span></p>
+<p>Therefore, when <span class="math inline">\(n\)</span> is large, <span class="math inline">\(e \sqrt n (n / e)^n\)</span> is within <span class="math inline">\(10\%\)</span> of the real value of <span class="math inline">\(n!\)</span>.</p>
+<h3 id="n-le-e-sqrtn-n-en.-1">7. <span class="math inline">\(n! \le e \sqrt{n} (n / e)^n\)</span>.</h3>
+<p>The same inequality can be obtained in the following manner.</p>
+<p><em>Proof:</em> We lower bound the integral by the areas of trapezoids. The trapezoid between <span class="math inline">\(t\)</span> and <span class="math inline">\(t + 1\)</span> has base heights <span class="math inline">\(\ln t\)</span> and <span class="math inline">\(\ln (t + 1)\)</span>, and area <span class="math inline">\(\frac{1}{2} (\ln t + \ln (t + 1) )\)</span>. Hence,</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \sum_{i = 1}^n \ln i &amp;= \frac{1}{2} \sum_{t = 1}^{n - 1} (\ln t + \ln (t + 1) ) + \frac{1}{2} \ln n \\
+    &amp;\le \int_1^n \ln t \ dt + \frac{1}{2} \ln n \\
+    &amp;= n \ln n - n + 1 + \frac{1}{2} \ln n 
+\end{aligned}
+\]</span> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/StirlingApproximation/UpperBound0.png?raw=true" /></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="n-in-e11-12-sqrtn-left-fracne-rightn-e-1-12n-1-e12-13-sqrtn-left-fracne-rightn-e1-12-n">8. <span class="math inline">\(n! \in [e^{11 / 12} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ 1 / (12n + 1)}, e^{12 / 13} \sqrt{n} \left( \frac{n}{e} \right)^n e^{1 / (12 n) }]\)</span></h3>
+<p><em>Proof:</em> Let <span class="math display">\[
+\begin{aligned}
+    U_k &amp;= \int_k^{k + 1} \ln t \ dt, \\
+    L_k &amp;= \frac{1}{2} \left(\ln k + \ln (k + 1) \right).
+\end{aligned}
+\]</span></p>
+<p>The estimation error in the previous section is determined by the gap between <span class="math inline">\(U_k\)</span> and <span class="math inline">\(L_k\)</span>, for <span class="math inline">\(k \in [n - 1]\)</span>. To investigate it carefully, define <span class="math inline">\(\forall k \in [n - 1]\)</span>, <span class="math display">\[
+    \epsilon_k \doteq U_k - L_k .
+\]</span></p>
+<p>Denote <span class="math inline">\(S = \sum_{i \in [n] } \ln i\)</span> and <span class="math inline">\(\hat S = n \ln n - n + 1 + \frac{1}{2} \ln n\)</span>. The derivation in the previous section shows <span class="math display">\[
+\hat S - S = \sum_{i = 1}^{n - 1} \epsilon_k.  
+\]</span></p>
+<p>For a fixed <span class="math inline">\(k\)</span>, we can compute <span class="math inline">\(\epsilon_k\)</span> in closed form: <span class="math display">\[
+\begin{aligned}
+    \epsilon_k 
+        &amp;= t \ln t \mid_k^{k + 1} - t \mid_k^{k + 1} - \frac{1}{2} \left( \ln k + \ln (k + 1) \right) \\
+        &amp;= \ln \frac{ (k + 1)^{k + 1} }{ k^k } \cdot \frac{1}{ k^{\frac{1}{2} } (k + 1)^{\frac{1}{2} } } - 1 \\
+        &amp;= \ln \left( \frac{k + 1}{k } \right)^{ k + \frac{1}{2} } - 1 \\
+        &amp;= \left(  \frac{2k + 1}{2} \right) \cdot \ln \left( \frac{k + 1}{k } \right)- 1 \\
+\end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(x = \frac{1}{2k + 1}\)</span>. As <span class="math inline">\(k + 1 = \frac{1}{2}( (2k + 1) + 1)\)</span>, and <span class="math inline">\(k = \frac{1}{2}( (2k + 1) - 1)\)</span>, we can write <span class="math display">\[
+    \epsilon_k = \left(  \frac{2k + 1}{2} \right) \cdot \ln \left( \frac{1 + k }{k } \right)- 1 = \frac{1}{2 x} \ln \frac{1 + x}{1 - x} - 1. 
+\]</span></p>
+<p>Using the Taylor's expansions for <span class="math inline">\(y = \ln(1 -x)\)</span> and <span class="math inline">\(y = \ln(1 + x)\)</span>, we have <span class="math display">\[
+\ln(1 - x) = -(x + \frac{x^2}{2} + \frac{x^3}{3} + ...) \\
+\ln(1 + x) = -(-x + \frac{x^2}{2} - \frac{x^3}{3} + ...) \\
+\]</span></p>
+<p>and <span class="math display">\[
+\ln \frac{1 + x}{1 - x} = 2 (x + \frac{x^3}{3} + \frac{x^5}{5} + \frac{x^7}{7} + ... ). 
+\]</span></p>
+<p>It follows that <span class="math display">\[
+\epsilon_k = \frac{x^2}{3} + \frac{x^4}{5} + \frac{x^6}{7} + ... 
+\]</span></p>
+<p>We can upper bound <span class="math inline">\(\epsilon_k\)</span> by <span class="math display">\[
+\begin{aligned}
+    \epsilon_k 
+        &amp;\le \frac{x^2}{3} ( 1 + x^2 +x^4 + ... ) \\
+        &amp;= \frac{x^2}{3} \frac{1}{1 - x^2} \\
+        &amp;= \frac{1}{3} \frac{1}{ (2k + 1)^2 - 1} \\
+        &amp;= \frac{1}{12} \left(\frac{1}{k } - \frac{1}{k + 1} \right).
+\end{aligned}
+\]</span></p>
+<p>Also, we can lower bound <span class="math inline">\(\epsilon_k\)</span> by <span class="math display">\[
+\begin{aligned}
+    \epsilon_k 
+        &amp;\ge \frac{x^2}{3} ( 1 + x^2 / 3 +x^4 / 3^2 + ... ) \\
+        &amp;= \frac{x^2}{3} \frac{1}{1 - x^2 / 3} \\
+        &amp;= \frac{1}{ 3(2k + 1)^2 - 1} \\
+        &amp;= \frac{1}{ 12(k^2 + k + \frac{2}{12} ) } \\
+        &amp;\ge \frac{1}{ 12(k + 1 + \frac{1}{12}) ( k + \frac{1}{12} ) } \\
+        &amp;= \frac{1}{12} \left(\frac{1}{k + \frac{1}{12} } - \frac{1}{k + 1 + \frac{1}{12} } \right). 
+\end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(A = \sum_{k = 1}^\infty \epsilon_k\)</span> and <span class="math inline">\(R = \sum_{k = n}^\infty \epsilon_k\)</span>. Then <span class="math display">\[
+\begin{aligned}
+    \hat S - S &amp;= A - R \\
+    \implies S &amp;= \hat S - A + R \\
+    \implies S &amp;= n \ln n - n + 1 + \frac{1}{2} \ln n - A + R \\
+    \implies n! &amp;= e^{1 - A} \sqrt{n} \left( \frac{n}{e} \right)^n e^R.
+\end{aligned}
+\]</span></p>
+<p>By previous inequalities, we know <span class="math display">\[
+    \begin{aligned}
+        A &amp;\ge \frac{1}{12} \sum_{k = 1}^\infty \left( \frac{1}{k + \frac{1}{12} } - \frac{1}{k + 1 + \frac{1}{12} } \right) = \frac{1}{12} \frac{1}{1 + \frac{1}{12} } = \frac{1}{13} \\
+        A &amp;\le \frac{1}{12} \sum_{k = 1}^\infty \left(\frac{1}{k } - \frac{1}{k + 1} \right) = \frac{1}{12}.
+    \end{aligned}
+\]</span></p>
+<p>Similarly, we can get <span class="math inline">\(\frac{1}{12n + 1 } = \frac{1}{12} \frac{1}{n + \frac{1}{12} } \le R \le \frac{1}{12n}\)</span>. To finish our proof, we have <span class="math display">\[
+n! \in [e^{11 / 12} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ 1 / (12n + 1)}, e^{12 / 13} \sqrt{n} \left( \frac{n}{e} \right)^n e^{1 / (12 n) }]
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="reference">Reference</h3>
+<p>[1] H. Robbins, “A Remark on Stirling’s Formula,” The American Mathematical Monthly, vol. 62, no. 1, pp. 26–29, 1955</p>
 
     </div>
 
@@ -326,7 +429,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-n-le-n-n"><span class="nav-number">1.</span> <span class="nav-text">1. $n! \le n^n$.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-n-ge-n-2-n-2"><span class="nav-number">2.</span> <span class="nav-text">2. $n! \ge (n &#x2F; 2)^{n &#x2F; 2}$.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-n-ge-frac-n-n-exp-n-n-e-n"><span class="nav-number">3.</span> <span class="nav-text">3. $n! \ge \frac{n^n}{ \exp(n) } &#x3D; (n &#x2F; e)^n$.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-n-ge-e-n-e-n"><span class="nav-number">4.</span> <span class="nav-text">4. $n! \ge e ( n &#x2F; e)^n$.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-n-ge-e-n-e-n"><span class="nav-number">5.</span> <span class="nav-text">5. $n! \ge e ( n &#x2F; e)^n$.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-n-le-e-sqrt-n-n-e-n"><span class="nav-number">6.</span> <span class="nav-text">6. $n! \le e \sqrt{n} (n &#x2F; e)^n$.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-n-le-e-sqrt-n-n-e-n"><span class="nav-number">7.</span> <span class="nav-text">7. $n! \le e \sqrt{n} (n &#x2F; e)^n$.</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-n-in-e-11-12-sqrt-n-left-frac-n-e-right-n-e-1-12n-1-e-12-13-sqrt-n-left-frac-n-e-right-n-e-1-12-n"><span class="nav-number">8.</span> <span class="nav-text">8. $n! \in [e^{11 &#x2F; 12} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ 1 &#x2F; (12n + 1)}, e^{12 &#x2F; 13} \sqrt{n} \left( \frac{n}{e} \right)^n e^{1 &#x2F; (12 n) }]$</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">9.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#n-le-nn."><span class="nav-number">1.</span> <span class="nav-text">1. \(n! \le n^n\).</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#n-ge-n-2n-2."><span class="nav-number">2.</span> <span class="nav-text">2. \(n! \ge (n &#x2F; 2)^{n &#x2F; 2}\).</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#n-ge-fracnn-expn-n-en."><span class="nav-number">3.</span> <span class="nav-text">3. \(n! \ge \frac{n^n}{ \exp(n) } &#x3D; (n &#x2F; e)^n\).</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#n-ge-e-n-en."><span class="nav-number">4.</span> <span class="nav-text">4. \(n! \ge e ( n &#x2F; e)^n\).</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#n-ge-e-n-en.-1"><span class="nav-number">5.</span> <span class="nav-text">5. \(n! \ge e ( n &#x2F; e)^n\).</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#n-le-e-sqrtn-n-en."><span class="nav-number">6.</span> <span class="nav-text">6. \(n! \le e \sqrt{n} (n &#x2F; e)^n\).</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#n-le-e-sqrtn-n-en.-1"><span class="nav-number">7.</span> <span class="nav-text">7. \(n! \le e \sqrt{n} (n &#x2F; e)^n\).</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#n-in-e11-12-sqrtn-left-fracne-rightn-e-1-12n-1-e12-13-sqrtn-left-fracne-rightn-e1-12-n"><span class="nav-number">8.</span> <span class="nav-text">8. \(n! \in [e^{11 &#x2F; 12} \sqrt{n} \left( \frac{n}{e} \right)^n e^{ 1 &#x2F; (12n + 1)}, e^{12 &#x2F; 13} \sqrt{n} \left( \frac{n}{e} \right)^n e^{1 &#x2F; (12 n) }]\)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reference"><span class="nav-number">9.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

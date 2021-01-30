@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="In many network applications, data comes as a stream $S &#x3D; {x_1, x_2, …, x_n }$, where each $x_i$ ($1 \le i \le n$) belongs to the domain $D$. Suppose each element in $D$ appear at least once in $S$, w">
+  <meta name="description" content="In many network applications, data comes as a stream \(S &#x3D; \{x_1, x_2, ..., x_n \}\), where each \(x_i\) (\(1 \le i \le n\)) belongs to the domain \(D\). Suppose each element in \(D\) appear at least">
 <meta property="og:type" content="article">
 <meta property="og:title" content="The Number of Distinct Elements">
 <meta property="og:url" content="http://example.com/2019/05/18/The-Number-of-Distinct-Elements/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="In many network applications, data comes as a stream $S &#x3D; {x_1, x_2, …, x_n }$, where each $x_i$ ($1 \le i \le n$) belongs to the domain $D$. Suppose each element in $D$ appear at least once in $S$, w">
+<meta property="og:description" content="In many network applications, data comes as a stream \(S &#x3D; \{x_1, x_2, ..., x_n \}\), where each \(x_i\) (\(1 \le i \le n\)) belongs to the domain \(D\). Suppose each element in \(D\) appear at least">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2019-05-18T06:09:20.000Z">
 <meta property="article:modified_time" content="2020-06-21T11:01:48.427Z">
@@ -194,42 +194,110 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>In many network applications, data comes as a stream $S = {x_1, x_2, …, x_n }$, where each $x_i$ ($1 \le i \le n$) belongs to the domain $D$. Suppose each element in $D$ appear at least once in $S$, we want to evaluate the size of $D$, i.e., the number of distinct elements in $S$ (denoted as $N = |D|$).  </p>
+        <p>In many network applications, data comes as a stream <span class="math inline">\(S = \{x_1, x_2, ..., x_n \}\)</span>, where each <span class="math inline">\(x_i\)</span> (<span class="math inline">\(1 \le i \le n\)</span>) belongs to the domain <span class="math inline">\(D\)</span>. Suppose each element in <span class="math inline">\(D\)</span> appear at least once in <span class="math inline">\(S\)</span>, we want to evaluate the size of <span class="math inline">\(D\)</span>, i.e., the number of distinct elements in <span class="math inline">\(S\)</span> (denoted as <span class="math inline">\(N = |D|\)</span>).</p>
 <p>Potential solutions include</p>
-<ol>
-<li>We can sort the elements in $S$ and count the number of distinct elements. This requires $O(n \log n)$ time (with quicksort) and $O(n)$ space.  </li>
-<li>We can use hashing to count the distinct elements. This can be done in $O(n)$ time and $O(n)$ space with two level hashing.  </li>
+<ol type="1">
+<li>We can sort the elements in <span class="math inline">\(S\)</span> and count the number of distinct elements. This requires <span class="math inline">\(O(n \log n)\)</span> time (with quicksort) and <span class="math inline">\(O(n)\)</span> space.<br />
+</li>
+<li>We can use hashing to count the distinct elements. This can be done in <span class="math inline">\(O(n)\)</span> time and <span class="math inline">\(O(n)\)</span> space with two level hashing.</li>
 </ol>
-<p>In real world application, $n$ could be extremely large. Therefore, the demand for $O(n)$ space is expansive or even impossible. Can we do this with $O(1)$ space? If we allow some error, this is possible.  </p>
-<h2 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution 1"></a>Solution 1</h2><p>The tool we resort to is a set of hash functions $\mathcal{H} = { h | h: U \rightarrow [0, 1] }$ such that<br>$$<br>\begin{aligned}<br>&amp;\Pr_{h \in \mathcal{H} } [h(x) \in [a, b]] = \frac{1}{b - a}, &amp;\forall x \in U \wedge [a, b] \subset [0, 1]<br>\end{aligned}<br>$$</p>
-<p>That is, given an element $x \in U$, if we choose an $h$ from $U$ randomly, then $h$ maps $x$ to a number between $[0, 1]$ uniformly at random. Further, we assume that $h$ maps different elements in $U$ to $[0, 1]$ independently (Remark: to what extend is this possible?).  </p>
-<p>Further, denote $h(S) = { h(x_1), h(x_2), …, h(x_n)}$ the image of $S$ under a function $h$. We claim that, if $h$ is selected randomly from $\mathcal{H}$, then the minimum expected value of $h(S)$ is  $1 / (N + 1)$:<br>$$<br>\underset{h \in \mathcal{H} }{E} [\min h(S)] = \int_{z = 0}^1 z \Pr_{h \in \mathcal{H}} [\min h(S) = z] \ dz = \frac{1}{N + 1}<br>$$</p>
-<p>To see this, observe that the probability that $\Pr_{h \in \mathcal{ H } }[\min h(S) \ge z] = (1 - z)^N​$, therefore $\Pr_{h \in \mathcal{ H } }[\min h(S) \le z] = 1 - (1 - z)^N​$ and the density function is given as<br>$$<br>p_{h \in \mathcal{H  } }[\min h(S) = z] = \frac{\partial \Pr_{h \in \mathcal{H}  }[\min h(S) \le z] }{ \partial z} = N (1 - z)^{N - 1}<br>$$</p>
-<p>Taking the expectation over $z = 0$ to $1$ gives the desired result.  </p>
-<p>Another way to prove this is to introduce an additional element $x_{n + 1}$ which is different from any other element in $D$ and let $S’ = S \cup { x_{n + 1} }$. What is the probability that $h(x_{n + 1})$ is the smallest in $h(S’)$, i.e., $\min h(S’) = h(x_{n + 1})$? Conditioning on the minimum value of ${ h(x_1), h(x_2), …, h(x_n) }$ ($\min h(S)$) being some $z$ ($z \in [0, 1]$), the probability becomes<br>$$<br>\begin{aligned}<br>&amp;\Pr[\min h(S’) = h(x_{n + 1}) \mid \min h(S) = z] \<br>= &amp;\Pr[h(x_{n + 1}) \in [0, z] \mid \min h(S) = z] \<br>= &amp;z<br>\end{aligned}<br>$$</p>
-<p>Integrating over all possible values of $z$, we have<br>$$<br>\Pr[\min h(S’) = h(x_{n + 1})] = \int_{z = 0}^1 z \Pr[\min h(S) = z] \ dz<br>$$</p>
-<p>This is exactly the expectation of $\min h(S)$. Moreover, by symmetry, $\Pr[\min h(S’) = h(x_{n + 1})] = \frac{1}{N + 1}$. Therefore, it follows that $E[\min h(S)] = \frac{1}{N + 1}$.</p>
-<p>It is natural to ask how accurate our estimation is. On the one hand, by Markov inequality,<br>$$<br> \Pr_{h \in \mathcal{H} } [\min h(S) \ge 2 \frac{1}{N + 1}] \le \frac{E[\min h(S)]}{2 \frac{1}{N + 1} } = \frac{1}{2}<br>$$</p>
-<p>By repeating the algorithm $k$ times, the failure probability drops to $\frac{1}{2^k}$. However, Markov inequality can not give a lower bound of $\min h(S)$. What comes to our rescue is Chebyshev’s inequality. First, note that<br>$$<br>\begin{aligned}<br>\underset{h \in \mathcal{H} }{E} [ (\min h(S))^2 ]<br>&amp;= \int_{z = 0}^1 N z^2(1 - z)^{N - 1} dz \<br>&amp;= \int_{z = 0}^1 N [(z - 1)^2  + 2(z - 1) + 1] (1 - z)^{N - 1}dz \<br>&amp;= -\frac{N}{N + 2}(1 - z)^{N + 2} \mid_{0}^1 + \frac{2N}{N + 1} (1 - z)^{N + 1} \mid_{0}^1 - \frac{N}{N} (1 - z)^{N} \mid_{0}^1  \<br>&amp;= \frac{N}{N + 2} - \frac{2N}{N + 1} + \frac{N}{N} \<br>&amp;= \frac{-(N - 1)(N + 2) + N^2 + N}{(N +2)(N + 1)} \<br>&amp;= \frac{2}{(N +2)(N + 1)}<br>\end{aligned}<br>$$</p>
-<p>It follows that $\underset{h \in \mathcal{H} }{Var} [ (\min h(S))^2 ] = \frac{2}{(N + 1)(N +2)} - \frac{1}{(N + 1)^2} \le \frac{1}{(N + 1)^2}$. However, this alone is not enough to give an accurate estimate. </p>
-<p><em>Question to ponder: try to apply Chebyshev’s inequality directly on this single estimate. Can we get a meaningful lower bound for $\min h(S)$?</em></p>
-<p>Instead, we repeat the algorithm $k$ times, and take the average over the $\min h(S)$’s. Let $\overline X$ denote this average value. Then $\underset{h \in \mathcal{H} }{Var} [ \overline X ] \le \frac{1}{k (N + 1)^2}$. Given a parameter $0 &lt; l &lt; 1$ (to be determined later),<br>$$<br>\Pr[ |\overline{X} - \frac{1}{N + 1} | \ge \frac{l}{N + 1}] \le  (\frac{1}{k(N + 1)^2}) / (\frac{l^2}{(N + 1)^2}) = \frac{1}{k l^2}<br>$$</p>
-<p>That is, $\overline{X} \in \frac{1}{N + 1}[1 - l, 1 + l]$ with probability $\frac{1}{k l^2}$. That is $n \in \frac{1}{\overline{X} } [1 - l , 1 + l]$ with probability $\frac{1}{k l^2}$.</p>
-<p><strong>Remark 1</strong>: there exists other analysis for the concentration behavior when we repeat the experiment for $k$ times. Note that for $N \ge 1$,  </p>
-<p>$$<br>\begin{aligned}<br>\Pr_{h \in \mathcal{ H } }[\min h(S) \ge (1 + \epsilon) \frac{1}{N + 1}]<br>&amp;= (1 - \frac{1 + \epsilon}{N + 1})^N \le \exp \left( -\frac{1 + \epsilon}{N + 1}N \right) \le \exp \left( -\frac{1 + \epsilon}{2} \right) = \frac{1}{\sqrt e} e^{-\epsilon / 2}\<br>\Pr_{h \in \mathcal{ H } }[\min h(S) \le (1 - \epsilon) \frac{1}{N + 1}]<br>&amp;= 1 - (1 -  \frac{1 - \epsilon}{N + 1})^N \le 1 - \exp \left( - \frac{ 1 - \epsilon }{2(N + 1)}N \right) \le 1 - \exp \left( - \frac{ 1 - \epsilon }{2} \right) = 1 - \frac{1}{\sqrt e} e^{ \epsilon / 2}<br>\end{aligned}<br>$$</p>
-<p>We claim that if we take the $\frac{k}{\sqrt e}​$-th smallest element, our estimate $\overline X​$ satisfies</p>
-<p>$$<br>\left| \overline X - \frac{1}{N + 1} \right| \le \epsilon \frac{1}{N + 1}<br>$$</p>
+<p>In real world application, <span class="math inline">\(n\)</span> could be extremely large. Therefore, the demand for <span class="math inline">\(O(n)\)</span> space is expansive or even impossible. Can we do this with <span class="math inline">\(O(1)\)</span> space? If we allow some error, this is possible.</p>
+<h2 id="solution-1">Solution 1</h2>
+<p>The tool we resort to is a set of hash functions <span class="math inline">\(\mathcal{H} = \{ h | h: U \rightarrow [0, 1] \}\)</span> such that<br />
+<span class="math display">\[
+\begin{aligned}
+&amp;\Pr_{h \in \mathcal{H} } [h(x) \in [a, b]] = \frac{1}{b - a}, &amp;\forall x \in U \wedge [a, b] \subset [0, 1]
+\end{aligned}
+\]</span></p>
+<p>That is, given an element <span class="math inline">\(x \in U\)</span>, if we choose an <span class="math inline">\(h\)</span> from <span class="math inline">\(U\)</span> randomly, then <span class="math inline">\(h\)</span> maps <span class="math inline">\(x\)</span> to a number between <span class="math inline">\([0, 1]\)</span> uniformly at random. Further, we assume that <span class="math inline">\(h\)</span> maps different elements in <span class="math inline">\(U\)</span> to <span class="math inline">\([0, 1]\)</span> independently (Remark: to what extend is this possible?).</p>
+<p>Further, denote <span class="math inline">\(h(S) = \{ h(x_1), h(x_2), ..., h(x_n)\}\)</span> the image of <span class="math inline">\(S\)</span> under a function <span class="math inline">\(h\)</span>. We claim that, if <span class="math inline">\(h\)</span> is selected randomly from <span class="math inline">\(\mathcal{H}\)</span>, then the minimum expected value of <span class="math inline">\(h(S)\)</span> is <span class="math inline">\(1 / (N + 1)\)</span>: <span class="math display">\[
+\underset{h \in \mathcal{H} }{E} [\min h(S)] = \int_{z = 0}^1 z \Pr_{h \in \mathcal{H}} [\min h(S) = z] \ dz = \frac{1}{N + 1}
+\]</span></p>
+<p>To see this, observe that the probability that <span class="math inline">\(\Pr_{h \in \mathcal{ H } }[\min h(S) \ge z] = (1 - z)^N​\)</span>, therefore <span class="math inline">\(\Pr_{h \in \mathcal{ H } }[\min h(S) \le z] = 1 - (1 - z)^N​\)</span> and the density function is given as <span class="math display">\[
+p_{h \in \mathcal{H  } }[\min h(S) = z] = \frac{\partial \Pr_{h \in \mathcal{H}  }[\min h(S) \le z] }{ \partial z} = N (1 - z)^{N - 1}
+\]</span></p>
+<p>Taking the expectation over <span class="math inline">\(z = 0\)</span> to <span class="math inline">\(1\)</span> gives the desired result.</p>
+<p>Another way to prove this is to introduce an additional element <span class="math inline">\(x_{n + 1}\)</span> which is different from any other element in <span class="math inline">\(D\)</span> and let <span class="math inline">\(S&#39; = S \cup \{ x_{n + 1} \}\)</span>. What is the probability that <span class="math inline">\(h(x_{n + 1})\)</span> is the smallest in <span class="math inline">\(h(S&#39;)\)</span>, i.e., <span class="math inline">\(\min h(S&#39;) = h(x_{n + 1})\)</span>? Conditioning on the minimum value of <span class="math inline">\(\{ h(x_1), h(x_2), ..., h(x_n) \}\)</span> (<span class="math inline">\(\min h(S)\)</span>) being some <span class="math inline">\(z\)</span> (<span class="math inline">\(z \in [0, 1]\)</span>), the probability becomes <span class="math display">\[
+\begin{aligned}
+&amp;\Pr[\min h(S&#39;) = h(x_{n + 1}) \mid \min h(S) = z] \\
+= &amp;\Pr[h(x_{n + 1}) \in [0, z] \mid \min h(S) = z] \\
+= &amp;z
+\end{aligned}
+\]</span></p>
+<p>Integrating over all possible values of <span class="math inline">\(z\)</span>, we have <span class="math display">\[
+\Pr[\min h(S&#39;) = h(x_{n + 1})] = \int_{z = 0}^1 z \Pr[\min h(S) = z] \ dz
+\]</span></p>
+<p>This is exactly the expectation of <span class="math inline">\(\min h(S)\)</span>. Moreover, by symmetry, <span class="math inline">\(\Pr[\min h(S&#39;) = h(x_{n + 1})] = \frac{1}{N + 1}\)</span>. Therefore, it follows that <span class="math inline">\(E[\min h(S)] = \frac{1}{N + 1}\)</span>.</p>
+<p>It is natural to ask how accurate our estimation is. On the one hand, by Markov inequality, <span class="math display">\[
+ \Pr_{h \in \mathcal{H} } [\min h(S) \ge 2 \frac{1}{N + 1}] \le \frac{E[\min h(S)]}{2 \frac{1}{N + 1} } = \frac{1}{2}
+\]</span></p>
+<p>By repeating the algorithm <span class="math inline">\(k\)</span> times, the failure probability drops to <span class="math inline">\(\frac{1}{2^k}\)</span>. However, Markov inequality can not give a lower bound of <span class="math inline">\(\min h(S)\)</span>. What comes to our rescue is Chebyshev's inequality. First, note that <span class="math display">\[
+\begin{aligned}
+\underset{h \in \mathcal{H} }{E} [ (\min h(S))^2 ]
+&amp;= \int_{z = 0}^1 N z^2(1 - z)^{N - 1} dz \\
+&amp;= \int_{z = 0}^1 N [(z - 1)^2  + 2(z - 1) + 1] (1 - z)^{N - 1}dz \\
+&amp;= -\frac{N}{N + 2}(1 - z)^{N + 2} \mid_{0}^1 + \frac{2N}{N + 1} (1 - z)^{N + 1} \mid_{0}^1 - \frac{N}{N} (1 - z)^{N} \mid_{0}^1  \\  
+&amp;= \frac{N}{N + 2} - \frac{2N}{N + 1} + \frac{N}{N} \\
+&amp;= \frac{-(N - 1)(N + 2) + N^2 + N}{(N +2)(N + 1)} \\
+&amp;= \frac{2}{(N +2)(N + 1)}
+\end{aligned}
+\]</span></p>
+<p>It follows that <span class="math inline">\(\underset{h \in \mathcal{H} }{Var} [ (\min h(S))^2 ] = \frac{2}{(N + 1)(N +2)} - \frac{1}{(N + 1)^2} \le \frac{1}{(N + 1)^2}\)</span>. However, this alone is not enough to give an accurate estimate.</p>
+<p><em>Question to ponder: try to apply Chebyshev's inequality directly on this single estimate. Can we get a meaningful lower bound for <span class="math inline">\(\min h(S)\)</span>?</em></p>
+<p>Instead, we repeat the algorithm <span class="math inline">\(k\)</span> times, and take the average over the <span class="math inline">\(\min h(S)\)</span>'s. Let <span class="math inline">\(\overline X\)</span> denote this average value. Then <span class="math inline">\(\underset{h \in \mathcal{H} }{Var} [ \overline X ] \le \frac{1}{k (N + 1)^2}\)</span>. Given a parameter <span class="math inline">\(0 &lt; l &lt; 1\)</span> (to be determined later),<br />
+<span class="math display">\[
+\Pr[ |\overline{X} - \frac{1}{N + 1} | \ge \frac{l}{N + 1}] \le  (\frac{1}{k(N + 1)^2}) / (\frac{l^2}{(N + 1)^2}) = \frac{1}{k l^2}
+\]</span></p>
+<p>That is, <span class="math inline">\(\overline{X} \in \frac{1}{N + 1}[1 - l, 1 + l]\)</span> with probability <span class="math inline">\(\frac{1}{k l^2}\)</span>. That is <span class="math inline">\(n \in \frac{1}{\overline{X} } [1 - l , 1 + l]\)</span> with probability <span class="math inline">\(\frac{1}{k l^2}\)</span>.</p>
+<p><strong>Remark 1</strong>: there exists other analysis for the concentration behavior when we repeat the experiment for <span class="math inline">\(k\)</span> times. Note that for <span class="math inline">\(N \ge 1\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Pr_{h \in \mathcal{ H } }[\min h(S) \ge (1 + \epsilon) \frac{1}{N + 1}]  
+&amp;= (1 - \frac{1 + \epsilon}{N + 1})^N \le \exp \left( -\frac{1 + \epsilon}{N + 1}N \right) \le \exp \left( -\frac{1 + \epsilon}{2} \right) = \frac{1}{\sqrt e} e^{-\epsilon / 2}\\
+\Pr_{h \in \mathcal{ H } }[\min h(S) \le (1 - \epsilon) \frac{1}{N + 1}]  
+&amp;= 1 - (1 -  \frac{1 - \epsilon}{N + 1})^N \le 1 - \exp \left( - \frac{ 1 - \epsilon }{2(N + 1)}N \right) \le 1 - \exp \left( - \frac{ 1 - \epsilon }{2} \right) = 1 - \frac{1}{\sqrt e} e^{ \epsilon / 2}
+\end{aligned}
+\]</span></p>
+<p>We claim that if we take the <span class="math inline">\(\frac{k}{\sqrt e}​\)</span>-th smallest element, our estimate <span class="math inline">\(\overline X​\)</span> satisfies</p>
+<p><span class="math display">\[
+\left| \overline X - \frac{1}{N + 1} \right| \le \epsilon \frac{1}{N + 1}
+\]</span></p>
 <p>with high probability.</p>
-<p>Denote $z_1, z_2, …, z_k$ a set of i.i.d Bernoulli variables with mean $\frac{1}{\sqrt e} e^{-\epsilon / 2}$. Then by Chernoff bound,<br>$$<br>\begin{aligned}<br>\Pr[ \sum z_i \ge \frac{k}{\sqrt e} ]<br>&amp;= \Pr[ \sum z_i \ge (1 + (e^{\epsilon / 2} - 1) ) \frac{k}{\sqrt e} e^ {-\epsilon / 2}] \<br>&amp;\le \exp \left( -(e^{\epsilon / 2} - 1)^2 \frac{k}{\sqrt e} e^ {-\epsilon / 2} / 3 \right) \<br>&amp;= \exp \left( -(e ^\epsilon - 2 e^{\epsilon / 2} + 1) e^ {-\epsilon / 2} \frac{k}{\sqrt e}  / 3 \right) \<br>&amp;= \exp \left( -( e^{\epsilon / 2} - 2 + e^ {-\epsilon / 2}) \frac{k}{\sqrt e}  / 3 \right) \<br>&amp;\le \exp \left( - \frac{ \epsilon^2 }{4} \frac{k}{\sqrt e}  / 3 \right) \<br>&amp; = \delta<br>\end{aligned}<br>$$</p>
-<p>It suffices to set $k = \frac{12 \sqrt e}{\epsilon^2} \ln \frac{1}{\delta}$.</p>
+<p>Denote <span class="math inline">\(z_1, z_2, ..., z_k\)</span> a set of i.i.d Bernoulli variables with mean <span class="math inline">\(\frac{1}{\sqrt e} e^{-\epsilon / 2}\)</span>. Then by Chernoff bound,<br />
+<span class="math display">\[
+\begin{aligned}
+\Pr[ \sum z_i \ge \frac{k}{\sqrt e} ]
+&amp;= \Pr[ \sum z_i \ge (1 + (e^{\epsilon / 2} - 1) ) \frac{k}{\sqrt e} e^ {-\epsilon / 2}] \\
+&amp;\le \exp \left( -(e^{\epsilon / 2} - 1)^2 \frac{k}{\sqrt e} e^ {-\epsilon / 2} / 3 \right) \\
+&amp;= \exp \left( -(e ^\epsilon - 2 e^{\epsilon / 2} + 1) e^ {-\epsilon / 2} \frac{k}{\sqrt e}  / 3 \right) \\
+&amp;= \exp \left( -( e^{\epsilon / 2} - 2 + e^ {-\epsilon / 2}) \frac{k}{\sqrt e}  / 3 \right) \\
+&amp;\le \exp \left( - \frac{ \epsilon^2 }{4} \frac{k}{\sqrt e}  / 3 \right) \\
+&amp; = \delta
+\end{aligned}
+\]</span></p>
+<p>It suffices to set <span class="math inline">\(k = \frac{12 \sqrt e}{\epsilon^2} \ln \frac{1}{\delta}\)</span>.</p>
 <p>By symmetry, we can prove the inequality of the other hand.</p>
-<p><strong>Remark 2:</strong> Suppose that we have a function $h$ that maps each of the $N$ elements to a non-negative real number according to exponential distribution $\exp(-1)$ independently (the same element is mapped to the same number), then the minimum of these real numbers serves also as an unbiased estimator of $\frac{1}{N}$. To verify this,<br>$$<br>\Pr[ \min h(S) \le z] = 1 - \exp(-zN)<br>$$</p>
-<p>Therefore,<br>$$<br>p[\min h(S) = z] = \frac{\partial \Pr[ \min h(S) \le z]}{\partial z} = N \exp(-Nz)<br>$$<br>and<br>$$<br>E[\min h(S)] = \int_{0}^\infty Nz \exp(-Nz) dz = -\int_{0}^\infty z \ d\exp(-Nz) = -z \exp(-Nz) \mid_{0}^\infty + \int_0^\infty \exp(-Nz) dz = \frac{1}{N}<br>$$<br>Further,<br>$$<br>\Pr[\min h(S) \ge (1 + \epsilon)  \frac{1}{N}] = \exp( - 1 - \epsilon) = \frac{1}{e}e^{-\epsilon} \<br>\Pr[\min h(S) \le (1 - \epsilon)  \frac{1}{N}] = 1 - \exp( - 1 + \epsilon) = 1 - \frac{1}{e}e^{\epsilon}<br>$$<br>Similarly, we can show that if we repeat the experiment $k = O(\frac{\ln 1 / \delta }{\epsilon^2 } )$ times, with probability at least $1 - \delta$, the $\frac{1}{e}$ smallest elements is an $1 \pm \epsilon$ estimator of $\frac{1}{N}$. </p>
-<h2 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution 2"></a>Solution 2</h2><p>Suppose we only want to know whether $N \ge t​$ or $N \le t / 2​$ for a given integer $t​$, is this possible?  </p>
-<p>The answer is yes and the solution is amazingly easy. We hash each element in $D$ uniformly at random into the range $[1, 2, 3, …, t]$. If $N \ge t$, the probability that no elements is assigned the value $t$ is given by<br>$$<br>(1 - 1 / t)^N \le (1 - 1 / t)^t \le 1/e<br>$$<br>The second inequality holds since $(1 - 1 / t) \le e^{1 / t}$.</p>
-<p>On the other hand, when $N \le t / 2$, the probability that no element is assigned the value $t$ is greater than<br>$$<br>(1 - 1 / t)^N \ge (1 - 1 / t)^{t / 2} \ge 1 / e<br>$$<br>The second inequality holds since $(1 - 1 / t) \ge e^{- 2 / t} = 1 - \frac{2}{t} + \frac{1}{2!}(\frac{2}{t})^2 - \frac{1}{3!}(\frac{2}{t})^3 + …$ when $1 / t \le 1/ 2$.</p>
-<p>We can boost the probability to some defined threshold $1 - \delta$ by repeating $k = \log 1 / \delta$ times and check whether the majority of the answers are “yes”. Note that the expected number of “yes” is more than $(1 - 1 / e)k$ and by chernoff bound the probability that less than $0.5 k$ “yes” are returned is given by $\delta$.  </p>
-<p>Now, to estimate $N$, we can set up $\log n$ values of $t: 1, 2, 4, 8, …, n$ and test for each value of $t$ whether $N \ge t$ or $N \le t / 2$.  We can find an interval $[t_1, t_2]$, such that $N \in [t_1, t_2]$ and $N / 2 \le t_1 \le t_2 \le 2\cdot N$. The space complexity is $O(\log n \log 1 / \delta)$.</p>
+<p><strong>Remark 2:</strong> Suppose that we have a function <span class="math inline">\(h\)</span> that maps each of the <span class="math inline">\(N\)</span> elements to a non-negative real number according to exponential distribution <span class="math inline">\(\exp(-1)\)</span> independently (the same element is mapped to the same number), then the minimum of these real numbers serves also as an unbiased estimator of <span class="math inline">\(\frac{1}{N}\)</span>. To verify this, <span class="math display">\[
+\Pr[ \min h(S) \le z] = 1 - \exp(-zN) 
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+p[\min h(S) = z] = \frac{\partial \Pr[ \min h(S) \le z]}{\partial z} = N \exp(-Nz)
+\]</span> and <span class="math display">\[
+E[\min h(S)] = \int_{0}^\infty Nz \exp(-Nz) dz = -\int_{0}^\infty z \ d\exp(-Nz) = -z \exp(-Nz) \mid_{0}^\infty + \int_0^\infty \exp(-Nz) dz = \frac{1}{N}
+\]</span> Further, <span class="math display">\[
+\Pr[\min h(S) \ge (1 + \epsilon)  \frac{1}{N}] = \exp( - 1 - \epsilon) = \frac{1}{e}e^{-\epsilon} \\
+\Pr[\min h(S) \le (1 - \epsilon)  \frac{1}{N}] = 1 - \exp( - 1 + \epsilon) = 1 - \frac{1}{e}e^{\epsilon}
+\]</span> Similarly, we can show that if we repeat the experiment <span class="math inline">\(k = O(\frac{\ln 1 / \delta }{\epsilon^2 } )\)</span> times, with probability at least <span class="math inline">\(1 - \delta\)</span>, the <span class="math inline">\(\frac{1}{e}\)</span> smallest elements is an <span class="math inline">\(1 \pm \epsilon\)</span> estimator of <span class="math inline">\(\frac{1}{N}\)</span>.</p>
+<h2 id="solution-2">Solution 2</h2>
+<p>Suppose we only want to know whether <span class="math inline">\(N \ge t​\)</span> or <span class="math inline">\(N \le t / 2​\)</span> for a given integer <span class="math inline">\(t​\)</span>, is this possible?</p>
+<p>The answer is yes and the solution is amazingly easy. We hash each element in <span class="math inline">\(D\)</span> uniformly at random into the range <span class="math inline">\([1, 2, 3, ..., t]\)</span>. If <span class="math inline">\(N \ge t\)</span>, the probability that no elements is assigned the value <span class="math inline">\(t\)</span> is given by <span class="math display">\[
+(1 - 1 / t)^N \le (1 - 1 / t)^t \le 1/e
+\]</span> The second inequality holds since <span class="math inline">\((1 - 1 / t) \le e^{1 / t}\)</span>.</p>
+<p>On the other hand, when <span class="math inline">\(N \le t / 2\)</span>, the probability that no element is assigned the value <span class="math inline">\(t\)</span> is greater than <span class="math display">\[
+(1 - 1 / t)^N \ge (1 - 1 / t)^{t / 2} \ge 1 / e
+\]</span> The second inequality holds since <span class="math inline">\((1 - 1 / t) \ge e^{- 2 / t} = 1 - \frac{2}{t} + \frac{1}{2!}(\frac{2}{t})^2 - \frac{1}{3!}(\frac{2}{t})^3 + ...\)</span> when <span class="math inline">\(1 / t \le 1/ 2\)</span>.</p>
+<p>We can boost the probability to some defined threshold <span class="math inline">\(1 - \delta\)</span> by repeating <span class="math inline">\(k = \log 1 / \delta\)</span> times and check whether the majority of the answers are "yes". Note that the expected number of "yes" is more than <span class="math inline">\((1 - 1 / e)k\)</span> and by chernoff bound the probability that less than <span class="math inline">\(0.5 k\)</span> "yes" are returned is given by <span class="math inline">\(\delta\)</span>.</p>
+<p>Now, to estimate <span class="math inline">\(N\)</span>, we can set up <span class="math inline">\(\log n\)</span> values of <span class="math inline">\(t: 1, 2, 4, 8, ..., n\)</span> and test for each value of <span class="math inline">\(t\)</span> whether <span class="math inline">\(N \ge t\)</span> or <span class="math inline">\(N \le t / 2\)</span>. We can find an interval <span class="math inline">\([t_1, t_2]\)</span>, such that <span class="math inline">\(N \in [t_1, t_2]\)</span> and <span class="math inline">\(N / 2 \le t_1 \le t_2 \le 2\cdot N\)</span>. The space complexity is <span class="math inline">\(O(\log n \log 1 / \delta)\)</span>.</p>
 
     </div>
 
@@ -310,7 +378,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Solution-1"><span class="nav-number">1.</span> <span class="nav-text">Solution 1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Solution-2"><span class="nav-number">2.</span> <span class="nav-text">Solution 2</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#solution-1"><span class="nav-number">1.</span> <span class="nav-text">Solution 1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#solution-2"><span class="nav-number">2.</span> <span class="nav-text">Solution 2</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

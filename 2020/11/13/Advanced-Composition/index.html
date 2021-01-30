@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Once we have designed some basic differentially private algorithms, it is a  natural idea to combine them and analysis the privacy loss. We begin with an illustrative example that sets up the mathemat">
+  <meta name="description" content="Once we have designed some basic differentially private algorithms, it is a natural idea to combine them and analysis the privacy loss. We begin with an illustrative example that sets up the mathemati">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Advanced Composition">
 <meta property="og:url" content="http://example.com/2020/11/13/Advanced-Composition/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Once we have designed some basic differentially private algorithms, it is a  natural idea to combine them and analysis the privacy loss. We begin with an illustrative example that sets up the mathemat">
+<meta property="og:description" content="Once we have designed some basic differentially private algorithms, it is a natural idea to combine them and analysis the privacy loss. We begin with an illustrative example that sets up the mathemati">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/door.png?raw=true">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/box1.png?raw=true">
@@ -198,113 +198,157 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Once we have designed some basic differentially private algorithms, it is a  natural idea to combine them and analysis the privacy loss. We begin with an illustrative example that sets up the mathematical model step by step. </p>
-<p>Image yourself in front of the door of a safe vault protected by a password lock. To open the door, you need the correct password $P$. If tried with the wrong password, the lock would destroy itself automatically. </p>
+        <p>Once we have designed some basic differentially private algorithms, it is a natural idea to combine them and analysis the privacy loss. We begin with an illustrative example that sets up the mathematical model step by step.</p>
+<p>Image yourself in front of the door of a safe vault protected by a password lock. To open the door, you need the correct password <span class="math inline">\(P\)</span>. If tried with the wrong password, the lock would destroy itself automatically.</p>
 <div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/door.png?raw=true" width="400" height="340" />
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/door.png?raw=true" width="400" height="340" /></p>
 </div>
-
-<p>Luckily, you know two candidate passwords $P_1$ and $P_2$, with one of them being the correct one. Further, you notice that the designer of the lock left a collection of boxes near the door, which contain information on how they decide the correct passwords. Obtaining complete information of anyone of them gives you the correct password. </p>
+<p>Luckily, you know two candidate passwords <span class="math inline">\(P_1\)</span> and <span class="math inline">\(P_2\)</span>, with one of them being the correct one. Further, you notice that the designer of the lock left a collection of boxes near the door, which contain information on how they decide the correct passwords. Obtaining complete information of anyone of them gives you the correct password.</p>
 <div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/box1.png?raw=true" width="400" height="340" />
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/box1.png?raw=true" width="400" height="340" /></p>
 </div>
-
-<p>But the boxes are also protected and you don’t have legally access to them. However, you can hack into the boxes. Hacking into the box won’t give you all its information, but a random message. In particular, each box $B$ is associated with a set $\mathcal{R}_B$, which is a finite collection of messages (in English). When $B$ is hacked, it returns a message $Y_B$  generated randomly from $\mathcal{R}_B$, whose distribution depends on the correct password $P$. </p>
-<p>Let $\mathcal{D}<em>{B, P_1}$ be the distribution of $Y_B$ if the correct password is $P_1$, and $\mathcal{D}_{B, P_2}$ be the one if the correct password is $P_2$. If there is a huge difference between $\mathcal{D}</em>{B, P_1}$ and $\mathcal{D}_{B, P_2}$, then you might be able to guess the correct password.</p>
-<p>E.g., suppose $\mathcal{R}_B =$ { “Dog bites.”, “Cat scratches.” } and the distributions are given as </p>
+<p>But the boxes are also protected and you don't have legally access to them. However, you can hack into the boxes. Hacking into the box won't give you all its information, but a random message. In particular, each box <span class="math inline">\(B\)</span> is associated with a set <span class="math inline">\(\mathcal{R}_B\)</span>, which is a finite collection of messages (in English). When <span class="math inline">\(B\)</span> is hacked, it returns a message <span class="math inline">\(Y_B\)</span> generated randomly from <span class="math inline">\(\mathcal{R}_B\)</span>, whose distribution depends on the correct password <span class="math inline">\(P\)</span>.</p>
+<p>Let <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> be the distribution of <span class="math inline">\(Y_B\)</span> if the correct password is <span class="math inline">\(P_1\)</span>, and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> be the one if the correct password is <span class="math inline">\(P_2\)</span>. If there is a huge difference between <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span>, then you might be able to guess the correct password.</p>
+<p>E.g., suppose <span class="math inline">\(\mathcal{R}_B =\)</span> { "Dog bites.", "Cat scratches." } and the distributions are given as</p>
 <table>
 <thead>
-<tr>
-<th align="center"></th>
-<th align="center">$\mathcal{D}_{B, P_1}$</th>
-<th align="center">$\mathcal{D}_{B, P_2}$</th>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;"><span class="math inline">\(\mathcal{D}_{B, P_1}\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(\mathcal{D}_{B, P_2}\)</span></th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">“Dog bites.”</td>
-<td align="center">0.99</td>
-<td align="center">0.01</td>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">"Dog bites."</td>
+<td style="text-align: center;">0.99</td>
+<td style="text-align: center;">0.01</td>
 </tr>
-<tr>
-<td align="center">“Cat scratches.”</td>
-<td align="center">0.01</td>
-<td align="center">0.99</td>
+<tr class="even">
+<td style="text-align: center;">"Cat scratches."</td>
+<td style="text-align: center;">0.01</td>
+<td style="text-align: center;">0.99</td>
 </tr>
-</tbody></table>
-<p>Hence, when you get $Y_B=$ “Dog bites.”, you prefer $P_1$ over $P_2$ and vice versa. </p>
-<p>Anticipating such potential information leakage, the designer of the lock equips the boxes with a defense mechanism, called $(\epsilon, 0)$-mechanism. It guarantees the distributions $\mathcal{D}_{B, P_1}$ and $\mathcal{D}_{B, P_2}$ are similar so that it is hard for you to infer the correct password from the message. In particular, $\forall S \subset \mathcal{R}_B$, if $S$ is measurable, it holds that<br>$$<br>\Pr[ Y_B \in S \ | \ P = P_1 ] \le e^\epsilon \cdot \Pr[ Y_B \in S \ | \ P = P_2 ] \<br>\Pr[ Y_B \in S \ | \ P = P_2 ] \le e^\epsilon \cdot \Pr[ Y_B \in S \ | \ P = P_1 ] \<br>$$</p>
-<p>When these inequalities are satisfied, we say that $\mathcal{D}<em>{B, P_1}$ and $\mathcal{D}_{B, P_2}$ are $(\epsilon, 0)$ close. The inequalities require $\mathcal{D}_{B, P_1}$ and $\mathcal{D}_{B, P_2}$ to have the same support on $\mathcal{R}_B$. Therefore, throughout our discussion below, we assume that both $\mathcal{D}</em>{B, P_1}$ and $\mathcal{D}_{B, P_2}$ assign positive probability to each element in $\mathcal{R}_B$. Otherwise, we can just replace $\mathcal{R}<em>B$ with the support of $\mathcal{D}</em>{B, P_1}$ (which is also the support of $\mathcal{D}_{B, P_2}$). </p>
-<p>Now, hacking one box is unlikely to help you to guess the correct password. You want to hack more boxes, with the hope that the information combined will assist you. Due to resource limit, you can’t hack all boxes but only a finite number of them. You choose the first box randomly. Then you choose every new box based on the information obtained from the hacked boxes. The figure below shows an example of hacking five boxes. </p>
+</tbody>
+</table>
+<p>Hence, when you get <span class="math inline">\(Y_B=\)</span> "Dog bites.", you prefer <span class="math inline">\(P_1\)</span> over <span class="math inline">\(P_2\)</span> and vice versa.</p>
+<p>Anticipating such potential information leakage, the designer of the lock equips the boxes with a defense mechanism, called <span class="math inline">\((\epsilon, 0)\)</span>-mechanism. It guarantees the distributions <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> are similar so that it is hard for you to infer the correct password from the message. In particular, <span class="math inline">\(\forall S \subset \mathcal{R}_B\)</span>, if <span class="math inline">\(S\)</span> is measurable, it holds that <span class="math display">\[
+\Pr[ Y_B \in S \ | \ P = P_1 ] \le e^\epsilon \cdot \Pr[ Y_B \in S \ | \ P = P_2 ] \\
+\Pr[ Y_B \in S \ | \ P = P_2 ] \le e^\epsilon \cdot \Pr[ Y_B \in S \ | \ P = P_1 ] \\
+\]</span></p>
+<p>When these inequalities are satisfied, we say that <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> are <span class="math inline">\((\epsilon, 0)\)</span> close. The inequalities require <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> to have the same support on <span class="math inline">\(\mathcal{R}_B\)</span>. Therefore, throughout our discussion below, we assume that both <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> assign positive probability to each element in <span class="math inline">\(\mathcal{R}_B\)</span>. Otherwise, we can just replace <span class="math inline">\(\mathcal{R}_B\)</span> with the support of <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> (which is also the support of <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span>).</p>
+<p>Now, hacking one box is unlikely to help you to guess the correct password. You want to hack more boxes, with the hope that the information combined will assist you. Due to resource limit, you can't hack all boxes but only a finite number of them. You choose the first box randomly. Then you choose every new box based on the information obtained from the hacked boxes. The figure below shows an example of hacking five boxes.</p>
 <div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/box2.png?raw=true" width="400" height="340" />
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/box2.png?raw=true" width="400" height="340" /></p>
 </div>
-
-<p>Suppose that your resource enables you to hack $n$ boxes and let $\vec Y_n = (Y_1, Y_2, …, Y_n)$ be the output messages you obtained. Similar to the situation of hacking one box, if the distribution of $\vec Y_n$, conditioned on $P = P_1$, is utterly distant from that conditioned on $P = P_2$, then there could be some cases when you can confidently infer the true password. Conversely, to prevent severe information leakage, the designer needs to ensure there isn’t such case, i.e., the two distributions should be similar. </p>
-<p>What makes things even more complicated is that, the distribution of $\vec Y_n$ depends not only on the output distributions of the boxes, but also on your strategy of choosing the boxes to hack. Let’s use symbol $A$ to denote your strategy. Whatever $A$ is, the designer need to guarantee that the distribution of $\vec Y_n$ conditioned $P = P_1$ should be similar to that conditioned on $P = P_2$. </p>
-<p>Surprisingly, this is in some sense achievable, as long as for each box, its output distribution conditioned on $P = P_1$ is $(\epsilon, 0)$ close to that conditioned on $P = P_2$. </p>
-<p>Let $\mathcal{R}$ be the set of possible possible messages of all boxes. </p>
+<p>Suppose that your resource enables you to hack <span class="math inline">\(n\)</span> boxes and let <span class="math inline">\(\vec Y_n = (Y_1, Y_2, ..., Y_n)\)</span> be the output messages you obtained. Similar to the situation of hacking one box, if the distribution of <span class="math inline">\(\vec Y_n\)</span>, conditioned on <span class="math inline">\(P = P_1\)</span>, is utterly distant from that conditioned on <span class="math inline">\(P = P_2\)</span>, then there could be some cases when you can confidently infer the true password. Conversely, to prevent severe information leakage, the designer needs to ensure there isn't such case, i.e., the two distributions should be similar.</p>
+<p>What makes things even more complicated is that, the distribution of <span class="math inline">\(\vec Y_n\)</span> depends not only on the output distributions of the boxes, but also on your strategy of choosing the boxes to hack. Let's use symbol <span class="math inline">\(A\)</span> to denote your strategy. Whatever <span class="math inline">\(A\)</span> is, the designer need to guarantee that the distribution of <span class="math inline">\(\vec Y_n\)</span> conditioned <span class="math inline">\(P = P_1\)</span> should be similar to that conditioned on <span class="math inline">\(P = P_2\)</span>.</p>
+<p>Surprisingly, this is in some sense achievable, as long as for each box, its output distribution conditioned on <span class="math inline">\(P = P_1\)</span> is <span class="math inline">\((\epsilon, 0)\)</span> close to that conditioned on <span class="math inline">\(P = P_2\)</span>.</p>
+<p>Let <span class="math inline">\(\mathcal{R}\)</span> be the set of possible possible messages of all boxes.</p>
 <blockquote>
-<p><strong><em>Theorem.</em></strong> $\forall A$, $\forall S \subset \mathcal{R}^n$, it holds that $\forall \delta’ \in (0, 1)$,<br>$$<br>    \Pr[ \vec Y_n \in S \ | \ P = P_1, A] \le e^{\epsilon’} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_2, A] + \delta’ \<br>    \Pr[ \vec Y_n \in S \ | \ P = P_2, A] \le e^{\epsilon’} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_1, A] + \delta’<br>$$<br>where $\epsilon’ = k\epsilon(e^\epsilon - 1) + \epsilon \sqrt{2 n \log \frac{1}{\delta’} }$.</p>
+<p><strong><em>Theorem.</em></strong> <span class="math inline">\(\forall A\)</span>, <span class="math inline">\(\forall S \subset \mathcal{R}^n\)</span>, it holds that <span class="math inline">\(\forall \delta&#39; \in (0, 1)\)</span>, <span class="math display">\[
+\Pr[ \vec Y_n \in S \ | \ P = P_1, A] \le e^{\epsilon&#39;} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_2, A] + \delta&#39; \\
+\Pr[ \vec Y_n \in S \ | \ P = P_2, A] \le e^{\epsilon&#39;} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_1, A] + \delta&#39;
+\]</span> where <span class="math inline">\(\epsilon&#39; = k\epsilon(e^\epsilon - 1) + \epsilon \sqrt{2 n \log \frac{1}{\delta&#39;} }\)</span>.</p>
 </blockquote>
-<p>If we view $\epsilon$ as the privacy loss of a single box, then the theorem states that the privacy loss grows to $O(\sqrt {n} \epsilon )$ is $n$ boxes are hacked. </p>
-<p>To prove the theorem, we need a rigorous model for the problem. </p>
+<p>If we view <span class="math inline">\(\epsilon\)</span> as the privacy loss of a single box, then the theorem states that the privacy loss grows to <span class="math inline">\(O(\sqrt {n} \epsilon )\)</span> is <span class="math inline">\(n\)</span> boxes are hacked.</p>
+<p>To prove the theorem, we need a rigorous model for the problem.</p>
 <p><strong><em>Definitions.</em></strong></p>
-<ol>
-<li><p>$\mathcal{I}$: the index set.</p>
-</li>
-<li><p>${ B_\alpha : \alpha \in \mathcal{I} }$: the collection of boxes. </p>
-</li>
-<li><p>${ \mathcal{R}_{\alpha} : \alpha \in \mathcal{I} }$: the ranges of the outputs of the boxes. </p>
-</li>
-<li><p>$\mathcal{R} \doteq \cup_{\alpha \in \mathcal{I} } R_\alpha$: the range of any possible output by any box. </p>
-</li>
-<li><p>${ \mathcal{D}<em>{\alpha, P_1} : \alpha \in \mathcal{I} }$ (${ \mathcal{D}_{\alpha, P_2} : \alpha \in \mathcal{I} }$): the set of output distribution when the correct password is $P_1$ ($P_2$). Without loss of generality, we assume that for a fixed $\alpha \in \mathcal{I}$, the distribution $\mathcal{D}_{\alpha, P_1}$ ($\mathcal{D}_{\alpha, P_2}$) assigns positive probability to each element in $\mathcal{R}_\alpha$. Moreover, $\mathcal{D}</em>{\alpha, P_1}$ and $\mathcal{D}_{\alpha, P_2}$ are $(\epsilon, 0)$ close. </p>
-</li>
-<li><p>$n$: the number of boxes you can hack.</p>
-</li>
-<li><p>$\vec i_k \doteq (i_1, i_2, …, i_k)$: the index sequence of boxes you have chosen to hack up to time $k$, where $k \in [0, n]$. When $k = 0$, $\vec i_0$ corresponds to a empty sequence. </p>
-</li>
-<li><p>$\vec Y_k = (Y_1, Y_2, …, Y_k):$ the random variables that represent messages outputted by the chosen boxes up to time $k \in [1, n]$, where $Y_t \in \mathcal{R}_{i_t} \subset \mathcal{R}$ for $t \in [1, k]$. Therefore, $\vec Y_k$ can be view as random vector in $\mathcal{R}^k$. </p>
-</li>
-<li><p>$\vec x_k = (x_1, x_2, …, x_k) \in \mathcal{R}^k:$ a point in $\mathcal{R}^k$, where $k \in [0, n]$. When $k = 0$, we define $\vec x_0 = \emptyset$. </p>
-</li>
-<li><p>$\vec h_k = \left&lt; \vec i_k, \vec x_k \right&gt; = \left&lt; (i_1, i_2, i_3, …, i_k), (x_1, x_2, …, x_k) \right&gt;:$ the history up to $k \in [0, n]$, which consists of the chosen indexes and observations up to time $k$. We use $\vec h_0$ to denote the empty history.</p>
-</li>
+<ol type="1">
+<li><p><span class="math inline">\(\mathcal{I}\)</span>: the index set.</p></li>
+<li><p><span class="math inline">\(\{ B_\alpha : \alpha \in \mathcal{I} \}\)</span>: the collection of boxes.</p></li>
+<li><p><span class="math inline">\(\{ \mathcal{R}_{\alpha} : \alpha \in \mathcal{I} \}\)</span>: the ranges of the outputs of the boxes.</p></li>
+<li><p><span class="math inline">\(\mathcal{R} \doteq \cup_{\alpha \in \mathcal{I} } R_\alpha\)</span>: the range of any possible output by any box.</p></li>
+<li><p><span class="math inline">\(\{ \mathcal{D}_{\alpha, P_1} : \alpha \in \mathcal{I} \}\)</span> (<span class="math inline">\(\{ \mathcal{D}_{\alpha, P_2} : \alpha \in \mathcal{I} \}\)</span>): the set of output distribution when the correct password is <span class="math inline">\(P_1\)</span> (<span class="math inline">\(P_2\)</span>). Without loss of generality, we assume that for a fixed <span class="math inline">\(\alpha \in \mathcal{I}\)</span>, the distribution <span class="math inline">\(\mathcal{D}_{\alpha, P_1}\)</span> (<span class="math inline">\(\mathcal{D}_{\alpha, P_2}\)</span>) assigns positive probability to each element in <span class="math inline">\(\mathcal{R}_\alpha\)</span>. Moreover, <span class="math inline">\(\mathcal{D}_{\alpha, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{\alpha, P_2}\)</span> are <span class="math inline">\((\epsilon, 0)\)</span> close.</p></li>
+<li><p><span class="math inline">\(n\)</span>: the number of boxes you can hack.</p></li>
+<li><p><span class="math inline">\(\vec i_k \doteq (i_1, i_2, ..., i_k)\)</span>: the index sequence of boxes you have chosen to hack up to time <span class="math inline">\(k\)</span>, where <span class="math inline">\(k \in [0, n]\)</span>. When <span class="math inline">\(k = 0\)</span>, <span class="math inline">\(\vec i_0\)</span> corresponds to a empty sequence.</p></li>
+<li><p><span class="math inline">\(\vec Y_k = (Y_1, Y_2, ..., Y_k):\)</span> the random variables that represent messages outputted by the chosen boxes up to time <span class="math inline">\(k \in [1, n]\)</span>, where <span class="math inline">\(Y_t \in \mathcal{R}_{i_t} \subset \mathcal{R}\)</span> for <span class="math inline">\(t \in [1, k]\)</span>. Therefore, <span class="math inline">\(\vec Y_k\)</span> can be view as random vector in <span class="math inline">\(\mathcal{R}^k\)</span>.</p></li>
+<li><p><span class="math inline">\(\vec x_k = (x_1, x_2, ..., x_k) \in \mathcal{R}^k:\)</span> a point in <span class="math inline">\(\mathcal{R}^k\)</span>, where <span class="math inline">\(k \in [0, n]\)</span>. When <span class="math inline">\(k = 0\)</span>, we define <span class="math inline">\(\vec x_0 = \emptyset\)</span>.</p></li>
+<li><p><span class="math inline">\(\vec h_k = \left&lt; \vec i_k, \vec x_k \right&gt; = \left&lt; (i_1, i_2, i_3, ..., i_k), (x_1, x_2, ..., x_k) \right&gt;:\)</span> the history up to <span class="math inline">\(k \in [0, n]\)</span>, which consists of the chosen indexes and observations up to time <span class="math inline">\(k\)</span>. We use <span class="math inline">\(\vec h_0\)</span> to denote the empty history.</p></li>
+<li><p><span class="math inline">\(A:\)</span> your strategy (policy) for choosing boxes. It works as follows: for any fixed history <span class="math inline">\(\vec h_k = \left&lt; \vec i_k, \vec x_k \right&gt;\)</span>, A is associated with a fixed distribution <span class="math inline">\(\mathcal{D}_{A, \vec h_k}\)</span> over <span class="math inline">\(\mathcal{I} \setminus \vec i_k\)</span>, the set of indexes of the unchosen boxes. When inputted with <span class="math inline">\(\vec h_k\)</span>, <span class="math inline">\(A\)</span> returns a random variable <span class="math inline">\(A(\vec h_k)\)</span> that follows the distribution <span class="math inline">\(\mathcal{D}_{A, \vec h_k}\)</span>.</p></li>
 </ol>
-<ol start="11">
-<li>$A:$ your strategy (policy) for choosing boxes. It works as follows: for any fixed history $\vec h_k = \left&lt; \vec i_k, \vec x_k \right&gt;$, A is associated with a fixed distribution $\mathcal{D}<em>{A, \vec h_k}$ over $\mathcal{I} \setminus \vec i_k$, the set of indexes of the unchosen boxes. When inputted with $\vec h_k$, $A$ returns a random variable $A(\vec h_k)$ that follows the distribution $\mathcal{D}</em>{A, \vec h_k}$. </li>
+<p>We will show that, no matter what strategy you use, it is unlikely that you distinguish via the output <span class="math inline">\(\vec Y_n\)</span> whether the correct password is <span class="math inline">\(P_1\)</span> or <span class="math inline">\(P_2\)</span>. This is because whether <span class="math inline">\(P = P_1\)</span> or not, the output distributions of <span class="math inline">\(\vec Y_n\)</span> are similar.</p>
+<p><strong><em>Proof of the theorem.</em></strong> We will just prove the first inequality, and the second one follows from symmetry. We consider a bad set in <span class="math inline">\(\mathcal{R}^n\)</span>: <span class="math display">\[
+\mathcal{W} \doteq \{ \vec x_n \in \mathcal{R}^n : \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] \ge e^{\epsilon&#39;} \cdot \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] \}
+\]</span></p>
+<p>and will use the following lemma.</p>
+<blockquote>
+<p><strong>Lemma.</strong> <span class="math inline">\(\Pr[ \vec Y_n \in \mathcal{W}\ | \ P = P_1, A] \le \delta&#39;\)</span>.</p>
+</blockquote>
+<p>Hence, <span class="math display">\[
+\begin{aligned}
+    \Pr[ \vec Y_n \in S \ | \ P = P_1, A] 
+        &amp;=  \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \Pr[ \vec Y_n \in S \cap \mathcal{W} \ | \ P = P_1, A] \\
+        &amp;\le  \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \Pr[ \vec Y_n \in \mathcal{W} \ | \ P = P_1, A] \\
+        &amp;\le \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \delta&#39; \\
+        &amp;= \sum_{ \vec x_n \in S \cap \bar{\mathcal{W} } } \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] + \delta&#39; \\
+        &amp;&lt; \sum_{ \vec x_n \in S \cap \bar{\mathcal{W} } } e^{\epsilon&#39;} \cdot  \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] + \delta&#39; \\
+        &amp;=  e^{\epsilon&#39;} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_2, A] + \delta&#39; 
+\end{aligned}
+\]</span></p>
+<p>The first inequality follows from monotonicity of probability, the second one from the lemma, and the final one from the definition of <span class="math inline">\(\mathcal{W}\)</span>.</p>
+<p><em>Proof of the lemma.</em> To prove the lemma, we need only to consider those point <span class="math inline">\(\vec x_n\)</span> with <span class="math display">\[
+\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] &gt; 0. 
+\]</span> Otherwise, <span class="math inline">\(\vec x_n\)</span> contributes to 0 probability to the set <span class="math inline">\(\mathcal{W}\)</span> (whether it belongs to <span class="math inline">\(\mathcal{W}\)</span> or not).</p>
+<p>Now, we expand the probability <span class="math inline">\(\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A]\)</span>. To obtain the <span class="math inline">\(k\)</span>-th output, there are two steps</p>
+<ol type="1">
+<li><span class="math inline">\(A\)</span> generates a index <span class="math inline">\(i_k\)</span> of a box based on the known history <span class="math inline">\(\vec h_{k - 1}\)</span>.<br />
+</li>
+<li>The box <span class="math inline">\(B_{i_k}\)</span> is hacked, and output a random message <span class="math inline">\(x_k\)</span> sampled from its distribution <span class="math inline">\(D_{i_k, P_1}\)</span>.</li>
 </ol>
-<p>We will show that, no matter what strategy you use, it is unlikely that you distinguish via the output $\vec Y_n$ whether the correct password is $P_1$ or $P_2$. This is because whether $P = P_1$ or not, the output distributions of $\vec Y_n$ are similar.  </p>
-<p><strong><em>Proof of the theorem.</em></strong> We will just prove the first inequality, and the second one follows from symmetry. We consider a bad set in $\mathcal{R}^n$:<br>$$<br>\mathcal{W} \doteq { \vec x_n \in \mathcal{R}^n : \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] \ge e^{\epsilon’} \cdot \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] }<br>$$</p>
-<p>and will use the following lemma. </p>
+<p>Let <span class="math inline">\(\vec H_k\)</span> be a random variable that represents the history up to <span class="math inline">\(k\)</span>. By chain rule, we have <span class="math display">\[
+\begin{aligned}
+    \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] 
+    &amp;= \prod_{k = 1}^n \Pr_{Y_k \sim \mathcal{D}_{i_k, P_1} } [ Y_k = x_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ] \\ 
+    &amp;\ \ \cdot \prod_{k = 1}^n \Pr_{ A(\vec h_{k - 1} ) \sim  \mathcal{D}_{A, \vec h_{k - 1} } } [ A(\vec h_{k - 1} ) = i_k \mid \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A  ]
+\end{aligned}
+\]</span></p>
+<p>By <span class="math inline">\(\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] &gt; 0\)</span>, each term in the expansion are positive. Similarly, <span class="math display">\[
+\begin{aligned}
+    \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] 
+    &amp;= \prod_{k = 1}^n \Pr_{Y_k \sim \mathcal{D}_{i_k, P_2} } [ Y_k = x_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] \\ 
+    &amp;\ \ \cdot \prod_{k = 1}^n \Pr_{ A(\vec h_{k - 1} ) \sim  \mathcal{D}_{A, \vec h_{k - 1} } } [ A(\vec h_{k - 1} ) = i_k \mid \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A  ]
+\end{aligned}
+\]</span></p>
+<p>As both <span class="math inline">\(\mathcal{D}_{i_k, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{i_k, P_2}\)</span> assign positive probability to each point in <span class="math inline">\(\mathcal{R}_{i_k}\)</span>, we know <span class="math inline">\(\Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] &gt; 0\)</span>.</p>
+<p>We are ready to consider the ratio: <span class="math display">\[
+\begin{aligned}
+    \ln \frac{ \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] }{ \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] } 
+    = \sum_{k = 1}^n \ln \frac{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_1} } [ Y_k = x_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ]  }{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_2} } [ Y_k = x_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] }. 
+\end{aligned}
+\]</span></p>
+<p>If we replace <span class="math inline">\(x_k\)</span> by a random variable <span class="math inline">\(X_k \sim \mathcal{D}_{i_k, P_1}\)</span>, then <span class="math display">\[
+C_k \doteq \ln \frac{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_1} } [ Y_k = X_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ]  }{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_2} } [ Y_k = X_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] }
+\]</span></p>
+<p>is a random variable. As <span class="math inline">\(\mathcal{D}_{i_k, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{i_k, P_2}\)</span> are <span class="math inline">\((\epsilon, 0)\)</span> close, we have <span class="math display">\[
+C_k \le \epsilon.
+\]</span></p>
+<p>Further, we have</p>
 <blockquote>
-<p><strong>Lemma.</strong> $\Pr[ \vec Y_n \in \mathcal{W}\ | \ P = P_1, A] \le \delta’$. </p>
+<p><strong>Fact 1.</strong> For any <span class="math inline">\(\alpha \in \mathcal{I}\)</span>, it holds that <span class="math display">\[
+\begin{aligned}
+\mathbb{E}_{ X \sim \mathcal{D}_{\alpha, P_1} } \left[ \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = X]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = X]  }  \right] 
+&amp;= \sum_{x \in \mathcal{R}_\alpha } \underset{ X \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \\
+&amp;\le \sum_{x \in \mathcal{R}_\alpha } \underset{ X \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \\
+&amp;+ 
+\sum_{x \in \mathcal{R}_\alpha } \underset{ X \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } \\
+&amp;= \sum_{x \in \mathcal{R}_\alpha } \left[ \underset{ X \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ X = x]  - \underset{ X \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ X = x] \right] \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \\
+&amp;\le (e^\epsilon - 1) \epsilon
+\end{aligned}
+\]</span></p>
 </blockquote>
-<p>Hence,<br>$$<br>\begin{aligned}<br>    \Pr[ \vec Y_n \in S \ | \ P = P_1, A]<br>        &amp;=  \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \Pr[ \vec Y_n \in S \cap \mathcal{W} \ | \ P = P_1, A] \<br>        &amp;\le  \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \Pr[ \vec Y_n \in \mathcal{W} \ | \ P = P_1, A] \<br>        &amp;\le \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \delta’ \<br>        &amp;= \sum_{ \vec x_n \in S \cap \bar{\mathcal{W} } } \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] + \delta’ \<br>        &amp;&lt; \sum_{ \vec x_n \in S \cap \bar{\mathcal{W} } } e^{\epsilon’} \cdot  \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] + \delta’ \<br>        &amp;=  e^{\epsilon’} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_2, A] + \delta’<br>\end{aligned}<br>$$</p>
-<p>The first inequality follows from monotonicity of probability, the second one from the lemma, and the final one from the definition of $\mathcal{W}$. </p>
-<p><em>Proof of the lemma.</em> To prove the lemma, we need only to consider those point $\vec x_n$ with<br>$$<br>\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] &gt; 0.<br>$$<br>Otherwise, $\vec x_n$ contributes to 0 probability to the set $\mathcal{W}$ (whether it belongs to $\mathcal{W}$ or not). </p>
-<p>Now, we expand the probability $\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A]$. To obtain the $k$-th output, there are two steps</p>
-<ol>
-<li>$A$ generates a index $i_k$ of a box based on the known history $\vec h_{k - 1}$.  </li>
-<li>The box $B_{i_k}$ is hacked, and output a random message $x_k$ sampled from its distribution $D_{i_k, P_1}$. </li>
-</ol>
-<p>Let $\vec H_k$ be a random variable that represents the history up to $k$. By chain rule, we have<br>$$<br>\begin{aligned}<br>    \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A]<br>    &amp;= \prod_{k = 1}^n \Pr_{Y_k \sim \mathcal{D}<em>{i_k, P_1} } [ Y_k = x_k \ | A(\vec h</em>{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ] \<br>    &amp;\ \ \cdot \prod_{k = 1}^n \Pr_{ A(\vec h_{k - 1} ) \sim  \mathcal{D}<em>{A, \vec h</em>{k - 1} } } [ A(\vec h_{k - 1} ) = i_k \mid \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A  ]<br>\end{aligned}<br>$$</p>
-<p>By $\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] &gt; 0$,  each term in the expansion are positive. Similarly,<br>$$<br>\begin{aligned}<br>    \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A]<br>    &amp;= \prod_{k = 1}^n \Pr_{Y_k \sim \mathcal{D}<em>{i_k, P_2} } [ Y_k = x_k \ | A(\vec h</em>{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] \<br>    &amp;\ \ \cdot \prod_{k = 1}^n \Pr_{ A(\vec h_{k - 1} ) \sim  \mathcal{D}<em>{A, \vec h</em>{k - 1} } } [ A(\vec h_{k - 1} ) = i_k \mid \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A  ]<br>\end{aligned}<br>$$</p>
-<p>As both $\mathcal{D}<em>{i_k, P_1}$ and $\mathcal{D}</em>{i_k, P_2}$ assign positive probability to each point in $\mathcal{R}_{i_k}$, we know $\Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] &gt; 0$.</p>
-<p>We are ready to consider the ratio:<br>$$<br>\begin{aligned}<br>    \ln \frac{ \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] }{ \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] }<br>    = \sum_{k = 1}^n \ln \frac{ \Pr_{Y_k \sim \mathcal{D}<em>{i_k, P_1} } [ Y_k = x_k \ | A(\vec h</em>{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ]  }{ \Pr_{Y_k \sim \mathcal{D}<em>{i_k, P_2} } [ Y_k = x_k \ | A(\vec h</em>{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] }.<br>\end{aligned}<br>$$</p>
-<p>If we replace $x_k$ by a random variable $X_k \sim \mathcal{D}<em>{i_k, P_1}$, then<br>$$<br>C_k \doteq \ln \frac{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_1} } [ Y_k = X_k \ | A(\vec h</em>{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ]  }{ \Pr_{Y_k \sim \mathcal{D}<em>{i_k, P_2} } [ Y_k = X_k \ | A(\vec h</em>{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] }<br>$$</p>
-<p>is a random variable. As $\mathcal{D}<em>{i_k, P_1}$ and $\mathcal{D}</em>{i_k, P_2}$ are $(\epsilon, 0)$ close, we have<br>$$<br>C_k \le \epsilon.<br>$$</p>
-<p>Further, we have </p>
+<p>Therefore, <span class="math inline">\(\mathbb{E} [C_k] \le (e^\epsilon - 1) \epsilon\)</span>.</p>
 <blockquote>
-<p><strong>Fact 1.</strong> For any $\alpha \in \mathcal{I}$, it holds that<br>$$<br>    \begin{aligned}<br>        \mathbb{E}<em>{ X \sim \mathcal{D}</em>{\alpha, P_1} } \left[ \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = X]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = X]  }  \right]<br>        &amp;= \sum_{x \in \mathcal{R}<em>\alpha } \underset{ X \sim \mathcal{D}</em>{\alpha, P_1} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \<br>        &amp;\le \sum_{x \in \mathcal{R}<em>\alpha } \underset{ X \sim \mathcal{D}</em>{\alpha, P_1} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \<br>        &amp;+<br>        \sum_{x \in \mathcal{R}<em>\alpha } \underset{ X \sim \mathcal{D}</em>{\alpha, P_2} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } \<br>        &amp;= \sum_{x \in \mathcal{R}<em>\alpha } \left[ \underset{ X \sim \mathcal{D}</em>{\alpha, P_1} }{ \Pr } [ X = x]  - \underset{ X \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ X = x] \right] \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \<br>        &amp;\le (e^\epsilon - 1) \epsilon<br>    \end{aligned}<br>$$</p>
+<p><strong>Fact 2.</strong> (<strong>Azuma Inequality</strong>). Let <span class="math inline">\(C_1, ...., C_n\)</span> be random variables such that <span class="math inline">\(\forall k \in [n]\)</span>, <span class="math inline">\(\Pr[ |C_k| \le \epsilon ] = 1\)</span>, and for every <span class="math inline">\((c_1, ..., c_{k -1} ) \in \text{Supp} (C_1, ..., C_{k - 1} )\)</span>, we have <span class="math display">\[
+\mathbb{E}[ C_i \mid C_1 = c_1, ..., C_{k -1} = c_{k - 1} ] \le \beta,
+\]</span> Then for every <span class="math inline">\(z &gt; 0\)</span>, we have <span class="math display">\[
+\Pr[ \sum_{k = 1}^n C_i -  n \beta &gt;  z] \le \exp(- \frac{z^2}{ 2 n\epsilon^2 } )
+\]</span></p>
 </blockquote>
-<p>Therefore, $\mathbb{E} [C_k] \le (e^\epsilon - 1) \epsilon$. </p>
-<blockquote>
-<p><strong>Fact 2.</strong> (<strong>Azuma Inequality</strong>). Let $C_1, …., C_n$ be random variables such that $\forall k \in [n]$, $\Pr[ |C_k| \le \epsilon ] = 1$, and for every $(c_1, …, c_{k -1} ) \in \text{Supp} (C_1, …, C_{k - 1} )$, we have<br>$$<br>\mathbb{E}[ C_i \mid C_1 = c_1, …, C_{k -1} = c_{k - 1} ] \le \beta,<br>$$<br>Then for every $z &gt; 0$, we have<br>$$<br>\Pr[ \sum_{k = 1}^n C_i -  n \beta &gt;  z] \le \exp(- \frac{z^2}{ 2 n\epsilon^2 } )<br>$$</p>
-</blockquote>
-<p>Finally, applying <em>Azuma Inequality</em> with $z = \sqrt{ 2n \log \frac{1}{\delta’} }$ and $\beta = (e^\epsilon - 1) \epsilon$, we get the desired result.</p>
-<p>$\blacksquare$</p>
-<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference."></a>Reference.</h3><p>[1] C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,” Foundations and Trends® in Theoretical Computer Science, vol. 9, no. 3–4, pp. 211–407, 2013</p>
+<p>Finally, applying <em>Azuma Inequality</em> with <span class="math inline">\(z = \sqrt{ 2n \log \frac{1}{\delta&#39;} }\)</span> and <span class="math inline">\(\beta = (e^\epsilon - 1) \epsilon\)</span>, we get the desired result.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h3 id="reference.">Reference.</h3>
+<p>[1] C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,” Foundations and Trends® in Theoretical Computer Science, vol. 9, no. 3–4, pp. 211–407, 2013</p>
 
     </div>
 
@@ -385,7 +429,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">1.</span> <span class="nav-text">Reference.</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#reference."><span class="nav-number">1.</span> <span class="nav-text">Reference.</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="EntropyThe entropy of a random variable $X$ is defined as$$\mathbf{H}[X] &#x3D; \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right]$$ Here we adopt the convention that $0 \log 0 &#x3D; 0$, as $\lim_{x \rightarro">
+  <meta name="description" content="Entropy The entropy of a random variable \(X\) is defined as \[ \mathbf{H}[X] &#x3D; \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] \] Here we adopt the convention that \(0 \log 0 &#x3D; 0\), as \(\lim_">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Entropy and Random Bits">
 <meta property="og:url" content="http://example.com/2020/06/01/Entropy-and-Random-Bits/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="EntropyThe entropy of a random variable $X$ is defined as$$\mathbf{H}[X] &#x3D; \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right]$$ Here we adopt the convention that $0 \log 0 &#x3D; 0$, as $\lim_{x \rightarro">
+<meta property="og:description" content="Entropy The entropy of a random variable \(X\) is defined as \[ \mathbf{H}[X] &#x3D; \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] \] Here we adopt the convention that \(0 \log 0 &#x3D; 0\), as \(\lim_">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Entropy.png">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.5.png">
@@ -201,111 +201,297 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h4 id="Entropy"><a href="#Entropy" class="headerlink" title="Entropy"></a>Entropy</h4><p>The entropy of a random variable $X$ is defined as<br>$$<br>\mathbf{H}[X] = \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right]<br>$$</p>
-<p>Here we adopt the convention that $0 \log 0 = 0$, as $\lim_{x \rightarrow 0^+} x \log x = \lim_{x \rightarrow \infty} \frac{1 }{ x } \log \frac{1 }{ x } = 0$. </p>
-<p>The entropy is oblivious to the specific values $X$ takes and is only sensitive to the probabilities with which $X$ takes these values.</p>
+        <h4 id="entropy">Entropy</h4>
+<p>The entropy of a random variable <span class="math inline">\(X\)</span> is defined as <span class="math display">\[
+\mathbf{H}[X] = \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right]
+\]</span></p>
+<p>Here we adopt the convention that <span class="math inline">\(0 \log 0 = 0\)</span>, as <span class="math inline">\(\lim_{x \rightarrow 0^+} x \log x = \lim_{x \rightarrow \infty} \frac{1 }{ x } \log \frac{1 }{ x } = 0\)</span>.</p>
+<p>The entropy is oblivious to the specific values <span class="math inline">\(X\)</span> takes and is only sensitive to the probabilities with which <span class="math inline">\(X\)</span> takes these values.</p>
 <blockquote>
-<p>Example.  </p>
-<ol>
-<li>$X_1 = \begin{cases}<br>e^{1000}, \text{with probability 0.5} \ 0, \text{with probability 0.5}<br>\end{cases}$      </li>
-<li>$X_2 = \begin{cases}<br>1, \text{with probability 0.5} \ -1, \text{with probability 0.5}<br>\end{cases}$  </li>
-</ol>
+<p>Example.<br />
+1. <span class="math inline">\(X_1 = \begin{cases} e^{1000}, \text{with probability 0.5} \\ 0, \text{with probability 0.5} \end{cases}\)</span><br />
+2. <span class="math inline">\(X_2 = \begin{cases} 1, \text{with probability 0.5} \\ -1, \text{with probability 0.5} \end{cases}\)</span></p>
 </blockquote>
-<p>By definition, both<br>$$<br>\mathbf{H}[X_1] = \mathbf{H}[X_2] = 0.5 \log_2 2 + 0.5 \log_2 2 = 1<br>$$</p>
-<p>We also notice that the entropy of a random variable may not reflect the whether a random variable is concentrated at its mean or not. </p>
-<p>The binary entropy function $\mathbf{H}(p)$ of a Bernoulli random variable $X$ that takes value $1$ with probability $p$ is<br>$$<br>\begin{aligned}<br>    \mathbf{H}(p) = &amp;p \log_2 \frac{1}{p} + (1 - p) \log_2 \frac{1}{1 - p} \<br>    = &amp;-p \log_2 p - (1 - p) \log_2 (1 - p)<br>\end{aligned}<br>$$</p>
-<p>By concavity of $\log_2(\cdot )$, we know that<br>$$<br>\begin{aligned}<br>    \mathbf{H}(p)<br>    &amp;\le \log_2 \left( p \frac{1}{p} + (1 - p) \frac{1}{1 - p} \right)<br>    &amp;= 1<br>\end{aligned}<br>$$</p>
-<p>The equality holds when $p = 0.5$. </p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Entropy.png"></p>
+<p>By definition, both <span class="math display">\[
+\mathbf{H}[X_1] = \mathbf{H}[X_2] = 0.5 \log_2 2 + 0.5 \log_2 2 = 1
+\]</span></p>
+<p>We also notice that the entropy of a random variable may not reflect the whether a random variable is concentrated at its mean or not.</p>
+<p>The binary entropy function <span class="math inline">\(\mathbf{H}(p)\)</span> of a Bernoulli random variable <span class="math inline">\(X\)</span> that takes value <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p\)</span> is <span class="math display">\[
+\begin{aligned}
+    \mathbf{H}(p) = &amp;p \log_2 \frac{1}{p} + (1 - p) \log_2 \frac{1}{1 - p} \\
+    = &amp;-p \log_2 p - (1 - p) \log_2 (1 - p)    
+\end{aligned}
+\]</span></p>
+<p>By concavity of <span class="math inline">\(\log_2(\cdot )\)</span>, we know that <span class="math display">\[
+\begin{aligned}
+    \mathbf{H}(p)
+    &amp;\le \log_2 \left( p \frac{1}{p} + (1 - p) \frac{1}{1 - p} \right) 
+    &amp;= 1
+\end{aligned}
+\]</span></p>
+<p>The equality holds when <span class="math inline">\(p = 0.5\)</span>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Entropy.png" /></p>
 <p>Some interesting values:</p>
 <ul>
-<li>$p = 0.5$, $\mathbf{H}(p) = 1$</li>
-<li>$p = 0.2/0.8$, $\mathbf{H}(p) \approx 0.7$</li>
-<li>$p = 0.1/0.9$, $\mathbf{H}(p) \approx 0.5$</li>
+<li><span class="math inline">\(p = 0.5\)</span>, <span class="math inline">\(\mathbf{H}(p) = 1\)</span></li>
+<li><span class="math inline">\(p = 0.2/0.8\)</span>, <span class="math inline">\(\mathbf{H}(p) \approx 0.7\)</span></li>
+<li><span class="math inline">\(p = 0.1/0.9\)</span>, <span class="math inline">\(\mathbf{H}(p) \approx 0.5\)</span></li>
 </ul>
-<p><strong><em>Lemma.</em></strong> Given a discrete range $\mathcal{U}$, the entropy of a random variable $X$ defined on $\mathcal{U}$ is maximized when $X$ has uniform distribution, i.e.,<br>$$<br>\mathbf{H} (X) \le \log |\mathcal{U}|<br>$$</p>
-<p><strong><em>Proof.</em></strong><br>$$<br>\begin{aligned}<br>    \mathbf{H} (X)<br>        &amp;= \sum_{x} p(x) \log \frac{1}{p(x) } \<br>        &amp;\le  \log \sum_{x} p(x) \frac{1}{p(x) } \<br>        &amp;= \log |\mathcal{U}|<br>\end{aligned}<br>$$</p>
-<p>The inequality holds with equality only when $p(x) = 1/ |\mathcal{U}|$. </p>
-<p>$\blacksquare$</p>
-<p><strong><em>Lemma.</em></strong> Let $p(x)$ and $q(x)$ be two distributions and $\lambda \in [0, 1]$, then<br>$$<br>\mathbf{H} (\lambda p(x) + (1 - \lambda) q(x) ) \ge \lambda \mathbf{H}(p(x) ) + (1 - \lambda) \mathbf{H} (q(x) )<br>$$</p>
-<p><strong><em>Proof.</em></strong><br>$$<br>\begin{aligned}<br>    \lambda \mathbf{H}(p(x) ) + (1 - \lambda) \mathbf{H} (q(x) )<br>        &amp;= \sum_{x} \left( \lambda p(x) \log \frac{1}{p(x)} + (1 - \lambda) q(x) \log \frac{1}{q(x) }  \right) \<br>        &amp;= (  \lambda p(x) + (1 - \lambda) q(x) )\sum_{x} \left( \frac{ \lambda p(x) }{  \lambda p(x) + (1 - \lambda) q(x) } \log \frac{1}{p(x)} + \frac{(1 - \lambda) q(x) }{ \lambda p(x) + (1 - \lambda) q(x) } \log \frac{1}{q(x) }  \right) \<br>        &amp;\le \sum_{x} ( \lambda p(x) + (1 - \lambda) q(x) ) \log \frac{1}{ \lambda p(x) + (1 - \lambda) q(x) } \<br>        &amp;= \mathbf{H} ( \lambda p(x) + (1 - \lambda) q(x) )<br>\end{aligned}<br>$$</p>
-<p>$\blacksquare$</p>
-<p><strong><em>Lemma.</em></strong> For two independent random variables $X$ and $Y$, we have<br>$$<br>\mathbb{E} \left[ \log_2 \frac{1}{\Pr[X + Y] } \right] = \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] + \mathbb{E} \left[ \log_2 \frac{1}{\Pr[Y] } \right]<br>$$</p>
-<p>i.e.,<br>$$<br>\mathbf{H}[X + Y] = \mathbf{H}[X] + \mathbf{H}[Y]<br>$$</p>
-<p><strong><em>Proof.</em></strong> We prove it for the case of discrete random variables.<br>$$<br>\begin{array}{rrl}<br>    &amp;\mathbb{E} \left[ \log_2 \frac{1}{\Pr[X + Y] }  \right]<br>    &amp;= \sum_{x, y} p(x, y) \log_2 \frac{1}{p(x, y)} \<br>    &amp;&amp;= \sum_{x, y} p(x) p(y) \left( \log_2 \frac{1}{p(x)} + \log_2 \frac{1}{p(y) } \right) \<br>    &amp;&amp;= \sum_{x} p(x) \sum_{y} p(y) \log_2 \frac{1}{p(x)} + \sum_{y} p(y) \sum_{x} p(x) \log_2 \frac{1}{p(y) } \<br>    &amp;&amp;= \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] + \mathbb{E} \left[ \log_2 \frac{1}{\Pr[Y] } \right]<br>\end{array}<br>$$<br>$\blacksquare$</p>
-<p><strong><em>Definition.</em></strong> Given random variable $X$ and $Y$, the joint entropy $\mathbf{H}(X, Y)$ with a distribution $p(x, y)$ is defined as<br>   $$<br>    \mathbf{H}(X,Y) = \mathbb{E}\left[ \log \frac{1}{p(x, y)} \right]<br>   $$<br>   When $X$ and $Y$ are discrete random variables, it is equivalent to<br>   $$<br>    \mathbf{H}(X,Y) = \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(x, y) }.<br>   $$</p>
-<p><strong><em>Definition.</em></strong> The conditional entropy $\mathbf{H}(Y \mid X)$ with a distribution $p(x, y)$ is defined as<br>   $$<br>   \begin{aligned}<br>       \mathbf{H}(Y \mid X)<br>        &amp;= \sum_{x \in \mathcal{X} } p(x) \cdot \mathbf{H} (Y \mid X = x) \<br>        &amp;= \sum_{x \in \mathcal{X} } p(x) \cdot \sum_{y \in \mathcal{Y} } p(y \mid x) \log \frac{1}{p(y \mid x) } \<br>        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) } \<br>        &amp;= \mathbb{E} \left[  \log \frac{1}{p(y \mid x) } \right]<br>   \end{aligned}<br>   $$</p>
+<p><strong><em>Lemma.</em></strong> Given a discrete range <span class="math inline">\(\mathcal{U}\)</span>, the entropy of a random variable <span class="math inline">\(X\)</span> defined on <span class="math inline">\(\mathcal{U}\)</span> is maximized when <span class="math inline">\(X\)</span> has uniform distribution, i.e., <span class="math display">\[
+\mathbf{H} (X) \le \log |\mathcal{U}|
+\]</span></p>
+<p><strong><em>Proof.</em></strong> <span class="math display">\[
+\begin{aligned}
+    \mathbf{H} (X) 
+        &amp;= \sum_{x} p(x) \log \frac{1}{p(x) } \\ 
+        &amp;\le  \log \sum_{x} p(x) \frac{1}{p(x) } \\
+        &amp;= \log |\mathcal{U}|
+\end{aligned}
+\]</span></p>
+<p>The inequality holds with equality only when <span class="math inline">\(p(x) = 1/ |\mathcal{U}|\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Lemma.</em></strong> Let <span class="math inline">\(p(x)\)</span> and <span class="math inline">\(q(x)\)</span> be two distributions and <span class="math inline">\(\lambda \in [0, 1]\)</span>, then <span class="math display">\[
+\mathbf{H} (\lambda p(x) + (1 - \lambda) q(x) ) \ge \lambda \mathbf{H}(p(x) ) + (1 - \lambda) \mathbf{H} (q(x) )
+\]</span></p>
+<p><strong><em>Proof.</em></strong> <span class="math display">\[
+\begin{aligned}
+    \lambda \mathbf{H}(p(x) ) + (1 - \lambda) \mathbf{H} (q(x) ) 
+        &amp;= \sum_{x} \left( \lambda p(x) \log \frac{1}{p(x)} + (1 - \lambda) q(x) \log \frac{1}{q(x) }  \right) \\ 
+        &amp;= (  \lambda p(x) + (1 - \lambda) q(x) )\sum_{x} \left( \frac{ \lambda p(x) }{  \lambda p(x) + (1 - \lambda) q(x) } \log \frac{1}{p(x)} + \frac{(1 - \lambda) q(x) }{ \lambda p(x) + (1 - \lambda) q(x) } \log \frac{1}{q(x) }  \right) \\
+        &amp;\le \sum_{x} ( \lambda p(x) + (1 - \lambda) q(x) ) \log \frac{1}{ \lambda p(x) + (1 - \lambda) q(x) } \\ 
+        &amp;= \mathbf{H} ( \lambda p(x) + (1 - \lambda) q(x) ) 
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Lemma.</em></strong> For two independent random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, we have <span class="math display">\[
+\mathbb{E} \left[ \log_2 \frac{1}{\Pr[X + Y] } \right] = \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] + \mathbb{E} \left[ \log_2 \frac{1}{\Pr[Y] } \right]
+\]</span></p>
+<p>i.e., <span class="math display">\[
+\mathbf{H}[X + Y] = \mathbf{H}[X] + \mathbf{H}[Y]
+\]</span></p>
+<p><strong><em>Proof.</em></strong> We prove it for the case of discrete random variables. <span class="math display">\[
+\begin{array}{rrl}
+    &amp;\mathbb{E} \left[ \log_2 \frac{1}{\Pr[X + Y] }  \right] 
+    &amp;= \sum_{x, y} p(x, y) \log_2 \frac{1}{p(x, y)} \\
+    &amp;&amp;= \sum_{x, y} p(x) p(y) \left( \log_2 \frac{1}{p(x)} + \log_2 \frac{1}{p(y) } \right) \\
+    &amp;&amp;= \sum_{x} p(x) \sum_{y} p(y) \log_2 \frac{1}{p(x)} + \sum_{y} p(y) \sum_{x} p(x) \log_2 \frac{1}{p(y) } \\
+    &amp;&amp;= \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] + \mathbb{E} \left[ \log_2 \frac{1}{\Pr[Y] } \right]    
+\end{array}
+\]</span> <span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Definition.</em></strong> Given random variable <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, the joint entropy <span class="math inline">\(\mathbf{H}(X, Y)\)</span> with a distribution <span class="math inline">\(p(x, y)\)</span> is defined as <span class="math display">\[
+    \mathbf{H}(X,Y) = \mathbb{E}\left[ \log \frac{1}{p(x, y)} \right]
+   \]</span> When <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are discrete random variables, it is equivalent to <span class="math display">\[
+    \mathbf{H}(X,Y) = \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(x, y) }.
+   \]</span></p>
+<p><strong><em>Definition.</em></strong> The conditional entropy <span class="math inline">\(\mathbf{H}(Y \mid X)\)</span> with a distribution <span class="math inline">\(p(x, y)\)</span> is defined as <span class="math display">\[
+   \begin{aligned}
+       \mathbf{H}(Y \mid X) 
+        &amp;= \sum_{x \in \mathcal{X} } p(x) \cdot \mathbf{H} (Y \mid X = x) \\
+        &amp;= \sum_{x \in \mathcal{X} } p(x) \cdot \sum_{y \in \mathcal{Y} } p(y \mid x) \log \frac{1}{p(y \mid x) } \\
+        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) } \\
+        &amp;= \mathbb{E} \left[  \log \frac{1}{p(y \mid x) } \right]
+   \end{aligned}
+   \]</span></p>
 <ul>
-<li><strong>Remark.</strong> <em>Conditioned on $X = x$, $Y$ is a random variable and therefore we can define its Entropy as $\mathbf{H}(Y \mid X = x)$. The conditional entropy $\mathbf{H}(Y \mid X)$ is the average of the $\mathbf{H}(Y \mid X = x)$ over the distribution of $X$. Both $\mathbf{H}(Y \mid X)$ and $\mathbf{H}(Y \mid X = x)$ represent a value. This is different from the conditional expectation: $\mathbb{E}[Y \mid X]$ is a random variable and $\mathbb{E}[Y \mid X = x]$ is a value.</em> </li>
+<li><strong>Remark.</strong> <em>Conditioned on <span class="math inline">\(X = x\)</span>, <span class="math inline">\(Y\)</span> is a random variable and therefore we can define its Entropy as <span class="math inline">\(\mathbf{H}(Y \mid X = x)\)</span>. The conditional entropy <span class="math inline">\(\mathbf{H}(Y \mid X)\)</span> is the average of the <span class="math inline">\(\mathbf{H}(Y \mid X = x)\)</span> over the distribution of <span class="math inline">\(X\)</span>. Both <span class="math inline">\(\mathbf{H}(Y \mid X)\)</span> and <span class="math inline">\(\mathbf{H}(Y \mid X = x)\)</span> represent a value. This is different from the conditional expectation: <span class="math inline">\(\mathbb{E}[Y \mid X]\)</span> is a random variable and <span class="math inline">\(\mathbb{E}[Y \mid X = x]\)</span> is a value.</em></li>
 </ul>
-<p><strong><em>Chain Rule.</em></strong> For random variable $X$ and $Y$, it holds that<br>   $$<br>   \begin{aligned}<br>       \mathbf{H}(X, Y)<br>        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(x, y) } \<br>        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) p(x) } \<br>        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) } + \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{ p(x) } \<br>        &amp;= \mathbf{H}(Y \mid X) + \mathbf{H}(X)<br>   \end{aligned}<br>   $$</p>
-<p><em>Corollary of</em> <strong><em>Chain Rule.</em></strong><br>   $$<br>   \mathbf{H}(X) + \mathbf{H}(Y \mid X) =<br>   \mathbf{H}(Y) + \mathbf{H}(X \mid Y)<br>   $$</p>
-<p>   Or<br>   $$<br>   \mathbf{H}(X) - \mathbf{H}(X \mid Y)=<br>   \mathbf{H}(Y) - \mathbf{H}(Y \mid X)<br>   $$</p>
-<h3 id="Binomial-Distribution"><a href="#Binomial-Distribution" class="headerlink" title="Binomial Distribution"></a>Binomial Distribution</h3><p>We study the relationship of binomial distribution $B(n, p)$ and entropy. As a rule of thumb, for reasonably large $n$ (say, $n \ge 100$) and moderate size of $p$ (e.g., $0.1 \le p \le 0.9$), the probability is concentrated on the interval $[np - \sqrt n, np + \sqrt n]$. </p>
-<p>$N = 100, p = 0.5$.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.5.png"></p>
-<p>$N = 100, p = 0.3$.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.3.png"></p>
-<p>$N = 100, p = 0.1$.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.1.png"></p>
-<p>$N = 1000, p = 0.1$. Note that<br>$$<br>\Pr[ 100 - \sqrt{1000} \le X \le 100 + \sqrt{1000} ] \approx 0.9993<br>$$<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=1000_P=0.1.png"></p>
-<p>*<strong>Lemma</strong>.* For $n\in \mathbf{Z}^+$, $k \in [n]$, it holds that<br>$$<br>\binom{n}{k} \ge \frac{1}{n + 1} 2^{n \mathbf{H}(\frac{k}{n} ) }<br>$$</p>
-<p>*<strong>Proof</strong>.* Define $q = \frac{k}{n}$. Then<br>$$<br>\begin{aligned}<br>    (q + (1 - q))^n &amp;= \sum_{i = 0}^n \binom{n}{i} q^i (1 - q)^{n - i}<br>\end{aligned}<br>$$</p>
-<p>The summation consists of $(n + 1)$ terms. We claim that<br>$$<br>\binom{n}{k} q^k (1 - q)^{n - k}<br>$$</p>
-<p>is the largest one. For $i \in [n]$,<br>$$<br>\frac{ \binom{n}{i + 1} q^{i + 1} (1 - q)^{n - i - 1} }{ \binom{n}{i } q^{i} (1 - q)^{n - i } } = \frac{n - i }{i + 1} \frac{ q}{1 - q}<br>$$</p>
-<p>The ratio is at least $1$ when $\frac{n - i}{i + 1} \ge \frac{1 -  q}{ q }$. We see that when $i = nq - 1 = k - 1$, it holds that<br>$$<br>\frac{n - i}{i + 1} = \frac{n - nq + 1}{ n q} \ge \frac{1 -  q}{ q }<br>$$<br>and when $i = k$,<br>$$<br>\frac{n - i}{i + 1} = \frac{n - nq}{ n q + 1} &lt; \frac{1 -  q}{ q }<br>$$</p>
-<p>Therefore,<br>$$<br>\begin{aligned}<br>    \binom{n}{k} q^k (1 - q)^{n - k}<br>        &amp;= \binom{n}{k} 2^{k \log_2 q} 2^{ (n - k )\log_2 (1 - q)} \<br>        &amp;= \binom{n}{k} 2^{ n [ q \log_2 q +  (1 - q )\log_2 (1 - q) ]} \<br>        &amp;\ge \frac{1}{n + 1}<br>\end{aligned}<br>$$</p>
-<p>$\blacksquare$</p>
-<h4 id="Extracting-Random-Bits"><a href="#Extracting-Random-Bits" class="headerlink" title="Extracting Random Bits"></a>Extracting Random Bits</h4><p>Consider a uniform random variable $X$ at $[0, m - 1]$. By definition we know that<br>$$<br>\mathbf{H}[X] = \sum_{i = 0}^{m - 1} \frac{1}{m} \log_2 \frac{1}{\frac{1}{m} } = \log_2 m<br>$$</p>
-<p>Given $X$ as an input, the following algorithm outputs a binary string $s$, such that each bit of $s$ can be interpreted as the outcome of independently Bernoulli random variables with probability $0.5$. </p>
-<p>On the high level, we divide $m$ into intervals of powers of 2. When $X$ falls into an interval, we return a binary number that is within the range of that interval. Specifically, we rewrite<br>$$<br>m = 2^{d_k} + 2^{d_{k - 1} } + … + 2^{d_1}<br>$$</p>
-<p>where $\lfloor \mathbf{H}[X] \rfloor = \lfloor \log_2 m \rfloor = d_k &gt; d_{k - 1} &gt; … &gt; d_1 \ge 0$ are the indexes of non-zero bits in the binary representation of $m$. The extraction is as follows:</p>
+<p><strong><em>Chain Rule.</em></strong> For random variable <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, it holds that <span class="math display">\[
+   \begin{aligned}
+       \mathbf{H}(X, Y) 
+        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(x, y) } \\
+        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) p(x) } \\
+        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) } + \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{ p(x) } \\
+        &amp;= \mathbf{H}(Y \mid X) + \mathbf{H}(X)
+   \end{aligned}
+   \]</span></p>
+<p><em>Corollary of</em> <strong><em>Chain Rule.</em></strong> <span class="math display">\[
+   \mathbf{H}(X) + \mathbf{H}(Y \mid X) =  
+   \mathbf{H}(Y) + \mathbf{H}(X \mid Y)
+   \]</span></p>
+<p>Or <span class="math display">\[
+   \mathbf{H}(X) - \mathbf{H}(X \mid Y)=  
+   \mathbf{H}(Y) - \mathbf{H}(Y \mid X)
+   \]</span></p>
+<h3 id="binomial-distribution">Binomial Distribution</h3>
+<p>We study the relationship of binomial distribution <span class="math inline">\(B(n, p)\)</span> and entropy. As a rule of thumb, for reasonably large <span class="math inline">\(n\)</span> (say, <span class="math inline">\(n \ge 100\)</span>) and moderate size of <span class="math inline">\(p\)</span> (e.g., <span class="math inline">\(0.1 \le p \le 0.9\)</span>), the probability is concentrated on the interval <span class="math inline">\([np - \sqrt n, np + \sqrt n]\)</span>.</p>
+<p><span class="math inline">\(N = 100, p = 0.5\)</span>. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.5.png" /></p>
+<p><span class="math inline">\(N = 100, p = 0.3\)</span>. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.3.png" /></p>
+<p><span class="math inline">\(N = 100, p = 0.1\)</span>. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.1.png" /></p>
+<p><span class="math inline">\(N = 1000, p = 0.1\)</span>. Note that <span class="math display">\[
+\Pr[ 100 - \sqrt{1000} \le X \le 100 + \sqrt{1000} ] \approx 0.9993
+\]</span> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=1000_P=0.1.png" /></p>
+<p><em><strong>Lemma</strong>.</em> For <span class="math inline">\(n\in \mathbf{Z}^+\)</span>, <span class="math inline">\(k \in [n]\)</span>, it holds that <span class="math display">\[
+\binom{n}{k} \ge \frac{1}{n + 1} 2^{n \mathbf{H}(\frac{k}{n} ) }
+\]</span></p>
+<p><em><strong>Proof</strong>.</em> Define <span class="math inline">\(q = \frac{k}{n}\)</span>. Then <span class="math display">\[
+\begin{aligned}
+    (q + (1 - q))^n &amp;= \sum_{i = 0}^n \binom{n}{i} q^i (1 - q)^{n - i}
+\end{aligned}
+\]</span></p>
+<p>The summation consists of <span class="math inline">\((n + 1)\)</span> terms. We claim that <span class="math display">\[
+\binom{n}{k} q^k (1 - q)^{n - k}
+\]</span></p>
+<p>is the largest one. For <span class="math inline">\(i \in [n]\)</span>, <span class="math display">\[
+\frac{ \binom{n}{i + 1} q^{i + 1} (1 - q)^{n - i - 1} }{ \binom{n}{i } q^{i} (1 - q)^{n - i } } = \frac{n - i }{i + 1} \frac{ q}{1 - q}
+\]</span></p>
+<p>The ratio is at least <span class="math inline">\(1\)</span> when <span class="math inline">\(\frac{n - i}{i + 1} \ge \frac{1 - q}{ q }\)</span>. We see that when <span class="math inline">\(i = nq - 1 = k - 1\)</span>, it holds that <span class="math display">\[
+\frac{n - i}{i + 1} = \frac{n - nq + 1}{ n q} \ge \frac{1 -  q}{ q }
+\]</span> and when <span class="math inline">\(i = k\)</span>, <span class="math display">\[
+\frac{n - i}{i + 1} = \frac{n - nq}{ n q + 1} &lt; \frac{1 -  q}{ q }
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+\begin{aligned}
+    \binom{n}{k} q^k (1 - q)^{n - k} 
+        &amp;= \binom{n}{k} 2^{k \log_2 q} 2^{ (n - k )\log_2 (1 - q)} \\
+        &amp;= \binom{n}{k} 2^{ n [ q \log_2 q +  (1 - q )\log_2 (1 - q) ]} \\
+        &amp;\ge \frac{1}{n + 1}
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h4 id="extracting-random-bits">Extracting Random Bits</h4>
+<p>Consider a uniform random variable <span class="math inline">\(X\)</span> at <span class="math inline">\([0, m - 1]\)</span>. By definition we know that <span class="math display">\[
+\mathbf{H}[X] = \sum_{i = 0}^{m - 1} \frac{1}{m} \log_2 \frac{1}{\frac{1}{m} } = \log_2 m
+\]</span></p>
+<p>Given <span class="math inline">\(X\)</span> as an input, the following algorithm outputs a binary string <span class="math inline">\(s\)</span>, such that each bit of <span class="math inline">\(s\)</span> can be interpreted as the outcome of independently Bernoulli random variables with probability <span class="math inline">\(0.5\)</span>.</p>
+<p>On the high level, we divide <span class="math inline">\(m\)</span> into intervals of powers of 2. When <span class="math inline">\(X\)</span> falls into an interval, we return a binary number that is within the range of that interval. Specifically, we rewrite <span class="math display">\[
+m = 2^{d_k} + 2^{d_{k - 1} } + ... + 2^{d_1}
+\]</span></p>
+<p>where <span class="math inline">\(\lfloor \mathbf{H}[X] \rfloor = \lfloor \log_2 m \rfloor = d_k &gt; d_{k - 1} &gt; ... &gt; d_1 \ge 0\)</span> are the indexes of non-zero bits in the binary representation of <span class="math inline">\(m\)</span>. The extraction is as follows:</p>
 <blockquote>
-<p><strong><em>Algorithm 1.</em></strong>  </p>
-<ol>
-<li>for $i \leftarrow k$ <em>down-to</em> $1$ <em>do</em>:  </li>
-<li>$\quad$ <em>if</em> $X &lt; 2^{d_i}$ <em>then</em>:  </li>
-<li>$\quad$ $\quad$ <em>return a $d_i$-bit binary representation of</em> $X$;  </li>
-<li>$\quad$ <em>else:</em>  </li>
-<li>$\quad$ $\quad$ $X \leftarrow X - 2^{d_i}$;  </li>
+<p><strong><em>Algorithm 1.</em></strong></p>
+<ol type="1">
+<li>for <span class="math inline">\(i \leftarrow k\)</span> <em>down-to</em> <span class="math inline">\(1\)</span> <em>do</em>:<br />
+</li>
+<li><span class="math inline">\(\quad\)</span> <em>if</em> <span class="math inline">\(X &lt; 2^{d_i}\)</span> <em>then</em>:<br />
+</li>
+<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span> <em>return a <span class="math inline">\(d_i\)</span>-bit binary representation of</em> <span class="math inline">\(X\)</span>;<br />
+</li>
+<li><span class="math inline">\(\quad\)</span> <em>else:</em><br />
+</li>
+<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span> <span class="math inline">\(X \leftarrow X - 2^{d_i}\)</span>;</li>
 </ol>
 </blockquote>
-<p><strong>Example ($m = 13$).</strong><br><em>It is interesting to note that when $X = 12$, our proposed extraction method return no random bit, as $0 &lt; 2^0$. In this case our proposed method has wasted some randomness.</em></p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/ExtractingRandomBits.png"></p>
-<p><em>Question to ponder: Come up with some method that uses $n$ i.i.d. $X$’s to extract binary string with expected length close to $n \mathbf{H}[X]$.</em> </p>
-<p>Let $s$ be the binary string returned by Algorithm 1. </p>
-<p><strong><em>Theorem 1</em></strong>.<br>$$<br>\lfloor \log_2 m \rfloor - 1 \le \mathbf{E}[|s|] \le \log_2 m<br>$$</p>
-<p><em>Proof.</em> It is easy to see that<br>$$<br>  \mathbf{E}[|s| ] = \sum_{i = 1}^k d_i \frac{2^{d_i} }{m }<br>$$<br>which depends on $m$. To show the upper bound,<br>$$<br>\begin{array}{lll}<br>    \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } - \log_2 m<br>    = \sum_{i = 1}^k \frac{2^{d_i} }{m } \log_2 \frac{2^{d_i} }{m } \le 0<br>\end{array}<br>$$<br>The inequality follows from $\log_2 \frac{2^{d_i} }{m } \le 0$ for $1 \le i \le k$. </p>
-<p>To show the lower bound, define the function<br>$$<br>f(m) = \sum_{i = 1}^k d_i \frac{2^{d_i} }{m }<br>$$</p>
-<p>We prove by induction on $m$ that $f(m) \ge \lfloor \log_2 m \rfloor - 1 = d_k - 1$. The cases holds trivially when $m = 1$. Now suppose it holds for all integer less than $m$. We prove that it holds for $m$.   </p>
-<p>Case 1. $m = 2^{d_k}$. Then $f(m) = d_k = \log_2 m$.   </p>
-<p>Case 2. $m &gt; 2^{d_k}$. Now<br>$$<br>\begin{aligned}<br>    f(m) &amp;= \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } \<br>    &amp;= d_k \frac{2^{d_k} }{m} + \left( \sum_{i = 1}^{k - 1} d_i \frac{2^{d_i} }{m - 2^{d_k}  }  \right) \frac{m - 2^{d_k} }{m} \<br>\end{aligned}<br>$$</p>
-<p>But $\sum_{i = 1}^{k - 1} 2^{d_i} = m - 2^{d_k}$. It follows by induction<br>$$<br>\sum_{i = 1}^{k - 1} d_i \frac{2^{d_i} }{m - 2^{d_k}  } = f(m - 2^{d_k}) \ge d_{k - 1} - 1<br>$$</p>
-<p>Finally,<br>$$<br>\begin{aligned}<br>    f(m)<br>    &amp;\ge d_k \frac{2^{d_k} }{m} + \left( d_{k - 1} -1 \right) \frac{m - 2^{d_k} }{m} \<br>    &amp;= d_k +  \left( d_{k - 1}- d_k -1 \right)  \frac{m - 2^{d_k} }{m} \<br>    &amp;= d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( 1 - \frac{ 2^{d_k} }{m} \right)\<br>    &amp;\ge  d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( 1 - \frac{ 2^{d_k} }{2^{d_k} + 2^{d_{k - 1} } } \right)\<br>    &amp;=  d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( \frac{ 2^{d_{k - 1} } }{2^{d_k} + 2^{d_{k - 1} } } \right)\<br>    &amp;=  d_k -  \left( \frac{ d_k  - d_{k - 1} + 1  }{2^{d_k - d_{k - 1} } + 1 } \right)\<br>    &amp;\ge  d_k -  \left( \frac{ d_k  - d_{k - 1} + 1  }{2^{d_k - d_{k - 1} } } \right)\<br>    &amp;\ge d_k - 1<br>\end{aligned}<br>$$</p>
-<p>The last inequality holds since $d_{k - 1} \le d_k - 1$ and the function $f(x) = \frac{x + 1}{2^x}$ decreases when $x \ge 1$. </p>
-<p>$\blacksquare$</p>
-<h5 id="Binary-Strings"><a href="#Binary-Strings" class="headerlink" title="Binary Strings"></a>Binary Strings</h5><p>To illustrate the idea of entropy, we study another example of random bit extraction. </p>
-<p><strong><em>Problem.</em></strong> <em>Let $t$ be an $n$-bit binary string each bit of which is interpreted as the outcome of independent bias coin flip that comes up head probability $p \le 0.5$. Given $t$ as input, we want to output a binary string $s$ (not necessary of length $n$) of independent unbiased random bits.</em></p>
-<p><strong><em>Theorem.</em></strong><br>There is an extraction algorithm, such that,   </p>
-<ol>
-<li>$\forall \delta \in (0, 1)$, $\exists N &gt; 0$, $s.t.$, $\forall n \ge N$, $\mathbf{E}[|s|] \ge (1 - \delta) n\mathbf{H}(p)$.    </li>
-<li>$\forall n &gt; 0$, $\mathbf{E}[|s|] \le n\mathbf{H}(p)$.</li>
-</ol>
-<p>The theorem states that the expected length of $s$ approximates $n\mathbf{H}(p)$. Equivalently,<br>$$<br>\lim_{n \rightarrow \infty} \frac{\mathbf{E}[|s|]}{n} = \mathbf{H}(p)<br>$$</p>
-<p><strong><em>Proof.</em></strong><br>Define the random variable $Z$ to be the number of ones in $t$. For any integer $k \ge 0$, there are $\binom{n}{k}$ strings with $k$ ones. We can map these strings to ${0, 1, …, \binom{n}{k} - 1 }$. Conditioned on $Z = k$, the mapping of $t$ is uniform on ${0, 1, …, \binom{n}{k} - 1 }$. We can use Algorithm 1 to return  a binary string $s$. Now its expected length is<br>$$<br>\mathbf{E}[|s|] = \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k]<br>$$</p>
-<p>Further, by Hoeffding’s inequality, it holds that for $0 &lt; \epsilon &lt; p$,<br>$$<br>\Pr[ |Z - np | \ge n\epsilon] \le \exp\left(- 2 n \epsilon^2 \right)<br>$$</p>
-<p>By setting the failure probability $\exp(-2 n \epsilon^2) = \delta / 2$, we get $\epsilon = \sqrt{\frac{\ln \frac{2}{\delta} }{2n} }$. </p>
-<p>Let $LB = \lceil np - n\epsilon \rceil$ and $UB = \lfloor np + n\epsilon \rfloor$. Observing that $Z$ is an integer, we have<br>$$<br>\begin{array}{rl}<br>    \Pr[LB \le Z \le UB] &amp;= \Pr[np - n\epsilon \le Z \le np + n\epsilon] \<br>    &amp;\ge 1 - \delta/2<br>\end{array}<br>$$</p>
-<p>As $p \le 0.5$, it holds that<br>$$<br>n = \lceil n/2 - n\epsilon \rceil + \lfloor n/2 + n\epsilon \rfloor \ge \lceil np - n\epsilon \rceil + \lfloor np + n\epsilon \rfloor<br>$$</p>
-<p>Therefore,<br>$$<br>LB \le UB \le n - LB \<br>$$</p>
-<p>Since $\binom{n}{k}$ increase for $k &lt; n / 2$ and decrease $k &gt; n / 2$, it holds that<br>$$<br>\binom{n}{LB} \le \binom{n}{UB}<br>$$</p>
-<p>For $LB \le k \le UB$, we have<br>$$<br>\binom{n}{LB} \le \binom{n}{k}<br>$$</p>
-<p>Define $q = \frac{ LB }{n}$,<br>$$<br>\binom{n}{LB}  \ge \frac{1}{n + 1} 2^{n \mathbf{H}( \frac{ LB }{n} ) } \ge \frac{1}{n + 1} 2^{n\mathbf{H}(p - \epsilon)}<br>$$</p>
-<p>By <strong><em>Theorem 1</em></strong>, we have<br>$$<br>\begin{aligned}<br>    \mathbf{E}[|s|] &amp;= \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \<br>    &amp;\ge \sum_{k = LB}^{UB} \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \<br>    &amp;\ge \sum_{k = LB }^{UB } \left( \left\lfloor \log_2 \binom{n}{k} \right\rfloor - 1 \right) \binom{n}{k} p^k (1 - p)^{n - k}  \<br>    &amp;\ge \sum_{k = LB }^{UB } \left( \left\lfloor \log_2  \binom{n}{ LB  } \right\rfloor - 1 \right) \binom{n}{k} p^k (1 - p)^{n - k}  \<br>    &amp;=  \left( \left\lfloor \log_2  \binom{n}{ LB  } \right\rfloor - 1 \right) \Pr[LB \le Z \le UB] \<br>    &amp;\ge \left( n \mathbf{H}(p - \epsilon)  - \log_2 (n + 1) \right) (1- \delta / 2) \<br>    &amp;=  \left( \frac{\mathbf{H}(p - \epsilon)}{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) (1- \delta / 2 ) \cdot n \cdot \mathbf{H}(p) \<br>    &amp;=  \left( \frac{\mathbf{H} \left(p - \sqrt{\frac{\ln \frac{2}{\delta} }{2n} } \right) }{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) (1- \delta / 2 ) \cdot n \cdot \mathbf{H}(p) \<br>\end{aligned}<br>$$</p>
-<p>$\exists N &gt; 0$, s.t.,  $\forall n &gt; N$, $\left( \frac{\mathbf{H} \left(p - \sqrt{\frac{\ln \frac{2}{\delta} }{2n} } \right) }{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) \ge (1 - \delta / 2)$, which finishes the proof of lower bound.</p>
-<p>As for the upper bound, observe that<br>$$<br>\binom{n}{k} p^k ( 1- p)^{n - k} \le 1<br>$$</p>
-<p>Therefore, $\binom{n}{k} \le p^{-k} ( 1- p)^{-(n - k) }$. Thus, we have<br>$$<br>\begin{aligned}<br>       \mathbf{E}[|s|] &amp;= \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \<br>       &amp;\le \sum_{k = 1}^n \left( \log_2 \binom{n}{k} \right) \binom{n}{k} p^k (1 - p)^{n - k} \<br>       &amp;\le \sum_{k = 1}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k (1 - p)^{n - k} }<br>\end{aligned}<br>$$</p>
-<p>The last term is exactly the entropy of the string. By independence of the bits, we know that it is equal to $n \mathbf{H}(p)$. </p>
-<p>Remark: we may also prove it algebraically.<br>$$<br>\begin{aligned}<br>       \mathbf{E}[|s|]<br>       &amp;\le \sum_{k = 0}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k (1 - p)^{n - k} } \<br>       &amp;= \sum_{k = 1}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k } + \sum_{k = 0}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ (1 - p)^{n - k} } \<br>       &amp;= \left( p \log_2 \frac{1}{p} \right) \sum_{k = 1}^n  \binom{n}{k} k p^{k - 1} (1 - p)^{n - k}  \<br>       &amp;\quad +  \left( ( 1- p) \log_2 \frac{1}{ 1 - p } \right) \sum_{k = 0}^{n - 1} \binom{n}{k} (n - k) p^k (1 - p)^{n - k - 1} \<br>       &amp;= \left( p \log_2 \frac{1}{p} \right) [(x + (1 - p))^n]_{x = p}’  +  \left( (1 - p) \log_2 \frac{1}{ 1 - p } \right) [(p + x)^n]_{x = 1-p}’ \<br>       &amp;= n \mathbf{H}(p)<br>\end{aligned}<br>$$</p>
-<p>$\blacksquare$</p>
-<h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference."></a>Reference.</h4><p>[1] S. Har-Peled, “Chapter 26 Entropy, Randomness, and Information,” p. 6.<br>[2] M. Mitzenmacher and E. Upfal, Probability and Computing: Randomized Algorithms and Probabilistic Analysis. Cambridge: Cambridge University Press, 2005.</p>
+<p><strong>Example (<span class="math inline">\(m = 13\)</span>).</strong> <em>It is interesting to note that when <span class="math inline">\(X = 12\)</span>, our proposed extraction method return no random bit, as <span class="math inline">\(0 &lt; 2^0\)</span>. In this case our proposed method has wasted some randomness.</em></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/ExtractingRandomBits.png" /></p>
+<p><em>Question to ponder: Come up with some method that uses <span class="math inline">\(n\)</span> i.i.d. <span class="math inline">\(X\)</span>'s to extract binary string with expected length close to <span class="math inline">\(n \mathbf{H}[X]\)</span>.</em></p>
+<p>Let <span class="math inline">\(s\)</span> be the binary string returned by Algorithm 1.</p>
+<p><strong><em>Theorem 1</em></strong>. <span class="math display">\[
+\lfloor \log_2 m \rfloor - 1 \le \mathbf{E}[|s|] \le \log_2 m
+\]</span></p>
+<p><em>Proof.</em> It is easy to see that <span class="math display">\[
+  \mathbf{E}[|s| ] = \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } 
+\]</span> which depends on <span class="math inline">\(m\)</span>. To show the upper bound, <span class="math display">\[
+\begin{array}{lll}
+    \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } - \log_2 m
+    = \sum_{i = 1}^k \frac{2^{d_i} }{m } \log_2 \frac{2^{d_i} }{m } \le 0
+\end{array}
+\]</span> The inequality follows from <span class="math inline">\(\log_2 \frac{2^{d_i} }{m } \le 0\)</span> for <span class="math inline">\(1 \le i \le k\)</span>.</p>
+<p>To show the lower bound, define the function <span class="math display">\[
+f(m) = \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } 
+\]</span></p>
+<p>We prove by induction on <span class="math inline">\(m\)</span> that <span class="math inline">\(f(m) \ge \lfloor \log_2 m \rfloor - 1 = d_k - 1\)</span>. The cases holds trivially when <span class="math inline">\(m = 1\)</span>. Now suppose it holds for all integer less than <span class="math inline">\(m\)</span>. We prove that it holds for <span class="math inline">\(m\)</span>.</p>
+<p>Case 1. <span class="math inline">\(m = 2^{d_k}\)</span>. Then <span class="math inline">\(f(m) = d_k = \log_2 m\)</span>.</p>
+<p>Case 2. <span class="math inline">\(m &gt; 2^{d_k}\)</span>. Now<br />
+<span class="math display">\[
+\begin{aligned}
+    f(m) &amp;= \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } \\
+    &amp;= d_k \frac{2^{d_k} }{m} + \left( \sum_{i = 1}^{k - 1} d_i \frac{2^{d_i} }{m - 2^{d_k}  }  \right) \frac{m - 2^{d_k} }{m} \\
+\end{aligned}
+\]</span></p>
+<p>But <span class="math inline">\(\sum_{i = 1}^{k - 1} 2^{d_i} = m - 2^{d_k}\)</span>. It follows by induction <span class="math display">\[
+\sum_{i = 1}^{k - 1} d_i \frac{2^{d_i} }{m - 2^{d_k}  } = f(m - 2^{d_k}) \ge d_{k - 1} - 1
+\]</span></p>
+<p>Finally, <span class="math display">\[
+\begin{aligned}
+    f(m)
+    &amp;\ge d_k \frac{2^{d_k} }{m} + \left( d_{k - 1} -1 \right) \frac{m - 2^{d_k} }{m} \\
+    &amp;= d_k +  \left( d_{k - 1}- d_k -1 \right)  \frac{m - 2^{d_k} }{m} \\
+    &amp;= d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( 1 - \frac{ 2^{d_k} }{m} \right)\\
+    &amp;\ge  d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( 1 - \frac{ 2^{d_k} }{2^{d_k} + 2^{d_{k - 1} } } \right)\\
+    &amp;=  d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( \frac{ 2^{d_{k - 1} } }{2^{d_k} + 2^{d_{k - 1} } } \right)\\
+    &amp;=  d_k -  \left( \frac{ d_k  - d_{k - 1} + 1  }{2^{d_k - d_{k - 1} } + 1 } \right)\\     
+    &amp;\ge  d_k -  \left( \frac{ d_k  - d_{k - 1} + 1  }{2^{d_k - d_{k - 1} } } \right)\\
+    &amp;\ge d_k - 1
+\end{aligned}
+\]</span></p>
+<p>The last inequality holds since <span class="math inline">\(d_{k - 1} \le d_k - 1\)</span> and the function <span class="math inline">\(f(x) = \frac{x + 1}{2^x}\)</span> decreases when <span class="math inline">\(x \ge 1\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h5 id="binary-strings">Binary Strings</h5>
+<p>To illustrate the idea of entropy, we study another example of random bit extraction.</p>
+<p><strong><em>Problem.</em></strong> <em>Let <span class="math inline">\(t\)</span> be an <span class="math inline">\(n\)</span>-bit binary string each bit of which is interpreted as the outcome of independent bias coin flip that comes up head probability <span class="math inline">\(p \le 0.5\)</span>. Given <span class="math inline">\(t\)</span> as input, we want to output a binary string <span class="math inline">\(s\)</span> (not necessary of length <span class="math inline">\(n\)</span>) of independent unbiased random bits.</em></p>
+<p><strong><em>Theorem.</em></strong> There is an extraction algorithm, such that,<br />
+1. <span class="math inline">\(\forall \delta \in (0, 1)\)</span>, <span class="math inline">\(\exists N &gt; 0\)</span>, <span class="math inline">\(s.t.\)</span>, <span class="math inline">\(\forall n \ge N\)</span>, <span class="math inline">\(\mathbf{E}[|s|] \ge (1 - \delta) n\mathbf{H}(p)\)</span>.<br />
+2. <span class="math inline">\(\forall n &gt; 0\)</span>, <span class="math inline">\(\mathbf{E}[|s|] \le n\mathbf{H}(p)\)</span>.</p>
+<p>The theorem states that the expected length of <span class="math inline">\(s\)</span> approximates <span class="math inline">\(n\mathbf{H}(p)\)</span>. Equivalently, <span class="math display">\[
+\lim_{n \rightarrow \infty} \frac{\mathbf{E}[|s|]}{n} = \mathbf{H}(p)
+\]</span></p>
+<p><strong><em>Proof.</em></strong> Define the random variable <span class="math inline">\(Z\)</span> to be the number of ones in <span class="math inline">\(t\)</span>. For any integer <span class="math inline">\(k \ge 0\)</span>, there are <span class="math inline">\(\binom{n}{k}\)</span> strings with <span class="math inline">\(k\)</span> ones. We can map these strings to <span class="math inline">\(\{0, 1, ..., \binom{n}{k} - 1 \}\)</span>. Conditioned on <span class="math inline">\(Z = k\)</span>, the mapping of <span class="math inline">\(t\)</span> is uniform on <span class="math inline">\(\{0, 1, ..., \binom{n}{k} - 1 \}\)</span>. We can use Algorithm 1 to return a binary string <span class="math inline">\(s\)</span>. Now its expected length is <span class="math display">\[
+\mathbf{E}[|s|] = \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k]
+\]</span></p>
+<p>Further, by Hoeffding's inequality, it holds that for <span class="math inline">\(0 &lt; \epsilon &lt; p\)</span>, <span class="math display">\[
+\Pr[ |Z - np | \ge n\epsilon] \le \exp\left(- 2 n \epsilon^2 \right)
+\]</span></p>
+<p>By setting the failure probability <span class="math inline">\(\exp(-2 n \epsilon^2) = \delta / 2\)</span>, we get <span class="math inline">\(\epsilon = \sqrt{\frac{\ln \frac{2}{\delta} }{2n} }\)</span>.</p>
+<p>Let <span class="math inline">\(LB = \lceil np - n\epsilon \rceil\)</span> and <span class="math inline">\(UB = \lfloor np + n\epsilon \rfloor\)</span>. Observing that <span class="math inline">\(Z\)</span> is an integer, we have <span class="math display">\[
+\begin{array}{rl}  
+    \Pr[LB \le Z \le UB] &amp;= \Pr[np - n\epsilon \le Z \le np + n\epsilon] \\
+    &amp;\ge 1 - \delta/2
+\end{array}
+\]</span></p>
+<p>As <span class="math inline">\(p \le 0.5\)</span>, it holds that <span class="math display">\[
+n = \lceil n/2 - n\epsilon \rceil + \lfloor n/2 + n\epsilon \rfloor \ge \lceil np - n\epsilon \rceil + \lfloor np + n\epsilon \rfloor
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+LB \le UB \le n - LB \\
+\]</span></p>
+<p>Since <span class="math inline">\(\binom{n}{k}\)</span> increase for <span class="math inline">\(k &lt; n / 2\)</span> and decrease <span class="math inline">\(k &gt; n / 2\)</span>, it holds that <span class="math display">\[
+\binom{n}{LB} \le \binom{n}{UB}
+\]</span></p>
+<p>For <span class="math inline">\(LB \le k \le UB\)</span>, we have <span class="math display">\[
+\binom{n}{LB} \le \binom{n}{k} 
+\]</span></p>
+<p>Define <span class="math inline">\(q = \frac{ LB }{n}\)</span>, <span class="math display">\[
+\binom{n}{LB}  \ge \frac{1}{n + 1} 2^{n \mathbf{H}( \frac{ LB }{n} ) } \ge \frac{1}{n + 1} 2^{n\mathbf{H}(p - \epsilon)} 
+\]</span></p>
+<p>By <strong><em>Theorem 1</em></strong>, we have <span class="math display">\[
+\begin{aligned}
+    \mathbf{E}[|s|] &amp;= \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \\
+    &amp;\ge \sum_{k = LB}^{UB} \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \\
+    &amp;\ge \sum_{k = LB }^{UB } \left( \left\lfloor \log_2 \binom{n}{k} \right\rfloor - 1 \right) \binom{n}{k} p^k (1 - p)^{n - k}  \\
+    &amp;\ge \sum_{k = LB }^{UB } \left( \left\lfloor \log_2  \binom{n}{ LB  } \right\rfloor - 1 \right) \binom{n}{k} p^k (1 - p)^{n - k}  \\
+    &amp;=  \left( \left\lfloor \log_2  \binom{n}{ LB  } \right\rfloor - 1 \right) \Pr[LB \le Z \le UB] \\
+    &amp;\ge \left( n \mathbf{H}(p - \epsilon)  - \log_2 (n + 1) \right) (1- \delta / 2) \\
+    &amp;=  \left( \frac{\mathbf{H}(p - \epsilon)}{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) (1- \delta / 2 ) \cdot n \cdot \mathbf{H}(p) \\
+    &amp;=  \left( \frac{\mathbf{H} \left(p - \sqrt{\frac{\ln \frac{2}{\delta} }{2n} } \right) }{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) (1- \delta / 2 ) \cdot n \cdot \mathbf{H}(p) \\
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\exists N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n &gt; N\)</span>, <span class="math inline">\(\left( \frac{\mathbf{H} \left(p - \sqrt{\frac{\ln \frac{2}{\delta} }{2n} } \right) }{\mathbf{H}(p) } - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) \ge (1 - \delta / 2)\)</span>, which finishes the proof of lower bound.</p>
+<p>As for the upper bound, observe that <span class="math display">\[
+\binom{n}{k} p^k ( 1- p)^{n - k} \le 1
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\binom{n}{k} \le p^{-k} ( 1- p)^{-(n - k) }\)</span>. Thus, we have <span class="math display">\[
+\begin{aligned}
+       \mathbf{E}[|s|] &amp;= \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \\
+       &amp;\le \sum_{k = 1}^n \left( \log_2 \binom{n}{k} \right) \binom{n}{k} p^k (1 - p)^{n - k} \\
+       &amp;\le \sum_{k = 1}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k (1 - p)^{n - k} } 
+\end{aligned}
+\]</span></p>
+<p>The last term is exactly the entropy of the string. By independence of the bits, we know that it is equal to <span class="math inline">\(n \mathbf{H}(p)\)</span>.</p>
+<p>Remark: we may also prove it algebraically. <span class="math display">\[
+\begin{aligned}
+       \mathbf{E}[|s|] 
+       &amp;\le \sum_{k = 0}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k (1 - p)^{n - k} } \\
+       &amp;= \sum_{k = 1}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k } + \sum_{k = 0}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ (1 - p)^{n - k} } \\
+       &amp;= \left( p \log_2 \frac{1}{p} \right) \sum_{k = 1}^n  \binom{n}{k} k p^{k - 1} (1 - p)^{n - k}  \\
+       &amp;\quad +  \left( ( 1- p) \log_2 \frac{1}{ 1 - p } \right) \sum_{k = 0}^{n - 1} \binom{n}{k} (n - k) p^k (1 - p)^{n - k - 1} \\
+       &amp;= \left( p \log_2 \frac{1}{p} \right) [(x + (1 - p))^n]_{x = p}&#39;  +  \left( (1 - p) \log_2 \frac{1}{ 1 - p } \right) [(p + x)^n]_{x = 1-p}&#39; \\
+       &amp;= n \mathbf{H}(p)
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h4 id="reference.">Reference.</h4>
+<p>[1] S. Har-Peled, “Chapter 26 Entropy, Randomness, and Information,” p. 6.<br />
+[2] M. Mitzenmacher and E. Upfal, Probability and Computing: Randomized Algorithms and Probabilistic Analysis. Cambridge: Cambridge University Press, 2005.</p>
 
     </div>
 
@@ -386,7 +572,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Entropy"><span class="nav-number">1.</span> <span class="nav-text">Entropy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binomial-Distribution"><span class="nav-number"></span> <span class="nav-text">Binomial Distribution</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Extracting-Random-Bits"><span class="nav-number">1.</span> <span class="nav-text">Extracting Random Bits</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Binary-Strings"><span class="nav-number">1.1.</span> <span class="nav-text">Binary Strings</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Reference"><span class="nav-number">2.</span> <span class="nav-text">Reference.</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#entropy"><span class="nav-number">1.</span> <span class="nav-text">Entropy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#binomial-distribution"><span class="nav-number"></span> <span class="nav-text">Binomial Distribution</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#extracting-random-bits"><span class="nav-number">1.</span> <span class="nav-text">Extracting Random Bits</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#binary-strings"><span class="nav-number">1.1.</span> <span class="nav-text">Binary Strings</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#reference."><span class="nav-number">2.</span> <span class="nav-text">Reference.</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

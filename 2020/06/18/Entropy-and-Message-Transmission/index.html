@@ -196,79 +196,193 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>We discuss another application that sheds light on meaning of entropy, the message transmission problem. In this model, a sender transmits a message to the receiver through a channel. In real world, the channel could be an optical fiber, a wireless channel,  a hard disk etc. In the final application, the computer that writes and reads information from the hard disk is both the sender and the receiver. </p>
-<p>In real world the channel is not perfect and the message transmitted is distorted by noise. It is natural to ask whether the message can be transmitted accurately under the noise, i.e., whether the receiver can recover the noisy message. </p>
-<p>To study the problem, we need a mathematical model for both the channel and the noise. We focus on the simplest binary channel with bits of 0 and 1. The noise causes the bits to flip and is modelled by the distribution on the bit-flips.  We study the simplest one that flips each bit independently with some identical probability $p &lt; 0.5$. For a message with length $n$, the number of bit flips follows a Binomial distribution $B(n, p)$. We call such channel a <em>binary symmetric channel</em>. </p>
-<p>To protect the message against noise, a naïve way is to send the each bit multiple times. For example, if the sender wants to send a bit 1, it sends $10$ copies of $1$ as $1111111111$.  The receiver decides that the bit sent is 1, if the majority of the $10$ bits it receives is 1. </p>
-<p>Could it be improved?  Repeating each bit may not be the mot efficient way against the noise. In general, if the sender wants to send a message of $k$ bits, it can convert it into a new message of $n$ bits and sends the new one.  The receiver considers the $n$ bits received as a whole, and try to recover the $k$-bit message the sender wants to send.</p>
-<p>We call the method used by the sender to convert the original message the <em>encoding function</em>, and the one used by the receiver to recover the message the  <em>decoding function.</em> </p>
-<p><strong><em>Definition.</em></strong> A $(k, n)$ encoding function $\text{Enc}: {0, 1}^k \rightarrow {0, 1}^n$ and a $(k, n)$ decoding function $\text{Dec}: {0, 1}^n \rightarrow {0, 1}^k$, where $n \ge k$. </p>
-<p>Since the noise flips the bits randomly, it is impossible to have an encoding function and a decoding function without error (unless $p = 0$). Instead, we aim to control the  probability of error within some specified threshold $\delta$. To achieve this, we add redundancy to the message and encode a $k$-bit one into an $n$-bit one. Now, $n - k$ is the amount of redundancy introduced. We would like to make $n - k$ as small as possible. On the other hand, the value of $n-k$ should positively related to $p$. The larger $p$ is, the noisier the channel is and the larger $n - k$ should be. </p>
-<p>For fixed $\delta$ and $p$, the <em>Shannon’s Theorem</em> says that the smallest possible value of $n - k$ we can achieve is roughly $n\mathbf{H}(p)$. Intuitively, $\mathbf{H}(p)$ is the amount of randomness the noise exerts on each bit. Therefore $1 - \mathbf{H}(p)$ is the maximum amount of information we can transmit by one bit. </p>
-<p>Before we proceed, we prove the following lemma. </p>
-<p><strong><em>Lemma 1</em></strong><br>For $q \in \mathbb{R}, q \le 1 / 2$ and $n \in \mathbb{N}$,  it hold that<br>$$<br>\begin{aligned}<br>    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i}<br>    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }<br>\end{aligned}<br>$$</p>
-<p><strong><em>Proof.</em></strong><br>$$<br>\begin{aligned}<br>    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i}<br>    &amp;\le \frac{n + 1}{2} \binom{n }{\lfloor q n \rfloor }  \<br>    &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} \left( { \lfloor q n \rfloor } / { n } \right) } \<br>    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }<br>\end{aligned}<br>$$</p>
-<p>The first inequality follows from  that $\binom{n}{i}$ is increasing for $i \le n / 2$ and that the summation is over at most $(n + 1) /2$ terms. The last one follows from that $\mathbf{H}(x)$ is increasing for $x \le 1 / 2$ and that ${ \lfloor q n \rfloor } / { n } \le {  q n } / { n } = q &lt; 1/2$.</p>
-<p>$\blacksquare$</p>
-<p><strong><em>Shannon’s Theorem</em></strong><br>Given a binary symmetric channel with flip probability $p &lt; 1 / 2$ and for any any $\epsilon, \delta &gt; 0$, when $n$ is large enough,  </p>
-<ol>
-<li>if $k \le  n (1 - \mathbf{H}(p) - \epsilon)$, there exist $(k, n)$ encoding and decoding functions such that the receiver fails to obtain the correct message with probability at most $2\delta$.   </li>
-<li>$\nexists (k, n)$ encoding and decoding functions with $k \ge n (1 - \mathbf{H}(p) + \epsilon)$ such that the decoding is correctly is at most $\delta$ for a $k$-bit input message chosen uniformly at random. </li>
+        <p>We discuss another application that sheds light on meaning of entropy, the message transmission problem. In this model, a sender transmits a message to the receiver through a channel. In real world, the channel could be an optical fiber, a wireless channel, a hard disk etc. In the final application, the computer that writes and reads information from the hard disk is both the sender and the receiver.</p>
+<p>In real world the channel is not perfect and the message transmitted is distorted by noise. It is natural to ask whether the message can be transmitted accurately under the noise, i.e., whether the receiver can recover the noisy message.</p>
+<p>To study the problem, we need a mathematical model for both the channel and the noise. We focus on the simplest binary channel with bits of 0 and 1. The noise causes the bits to flip and is modelled by the distribution on the bit-flips. We study the simplest one that flips each bit independently with some identical probability <span class="math inline">\(p &lt; 0.5\)</span>. For a message with length <span class="math inline">\(n\)</span>, the number of bit flips follows a Binomial distribution <span class="math inline">\(B(n, p)\)</span>. We call such channel a <em>binary symmetric channel</em>.</p>
+<p>To protect the message against noise, a naïve way is to send the each bit multiple times. For example, if the sender wants to send a bit 1, it sends <span class="math inline">\(10\)</span> copies of <span class="math inline">\(1\)</span> as <span class="math inline">\(1111111111\)</span>. The receiver decides that the bit sent is 1, if the majority of the <span class="math inline">\(10\)</span> bits it receives is 1.</p>
+<p>Could it be improved? Repeating each bit may not be the mot efficient way against the noise. In general, if the sender wants to send a message of <span class="math inline">\(k\)</span> bits, it can convert it into a new message of <span class="math inline">\(n\)</span> bits and sends the new one. The receiver considers the <span class="math inline">\(n\)</span> bits received as a whole, and try to recover the <span class="math inline">\(k\)</span>-bit message the sender wants to send.</p>
+<p>We call the method used by the sender to convert the original message the <em>encoding function</em>, and the one used by the receiver to recover the message the <em>decoding function.</em></p>
+<p><strong><em>Definition.</em></strong> A <span class="math inline">\((k, n)\)</span> encoding function <span class="math inline">\(\text{Enc}: \{0, 1\}^k \rightarrow \{0, 1\}^n\)</span> and a <span class="math inline">\((k, n)\)</span> decoding function <span class="math inline">\(\text{Dec}: \{0, 1\}^n \rightarrow \{0, 1\}^k\)</span>, where <span class="math inline">\(n \ge k\)</span>.</p>
+<p>Since the noise flips the bits randomly, it is impossible to have an encoding function and a decoding function without error (unless <span class="math inline">\(p = 0\)</span>). Instead, we aim to control the probability of error within some specified threshold <span class="math inline">\(\delta\)</span>. To achieve this, we add redundancy to the message and encode a <span class="math inline">\(k\)</span>-bit one into an <span class="math inline">\(n\)</span>-bit one. Now, <span class="math inline">\(n - k\)</span> is the amount of redundancy introduced. We would like to make <span class="math inline">\(n - k\)</span> as small as possible. On the other hand, the value of <span class="math inline">\(n-k\)</span> should positively related to <span class="math inline">\(p\)</span>. The larger <span class="math inline">\(p\)</span> is, the noisier the channel is and the larger <span class="math inline">\(n - k\)</span> should be.</p>
+<p>For fixed <span class="math inline">\(\delta\)</span> and <span class="math inline">\(p\)</span>, the <em>Shannon's Theorem</em> says that the smallest possible value of <span class="math inline">\(n - k\)</span> we can achieve is roughly <span class="math inline">\(n\mathbf{H}(p)\)</span>. Intuitively, <span class="math inline">\(\mathbf{H}(p)\)</span> is the amount of randomness the noise exerts on each bit. Therefore <span class="math inline">\(1 - \mathbf{H}(p)\)</span> is the maximum amount of information we can transmit by one bit.</p>
+<p>Before we proceed, we prove the following lemma.</p>
+<p><strong><em>Lemma 1</em></strong><br />
+For <span class="math inline">\(q \in \mathbb{R}, q \le 1 / 2\)</span> and <span class="math inline">\(n \in \mathbb{N}\)</span>, it hold that <span class="math display">\[
+\begin{aligned}
+    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i} 
+    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }
+\end{aligned}
+\]</span></p>
+<p><strong><em>Proof.</em></strong><br />
+<span class="math display">\[
+\begin{aligned}
+    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i} 
+    &amp;\le \frac{n + 1}{2} \binom{n }{\lfloor q n \rfloor }  \\
+    &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} \left( { \lfloor q n \rfloor } / { n } \right) } \\
+    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }
+\end{aligned}
+\]</span></p>
+<p>The first inequality follows from that <span class="math inline">\(\binom{n}{i}\)</span> is increasing for <span class="math inline">\(i \le n / 2\)</span> and that the summation is over at most <span class="math inline">\((n + 1) /2\)</span> terms. The last one follows from that <span class="math inline">\(\mathbf{H}(x)\)</span> is increasing for <span class="math inline">\(x \le 1 / 2\)</span> and that <span class="math inline">\({ \lfloor q n \rfloor } / { n } \le { q n } / { n } = q &lt; 1/2\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Shannon's Theorem</em></strong><br />
+Given a binary symmetric channel with flip probability <span class="math inline">\(p &lt; 1 / 2\)</span> and for any any <span class="math inline">\(\epsilon, \delta &gt; 0\)</span>, when <span class="math inline">\(n\)</span> is large enough,</p>
+<ol type="1">
+<li>if <span class="math inline">\(k \le n (1 - \mathbf{H}(p) - \epsilon)\)</span>, there exist <span class="math inline">\((k, n)\)</span> encoding and decoding functions such that the receiver fails to obtain the correct message with probability at most <span class="math inline">\(2\delta\)</span>.<br />
+</li>
+<li><span class="math inline">\(\nexists (k, n)\)</span> encoding and decoding functions with <span class="math inline">\(k \ge n (1 - \mathbf{H}(p) + \epsilon)\)</span> such that the decoding is correctly is at most <span class="math inline">\(\delta\)</span> for a <span class="math inline">\(k\)</span>-bit input message chosen uniformly at random.</li>
 </ol>
-<p><strong><em>Proof of 1.</em></strong> </p>
-<p><strong>Intuition.</strong>  When an $n$-bit message $s$ is transmitted through the channel, the number of flipped bits is roughly $np$. As $p &lt; {1} / {2}$, we can find a $\lambda &gt; 0$ such that $p + \lambda &lt; {1} / {2}$.  Let $R$ be the received $n$-bit message and define $d(s, R)$ the number of different bits between $s$ and $R$, i.e., the Hamming distance between $s$ and $R$. Given $s$ and $p$, let $\mathfrak{D}(s, p)$ be the distribution of $R$ on ${0, 1}^n$.</p>
-<p>By Hoeffding’s inequality, it holds that<br>$$<br>\Pr_{R \sim \mathfrak{D}(s, p) } [ |d(s, R) - pn | \ge \lambda n] \le \exp(- 2 \lambda^2 n).<br>$$</p>
-<p>Define the $(p + \lambda)n$ ball centered $s$ as<br>$$<br>B_{s, (p + \lambda)n} \doteq { r \in {0, 1}^n : d(s, r) &lt; (p + \lambda)n }.<br>$$</p>
-<p>The the Hoeffding’s inequality implies that for large enough $n$, we have<br>$$<br>\Pr_{R \sim \mathfrak{D}(s, p) } [ R \notin B_{s, (p + \lambda)n}] \le \delta.<br>$$</p>
-<p>That is, with probability at most $\delta$, the received message fall outside the ball $B_{s, (p + \lambda)n}$. This motivates to decode each message in $B_{s, (p + \lambda)n}$ as the original message the sender wants to send. </p>
-<p>Further, by Lemma 1, the size of $B_{s, (p + \lambda) n}$ is bounded by<br>$$<br>\begin{aligned}<br>    \sum_{i = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{i}<br>    &amp;\le 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }<br>\end{aligned}<br>$$</p>
-<p>Therefore, the maximum number of non-overlapped balls we can pack into the message space ${0, 1}^n$ is<br>$$<br>\frac{2^n}{ 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }  } = 2^{ n (1 - \mathbf{H} ( p + \lambda) - \frac{1}{n} \log \frac{n + 1}{2})   }<br>$$</p>
-<p>When $n$ is large enough, this is at least $2^{ n (1 - \mathbf{H} ( p ) - \epsilon) }$. </p>
-<p><em>Remark: Hoeffding’s inequality is an overkill. Chebyshev’s inequality suffices for this proof.</em></p>
+<p><strong><em>Proof of 1.</em></strong></p>
+<p><strong>Intuition.</strong> When an <span class="math inline">\(n\)</span>-bit message <span class="math inline">\(s\)</span> is transmitted through the channel, the number of flipped bits is roughly <span class="math inline">\(np\)</span>. As <span class="math inline">\(p &lt; {1} / {2}\)</span>, we can find a <span class="math inline">\(\lambda &gt; 0\)</span> such that <span class="math inline">\(p + \lambda &lt; {1} / {2}\)</span>. Let <span class="math inline">\(R\)</span> be the received <span class="math inline">\(n\)</span>-bit message and define <span class="math inline">\(d(s, R)\)</span> the number of different bits between <span class="math inline">\(s\)</span> and <span class="math inline">\(R\)</span>, i.e., the Hamming distance between <span class="math inline">\(s\)</span> and <span class="math inline">\(R\)</span>. Given <span class="math inline">\(s\)</span> and <span class="math inline">\(p\)</span>, let <span class="math inline">\(\mathfrak{D}(s, p)\)</span> be the distribution of <span class="math inline">\(R\)</span> on <span class="math inline">\(\{0, 1\}^n\)</span>.</p>
+<p>By Hoeffding's inequality, it holds that <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s, p) } [ |d(s, R) - pn | \ge \lambda n] \le \exp(- 2 \lambda^2 n).
+\]</span></p>
+<p>Define the <span class="math inline">\((p + \lambda)n\)</span> ball centered <span class="math inline">\(s\)</span> as <span class="math display">\[
+B_{s, (p + \lambda)n} \doteq \{ r \in \{0, 1\}^n : d(s, r) &lt; (p + \lambda)n \}.
+\]</span></p>
+<p>The the Hoeffding's inequality implies that for large enough <span class="math inline">\(n\)</span>, we have <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s, p) } [ R \notin B_{s, (p + \lambda)n}] \le \delta.
+\]</span></p>
+<p>That is, with probability at most <span class="math inline">\(\delta\)</span>, the received message fall outside the ball <span class="math inline">\(B_{s, (p + \lambda)n}\)</span>. This motivates to decode each message in <span class="math inline">\(B_{s, (p + \lambda)n}\)</span> as the original message the sender wants to send.</p>
+<p>Further, by Lemma 1, the size of <span class="math inline">\(B_{s, (p + \lambda) n}\)</span> is bounded by <span class="math display">\[
+\begin{aligned}
+    \sum_{i = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{i} 
+    &amp;\le 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }
+\end{aligned}
+\]</span></p>
+<p>Therefore, the maximum number of non-overlapped balls we can pack into the message space <span class="math inline">\(\{0, 1\}^n\)</span> is<br />
+<span class="math display">\[
+\frac{2^n}{ 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }  } = 2^{ n (1 - \mathbf{H} ( p + \lambda) - \frac{1}{n} \log \frac{n + 1}{2})   }
+\]</span></p>
+<p>When <span class="math inline">\(n\)</span> is large enough, this is at least <span class="math inline">\(2^{ n (1 - \mathbf{H} ( p ) - \epsilon) }\)</span>.</p>
+<p><em>Remark: Hoeffding's inequality is an overkill. Chebyshev's inequality suffices for this proof.</em></p>
 <p><strong>Designing Encoding and Decoding Functions.</strong></p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Balls.png"></p>
-<p>This motivates one to design of encoding and decoding function as follows: find a set of messages $s_1, s_2, …, s_{2^k} \in {0, 1}^n$, such that<br>$$<br>B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, …, B_{s_{2^k} , (p + \lambda)n}<br>$$</p>
-<p>are disjoint balls, and assign the messages in ${0, 1}^k$ to the ones in ${ s_i }‘s$ one by one. If the sending want to send $i$, it sends $s_i$. On receiving a message $r$, the receiver determines which ball $r$ belongs to. The probability of decoding error is at most $\delta$.</p>
-<p><em>Question to ponder: can we find such a set efficiently, such that</em><br>$$<br>B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, …, B_{s_{2^k} , (p + \lambda)n}<br>$$<br><em>are disjoint?</em>  </p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Balls.png" /></p>
+<p>This motivates one to design of encoding and decoding function as follows: find a set of messages <span class="math inline">\(s_1, s_2, ..., s_{2^k} \in \{0, 1\}^n\)</span>, such that <span class="math display">\[
+B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, ..., B_{s_{2^k} , (p + \lambda)n}
+\]</span></p>
+<p>are disjoint balls, and assign the messages in <span class="math inline">\(\{0, 1\}^k\)</span> to the ones in <span class="math inline">\(\{ s_i \}&#39;s\)</span> one by one. If the sending want to send <span class="math inline">\(i\)</span>, it sends <span class="math inline">\(s_i\)</span>. On receiving a message <span class="math inline">\(r\)</span>, the receiver determines which ball <span class="math inline">\(r\)</span> belongs to. The probability of decoding error is at most <span class="math inline">\(\delta\)</span>.</p>
+<p><em>Question to ponder: can we find such a set efficiently, such that</em><br />
+<span class="math display">\[
+B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, ..., B_{s_{2^k} , (p + \lambda)n}
+\]</span> <em>are disjoint?</em></p>
 <p><strong>Finding the Codewords.</strong></p>
-<p>It is left to find a set of satisfactory $s_1, s_2, …, s_{2^k} \in {0, 1}^n$. The method we show here does not find a set of non-overlapped balls. Instead it aims to find a set such that </p>
+<p>It is left to find a set of satisfactory <span class="math inline">\(s_1, s_2, ..., s_{2^k} \in \{0, 1\}^n\)</span>. The method we show here does not find a set of non-overlapped balls. Instead it aims to find a set such that</p>
 <blockquote>
-<p>if $s_i$ is transmitted, then the probability received message $r$ falls into the another ball, i.e., $r \in B_{s_{j} , (p + \lambda)n}$ ($j \neq i$),  is less than $\delta$.  </p>
+<p>if <span class="math inline">\(s_i\)</span> is transmitted, then the probability received message <span class="math inline">\(r\)</span> falls into the another ball, i.e., <span class="math inline">\(r \in B_{s_{j} , (p + \lambda)n}\)</span> (<span class="math inline">\(j \neq i\)</span>), is less than <span class="math inline">\(\delta\)</span>.</p>
 </blockquote>
-<p>The property implies that the overlap between $B_{s_{i} , (p + \lambda)n}$ and $\cup_{j \neq i} B_{s_{j} , (p + \lambda)n}$ is less than $\delta$ (measured by probability). To formalize the statement, define the random variable $S$ to be the message sent and $R$ to be the one received. Given that $S = s_i$ is sent, the conditional probability of receiving $R = r$ is<br>$$<br>\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] = p^{d(s_i,r)} (1 - p)^{1 - d(s_i, r)}<br>$$</p>
-<p>To goal is to prove that it holds for all $i$,<br>$$<br>\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] = \sum_{r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n} } p_r \le \delta<br>$$</p>
-<p>Then , by union bound, it holds that<br>$$<br>\begin{aligned}<br>\Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \text{ is not recovered correctly} \mid S = s_i]<br>    &amp;= \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p + \lambda)n}  \vee  R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid S = s_i] \<br>    &amp;\le \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p + \lambda)n}   \mid S = s_i]  + \Pr[ R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid S = s_i] \<br>    &amp;\le 2 \delta<br>\end{aligned}<br>$$<br>That is, $s_i$ is transmitted and decoded correctly with probability at least $1 - 2 \delta$. </p>
+<p>The property implies that the overlap between <span class="math inline">\(B_{s_{i} , (p + \lambda)n}\)</span> and <span class="math inline">\(\cup_{j \neq i} B_{s_{j} , (p + \lambda)n}\)</span> is less than <span class="math inline">\(\delta\)</span> (measured by probability). To formalize the statement, define the random variable <span class="math inline">\(S\)</span> to be the message sent and <span class="math inline">\(R\)</span> to be the one received. Given that <span class="math inline">\(S = s_i\)</span> is sent, the conditional probability of receiving <span class="math inline">\(R = r\)</span> is <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] = p^{d(s_i,r)} (1 - p)^{1 - d(s_i, r)}
+\]</span></p>
+<p>To goal is to prove that it holds for all <span class="math inline">\(i\)</span>, <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] = \sum_{r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n} } p_r \le \delta
+\]</span></p>
+<p>Then , by union bound, it holds that <span class="math display">\[
+\begin{aligned} 
+\Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \text{ is not recovered correctly} \mid S = s_i] 
+    &amp;= \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p + \lambda)n}  \vee  R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid S = s_i] \\
+    &amp;\le \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p + \lambda)n}   \mid S = s_i]  + \Pr[ R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid S = s_i] \\
+    &amp;\le 2 \delta
+\end{aligned}
+\]</span> That is, <span class="math inline">\(s_i\)</span> is transmitted and decoded correctly with probability at least <span class="math inline">\(1 - 2 \delta\)</span>.</p>
 <p>In what follows, we will prove the following claim:</p>
-<p><strong>Claim 1</strong>. <em>If we generate $2^{k + 1}$ codewords uniformly at random from ${0, 1}^n$, then in  expectation</em><br>$$<br>\underset{ {s_1, s_2, …,s_{2^{k + 1} } \sim \mathbf{U}({0, 1}^n) } } {\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \le  2^k \delta<br>$$</p>
-<p>Claim 1 implies that there exits a set of codewords $s_1, s_2, …, s_{2^{k + 1} }$ with<br>$$<br>\sum_{i = 1}^{2^{k + 1} } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]    \le 2^k \delta<br>$$</p>
-<p>If we send each $s_i$ with probability $1 / 2^k$, then the expected error probability is already $\delta$. But we can have a stronger result: we can find a set of $2^k$ codewords, such that for each $i$,<br>$$<br>\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \le 2 \delta<br>$$</p>
-<p>W.L.O.G., suppose that $s_1, s_2, …, s_{2^k}$ are the ones with the smallest $\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]$ ‘s, it must be that<br>$$<br>\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]  \le \frac{2^k \delta }{2^k } = \delta<br>$$</p>
-<p><strong><em>Proof of Claim 1</em></strong>. By Lemma 1, for a fixed $r$, the number of  strings $s \in {0, 1}^n$ such that $d(s, r) &lt; (p + \lambda) n$ is bounded by<br>$$<br>\begin{aligned}<br>    \sum_{k = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{k}<br>        &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} ( p + \lambda) }<br>\end{aligned}<br>$$</p>
-<p>If a message $s$ is picked uniformly at random from ${0, 1}^n$, the probability such that<br>$$<br>\Pr_{s \sim \mathbf{U}({0, 1}^n) } [d(s, r) &lt; (p + \lambda) n ] \le \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H} \left(  p + \lambda \right) }<br>$$</p>
-<p>By union bound,<br>$$<br>\begin{aligned}<br>    \Pr_{s_1, s_2, …,s_{2^{k + 1} } \sim \mathbf{U}({0, 1}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ]<br>    &amp;&lt; 2^k \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H}( p + \lambda) }  \<br>    &amp;= 2^{ k + \log (n + 1) +  n \mathbf{H} ( p + \lambda) - n - 1 }<br>\end{aligned}<br>$$</p>
-<p>As $k \le n(1 - \mathbf{H}(p) - \epsilon)$, when $n$ is sufficient large, it follows<br>$$<br>\begin{aligned}<br>     \Pr_{s_1, s_2, …,s_{2^{k + 1} } \sim \mathbf{U}({0, 1}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ]<br>        &lt; 2^{ \log \frac{n + 1}{2} +  n ( \mathbf{H} ( p + \lambda) - \mathbf{H} ( p) - \delta) }<br>        \le \frac{\delta}{2}<br>\end{aligned}<br>$$</p>
-<p>Therefore,<br>$$<br>\begin{aligned}<br>    &amp;\underset{ {s_1, s_2, …,s_{2^{k + 1} } \sim \mathbf{U}({0, 1}^n) } } {\mathbb{E} } \left[ \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \<br>    &amp;= \sum_{r \in {0, 1}^n }     \Pr_{s_1, s_2, …,s_{2^{k + 1} } \sim \mathbf{U}({0, 1}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] \cdot  \Pr_{R \sim \mathfrak{D}(s_i, p) } [ R = r \mid S = s_i] \<br>    &amp;\le \frac{\delta}{2}<br>\end{aligned}<br>$$</p>
-<p>and<br>$$<br>\underset{ {s_1, s_2, …,s_{2^{k + 1} } \sim \mathbf{U}({0, 1}^n) } } {\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \le 2^{k + 1} \frac{\delta}{2} = 2^k \delta<br>$$</p>
-<p>$\blacksquare$</p>
-<p><strong><em>Proof of 2.</em></strong>  </p>
-<p>The difficulty here is to prove that the claim holds for arbitrary $(k, n)$ encoding and decoding functions. The proof relies on an important property:</p>
+<p><strong>Claim 1</strong>. <em>If we generate <span class="math inline">\(2^{k + 1}\)</span> codewords uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, then in expectation</em> <span class="math display">\[
+\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \le  2^k \delta
+\]</span></p>
+<p>Claim 1 implies that there exits a set of codewords <span class="math inline">\(s_1, s_2, ..., s_{2^{k + 1} }\)</span> with <span class="math display">\[
+\sum_{i = 1}^{2^{k + 1} } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]    \le 2^k \delta
+\]</span></p>
+<p>If we send each <span class="math inline">\(s_i\)</span> with probability <span class="math inline">\(1 / 2^k\)</span>, then the expected error probability is already <span class="math inline">\(\delta\)</span>. But we can have a stronger result: we can find a set of <span class="math inline">\(2^k\)</span> codewords, such that for each <span class="math inline">\(i\)</span>, <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \le 2 \delta
+\]</span></p>
+<p>W.L.O.G., suppose that <span class="math inline">\(s_1, s_2, ..., s_{2^k}\)</span> are the ones with the smallest <span class="math inline">\(\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]\)</span> 's, it must be that <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]  \le \frac{2^k \delta }{2^k } = \delta
+\]</span></p>
+<p><strong><em>Proof of Claim 1</em></strong>. By Lemma 1, for a fixed <span class="math inline">\(r\)</span>, the number of strings <span class="math inline">\(s \in \{0, 1\}^n\)</span> such that <span class="math inline">\(d(s, r) &lt; (p + \lambda) n\)</span> is bounded by <span class="math display">\[
+\begin{aligned}
+    \sum_{k = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{k} 
+        &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} ( p + \lambda) }
+\end{aligned}
+\]</span></p>
+<p>If a message <span class="math inline">\(s\)</span> is picked uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, the probability such that <span class="math display">\[
+\Pr_{s \sim \mathbf{U}(\{0, 1\}^n) } [d(s, r) &lt; (p + \lambda) n ] \le \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H} \left(  p + \lambda \right) }
+\]</span></p>
+<p>By union bound,<br />
+<span class="math display">\[
+\begin{aligned}
+    \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] 
+    &amp;&lt; 2^k \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H}( p + \lambda) }  \\
+    &amp;= 2^{ k + \log (n + 1) +  n \mathbf{H} ( p + \lambda) - n - 1 } 
+\end{aligned}
+\]</span></p>
+<p>As <span class="math inline">\(k \le n(1 - \mathbf{H}(p) - \epsilon)\)</span>, when <span class="math inline">\(n\)</span> is sufficient large, it follows<br />
+<span class="math display">\[
+\begin{aligned}
+     \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] 
+        &lt; 2^{ \log \frac{n + 1}{2} +  n ( \mathbf{H} ( p + \lambda) - \mathbf{H} ( p) - \delta) } 
+        \le \frac{\delta}{2}
+\end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+\begin{aligned}
+    &amp;\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} } \left[ \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \\
+    &amp;= \sum_{r \in \{0, 1\}^n }     \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] \cdot  \Pr_{R \sim \mathfrak{D}(s_i, p) } [ R = r \mid S = s_i] \\
+    &amp;\le \frac{\delta}{2}
+\end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \le 2^{k + 1} \frac{\delta}{2} = 2^k \delta
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Proof of 2.</em></strong></p>
+<p>The difficulty here is to prove that the claim holds for arbitrary <span class="math inline">\((k, n)\)</span> encoding and decoding functions. The proof relies on an important property:</p>
 <blockquote>
-<p>the decoding function $\text{Dec}$ is a function on ${0, 1}^n$</p>
+<p>the decoding function <span class="math inline">\(\text{Dec}\)</span> is a function on <span class="math inline">\(\{0, 1\}^n\)</span></p>
 </blockquote>
-<p>For any $r \in {0, 1}^n$, there is a unique output $\text{Dec}(r) \in {0, 1}^k$. The decoding function needs to decide the unique message ${0, 1}^n$ the sender want to send. </p>
-<p>Now, define<br>$$<br>S_i \doteq { r \in {0, 1}^n :  r \text{ is decoded correctly if } s_i \text{ is sent}   }<br>$$</p>
-<p>The $S_i$’s are non-overlapped and we have,<br>$$<br>\cup_{i = 1}^{2^k} S_i \subset {0, 1 }^n<br>$$</p>
-<p>If $s_i$ is sent, then by Hoeffding inequality, with probability at least $1 - \exp(- 2\lambda^2 n)$, the received message $R$ is likely to fall into a ring centered at $s_i$:<br>$$<br>\text{ring} (s_i) \doteq { r \in {0, 1}^n : |d(r, s_i) - pn |&lt; \lambda n }<br>$$</p>
-<p>Finally, if the messages $s_1, s_2, …, s_{2^k}$ are sent uniformly at random, i.e., $i \sim \mathbf{U}[1, 2^k]$, then<br>$$<br>\begin{aligned}<br>    \Pr[ R \text{ is decoded correctly}]   &amp;=  \sum_{i = 1}^{2^k} \sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \Pr_{i \sim \mathbf{U}[1, 2^k]} [ S = s_i] \<br>        &amp;=  \frac{1}{2^k} \sum_{i = 1}^{2^k} \sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i]<br>\end{aligned}<br>$$</p>
-<p>Observed that $S_i \subset \text{ring} (s_i) \cup (S_i \cap \text{ring} (s_i) )$, we get</p>
-<p>$$<br>\begin{aligned}<br> &amp;\Pr[ R \text{ is decoded correctly}] \<br>        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \sum_{r \notin \text{ring} (s_i)  } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i]  +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right) \<br>        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \exp( -2\lambda^2n) +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right)<br>\end{aligned}<br>$$</p>
-<p>Note that for $r \in S_i \cap \text{ring} (s_i)$, as $p &lt; 1 / 2$, it holds that<br>$$<br>\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \le p^{ \lceil(p - \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil }<br>$$</p>
+<p>For any <span class="math inline">\(r \in \{0, 1\}^n\)</span>, there is a unique output <span class="math inline">\(\text{Dec}(r) \in \{0, 1\}^k\)</span>. The decoding function needs to decide the unique message <span class="math inline">\(\{0, 1\}^n\)</span> the sender want to send.</p>
+<p>Now, define <span class="math display">\[
+S_i \doteq \{ r \in \{0, 1\}^n :  r \text{ is decoded correctly if } s_i \text{ is sent}   \}
+\]</span></p>
+<p>The <span class="math inline">\(S_i\)</span>'s are non-overlapped and we have, <span class="math display">\[
+\cup_{i = 1}^{2^k} S_i \subset \{0, 1 \}^n
+\]</span></p>
+<p>If <span class="math inline">\(s_i\)</span> is sent, then by Hoeffding inequality, with probability at least <span class="math inline">\(1 - \exp(- 2\lambda^2 n)\)</span>, the received message <span class="math inline">\(R\)</span> is likely to fall into a ring centered at <span class="math inline">\(s_i\)</span>: <span class="math display">\[
+\text{ring} (s_i) \doteq \{ r \in \{0, 1\}^n : |d(r, s_i) - pn |&lt; \lambda n \}
+\]</span></p>
+<p>Finally, if the messages <span class="math inline">\(s_1, s_2, ..., s_{2^k}\)</span> are sent uniformly at random, i.e., <span class="math inline">\(i \sim \mathbf{U}[1, 2^k]\)</span>, then <span class="math display">\[
+\begin{aligned}
+    \Pr[ R \text{ is decoded correctly}]   &amp;=  \sum_{i = 1}^{2^k} \sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \Pr_{i \sim \mathbf{U}[1, 2^k]} [ S = s_i] \\ 
+        &amp;=  \frac{1}{2^k} \sum_{i = 1}^{2^k} \sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] 
+\end{aligned}
+\]</span></p>
+<p>Observed that <span class="math inline">\(S_i \subset \text{ring} (s_i) \cup (S_i \cap \text{ring} (s_i) )\)</span>, we get</p>
+<p><span class="math display">\[
+\begin{aligned}
+ &amp;\Pr[ R \text{ is decoded correctly}] \\
+        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \sum_{r \notin \text{ring} (s_i)  } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i]  +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right) \\ 
+        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \exp( -2\lambda^2n) +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right) 
+\end{aligned}
+\]</span></p>
+<p>Note that for <span class="math inline">\(r \in S_i \cap \text{ring} (s_i)\)</span>, as <span class="math inline">\(p &lt; 1 / 2\)</span>, it holds that <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \le p^{ \lceil(p - \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil }
+\]</span></p>
 <p>We obtain</p>
-<p>$$<br>\begin{aligned}<br>        &amp;\Pr[ R \text{ is decoded correctly}] \<br>        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ \lceil(p - \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil } \<br>        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ (p - \lambda) n } (1 - p)^{ n - (p - \lambda) n  } \<br>        &amp;= \exp( -2\lambda^2n) +  p^{ (p - \lambda) n } (1 - p)^{ n - (p - \lambda) n  }  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } \frac{1}{2^k}  \<br>        &amp;= \exp( -2\lambda^2n) +   p^{ pn } (1 - p)^{ n - pn } \left(\frac{ 1 - p}{ p} \right)^{\lambda n} 2^{n - k}\<br>        &amp;= \exp( -2\lambda^2n) +  2^{n - k - n \mathbf{H}(p)}  \left(\frac{ 1 - p}{ p} \right)^{\lambda n}<br>\end{aligned}<br>$$</p>
-<p>Conditioning on that $k \ge n (1 - \mathbf{H}(p) + \delta)$,<br>$$<br>\Pr[ R \text{ is decoded correctly}] \le \exp( -2\lambda^2n) +  2^{- n (\delta + \lambda \log \frac{ 1 - p}{ p} ) }<br>$$</p>
-<p>By choosing sufficient small $\lambda$ and large enough $n$, $\Pr[ R \text{ is decoded correctly}]$ can be arbitrary small.  </p>
-<p>$\blacksquare$</p>
-<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>[1] M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</p>
+<p><span class="math display">\[
+\begin{aligned}
+        &amp;\Pr[ R \text{ is decoded correctly}] \\
+        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ \lceil(p - \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil } \\
+        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ (p - \lambda) n } (1 - p)^{ n - (p - \lambda) n  } \\
+        &amp;= \exp( -2\lambda^2n) +  p^{ (p - \lambda) n } (1 - p)^{ n - (p - \lambda) n  }  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } \frac{1}{2^k}  \\
+        &amp;= \exp( -2\lambda^2n) +   p^{ pn } (1 - p)^{ n - pn } \left(\frac{ 1 - p}{ p} \right)^{\lambda n} 2^{n - k}\\
+        &amp;= \exp( -2\lambda^2n) +  2^{n - k - n \mathbf{H}(p)}  \left(\frac{ 1 - p}{ p} \right)^{\lambda n}
+\end{aligned}
+\]</span></p>
+<p>Conditioning on that <span class="math inline">\(k \ge n (1 - \mathbf{H}(p) + \delta)\)</span>, <span class="math display">\[
+\Pr[ R \text{ is decoded correctly}] \le \exp( -2\lambda^2n) +  2^{- n (\delta + \lambda \log \frac{ 1 - p}{ p} ) }  
+\]</span></p>
+<p>By choosing sufficient small <span class="math inline">\(\lambda\)</span> and large enough <span class="math inline">\(n\)</span>, <span class="math inline">\(\Pr[ R \text{ is decoded correctly}]\)</span> can be arbitrary small.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h2 id="reference">Reference</h2>
+<p>[1] M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</p>
 
     </div>
 
@@ -349,7 +463,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">1.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

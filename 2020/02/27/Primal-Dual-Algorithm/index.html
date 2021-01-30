@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Primal:$$\begin{aligned}    &amp;\min       &amp;c^T x \    &amp;s.t.       &amp;Ax &#x3D; b\    &amp;           &amp;x \ge 0\end{aligned}$$ We assume that $b \ge 0$. Otherwise we can flip the $i$ constrai">
+  <meta name="description" content="Primal: \[ \begin{aligned}     &amp;\min       &amp;c^T x \\     &amp;s.t.       &amp;Ax &#x3D; b\\     &amp;           &amp;x \ge 0 \end{aligned} \] We assume that \(b \ge 0\). Otherwise we can fli">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Primal-Dual Algorithm">
 <meta property="og:url" content="http://example.com/2020/02/27/Primal-Dual-Algorithm/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Primal:$$\begin{aligned}    &amp;\min       &amp;c^T x \    &amp;s.t.       &amp;Ax &#x3D; b\    &amp;           &amp;x \ge 0\end{aligned}$$ We assume that $b \ge 0$. Otherwise we can flip the $i$ constrai">
+<meta property="og:description" content="Primal: \[ \begin{aligned}     &amp;\min       &amp;c^T x \\     &amp;s.t.       &amp;Ax &#x3D; b\\     &amp;           &amp;x \ge 0 \end{aligned} \] We assume that \(b \ge 0\). Otherwise we can fli">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-02-27T10:57:12.000Z">
 <meta property="article:modified_time" content="2020-02-28T00:36:47.345Z">
@@ -194,25 +194,59 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Primal:<br>$$<br>\begin{aligned}<br>    &amp;\min       &amp;c^T x \<br>    &amp;s.t.       &amp;Ax = b\<br>    &amp;           &amp;x \ge 0<br>\end{aligned}<br>$$</p>
-<p>We assume that $b \ge 0$. Otherwise we can flip the $i$ constraints $A^T_i x = b_i$ by $- A^T_i x = -b_i$, where $A^T_i$ is the $i$-th column of matrix $A^T$, i.e, the $i$-th row of matrix $A$.  </p>
-<p>Dual:<br>$$<br>\begin{aligned}<br>    &amp;\max       &amp;y^T b \<br>    &amp;s.t.       &amp;y^TA \le c^T \<br>\end{aligned}<br>$$</p>
-<p>Suppose that we have a feasible solution $y$ for the dual (if $c \ge 0$, then $y = 0$ is a feasible solution). Weak duality states that<br>$$<br>c^T x \ge y^T A x = y^T b<br>$$</p>
-<p>Denote $S = { i : i \in [n], y^T A_i &lt; c_i }$ (the set of constraints that have slacks for increments) and $\bar S = [n] \setminus S$ (the set of indexes of tight dual constraints), where $A_i$ is the $i$-th columns of $A$.</p>
-<p>By weak duality, if we can find an $x$ such that</p>
-<ol>
-<li>$x_{S } = 0$, where $x_{S} \doteq (x_i : i \in {S})$. </li>
-<li>$x_{\bar S} \ge 0$ and $A_{\bar S} x_{\bar S} = b$, where $A_{\bar S}$ is the sub-matrix of $A$ containing only columns in ${\bar S}$.</li>
+        <p>Primal: <span class="math display">\[
+\begin{aligned}
+    &amp;\min       &amp;c^T x \\
+    &amp;s.t.       &amp;Ax = b\\
+    &amp;           &amp;x \ge 0
+\end{aligned}
+\]</span></p>
+<p>We assume that <span class="math inline">\(b \ge 0\)</span>. Otherwise we can flip the <span class="math inline">\(i\)</span> constraints <span class="math inline">\(A^T_i x = b_i\)</span> by <span class="math inline">\(- A^T_i x = -b_i\)</span>, where <span class="math inline">\(A^T_i\)</span> is the <span class="math inline">\(i\)</span>-th column of matrix <span class="math inline">\(A^T\)</span>, i.e, the <span class="math inline">\(i\)</span>-th row of matrix <span class="math inline">\(A\)</span>.</p>
+<p>Dual: <span class="math display">\[
+\begin{aligned}
+    &amp;\max       &amp;y^T b \\
+    &amp;s.t.       &amp;y^TA \le c^T \\
+\end{aligned}
+\]</span></p>
+<p>Suppose that we have a feasible solution <span class="math inline">\(y\)</span> for the dual (if <span class="math inline">\(c \ge 0\)</span>, then <span class="math inline">\(y = 0\)</span> is a feasible solution). Weak duality states that <span class="math display">\[
+c^T x \ge y^T A x = y^T b
+\]</span></p>
+<p>Denote <span class="math inline">\(S = \{ i : i \in [n], y^T A_i &lt; c_i \}\)</span> (the set of constraints that have slacks for increments) and <span class="math inline">\(\bar S = [n] \setminus S\)</span> (the set of indexes of tight dual constraints), where <span class="math inline">\(A_i\)</span> is the <span class="math inline">\(i\)</span>-th columns of <span class="math inline">\(A\)</span>.</p>
+<p>By weak duality, if we can find an <span class="math inline">\(x\)</span> such that</p>
+<ol type="1">
+<li><span class="math inline">\(x_{S } = 0\)</span>, where <span class="math inline">\(x_{S} \doteq (x_i : i \in {S})\)</span>.</li>
+<li><span class="math inline">\(x_{\bar S} \ge 0\)</span> and <span class="math inline">\(A_{\bar S} x_{\bar S} = b\)</span>, where <span class="math inline">\(A_{\bar S}\)</span> is the sub-matrix of <span class="math inline">\(A\)</span> containing only columns in <span class="math inline">\({\bar S}\)</span>.</li>
 </ol>
-<p>then both $y$ and $x$ are optimal. However, as $y$ is not necessarily optimal, we have the following relaxed optimization problem, which is called <em>restricted primal</em></p>
-<p>Relaxation:<br>$$<br>\begin{aligned}<br>    &amp;\min       &amp;1^T \bar x \<br>    &amp;s.t.       &amp;A_{\bar S} x_{\bar S} + \bar x = b \<br>    &amp;           &amp;x_{\bar S} \ge 0 \<br>    &amp;           &amp;\bar x \ge 0<br>\end{aligned}<br>$$</p>
-<p>Note that $x_{\bar S} = 0$ and $\bar x = b$ is a feasible solution as we assume that $b \ge 0$. Therefore, <em>restricted primal</em> is feasible. Further, it is bounded below by $1^{\bar S} 0 = 0$. Indeed, if it achieves optimal solution value $0$, it holds that $\bar x = 0$ so that $A_{\bar S} x_{\bar S} = b$. </p>
-<p>Associated with the <em>restricted primal</em> is the <em>restricted dual</em><br>$$<br>\begin{aligned}<br>    &amp;\max       &amp; \bar y^T b \<br>    &amp;s.t.       &amp; \bar y^TA_{\bar S} \le 0 \<br>    &amp;           &amp; \bar y^T \le 1^T<br>\end{aligned}<br>$$</p>
-<p>By strong duality, it optimal solution $\bar y^T b = 1^T \bar x$. If $1^T \bar x= \bar y^T b &gt; 0$, then we can improve the dual solution $y$ by<br>$$<br>y \leftarrow y + \epsilon \bar y<br>$$</p>
-<p>for some $\epsilon$. To determine its value, first observe that<br>$$<br>(y + \epsilon \bar y)^{T} A_{\bar S} = y^T A_{\bar S} + \epsilon \bar y^T A_{\bar S} \le y^T A_{\bar S} = c_{\bar S}^T<br>$$</p>
-<p>Hence it is left to guarantee that<br>$$<br>(y + \epsilon \bar y)^T A_S = y^T A_S + \epsilon \bar y^T A_S \le  c_S<br>$$</p>
-<p>By definition of ${S}$, we have $y^T A_{S} &lt; c_{S}^T$. If that $\bar y^T A_i \le 0$ for $\forall i \in {S}$, then $\epsilon$ can be arbitrary large and the dual is unbounded. Otherwise, </p>
-<p>$$<br>\epsilon = \min_{i \in S, \bar y^T A_i &gt; 0} \frac{c_i - y^T A_i } { \bar y^T A_i }<br>$$</p>
+<p>then both <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span> are optimal. However, as <span class="math inline">\(y\)</span> is not necessarily optimal, we have the following relaxed optimization problem, which is called <em>restricted primal</em></p>
+<p>Relaxation: <span class="math display">\[
+\begin{aligned}
+    &amp;\min       &amp;1^T \bar x \\
+    &amp;s.t.       &amp;A_{\bar S} x_{\bar S} + \bar x = b \\
+    &amp;           &amp;x_{\bar S} \ge 0 \\
+    &amp;           &amp;\bar x \ge 0
+\end{aligned}
+\]</span></p>
+<p>Note that <span class="math inline">\(x_{\bar S} = 0\)</span> and <span class="math inline">\(\bar x = b\)</span> is a feasible solution as we assume that <span class="math inline">\(b \ge 0\)</span>. Therefore, <em>restricted primal</em> is feasible. Further, it is bounded below by <span class="math inline">\(1^{\bar S} 0 = 0\)</span>. Indeed, if it achieves optimal solution value <span class="math inline">\(0\)</span>, it holds that <span class="math inline">\(\bar x = 0\)</span> so that <span class="math inline">\(A_{\bar S} x_{\bar S} = b\)</span>.</p>
+<p>Associated with the <em>restricted primal</em> is the <em>restricted dual</em> <span class="math display">\[
+\begin{aligned}
+    &amp;\max       &amp; \bar y^T b \\
+    &amp;s.t.       &amp; \bar y^TA_{\bar S} \le 0 \\
+    &amp;           &amp; \bar y^T \le 1^T
+\end{aligned}
+\]</span></p>
+<p>By strong duality, it optimal solution <span class="math inline">\(\bar y^T b = 1^T \bar x\)</span>. If <span class="math inline">\(1^T \bar x= \bar y^T b &gt; 0\)</span>, then we can improve the dual solution <span class="math inline">\(y\)</span> by <span class="math display">\[
+y \leftarrow y + \epsilon \bar y
+\]</span></p>
+<p>for some <span class="math inline">\(\epsilon\)</span>. To determine its value, first observe that <span class="math display">\[
+(y + \epsilon \bar y)^{T} A_{\bar S} = y^T A_{\bar S} + \epsilon \bar y^T A_{\bar S} \le y^T A_{\bar S} = c_{\bar S}^T
+\]</span></p>
+<p>Hence it is left to guarantee that <span class="math display">\[
+(y + \epsilon \bar y)^T A_S = y^T A_S + \epsilon \bar y^T A_S \le  c_S
+\]</span></p>
+<p>By definition of <span class="math inline">\({S}\)</span>, we have <span class="math inline">\(y^T A_{S} &lt; c_{S}^T\)</span>. If that <span class="math inline">\(\bar y^T A_i \le 0\)</span> for <span class="math inline">\(\forall i \in {S}\)</span>, then <span class="math inline">\(\epsilon\)</span> can be arbitrary large and the dual is unbounded. Otherwise,</p>
+<p><span class="math display">\[
+\epsilon = \min_{i \in S, \bar y^T A_i &gt; 0} \frac{c_i - y^T A_i } { \bar y^T A_i }
+\]</span></p>
 
     </div>
 

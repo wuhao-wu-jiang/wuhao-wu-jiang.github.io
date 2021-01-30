@@ -193,58 +193,53 @@
 
       
           <p>K-Connected Spanning Subgraph</p>
-<h4 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h4><p>Consider that you are given a transportation network, which is a graph.  Now you are asked to find out a sub-graph that the transportation capacity between any two sites in the sub-graph is above some threshold k. </p>
+<h4 id="background">Background</h4>
+<p>Consider that you are given a transportation network, which is a graph. Now you are asked to find out a sub-graph that the transportation capacity between any two sites in the sub-graph is above some threshold k.</p>
 <p>This sub-graph could be viewed as kind of a backbone. Its importance is as follows: even if some lines in the transportation network break down, so long as the lines of this sub-graph operates, we can guarantee that the network is able to transport k capacity cargo between any two sites.</p>
-<p>If we examine this problem deeply, we may ask the following questions:</p>
-<ol>
-<li>Does such a sub-graph exist?</li>
-<li>If such a sub-graph exist, how to find one with the minimum number of edges?</li>
-</ol>
-<h4 id="Solution"><a href="#Solution" class="headerlink" title="Solution"></a>Solution</h4><p>Existence could be answered right now. If the minimum cut of the graph is no less than k, then we could find such a sub-graph. A trivial case is the graph itself. But the second one is difficult. It is believed that this is a NP hard problem.</p>
+<p>If we examine this problem deeply, we may ask the following questions: 1. Does such a sub-graph exist? 2. If such a sub-graph exist, how to find one with the minimum number of edges?</p>
+<h4 id="solution">Solution</h4>
+<p>Existence could be answered right now. If the minimum cut of the graph is no less than k, then we could find such a sub-graph. A trivial case is the graph itself. But the second one is difficult. It is believed that this is a NP hard problem.</p>
 <p>Approximation algorithms are proposed. One of them was given by Hiroshi Nagamochi and Toshihide ibaraki [A Linear-Time Algorithm for Finding a Sparse k-Connected Spanning Subgraph of a k-Connected Graph] in 1992.</p>
-<p>We firstly formalize the notions. To simplify the problem, we focus on graphs that are undirected and consist of no multiple edges and self loops. </p>
+<p>We firstly formalize the notions. To simplify the problem, we focus on graphs that are undirected and consist of no multiple edges and self loops.</p>
 <p><strong>k-Connected Graph</strong>: A graph is k-Connected if the minimum cut of the graph is no less than k.</p>
-<p><strong>Nagamoci-Ibaraki Algorithm</strong> Given a graph $G=&lt;V,E&gt;$, if $F_i = &lt;V, E_i&gt;$ is the maximal spanning forest of $G = &lt;V, E - E_1 - E_2 - .. - E_{i - 1}&gt;$, the $G_i = &lt;V, E_1 \cup E_2 \cup … \cup E_{i - 1}&gt;$ is a k-Connected Sub-graph with $k|V| - k(k + 1)$ edges if $k \le \lambda(G)$, where $\lambda(G)$ is the minimum cut of G.</p>
-<p>Here only a scratch of proof is given. Consider a particular cut C in G, whose value $\lambda(C)$ is no less than $\lambda(G)$. For any $G_i$ with $i &lt;= \lambda(G)$, it must consist of at least one edge of C. Otherwise we could add an arbitrary edge in$C-E_1-E_2-…-E_{i - 1}$ to $F_i$ such that $F_i$ is still a forest, contradicting $F_i$ is maximal.</p>
-<p>Finding a maximal forest in $G=&lt;V,E&gt;$ requires $O(|V| + |E|)$ time. So $O(k(|V| + |E|))$ is required for k-Connected Graph.  Nagamochi and Ibaraki did it in $O(|V| + |E|)$ time.  They scaned all nodes and edges once and classify edges into different $E_i$, here $i \in [1…|E|]$.</p>
-<h4 id="Pseudo-Code"><a href="#Pseudo-Code" class="headerlink" title="Pseudo Code:"></a><em>Pseudo Code</em>:</h4><ol>
-<li><p>   h(v) = 0, $\forall v \in V$</p>
-</li>
-<li><p>   $E_i = \emptyset, \forall i \in [1..|E|] $</p>
-</li>
-<li><p>while $\exists u$ that has not been scanned </p>
+<p><strong>Nagamoci-Ibaraki Algorithm</strong> Given a graph <span class="math inline">\(G=&lt;V,E&gt;\)</span>, if <span class="math inline">\(F_i = &lt;V, E_i&gt;\)</span> is the maximal spanning forest of <span class="math inline">\(G = &lt;V, E - E_1 - E_2 - .. - E_{i - 1}&gt;\)</span>, the <span class="math inline">\(G_i = &lt;V, E_1 \cup E_2 \cup ... \cup E_{i - 1}&gt;\)</span> is a k-Connected Sub-graph with <span class="math inline">\(k|V| - k(k + 1)\)</span> edges if <span class="math inline">\(k \le \lambda(G)\)</span>, where <span class="math inline">\(\lambda(G)\)</span> is the minimum cut of G.</p>
+<p>Here only a scratch of proof is given. Consider a particular cut C in G, whose value <span class="math inline">\(\lambda(C)\)</span> is no less than <span class="math inline">\(\lambda(G)\)</span>. For any <span class="math inline">\(G_i\)</span> with <span class="math inline">\(i &lt;= \lambda(G)\)</span>, it must consist of at least one edge of C. Otherwise we could add an arbitrary edge in<span class="math inline">\(C-E_1-E_2-...-E_{i - 1}\)</span> to <span class="math inline">\(F_i\)</span> such that <span class="math inline">\(F_i\)</span> is still a forest, contradicting <span class="math inline">\(F_i\)</span> is maximal.</p>
+<p>Finding a maximal forest in <span class="math inline">\(G=&lt;V,E&gt;\)</span> requires <span class="math inline">\(O(|V| + |E|)\)</span> time. So <span class="math inline">\(O(k(|V| + |E|))\)</span> is required for k-Connected Graph. Nagamochi and Ibaraki did it in <span class="math inline">\(O(|V| + |E|)\)</span> time. They scaned all nodes and edges once and classify edges into different <span class="math inline">\(E_i\)</span>, here <span class="math inline">\(i \in [1...|E|]\)</span>.</p>
+<h4 id="pseudo-code"><em>Pseudo Code</em>:</h4>
+<ol type="1">
+<li>h(v) = 0, <span class="math inline">\(\forall v \in V\)</span></li>
+<li>$E_i = , i $</li>
+<li>while <span class="math inline">\(\exists u\)</span> that has not been scanned
 <ul>
-<li><p>find u with maximum h(u)</p>
-</li>
-<li><p>marked u as scanned</p>
-</li>
-<li><p>for all $(u,v) \in E$ that has not been scanned</p>
+<li>find u with maximum h(u)</li>
+<li>marked u as scanned</li>
+<li>for all <span class="math inline">\((u,v) \in E\)</span> that has not been scanned
 <ul>
 <li>marked (u,v) as scanned.</li>
-<li>if h(u) == h(v) then<ul>
+<li>if h(u) == h(v) then
+<ul>
 <li>++h(u)</li>
-</ul>
-</li>
+</ul></li>
 <li>end if</li>
 <li>++h(v)</li>
-<li>$E_{h(v)} = E_{h(v)} \cup {(u,v)}$</li>
-</ul>
-</li>
-<li><p>end for</p>
+<li><span class="math inline">\(E_{h(v)} = E_{h(v)} \cup {(u,v)}\)</span></li>
+</ul></li>
+<li>end for</li>
+</ul></li>
+</ol>
 <p>end while</p>
-</li>
-</ul>
-<h4 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h4></li>
-</ol>
+<h4 id="analysis">Analysis</h4>
 <p>To see that the algorithm indeed works, we have to check two things:</p>
-<ol>
-<li>$F_i=&lt;V, E_i&gt;$ is a forest, i.e.,  $F_i$ does not contain a cycle.</li>
-<li>$F_i=&lt;V, E_i&gt;$ is maximal.</li>
+<ol type="1">
+<li><span class="math inline">\(F_i=&lt;V, E_i&gt;\)</span> is a forest, i.e., <span class="math inline">\(F_i\)</span> does not contain a cycle.</li>
+<li><span class="math inline">\(F_i=&lt;V, E_i&gt;\)</span> is maximal.</li>
 </ol>
-<p><strong>$F_i$ doesn’t contain a cycle:</strong> suppose that when u is being scanned and (u,v) is added to $E_i$, a cycle is created. Then some edge incident to v belongs to $F_i$. Thus h(v) &gt;= i before (u, v) is added to $E_i$. But (u,v) is added to $E_{h(v)}$ after <strong>$’++h(v)’$</strong>. So $(u,v) \notin E_i$. A contradiction.</p>
-<p><strong>$F_i$ is maximal</strong>. If $F_i$ is not maximal, there is some edge $(u,v) \in E_j$ for some $j &gt; i$ such that $&lt;V, E_i \cup {(u,v)}&gt;$ is a forest. Denote the tree containing u in $F_i$ by $T_u$ and the one containing v in $F_i$ by $T_v$. Further, denote the order of nodes in $T_u$ and $T_v$ being scanned by $[x_1, x_2,…, u,…]$ $[y_1,y_2,…v,…]$ respectively. Without losing generality, suppose $x_1$ is scanned before $y_1$.  When $x_1$ is scanned, we must have $h(x_1) == i - 1$ and $h(y_1) \le i - 1$. After $x_1$ is scanned, $h(x_1) == h(x_2) ==i$. For any other node $z \ne {x_1}$ such that $h(z) == i$, we guarantee that $h(z) == i -1$ before $x_1$ is scanned and $z \in [x_2, x_3,…]$, otherwise z is scanned before $x_1$.  Now $h(x_2) =i &gt; h(y_1)$, it’s scanned before $y_1$. Following this way, u is scanned before $y_1$. When u is scanned, $h(v) \le i - 1$. So (u, v) is add to some $E_j$ for $j \le i$. A contradiction.</p>
-<p>The number of edges in $G_i$</p>
-<p>Suppose the order of nodes being scanned in V is $v_1, v_2, ..$. The value of $h(v_i)$ could not exceed i, since there are at most one edge $(v_j, v_i)$ incident to $v_i$ for some j less than i. So $v_i$ does not appear in forest $F_k$ for $k &gt; i$. Then $F_k$ contains at most |V| - 1 - (k - 1) = |V| - k edges. Thus the number of edges in $G_i$ is at most<br>$$<br>\Sigma_{i = 1}^{k} (|V| - i) = k|V| - k(k + 1) /2<br>$$</p>
+<p><strong><span class="math inline">\(F_i\)</span> doesn't contain a cycle:</strong> suppose that when u is being scanned and (u,v) is added to <span class="math inline">\(E_i\)</span>, a cycle is created. Then some edge incident to v belongs to <span class="math inline">\(F_i\)</span>. Thus h(v) &gt;= i before (u, v) is added to <span class="math inline">\(E_i\)</span>. But (u,v) is added to <span class="math inline">\(E_{h(v)}\)</span> after <strong><span class="math inline">\(&#39;++h(v)&#39;\)</span></strong>. So <span class="math inline">\((u,v) \notin E_i\)</span>. A contradiction.</p>
+<p><strong><span class="math inline">\(F_i\)</span> is maximal</strong>. If <span class="math inline">\(F_i\)</span> is not maximal, there is some edge <span class="math inline">\((u,v) \in E_j\)</span> for some <span class="math inline">\(j &gt; i\)</span> such that <span class="math inline">\(&lt;V, E_i \cup \{(u,v)\}&gt;\)</span> is a forest. Denote the tree containing u in <span class="math inline">\(F_i\)</span> by <span class="math inline">\(T_u\)</span> and the one containing v in <span class="math inline">\(F_i\)</span> by <span class="math inline">\(T_v\)</span>. Further, denote the order of nodes in <span class="math inline">\(T_u\)</span> and <span class="math inline">\(T_v\)</span> being scanned by <span class="math inline">\([x_1, x_2,..., u,...]\)</span> <span class="math inline">\([y_1,y_2,...v,...]\)</span> respectively. Without losing generality, suppose <span class="math inline">\(x_1\)</span> is scanned before <span class="math inline">\(y_1\)</span>. When <span class="math inline">\(x_1\)</span> is scanned, we must have <span class="math inline">\(h(x_1) == i - 1\)</span> and <span class="math inline">\(h(y_1) \le i - 1\)</span>. After <span class="math inline">\(x_1\)</span> is scanned, <span class="math inline">\(h(x_1) == h(x_2) ==i\)</span>. For any other node <span class="math inline">\(z \ne {x_1}\)</span> such that <span class="math inline">\(h(z) == i\)</span>, we guarantee that <span class="math inline">\(h(z) == i -1\)</span> before <span class="math inline">\(x_1\)</span> is scanned and <span class="math inline">\(z \in [x_2, x_3,...]\)</span>, otherwise z is scanned before <span class="math inline">\(x_1\)</span>. Now <span class="math inline">\(h(x_2) =i &gt; h(y_1)\)</span>, it's scanned before <span class="math inline">\(y_1\)</span>. Following this way, u is scanned before <span class="math inline">\(y_1\)</span>. When u is scanned, <span class="math inline">\(h(v) \le i - 1\)</span>. So (u, v) is add to some <span class="math inline">\(E_j\)</span> for <span class="math inline">\(j \le i\)</span>. A contradiction.</p>
+<p>The number of edges in <span class="math inline">\(G_i\)</span></p>
+<p>Suppose the order of nodes being scanned in V is <span class="math inline">\(v_1, v_2, ..\)</span>. The value of <span class="math inline">\(h(v_i)\)</span> could not exceed i, since there are at most one edge <span class="math inline">\((v_j, v_i)\)</span> incident to <span class="math inline">\(v_i\)</span> for some j less than i. So <span class="math inline">\(v_i\)</span> does not appear in forest <span class="math inline">\(F_k\)</span> for <span class="math inline">\(k &gt; i\)</span>. Then <span class="math inline">\(F_k\)</span> contains at most |V| - 1 - (k - 1) = |V| - k edges. Thus the number of edges in <span class="math inline">\(G_i\)</span> is at most <span class="math display">\[
+\Sigma_{i = 1}^{k} (|V| - i) = k|V| - k(k + 1) /2
+\]</span></p>
 
       
     </div>
@@ -309,14 +304,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Suppose the edge connectivity of a graph G is c. In the previous article we know that the number of cuts with weight up to kc is bounded by $O((2n)^{2k})$, where k is a real number and n is the number of vertices in G. </p>
-<p>Let $f(x)$ to be the number of cut with value xc and define $F(k) = \Sigma_{x \le k} f(x)$. From the discussion above, $F(k) \le \lambda (2n)^{2k}$ for some parameter $\lambda$.</p>
-<p>If we remove each edge with probability p, then the graph becomes disconnected with probability at most $P[Disconnected] = \Sigma_{x} f(x)p^{xc} $</p>
-<p>To maximize $P[Disconnected]$, we take $F(k) = \lambda (2n)^{2k}$ for every k.</p>
-<p>By the definition of $F(k)$,  $f(k) = \lambda ((2n)^{2k} - (2n)^{2(k-1)})$.</p>
-<p>Then, for $k \ge 2$,<br>$$<br>\begin{aligned}<br>f(k) p^{kc} &amp; =     \lambda ((2n)^{2k} - (2n)^{2(k-1)}) p^{kc} \<br>                  &amp;  =    \lambda (\int_{k -1}^{k} {\partial (2n)^{2x} \over \partial x} dx) * p^{kc} \\<br>                  &amp; \le  \lambda \int_{k -1}^{k} {\partial(2n)^{2x} \over \partial x} p^{xc}dx<br>\end{aligned}<br>$$</p>
-<p>Sum up this inequality over k,<br>$$<br>\begin{aligned}<br>P[Disconnected] &amp; \le f(1)p^c + \lambda  \int_1^\infty {\partial (2n)^{2x} \over \partial x} p^{xc} dx \<br>                            &amp; = \lambda (2n)^2 p^c - \lambda  {2\ln 2n \over 2 \ln 2n + c \ln p} (2n)^2 p^c<br>\end{aligned}<br>$$</p>
-<p>If $p = (2n)^{-{a \over c} }$ for some parameter $a$, then $P[Disconnected] = O(n^2 p^c / (a - 2)) = O(n^{2 - a} / (a -2))$. When a = 3, the graph is disconnected with probability O(1/n). (p.s: for large c, $p \approx 1 - {a \ln 2n \over c} $)</p>
+          <p>Suppose the edge connectivity of a graph G is c. In the previous article we know that the number of cuts with weight up to kc is bounded by <span class="math inline">\(O((2n)^{2k})\)</span>, where k is a real number and n is the number of vertices in G.</p>
+<p>Let <span class="math inline">\(f(x)\)</span> to be the number of cut with value xc and define <span class="math inline">\(F(k) = \Sigma_{x \le k} f(x)\)</span>. From the discussion above, <span class="math inline">\(F(k) \le \lambda (2n)^{2k}\)</span> for some parameter <span class="math inline">\(\lambda\)</span>.</p>
+<p>If we remove each edge with probability p, then the graph becomes disconnected with probability at most $P[Disconnected] = _{x} f(x)p^{xc} $</p>
+<p>To maximize <span class="math inline">\(P[Disconnected]\)</span>, we take <span class="math inline">\(F(k) = \lambda (2n)^{2k}\)</span> for every k.</p>
+<p>By the definition of <span class="math inline">\(F(k)\)</span>, <span class="math inline">\(f(k) = \lambda ((2n)^{2k} - (2n)^{2(k-1)})\)</span>.</p>
+<p>Then, for <span class="math inline">\(k \ge 2\)</span>, <span class="math display">\[
+\begin{aligned}
+f(k) p^{kc} &amp; =     \lambda ((2n)^{2k} - (2n)^{2(k-1)}) p^{kc} \\\
+                  &amp;  =    \lambda (\int\_{k -1}^{k} {\partial (2n)^{2x} \over \partial x} dx) * p^{kc} \\\ 
+                  &amp; \le  \lambda \int\_{k -1}^{k} {\partial(2n)^{2x} \over \partial x} p^{xc}dx
+\end{aligned}
+\]</span></p>
+<p>Sum up this inequality over k, <span class="math display">\[
+\begin{aligned}
+P[Disconnected] &amp; \le f(1)p^c + \lambda  \int_1^\infty {\partial (2n)^{2x} \over \partial x} p^{xc} dx \\\
+                            &amp; = \lambda (2n)^2 p^c - \lambda  {2\ln 2n \over 2 \ln 2n + c \ln p} (2n)^2 p^c
+\end{aligned}
+\]</span></p>
+<p>If <span class="math inline">\(p = (2n)^{-{a \over c} }\)</span> for some parameter <span class="math inline">\(a\)</span>, then <span class="math inline">\(P[Disconnected] = O(n^2 p^c / (a - 2)) = O(n^{2 - a} / (a -2))\)</span>. When a = 3, the graph is disconnected with probability O(1/n). (p.s: for large c, $p 1 - {a 2n c} $)</p>
 
       
     </div>
@@ -384,20 +390,76 @@
           <blockquote>
 <p>Last Updated: Jan-21st-2021</p>
 </blockquote>
-<p>Let $X_i \in { 0, 1 }: i \in [n]$ be a set of $n$ independent random variables with $\mathbb{E} [X_i] = \mu_i : i \in [n]$.  Define<br>$$<br>\begin{aligned}<br>    X &amp;\doteq \sum_{i \in [n] } X_i, \<br>    \mu &amp;\doteq \mathbb{E} \left[ \sum_{i \in [n] } X_i \right] = \sum_{i \in [n] } \mu_i.<br>\end{aligned}<br>$$</p>
-<p><strong>Theorem 1</strong>  <em>For any $0 &lt; \epsilon &lt; 1$</em>,<br>$$<br>\Pr \left[ X \ge (1 + \epsilon) \cdot \mu \right] \le e ^ {- \epsilon^2 \mu / 3}.<br>$$</p>
-<p><strong>Proof</strong>:<br>Noting that $e^x$ is a non-decreasing function and by applying <em>Markov’s Inequality</em>, for any <em>t &gt; 0</em>, we obtain<br>$$<br>\begin{aligned}<br>    \Pr \left[ X \ge (1 + \epsilon) \cdot \mu \right]<br>    &amp; = \Pr \left[ e^{tX} \ge e^{ (1 + \epsilon) t \mu } \right] \<br>    &amp; \le \frac{\mathbb{E} \left[ e^{tX} \right] }{e^{(1 + \epsilon)t\mu} }.<br>    \end{aligned}<br>$$</p>
-<p>From independence of $X_i$, we get<br>$$<br>\begin{aligned}<br>    \mathbb{E} \left[ e^{tX} \right]<br>    &amp;= \prod \mathbb{E} \left[ e^{t X_i} \right] \<br>    &amp; = \prod (e^t \mu_i + (1 - \mu_i)) \<br>    &amp; = \prod(1 + \mu_i (e^t -1)) \<br>    &amp;\le \prod e^{ \mu_i (e^t - 1)} \<br>    &amp;= e^{\mu (e^t -1)}.<br>\end{aligned}<br>$$</p>
-<p>Hence:<br>$$<br>    \Pr \left[ X \ge (1 + \epsilon) \cdot \mu \right] \le \frac{\mathbb{E} \left[ e^{tX} \right] }{ e^{ (1 + \epsilon)t\mu} } = \frac{e^{\mu (e^t -1)} }{e^{(1 + \epsilon)t\mu} }.<br>$$</p>
-<p>By minimizing the inequality over t, we have<br>$$<br>    \Pr[X \ge (1 + \epsilon)\mu] \le \underset{t &gt; 0}{\min } \frac{e^{\mu (e^t -1)} }{e^{(1 + \epsilon)t\mu} }.<br>$$</p>
-<p>It can be shown that when $t = \ln (1 + \epsilon )$, the bound is tightest:<br>$$<br>\Pr[X \ge (1 + \epsilon)\mu] \le e ^ {\mu ( \epsilon - ( 1 + \epsilon) \ln(1 + \epsilon))} = \left( \frac{e^\epsilon}{ (1 + \epsilon)^{1 + \epsilon} } \right)^\mu.<br>$$</p>
-<p>By Taylor series expansion for $\ln(1 + \epsilon)$,<br>$$<br>\begin{aligned}<br>    (1 + \epsilon)\ln(1 + \epsilon) &amp;= \epsilon + \sum_{i=2}^{\infty} (-\epsilon)^i \left( \frac{1}{i - 1} -  \frac{1}{i} \right) \<br>    &amp; \ge \epsilon + \epsilon^2<br>    \frac{1}{2} - \epsilon^3 \frac{1}{6} \<br>    &amp; \ge \epsilon + \epsilon^2 \frac{1}{3}.<br>    \end{aligned}<br>$$</p>
-<p>Substitute it back into the inequality,  we obtain the desired result:<br>$$<br>\Pr[X \ge (1 + \epsilon)\mu] \le e ^ {- \epsilon^2 \frac{\mu}{3} }.<br>$$</p>
-<p><strong>Theorem 2</strong> <em>For any $0 &lt; \epsilon &lt; 1$,</em><br>$$<br>\Pr[X \le (1 - \epsilon)\mu] \le e ^ {- \epsilon^2 \frac{\mu}{2} }.<br>$$<br><strong>Proof</strong>:<br>As before,<br>$$<br>\begin{aligned}<br>    \Pr \left[ X \le (1 - \epsilon) \mu \right]<br>    &amp; = \Pr \left[ e^{-tX} \ge e^{-(1 - \epsilon) t \mu} \right] \<br>    &amp; \le \frac{ \mathbb{E} \left[ e^{-tX} \right] }{e^{-(1 - \epsilon) t \mu} } \<br>    &amp; \le  \frac{e^{ (1 - \epsilon) t \mu} }{e^{ \mu(e^t -1) } }.<br>\end{aligned}<br>$$</p>
-<p>Let $t = \ln (1 + \epsilon )$,<br>$$<br>    \Pr \left[ X \le (1 - \epsilon) \cdot \mu \right] \le<br>    e ^ {\mu ( (  1 - \epsilon) \ln(1 + \epsilon) - \epsilon ) }.<br>$$</p>
-<p>Applying Taylor expansion, we get<br>$$<br>\begin{aligned}<br>    (1 - \epsilon)\ln(1 + \epsilon) &amp;= \epsilon + \sum_{i=2}^{\infty} (-\epsilon)^i \left(- \frac{1}{i - 1} +  \frac{1}{i} \right) \<br>    &amp; \ge \epsilon - \epsilon^2 \frac{1}{2}.<br>\end{aligned}<br>$$</p>
-<p>Finally,<br>$$<br>    \Pr \left[ X \le (1 - \epsilon) \cdot \mu \right] \le e ^ {- \epsilon^2 \frac{\mu}{2} }.<br>$$</p>
-<p>$\square$</p>
+<p>Let <span class="math inline">\(X_i \in \{ 0, 1 \}: i \in [n]\)</span> be a set of <span class="math inline">\(n\)</span> independent random variables with <span class="math inline">\(\mathbb{E} [X_i] = \mu_i : i \in [n]\)</span>. Define <span class="math display">\[
+\begin{aligned} 
+    X &amp;\doteq \sum_{i \in [n] } X_i, \\
+    \mu &amp;\doteq \mathbb{E} \left[ \sum_{i \in [n] } X_i \right] = \sum_{i \in [n] } \mu_i. 
+\end{aligned}
+\]</span></p>
+<p><strong>Theorem 1</strong> <em>For any <span class="math inline">\(0 &lt; \epsilon &lt; 1\)</span></em>, <span class="math display">\[
+\Pr \left[ X \ge (1 + \epsilon) \cdot \mu \right] \le e ^ {- \epsilon^2 \mu / 3}.
+\]</span></p>
+<p><strong>Proof</strong>: Noting that <span class="math inline">\(e^x\)</span> is a non-decreasing function and by applying <em>Markov's Inequality</em>, for any <em>t &gt; 0</em>, we obtain <span class="math display">\[
+\begin{aligned}
+    \Pr \left[ X \ge (1 + \epsilon) \cdot \mu \right] 
+    &amp; = \Pr \left[ e^{tX} \ge e^{ (1 + \epsilon) t \mu } \right] \\
+    &amp; \le \frac{\mathbb{E} \left[ e^{tX} \right] }{e^{(1 + \epsilon)t\mu} }.
+    \end{aligned}
+\]</span></p>
+<p>From independence of <span class="math inline">\(X_i\)</span>, we get <span class="math display">\[
+\begin{aligned}
+    \mathbb{E} \left[ e^{tX} \right] 
+    &amp;= \prod \mathbb{E} \left[ e^{t X_i} \right] \\
+    &amp; = \prod (e^t \mu_i + (1 - \mu_i)) \\
+    &amp; = \prod(1 + \mu_i (e^t -1)) \\
+    &amp;\le \prod e^{ \mu_i (e^t - 1)} \\
+    &amp;= e^{\mu (e^t -1)}.
+\end{aligned}
+\]</span></p>
+<p>Hence: <span class="math display">\[
+    \Pr \left[ X \ge (1 + \epsilon) \cdot \mu \right] \le \frac{\mathbb{E} \left[ e^{tX} \right] }{ e^{ (1 + \epsilon)t\mu} } = \frac{e^{\mu (e^t -1)} }{e^{(1 + \epsilon)t\mu} }.
+\]</span></p>
+<p>By minimizing the inequality over t, we have <span class="math display">\[
+    \Pr[X \ge (1 + \epsilon)\mu] \le \underset{t &gt; 0}{\min } \frac{e^{\mu (e^t -1)} }{e^{(1 + \epsilon)t\mu} }.
+\]</span></p>
+<p>It can be shown that when <span class="math inline">\(t = \ln (1 + \epsilon )\)</span>, the bound is tightest: <span class="math display">\[
+\Pr[X \ge (1 + \epsilon)\mu] \le e ^ {\mu ( \epsilon - ( 1 + \epsilon) \ln(1 + \epsilon))} = \left( \frac{e^\epsilon}{ (1 + \epsilon)^{1 + \epsilon} } \right)^\mu.
+\]</span></p>
+<p>By Taylor series expansion for <span class="math inline">\(\ln(1 + \epsilon)\)</span>, <span class="math display">\[
+\begin{aligned}
+    (1 + \epsilon)\ln(1 + \epsilon) &amp;= \epsilon + \sum_{i=2}^{\infty} (-\epsilon)^i \left( \frac{1}{i - 1} -  \frac{1}{i} \right) \\
+    &amp; \ge \epsilon + \epsilon^2
+    \frac{1}{2} - \epsilon^3 \frac{1}{6} \\
+    &amp; \ge \epsilon + \epsilon^2 \frac{1}{3}.  
+    \end{aligned}
+\]</span></p>
+<p>Substitute it back into the inequality, we obtain the desired result: <span class="math display">\[
+\Pr[X \ge (1 + \epsilon)\mu] \le e ^ {- \epsilon^2 \frac{\mu}{3} }.
+\]</span></p>
+<p><strong>Theorem 2</strong> <em>For any <span class="math inline">\(0 &lt; \epsilon &lt; 1\)</span>,</em> <span class="math display">\[
+\Pr[X \le (1 - \epsilon)\mu] \le e ^ {- \epsilon^2 \frac{\mu}{2} }.
+\]</span> <strong>Proof</strong>: As before, <span class="math display">\[
+\begin{aligned}
+    \Pr \left[ X \le (1 - \epsilon) \mu \right] 
+    &amp; = \Pr \left[ e^{-tX} \ge e^{-(1 - \epsilon) t \mu} \right] \\
+    &amp; \le \frac{ \mathbb{E} \left[ e^{-tX} \right] }{e^{-(1 - \epsilon) t \mu} } \\
+    &amp; \le  \frac{e^{ (1 - \epsilon) t \mu} }{e^{ \mu(e^t -1) } }.
+\end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(t = \ln (1 + \epsilon )\)</span>, <span class="math display">\[
+    \Pr \left[ X \le (1 - \epsilon) \cdot \mu \right] \le 
+    e ^ {\mu ( (  1 - \epsilon) \ln(1 + \epsilon) - \epsilon ) }.
+\]</span></p>
+<p>Applying Taylor expansion, we get <span class="math display">\[
+\begin{aligned}
+    (1 - \epsilon)\ln(1 + \epsilon) &amp;= \epsilon + \sum_{i=2}^{\infty} (-\epsilon)^i \left(- \frac{1}{i - 1} +  \frac{1}{i} \right) \\
+    &amp; \ge \epsilon - \epsilon^2 \frac{1}{2}.
+\end{aligned}
+\]</span></p>
+<p>Finally, <span class="math display">\[
+    \Pr \left[ X \le (1 - \epsilon) \cdot \mu \right] \le e ^ {- \epsilon^2 \frac{\mu}{2} }.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
 
       
     </div>
@@ -462,162 +524,167 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Notes on Introduction to Complexity  </p>
-<h5 id="Chapter-Two"><a href="#Chapter-Two" class="headerlink" title="Chapter Two"></a>Chapter Two</h5><h6 id="Context-Free-Grammar"><a href="#Context-Free-Grammar" class="headerlink" title="Context-Free Grammar"></a>Context-Free Grammar</h6><blockquote>
-<p>A context-free grammar is a four-tuple $\langle N, T, S, R\rangle$, where</p>
+          <p>Notes on Introduction to Complexity</p>
+<h5 id="chapter-two">Chapter Two</h5>
+<h6 id="context-free-grammar">Context-Free Grammar</h6>
+<blockquote>
+<p>A context-free grammar is a four-tuple <span class="math inline">\(\langle N, T, S, R\rangle\)</span>, where</p>
 <ul>
 <li>N is a finite set of symbols called the variables(non-terminals),</li>
 <li>T is a finite set of symbols, disjoint from N, called the terminals,</li>
-<li>$S \in N$ is the start symbol and</li>
-<li>R is a finite set of rules(productions), with each rule of the form $X \to \omega$,  where $X \in N$ and $\omega \in (N \cup T)^+$.</li>
+<li><span class="math inline">\(S \in N\)</span> is the start symbol and</li>
+<li>R is a finite set of rules(productions), with each rule of the form <span class="math inline">\(X \to \omega\)</span>, where <span class="math inline">\(X \in N\)</span> and <span class="math inline">\(\omega \in (N \cup T)^+\)</span>.</li>
 </ul>
 </blockquote>
-<h6 id="Chomsky-Normal-Form"><a href="#Chomsky-Normal-Form" class="headerlink" title="Chomsky Normal Form"></a>Chomsky Normal Form</h6><blockquote>
-<p>A context-free grammar $\langle N, T, S, R\rangle$ is in chomsky normal form if each rule in R is of one of the two forms  </p>
+<h6 id="chomsky-normal-form">Chomsky Normal Form</h6>
+<blockquote>
+<p>A context-free grammar <span class="math inline">\(\langle N, T, S, R\rangle\)</span> is in chomsky normal form if each rule in R is of one of the two forms</p>
 <ul>
-<li>$X \to YZ$, where $X, Y, Z \in N$, </li>
-<li>$X \to a$, where $X \in N, a \in T$.   </li>
+<li><span class="math inline">\(X \to YZ\)</span>, where <span class="math inline">\(X, Y, Z \in N\)</span>,</li>
+<li><span class="math inline">\(X \to a\)</span>, where <span class="math inline">\(X \in N, a \in T\)</span>.</li>
 </ul>
-<p>In addition, we permit $S \to \epsilon$, where $S$ is the start variable.</p>
+<p>In addition, we permit <span class="math inline">\(S \to \epsilon\)</span>, where <span class="math inline">\(S\)</span> is the start variable.</p>
 </blockquote>
-<h6 id="Pushdown-Automata"><a href="#Pushdown-Automata" class="headerlink" title="Pushdown Automata"></a>Pushdown Automata</h6><blockquote>
-<p>A pushdown automaton is a six-tuple $\langle Q, \Sigma, \Gamma, \delta, S, F \rangle$, where</p>
+<h6 id="pushdown-automata">Pushdown Automata</h6>
+<blockquote>
+<p>A pushdown automaton is a six-tuple <span class="math inline">\(\langle Q, \Sigma, \Gamma, \delta, S, F \rangle\)</span>, where</p>
 <ul>
 <li>Q is a finite set of states,</li>
-<li>$\Sigma$ is a finite set of input symbols,</li>
-<li>$\Gamma$ is a finite set of stack symbols,</li>
-<li>$\delta : Q \times \Sigma_{\epsilon} \times \Gamma_{\epsilon} \to P(Q \times \Gamma)$ is the transition function, where $P(Q \times \Gamma)$ is the power set of $Q \times \Gamma$, </li>
-<li>$S \in Q$ is the start state and </li>
-<li>$F \subseteq Q$ is a finite set of accept states.</li>
+<li><span class="math inline">\(\Sigma\)</span> is a finite set of input symbols,</li>
+<li><span class="math inline">\(\Gamma\)</span> is a finite set of stack symbols,</li>
+<li><span class="math inline">\(\delta : Q \times \Sigma_{\epsilon} \times \Gamma_{\epsilon} \to P(Q \times \Gamma)\)</span> is the transition function, where <span class="math inline">\(P(Q \times \Gamma)\)</span> is the power set of <span class="math inline">\(Q \times \Gamma\)</span>,</li>
+<li><span class="math inline">\(S \in Q\)</span> is the start state and</li>
+<li><span class="math inline">\(F \subseteq Q\)</span> is a finite set of accept states.</li>
 </ul>
 </blockquote>
-<h6 id="Equivalence-between-Context-Free-Grammar-and-Pushdown-Automata"><a href="#Equivalence-between-Context-Free-Grammar-and-Pushdown-Automata" class="headerlink" title="Equivalence between Context-Free Grammar and Pushdown Automata"></a>Equivalence between Context-Free Grammar and Pushdown Automata</h6><ol>
-<li><p>For every context-free grammar G, there is an automaton M, such that M recognizes the language generated by G.  </p>
-</li>
-<li><p><strong><em>If a pushdown automaton recognizes some language, then it is context-free.</em></strong></p>
-</li>
+<h6 id="equivalence-between-context-free-grammar-and-pushdown-automata">Equivalence between Context-Free Grammar and Pushdown Automata</h6>
+<ol type="1">
+<li><p>For every context-free grammar G, there is an automaton M, such that M recognizes the language generated by G.</p></li>
+<li><p><strong><em>If a pushdown automaton recognizes some language, then it is context-free.</em></strong></p></li>
 </ol>
-<p><strong>Proof</strong>: For the convenience of proof, we modify a pushdown automaton $M = \langle Q, \Sigma, \Gamma, \delta, S, F \rangle$ to give it three features:</p>
+<p><strong>Proof</strong>: For the convenience of proof, we modify a pushdown automaton <span class="math inline">\(M = \langle Q, \Sigma, \Gamma, \delta, S, F \rangle\)</span> to give it three features:</p>
 <blockquote>
 <ul>
-<li>M accepts by entering empty stack.  </li>
-</ul>
-</blockquote>
-<ul>
-<li>These is only one accept state $q_{accpet}$ in F.  </li>
-<li>Each transition either pushes a symbol onto the stack or pops one off the stack, but it does not do both at the same time.  The way to construct a context-free grammar G from the push-down automaton M is given by follow (<strong><em>Introduction To The Theory Of  Computation 2nd Edition by Michael Sipser</em></strong>, p120):<blockquote>
-<p><em>(1)</em> $\forall p \in Q$, we put the rule $N_{pp} \to \epsilon$ in G.  </p>
-</blockquote>
+<li>M accepts by entering empty stack.<br />
 </li>
+<li>These is only one accept state <span class="math inline">\(q_{accpet}\)</span> in F.<br />
+</li>
+<li>Each transition either pushes a symbol onto the stack or pops one off the stack, but it does not do both at the same time.</li>
 </ul>
-<p><em>(2)</em> $\forall p,q,r \in Q$, we add to G a new rule $N_{pq} \to N_{pr} N_{rq}$,<br><em>(3)</em> $\forall p, q, r, s \in Q$, if $\exists a, b\in \Sigma_\epsilon$, $t \in \Gamma$, s.t. $(r,t) \in \delta(p,a,\epsilon)$ and  $ (q,\epsilon) \in \delta(s,b,t)$, then we put the rule $N_{pq} \to a N_{rs}b$ in G.</p>
+</blockquote>
+<p>The way to construct a context-free grammar G from the push-down automaton M is given by follow (<strong><em>Introduction To The Theory Of Computation 2nd Edition by Michael Sipser</em></strong>, p120): &gt;<em>(1)</em> <span class="math inline">\(\forall p \in Q\)</span>, we put the rule <span class="math inline">\(N_{pp} \to \epsilon\)</span> in G.<br />
+<em>(2)</em> <span class="math inline">\(\forall p,q,r \in Q\)</span>, we add to G a new rule <span class="math inline">\(N_{pq} \to N_{pr} N_{rq}\)</span>,<br />
+<em>(3)</em> <span class="math inline">\(\forall p, q, r, s \in Q\)</span>, if <span class="math inline">\(\exists a, b\in \Sigma_\epsilon\)</span>, <span class="math inline">\(t \in \Gamma\)</span>, s.t. <span class="math inline">\((r,t) \in \delta(p,a,\epsilon)\)</span> and $ (q,) (s,b,t)$, then we put the rule <span class="math inline">\(N_{pq} \to a N_{rs}b\)</span> in G.</p>
 <p>It is easy to see that (1) and (2) may give rise to many meaningless grammar rules, i.e., grammar rules that will never be used to derive terminal strings. (3) seems to be the only exception at the first glance. However, it indeed does the same. Consider the following example,</p>
-<center> 
-![enter image description here](http://imglf2.nosdn.127.net/img/Y1FUYmVJRmJqaTIwc0EyUTdZa0dtbFQ4bTJlQ3l4UTVpU2REQ20vSExpOD0.jpg?imageView&thumbnail=1680x0&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkgbHdwaGlsZSAvIGx3cGhpbGUubG9mdGVyLmNvbQ==&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=340&dx=16&dy=20&stripmeta=0)
-pushdown automaton M1 
+<center>
+<img src="http://imglf2.nosdn.127.net/img/Y1FUYmVJRmJqaTIwc0EyUTdZa0dtbFQ4bTJlQ3l4UTVpU2REQ20vSExpOD0.jpg?imageView&amp;thumbnail=1680x0&amp;quality=96&amp;stripmeta=0&amp;type=jpg%7Cwatermark&amp;type=2&amp;text=wqkgbHdwaGlsZSAvIGx3cGhpbGUubG9mdGVyLmNvbQ==&amp;font=bXN5aA==&amp;gravity=southwest&amp;dissolve=30&amp;fontsize=340&amp;dx=16&amp;dy=20&amp;stripmeta=0" alt="enter image description here" /> pushdown automaton M1
 </center>
-
 <p>Some of the grammar productions constructed according to (1), (2), (3) are:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>grammar productions</th>
 <th>contructed according to [(1)/(2)/(3)]</th>
 </tr>
 </thead>
-<tbody><tr>
-<td>$N_{av} \to N_{bc}$</td>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(N_{av} \to N_{bc}\)</span></td>
 <td>[according to (3)]</td>
 </tr>
-<tr>
-<td>$N_{bc} \to N_{bd}N_{dc}$</td>
+<tr class="even">
+<td><span class="math inline">\(N_{bc} \to N_{bd}N_{dc}\)</span></td>
 <td>[according to (2)]</td>
 </tr>
-<tr>
-<td>$N_{bd} \to N_{cc}$</td>
+<tr class="odd">
+<td><span class="math inline">\(N_{bd} \to N_{cc}\)</span></td>
 <td>[according to (3)]</td>
 </tr>
-<tr>
-<td>$N_{cc} \to \epsilon$</td>
+<tr class="even">
+<td><span class="math inline">\(N_{cc} \to \epsilon\)</span></td>
 <td>[according to (1)]</td>
 </tr>
-<tr>
-<td>$N_{dc} \to N_{dt}N_{tc}$</td>
+<tr class="odd">
+<td><span class="math inline">\(N_{dc} \to N_{dt}N_{tc}\)</span></td>
 <td>[according to (2)]</td>
 </tr>
-<tr>
-<td>$N_{dt} \to N_{es}$</td>
+<tr class="even">
+<td><span class="math inline">\(N_{dt} \to N_{es}\)</span></td>
 <td>[according to (3)]</td>
 </tr>
-<tr>
-<td>$N_{tc} \to N_{uu}y$</td>
+<tr class="odd">
+<td><span class="math inline">\(N_{tc} \to N_{uu}y\)</span></td>
 <td>[according to (3)]</td>
 </tr>
-<tr>
-<td>$N_{uu} \to \epsilon$</td>
+<tr class="even">
+<td><span class="math inline">\(N_{uu} \to \epsilon\)</span></td>
 <td>[according to (1)]</td>
 </tr>
-<tr>
-<td>…</td>
-<td>…</td>
+<tr class="odd">
+<td>...</td>
+<td>...</td>
 </tr>
-</tbody></table>
-<p>Heading down this way, we can get the grammar for pushdown automaton M1.  But following (3), we also get productions like:</p>
-<blockquote>
-<p>$N_{dn} \to N_{em}$<br>$N_{ek} \to N_{fj}$</p>
-</blockquote>
-<p>These rules are useless. They can not derive any string of terminals. To understand the real cause of the problem, take $N_{dn} \to N_{em}$ for example. When the push down automaton goes from state $q_d$ to state $q_e$, it pushes a $Y$ into the stack. And a $Y$ is poped during the transition from state $q_m$ to $q_n$. But the $Y$ poped is not the same $Y$ pushed during the transition from state $q_d$ to $q_e$.  At state $q_n$, the stack does not recover to its initial state before the automaton entering state $q_d$. Some additional non-terminal symbols are still in the stack.<br> </br></p>
-<p><strong>Now let’s look at another automaton M2 that recognizes the same language as M1.</strong></p>
+</tbody>
+</table>
+<p>Heading down this way, we can get the grammar for pushdown automaton M1. But following (3), we also get productions like: &gt;<span class="math inline">\(N_{dn} \to N_{em}\)</span><br />
+&gt;<span class="math inline">\(N_{ek} \to N_{fj}\)</span></p>
+<p>These rules are useless. They can not derive any string of terminals. To understand the real cause of the problem, take <span class="math inline">\(N_{dn} \to N_{em}\)</span> for example. When the push down automaton goes from state <span class="math inline">\(q_d\)</span> to state <span class="math inline">\(q_e\)</span>, it pushes a <span class="math inline">\(Y\)</span> into the stack. And a <span class="math inline">\(Y\)</span> is poped during the transition from state <span class="math inline">\(q_m\)</span> to <span class="math inline">\(q_n\)</span>. But the <span class="math inline">\(Y\)</span> poped is not the same <span class="math inline">\(Y\)</span> pushed during the transition from state <span class="math inline">\(q_d\)</span> to <span class="math inline">\(q_e\)</span>. At state <span class="math inline">\(q_n\)</span>, the stack does not recover to its initial state before the automaton entering state <span class="math inline">\(q_d\)</span>. Some additional non-terminal symbols are still in the stack. </br></p>
+<strong>Now let's look at another automaton M2 that recognizes the same language as M1.</strong>
 <center>
-![enter image description here](http://imglf0.nosdn.127.net/img/Y1FUYmVJRmJqaTIwc0EyUTdZa0dtdGxvQitSZkc1VnFkWkNaSDZQWnRYaz0.jpg?imageView&thumbnail=1680x0&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkgbHdwaGlsZSAvIGx3cGhpbGUubG9mdGVyLmNvbQ==&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=340&dx=16&dy=20&stripmeta=0) 
-pushdown automaton M2
+<img src="http://imglf0.nosdn.127.net/img/Y1FUYmVJRmJqaTIwc0EyUTdZa0dtdGxvQitSZkc1VnFkWkNaSDZQWnRYaz0.jpg?imageView&amp;thumbnail=1680x0&amp;quality=96&amp;stripmeta=0&amp;type=jpg%7Cwatermark&amp;type=2&amp;text=wqkgbHdwaGlsZSAvIGx3cGhpbGUubG9mdGVyLmNvbQ==&amp;font=bXN5aA==&amp;gravity=southwest&amp;dissolve=30&amp;fontsize=340&amp;dx=16&amp;dy=20&amp;stripmeta=0" alt="enter image description here" /> pushdown automaton M2
 </center>
-
 <p>Interestingly, such unnecessary rules disappear in M2. See the following rules:</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>grammar productions</th>
 <th>contructed according to [(1)/(2)/(3)]</th>
 </tr>
 </thead>
-<tbody><tr>
-<td>$N_{dc} \to N_{dj}N_{jc}$</td>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(N_{dc} \to N_{dj}N_{jc}\)</span></td>
 <td>according to (2)</td>
 </tr>
-<tr>
-<td>$N_{dj}  \to N_{ec}$</td>
+<tr class="even">
+<td><span class="math inline">\(N_{dj} \to N_{ec}\)</span></td>
 <td>according to (3)</td>
 </tr>
-<tr>
-<td>$N_{jc}  \to N_{cc}y$</td>
+<tr class="odd">
+<td><span class="math inline">\(N_{jc} \to N_{cc}y\)</span></td>
 <td>according to (3)</td>
 </tr>
-</tbody></table>
-<p>When the push down automaton goes from state $q_d$ to state $q_e$, it pushes a $Y$ into the stack. And a $Y$ is poped during the transition from state $q_j$ to $q_c$. When entering state $q_j$, the stack may not be what it is before going to state $q_d$. But the rule $N_{dj}  \to N_{ec}$ is valid. It can indeed derive terminal strings.</p>
-<p>Actually, M2 will enter $q_j$ twice, with $XY$$ and $$$ in the stack respectively. In the former case, the automaton will loop on $q_c$. It enters the accept state until $$$ is left on the stack.</p>
-<p><em>The grammar corresponding to M2</em>:  </p>
+</tbody>
+</table>
+<p>When the push down automaton goes from state <span class="math inline">\(q_d\)</span> to state <span class="math inline">\(q_e\)</span>, it pushes a <span class="math inline">\(Y\)</span> into the stack. And a <span class="math inline">\(Y\)</span> is poped during the transition from state <span class="math inline">\(q_j\)</span> to <span class="math inline">\(q_c\)</span>. When entering state <span class="math inline">\(q_j\)</span>, the stack may not be what it is before going to state <span class="math inline">\(q_d\)</span>. But the rule <span class="math inline">\(N_{dj} \to N_{ec}\)</span> is valid. It can indeed derive terminal strings.</p>
+<p>Actually, M2 will enter <span class="math inline">\(q_j\)</span> twice, with <span class="math inline">\(XY\$\)</span> and <span class="math inline">\(\$\)</span> in the stack respectively. In the former case, the automaton will loop on <span class="math inline">\(q_c\)</span>. It enters the accept state until <span class="math inline">\(\$\)</span> is left on the stack.</p>
+<p><em>The grammar corresponding to M2</em>:</p>
 <blockquote>
-<p> $N_{ak} \to N_{bc}$<br> $N_{bc} \to N_{bd}N_{dc}$<br> $N_{bd} \to N_{cc}$<br> $N_{dc} \to N_{dj}N_{jc}$<br> $N_{dj} \to N_{ec}$<br> $N_{ec} \to N_{ei}N_{ic}$<br> $N_{ei} \to N_{fc}$<br> $N_{fc} \to N_{fj}N_{jc}$<br> $N_{fj} \to N_{gc}$<br> $N_{gc} \to N_{gi}N_{ic}$<br> $N_{gi} \to N_{hc}$<br> $N_{hc} \to N_{cc}a$<br> $N_{jc} \to N_{cc}y$<br> $N_{ic} \to N_{cc}x$<br> $N_{cc} \to \epsilon$  </p>
+<p><span class="math inline">\(N_{ak} \to N_{bc}\)</span><br />
+<span class="math inline">\(N_{bc} \to N_{bd}N_{dc}\)</span><br />
+<span class="math inline">\(N_{bd} \to N_{cc}\)</span><br />
+<span class="math inline">\(N_{dc} \to N_{dj}N_{jc}\)</span><br />
+<span class="math inline">\(N_{dj} \to N_{ec}\)</span><br />
+<span class="math inline">\(N_{ec} \to N_{ei}N_{ic}\)</span><br />
+<span class="math inline">\(N_{ei} \to N_{fc}\)</span><br />
+<span class="math inline">\(N_{fc} \to N_{fj}N_{jc}\)</span><br />
+<span class="math inline">\(N_{fj} \to N_{gc}\)</span><br />
+<span class="math inline">\(N_{gc} \to N_{gi}N_{ic}\)</span><br />
+<span class="math inline">\(N_{gi} \to N_{hc}\)</span><br />
+<span class="math inline">\(N_{hc} \to N_{cc}a\)</span><br />
+<span class="math inline">\(N_{jc} \to N_{cc}y\)</span><br />
+<span class="math inline">\(N_{ic} \to N_{cc}x\)</span><br />
+<span class="math inline">\(N_{cc} \to \epsilon\)</span></p>
 </blockquote>
-<p>In the book <strong><em>Introduction To Automata Theory, Languages, and Computation</em></strong>, <strong><em>John E. Hopcroft, Rajeev Motwani, Jeffery D. Ullman</em></strong> give another way of converting a pushdown automaton into context-free grammar. In that way, we can avoid construct meaningless rules even for pushdown automaton M1. The key idea is, rule like $N_{pq} \to a N_{rs}b$ is constructed if and only if in state $q$ the stack is the same as what it is before the automaton entering state $p$.</p>
-<p>One more thing to mention about rule(3)</p>
-<blockquote>
-<p><em>(3)</em> $\forall p, q, r, s \in Q$, if $\exists a, b\in \Sigma_\epsilon, t \in \Gamma$, s.t. $(r,t) \in \delta(p,a,\epsilon)$ and  $ (q,\epsilon) \in \delta(s,b,t)$, then we put the rule $N_{pq} \to a N_{rs}b$ in G.</p>
-</blockquote>
-<p>is that <strong>t</strong> need not to be <strong>b</strong>. We will give an example, though it is kind of weird.  </p>
+<p>In the book <strong><em>Introduction To Automata Theory, Languages, and Computation</em></strong>, <strong><em>John E. Hopcroft, Rajeev Motwani, Jeffery D. Ullman</em></strong> give another way of converting a pushdown automaton into context-free grammar. In that way, we can avoid construct meaningless rules even for pushdown automaton M1. The key idea is, rule like <span class="math inline">\(N_{pq} \to a N_{rs}b\)</span> is constructed if and only if in state <span class="math inline">\(q\)</span> the stack is the same as what it is before the automaton entering state <span class="math inline">\(p\)</span>.</p>
+<p>One more thing to mention about rule(3) &gt; <em>(3)</em> <span class="math inline">\(\forall p, q, r, s \in Q\)</span>, if <span class="math inline">\(\exists a, b\in \Sigma_\epsilon, t \in \Gamma\)</span>, s.t. <span class="math inline">\((r,t) \in \delta(p,a,\epsilon)\)</span> and $ (q,) (s,b,t)$, then we put the rule <span class="math inline">\(N_{pq} \to a N_{rs}b\)</span> in G.</p>
+is that <strong>t</strong> need not to be <strong>b</strong>. We will give an example, though it is kind of weird.<br />
+
 <center>
-![](http://i.imgur.com/NaV9YFA.jpg)
-pushdown automaton M3
-</center> 
-
-
-<h6 id="Non-context-free-Languages"><a href="#Non-context-free-Languages" class="headerlink" title="Non-context-free Languages"></a>Non-context-free Languages</h6><p><strong>Pumping lemma for context-free language</strong>: for every context-free language $L$, there is a number p, such that for every $\omega \in L$, if the length of $\omega$ is greater than p, then $\omega$ can be devided into five pieces $\omega = axyzb$, satisfying the following three conditions:</p>
-<ol>
-<li>$ax^iyz^ib \in L$, for all $i \ge 0$,</li>
-<li>$|xyz| \le p$ and</li>
-<li>$|x| \ge 0$ or $|z| \ge 0$.</li>
-</ol>
+<img src="http://i.imgur.com/NaV9YFA.jpg" /> pushdown automaton M3
+</center>
+<h6 id="non-context-free-languages">Non-context-free Languages</h6>
+<p><strong>Pumping lemma for context-free language</strong>: for every context-free language <span class="math inline">\(L\)</span>, there is a number p, such that for every <span class="math inline">\(\omega \in L\)</span>, if the length of <span class="math inline">\(\omega\)</span> is greater than p, then <span class="math inline">\(\omega\)</span> can be devided into five pieces <span class="math inline">\(\omega = axyzb\)</span>, satisfying the following three conditions: 1. <span class="math inline">\(ax^iyz^ib \in L\)</span>, for all <span class="math inline">\(i \ge 0\)</span>, 2. <span class="math inline">\(|xyz| \le p\)</span> and 3. <span class="math inline">\(|x| \ge 0\)</span> or <span class="math inline">\(|z| \ge 0\)</span>.</p>
 
       
     </div>
@@ -682,58 +749,62 @@ pushdown automaton M3
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Reading Notes on Introduction to Complexity  </p>
-<h5 id="Chapter-One"><a href="#Chapter-One" class="headerlink" title="Chapter One"></a>Chapter One</h5><h6 id="Finite-State-Automata-DFA"><a href="#Finite-State-Automata-DFA" class="headerlink" title="Finite State Automata(DFA)"></a>Finite State Automata(DFA)</h6><blockquote>
-<p>A finite state automaton is a five-tuple $\langle Q, \Sigma , \delta, S, F \rangle $, where  </p>
+          <p>Reading Notes on Introduction to Complexity</p>
+<h5 id="chapter-one">Chapter One</h5>
+<h6 id="finite-state-automatadfa">Finite State Automata(DFA)</h6>
+<blockquote>
+<p>A finite state automaton is a five-tuple $Q, , , S, F $, where</p>
 </blockquote>
 <blockquote>
 <ul>
-<li> $Q$ is a finite set called the states, </li>
-<li> $\Sigma$ is a finite set called the alphabet, </li>
-<li> $\delta : Q \times \Sigma \to Q$ is a transition function: , </li>
-<li> $S \in Q$ is the start state, </li>
-<li> $F \subseteq Q$  is the set of accpet states.    </li>
+<li><span class="math inline">\(Q\)</span> is a finite set called the states,</li>
+<li><span class="math inline">\(\Sigma\)</span> is a finite set called the alphabet,</li>
+<li><span class="math inline">\(\delta : Q \times \Sigma \to Q\)</span> is a transition function: ,</li>
+<li><span class="math inline">\(S \in Q\)</span> is the start state,</li>
+<li><span class="math inline">\(F \subseteq Q\)</span> is the set of accpet states.</li>
 </ul>
 </blockquote>
-<h6 id="Nondeterministic-Finite-State-Automata-NFA"><a href="#Nondeterministic-Finite-State-Automata-NFA" class="headerlink" title="Nondeterministic Finite State Automata(NFA)"></a>Nondeterministic Finite State Automata(NFA)</h6><blockquote>
-<p>A nondeterministic finite state automaton is a five-tuple $\langle Q, \Sigma , \delta, S, F \rangle $, where  </p>
-<ul>
-<li> $Q$ is a finite set called the states, </li>
-<li> $\Sigma$ is a finite set called the alphabet, </li>
-<li> $\delta : Q \times \Sigma_{\epsilon} \to P(Q)$ is a transition function, where $P(Q)$ is the power set of $Q$,   </li>
-<li> $S \in Q$ is the start state, </li>
-<li> $F \subseteq Q$  is the set of accpet states. </li>
-</ul>
+<h6 id="nondeterministic-finite-state-automatanfa">Nondeterministic Finite State Automata(NFA)</h6>
+<blockquote>
+<p>A nondeterministic finite state automaton is a five-tuple $Q, , , S, F $, where<br />
+- <span class="math inline">\(Q\)</span> is a finite set called the states, - <span class="math inline">\(\Sigma\)</span> is a finite set called the alphabet, - <span class="math inline">\(\delta : Q \times \Sigma_{\epsilon} \to P(Q)\)</span> is a transition function, where <span class="math inline">\(P(Q)\)</span> is the power set of <span class="math inline">\(Q\)</span>,<br />
+- <span class="math inline">\(S \in Q\)</span> is the start state, - <span class="math inline">\(F \subseteq Q\)</span> is the set of accpet states.</p>
 </blockquote>
-<h6 id="Regular-Language"><a href="#Regular-Language" class="headerlink" title="Regular Language"></a>Regular Language</h6><blockquote>
-<p>A regular language is the language that can be recognized by some finite state automaton.   </p>
+<h6 id="regular-language">Regular Language</h6>
+<blockquote>
+<p>A regular language is the language that can be recognized by some finite state automaton.</p>
 </blockquote>
-<h6 id="Regular-Expression"><a href="#Regular-Expression" class="headerlink" title="Regular Expression"></a>Regular Expression</h6><p>The set of regular expressions  of an alphabet $\Sigma$ is defined as follows:   </p>
+<h6 id="regular-expression">Regular Expression</h6>
+<p>The set of regular expressions of an alphabet <span class="math inline">\(\Sigma\)</span> is defined as follows:</p>
 <blockquote>
 <ul>
-<li>${a} \in RE$ for some $a \in \Sigma$,   </li>
-<li>${\epsilon} \in RE$,    </li>
-<li>$R \in RE$ , if  is       <ol>
-<li> $(R_1 \cup R_2)$,  where $R_1, R_2 \in RE$,     </li>
-<li> $(R_1 \circ R_2)$, where $R_1, R_2 \in RE$,     </li>
-<li> $(R_1^*)$, where $R_1 \in RE$.  </li>
-</ol>
+<li><span class="math inline">\(\{a\} \in RE\)</span> for some <span class="math inline">\(a \in \Sigma\)</span>,<br />
+</li>
+<li><span class="math inline">\(\{\epsilon\} \in RE\)</span>,<br />
+</li>
+<li><span class="math inline">\(R \in RE\)</span> , if is<br />
 </li>
 </ul>
+<ol type="1">
+<li><span class="math inline">\((R_1 \cup R_2)\)</span>, where <span class="math inline">\(R_1, R_2 \in RE\)</span>,<br />
+</li>
+<li><span class="math inline">\((R_1 \circ R_2)\)</span>, where <span class="math inline">\(R_1, R_2 \in RE\)</span>,<br />
+</li>
+<li><span class="math inline">\((R_1^*)\)</span>, where <span class="math inline">\(R_1 \in RE\)</span>.</li>
+</ol>
 </blockquote>
-<h6 id="Theorem-1"><a href="#Theorem-1" class="headerlink" title="Theorem 1"></a>Theorem 1</h6><blockquote>
-<p>Every nondeterministic finite automaton has an equivalent deterministic finite automaton.  </p>
+<h6 id="theorem-1">Theorem 1</h6>
+<blockquote>
+<p>Every nondeterministic finite automaton has an equivalent deterministic finite automaton.</p>
 </blockquote>
-<h6 id="Theorem-2"><a href="#Theorem-2" class="headerlink" title="Theorem 2"></a>Theorem 2</h6><blockquote>
-<p>Every regular language has a regular expression that describes it.  </p>
+<h6 id="theorem-2">Theorem 2</h6>
+<blockquote>
+<p>Every regular language has a regular expression that describes it.</p>
 </blockquote>
-<h6 id="Theorem-3"><a href="#Theorem-3" class="headerlink" title="Theorem 3"></a>Theorem 3</h6><blockquote>
-<p>For every regular language $L$, there is a number p where, for every $\omega \in L$ of length at least p, $\omega$ can be devided into three pieces $\omega = xyz$,  such that    </p>
-<ul>
-<li>$xy^iz \in L$, for every $i \ge 0$, </li>
-<li>$|xy| \le p$, and </li>
-<li>$|y| &gt; 0$. ​  ​  ​ ​</li>
-</ul>
+<h6 id="theorem-3">Theorem 3</h6>
+<blockquote>
+<p>For every regular language <span class="math inline">\(L\)</span>, there is a number p where, for every <span class="math inline">\(\omega \in L\)</span> of length at least p, <span class="math inline">\(\omega\)</span> can be devided into three pieces <span class="math inline">\(\omega = xyz\)</span>, such that<br />
+- <span class="math inline">\(xy^iz \in L\)</span>, for every <span class="math inline">\(i \ge 0\)</span>, - <span class="math inline">\(|xy| \le p\)</span>, and - <span class="math inline">\(|y| &gt; 0\)</span>. ​ ​ ​ ​</p>
 </blockquote>
 
       

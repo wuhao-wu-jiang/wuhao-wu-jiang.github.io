@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Given a sequence of numbers $S &#x3D; { x_1, x_2, …, x_n }$ where each element comes from a finite domain $U$, the heavy hitter problem asks for the element that appears at least $\frac{n}{k + 1} + 1$ time">
+  <meta name="description" content="Given a sequence of numbers \(S &#x3D; \{ x_1, x_2, ..., x_n \}\) where each element comes from a finite domain \(U\), the heavy hitter problem asks for the element that appears at least \(\frac{n}{k + 1}">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Heavy Hitter">
 <meta property="og:url" content="http://example.com/2018/08/28/Heavy-Hitter/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Given a sequence of numbers $S &#x3D; { x_1, x_2, …, x_n }$ where each element comes from a finite domain $U$, the heavy hitter problem asks for the element that appears at least $\frac{n}{k + 1} + 1$ time">
+<meta property="og:description" content="Given a sequence of numbers \(S &#x3D; \{ x_1, x_2, ..., x_n \}\) where each element comes from a finite domain \(U\), the heavy hitter problem asks for the element that appears at least \(\frac{n}{k + 1}">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2018-08-28T04:03:26.000Z">
 <meta property="article:modified_time" content="2019-06-04T14:38:04.000Z">
@@ -194,20 +194,35 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Given a sequence of numbers $S = { x_1, x_2, …, x_n }$ where each element comes from a finite domain $U$, the heavy hitter problem asks for the element that appears at least $\frac{n}{k + 1} + 1$ times in the sequence. Note that there could be at most $k$ such elements.</p>
-<h2 id="Deterministic"><a href="#Deterministic" class="headerlink" title="Deterministic"></a>Deterministic</h2><p>If false positive is allowed, we have a deterministic algorithm that has $O(k)$ space overhead.  </p>
+        <p>Given a sequence of numbers <span class="math inline">\(S = \{ x_1, x_2, ..., x_n \}\)</span> where each element comes from a finite domain <span class="math inline">\(U\)</span>, the heavy hitter problem asks for the element that appears at least <span class="math inline">\(\frac{n}{k + 1} + 1\)</span> times in the sequence. Note that there could be at most <span class="math inline">\(k\)</span> such elements.</p>
+<h2 id="deterministic">Deterministic</h2>
+<p>If false positive is allowed, we have a deterministic algorithm that has <span class="math inline">\(O(k)\)</span> space overhead.</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">L = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span> x <span class="keyword">in</span> S:</span><br><span class="line">    <span class="keyword">if</span> x <span class="keyword">in</span> L:</span><br><span class="line">        L[x] = L[x] + <span class="number">1</span></span><br><span class="line">    <span class="keyword">elif</span> <span class="built_in">len</span>(L) &lt; k:</span><br><span class="line">        L[x] = <span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        decrement the value of every elements <span class="keyword">in</span> L by <span class="number">1</span></span><br><span class="line">        delete elements <span class="keyword">in</span> L <span class="keyword">with</span> value = <span class="number">0</span></span><br></pre></td></tr></table></figure>
-<p>To see the correctness of the algorithm, we give each element in $S$ a token. There are $n$ tokens in total. If a element is not added to the list $L$, $k + 1$ token are throw away. If an elements appears more than $\frac{n}{k + 1}$ times, it must appears in $L$ when the algorithm terminates.  </p>
-<p>Another way to prove this is that, each time an element is thrown away, it is not in the counter and the sum of counter decremented is $k$. Let $f_x$ be the frequency of an element $x$. Then the maximum number of times $x$ is thrown away is bounded by $k f_x \le n - f_x$, which implies that $f_x \le \frac{n}{k + 1}$.</p>
-<h2 id="Randomized"><a href="#Randomized" class="headerlink" title="Randomized"></a>Randomized</h2><p>An alternate approach is randomized algorithm. In high level, we would like to maintain a set of $m$ bins and assign each element in $U$ uniformly at random one of the bins. Then we put each number in $S$ into the $m$ bins according which bin it is assigned to. In expectation, each bin will receive $\frac{n}{m}$ elements. To estimate the number of time an element $x$ appears in $S$, we just return the number of elements of the bin $x$ is assigned. Note that we might overestimate $x$’s frequency, whose expectation is at most $\frac{n}{m}$. We might repeat this several time to reduce variance.  </p>
-<p>The tools to achieve the idea are $t$ hash functions $h_1, h_2, …, h_t : S \rightarrow [m]$. Initially, we have $l$ list (denoted as $L_1, L_2, .., L_t$) where each list has size $m$. Then we go through elements in $S$. For each element $x$, we increment the $L_i[h_i(x)]$ by 1 for all $i \in [t]$. Finally for an element $x$, we use the minimum value $\min_i { L_i[h_i(x)] }$ as its frequency estimation. </p>
-<p>$$<br>\begin{aligned}<br>E[L_i[h_i(x)]]<br>&amp;= f_x + \sum_{y \in S, y \neq x} P [h_i (y) \<br>&amp;= f_x + \frac{(n - f_x)}{m} \<br>&amp;\le f_x + \frac{n}{m}<br>\end{aligned}<br>$$</p>
-<p>By Markov inequality,<br>$$<br>P[ L_i[h_i(x)] -  f_x &gt;  2 \frac{n}{m}] \le \frac{E[L_i[h_i(x)] - f_x]}{ 2 \frac{n}{m} }  \le \frac{ \frac{n}{m} }{ 2 \frac{n}{m} }  \le \frac{1}{2}<br>$$</p>
-<p>Therefore,<br>$$<br>P[ \min_i { L_i[h_i(x)] } - f_x &gt; 2 \frac{n}{m}] \le \frac{1}{2^t}<br>$$</p>
-<p>which decreases exponentially with respect to the size of $t$. If we would like the failure probability to be $\delta$, we need to set $t = O(\log \frac{1}{\delta})$.</p>
-<p>In conclusion, we can return the estimation of frequency of elements, such that $\forall x \in U$,  $\tilde{f_x} \le f_x + 2\frac{n}{m}$, with probability at least $1 - \delta$ and space overhead $O(m \log \frac{1}{\delta})$.</p>
-<p>Reference:  </p>
-<ol>
+<p>To see the correctness of the algorithm, we give each element in <span class="math inline">\(S\)</span> a token. There are <span class="math inline">\(n\)</span> tokens in total. If a element is not added to the list <span class="math inline">\(L\)</span>, <span class="math inline">\(k + 1\)</span> token are throw away. If an elements appears more than <span class="math inline">\(\frac{n}{k + 1}\)</span> times, it must appears in <span class="math inline">\(L\)</span> when the algorithm terminates.</p>
+<p>Another way to prove this is that, each time an element is thrown away, it is not in the counter and the sum of counter decremented is <span class="math inline">\(k\)</span>. Let <span class="math inline">\(f_x\)</span> be the frequency of an element <span class="math inline">\(x\)</span>. Then the maximum number of times <span class="math inline">\(x\)</span> is thrown away is bounded by <span class="math inline">\(k f_x \le n - f_x\)</span>, which implies that <span class="math inline">\(f_x \le \frac{n}{k + 1}\)</span>.</p>
+<h2 id="randomized">Randomized</h2>
+<p>An alternate approach is randomized algorithm. In high level, we would like to maintain a set of <span class="math inline">\(m\)</span> bins and assign each element in <span class="math inline">\(U\)</span> uniformly at random one of the bins. Then we put each number in <span class="math inline">\(S\)</span> into the <span class="math inline">\(m\)</span> bins according which bin it is assigned to. In expectation, each bin will receive <span class="math inline">\(\frac{n}{m}\)</span> elements. To estimate the number of time an element <span class="math inline">\(x\)</span> appears in <span class="math inline">\(S\)</span>, we just return the number of elements of the bin <span class="math inline">\(x\)</span> is assigned. Note that we might overestimate <span class="math inline">\(x\)</span>'s frequency, whose expectation is at most <span class="math inline">\(\frac{n}{m}\)</span>. We might repeat this several time to reduce variance.</p>
+<p>The tools to achieve the idea are <span class="math inline">\(t\)</span> hash functions <span class="math inline">\(h_1, h_2, ..., h_t : S \rightarrow [m]\)</span>. Initially, we have <span class="math inline">\(l\)</span> list (denoted as <span class="math inline">\(L_1, L_2, .., L_t\)</span>) where each list has size <span class="math inline">\(m\)</span>. Then we go through elements in <span class="math inline">\(S\)</span>. For each element <span class="math inline">\(x\)</span>, we increment the <span class="math inline">\(L_i[h_i(x)]\)</span> by 1 for all <span class="math inline">\(i \in [t]\)</span>. Finally for an element <span class="math inline">\(x\)</span>, we use the minimum value <span class="math inline">\(\min_i \{ L_i[h_i(x)] \}\)</span> as its frequency estimation.</p>
+<p><span class="math display">\[
+\begin{aligned}
+E[L_i[h_i(x)]] 
+&amp;= f_x + \sum_{y \in S, y \neq x} P [h_i (y) \\
+&amp;= f_x + \frac{(n - f_x)}{m} \\
+&amp;\le f_x + \frac{n}{m}
+\end{aligned}
+\]</span></p>
+<p>By Markov inequality,<br />
+<span class="math display">\[
+P[ L_i[h_i(x)] -  f_x &gt;  2 \frac{n}{m}] \le \frac{E[L_i[h_i(x)] - f_x]}{ 2 \frac{n}{m} }  \le \frac{ \frac{n}{m} }{ 2 \frac{n}{m} }  \le \frac{1}{2}
+\]</span></p>
+<p>Therefore,<br />
+<span class="math display">\[
+P[ \min_i \{ L_i[h_i(x)] \} - f_x &gt; 2 \frac{n}{m}] \le \frac{1}{2^t}
+\]</span></p>
+<p>which decreases exponentially with respect to the size of <span class="math inline">\(t\)</span>. If we would like the failure probability to be <span class="math inline">\(\delta\)</span>, we need to set <span class="math inline">\(t = O(\log \frac{1}{\delta})\)</span>.</p>
+<p>In conclusion, we can return the estimation of frequency of elements, such that <span class="math inline">\(\forall x \in U\)</span>, <span class="math inline">\(\tilde{f_x} \le f_x + 2\frac{n}{m}\)</span>, with probability at least <span class="math inline">\(1 - \delta\)</span> and space overhead <span class="math inline">\(O(m \log \frac{1}{\delta})\)</span>.</p>
+<p>Reference:</p>
+<ol type="1">
 <li>MIT 6.854/18.415: Advanced Algorithms, Spring 2016, Lecture 4</li>
 </ol>
 
@@ -290,7 +305,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Deterministic"><span class="nav-number">1.</span> <span class="nav-text">Deterministic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Randomized"><span class="nav-number">2.</span> <span class="nav-text">Randomized</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#deterministic"><span class="nav-number">1.</span> <span class="nav-text">Deterministic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#randomized"><span class="nav-number">2.</span> <span class="nav-text">Randomized</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

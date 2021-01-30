@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Suppose that we throw $m$ balls into $n$ bins uniformly at random, where $n$ is a fixed number. What is the probability that some pair of balls are placed in the same bin?  Define $X_{i, j}$ be the in">
+  <meta name="description" content="Suppose that we throw \(m\) balls into \(n\) bins uniformly at random, where \(n\) is a fixed number. What is the probability that some pair of balls are placed in the same bin? Define \(X_{i, j}\) b">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Birthday Paradox">
 <meta property="og:url" content="http://example.com/2018/08/26/Birthday-Paradox/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Suppose that we throw $m$ balls into $n$ bins uniformly at random, where $n$ is a fixed number. What is the probability that some pair of balls are placed in the same bin?  Define $X_{i, j}$ be the in">
+<meta property="og:description" content="Suppose that we throw \(m\) balls into \(n\) bins uniformly at random, where \(n\) is a fixed number. What is the probability that some pair of balls are placed in the same bin? Define \(X_{i, j}\) b">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2018-08-26T01:29:30.000Z">
 <meta property="article:modified_time" content="2020-12-09T07:34:28.623Z">
@@ -194,31 +194,74 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Suppose that we throw $m$ balls into $n$ bins uniformly at random, where $n$ is a fixed number. What is the probability that some pair of balls are placed in the same bin? </p>
-<p>Define $X_{i, j}$ be the indicator variable that the $i$-th ball and the $j$-th ball go to the same bin. Its expectation is given by </p>
-<p>$$<br>E[X_{i,j}] = 1\cdot P[ X_{i,j} = 1] + 0 \cdot P[X_{i,j} = 0] = \frac{1}{n}.<br>$$</p>
-<p>By linearity of expectation, we have<br>$$<br>E[\sum_{1 \le i &lt; j \le m} X_{i,j}] = \sum_{1 \le i &lt; j \le m} E[X_{i,j}] = \frac{m (m - 1)}{2n}.<br>$$</p>
-<p>When $m \approx \sqrt{2n}$, in expectation, there is a pair of ball going to the same bin. However, this estimate is too loose. </p>
-<p>Define $p(m, n)$ the exact probability that no ball goes to the same bin. Then </p>
-<p>$$<br>p(m, n) = \prod_{i = 0}^m \frac{n - i}{n} = \prod_{i = 0}^m (1 - \frac{i}{n}).<br>$$</p>
-<p>By inequality $1 - \frac{i}{n} \le e^{- \frac{i}{n} }$, we have a upper bound for the above probability:<br>$$<br>p(m, n) \le  e^{- \frac{m (m - 1)}{2n} }.<br>$$</p>
-<p>Therefore, the probability that there is at least one collision is lower bounded by<br>$$<br>1 - e^{- \frac{m (m - 1)}{2n} }.<br>$$</p>
-<p>If $m = \sqrt n$, we get $e^{- \frac{m (m - 1)}{2n} }  \approx e^{-\frac{1}{2} }  \approx 0.6$. If $m = 2 \sqrt n$, we get $e^{- \frac{m (m - 1)}{2n} }  \approx e^{-2} \approx 0.14$.</p>
-<p>In the case $n = 365$, we say that if there are $\sqrt n \approx 19$ people, $40%$ of times some pair of them share the same birthday. If there are $36$ people, the probability is over $80%$.  </p>
-<p><em>Remark:</em> let’s play some math to bound $p(m, n)$ asymptotically. First, when $x \le 1 / 2$, we have<br>$$<br>e^x = \sum_{i = 0}^\infty x^i / i! \le 1 + x + \frac{x^2}{2} \left( \sum_{i = 0}^\infty ( \frac{1}{2})^i \right) \le 1 + 2 x.<br>$$</p>
-<p>Hence,<br>$$<br>p(m, n) \le  e^{- \frac{m (m - 1)}{2n} } \le \exp( -\frac{m^2}{2n} ) \cdot (1 + \frac{m}{n} ).<br>$$</p>
-<p>On the other hand, for $k \in \mathbb{N}^+$,<br>$$<br>(1 - x) ( \sum_{i = 0}^k  x^k) = 1 - x^{k + 1}.<br>$$</p>
-<p>when $|x| &lt; 1$,<br>$$<br>(1 - x) ( \sum_{i = 0}^\infty  x^i) = \lim_{k \rightarrow \infty} (1 - x^{k + 1} ) = 1.<br>$$</p>
-<p>Therefore, when $|x| &lt; 1$,<br>$$<br>\frac{1}{1 - x} = \sum_{i = 0}^\infty x^i.<br>$$</p>
-<p>Replacing $x$ with $-x$, we get<br>$$<br>\frac{1}{1 + x} = \sum_{i = 0}^\infty (-1)^i x^i = 1 - x + x^2 - x^3 + …<br>$$</p>
-<p>By $(\ln (1 + x) )’ = \frac{1}{1 + x}$, we get<br>$$<br>\ln (1 + x) = x - \frac{x^2}{2} + \frac{x^3}{3} - …<br>$$</p>
-<p>and<br>$$<br>\ln (1 - x) = - x - \frac{x^2}{2} - \frac{x^3}{3} - …<br>$$</p>
-<p>When $x \le 1 / 2$, we get<br>$$<br>\ln (1 - x) \ge - x - \frac{x^2}{2}( \sum_{i = 0}^\infty (\frac{1}{2})^i ) = -x - x^2.<br>$$</p>
-<p>So, when $m &lt; n / 2$,<br>$$<br>\begin{aligned}<br>    p(m, n)<br>        &amp;= \prod_{i = 0}^m (1 - \frac{i}{n}) \<br>        &amp;\ge \exp( - \sum_{i = 0}^m \frac{i}{n} - \sum_{i = 0}^m \frac{i^2}{n^2}) \<br>        &amp;\ge \exp( - \frac{m (m - 1)}{2n} ) ( 1 - \sum_{i = 0}^m \frac{i^2}{n^2}) \<br>        &amp;\ge \exp( - \frac{m^2}{2n} ) ( 1 - O( \frac{m^3}{n^2} ) ).<br>\end{aligned}<br>$$</p>
-<p>Combined, we get<br>$$<br>\exp( - \frac{m^2}{2n} ) ( 1 - O( \frac{m^3}{n^2} ) ) \le p(m, n) \le \exp( - \frac{m^2}{2n} ) ( 1 - m / n ).<br>$$</p>
-<p>If $m &lt; \sqrt n$, then $m^3 / n^2 &lt; m / n$. In this case,<br>$$<br>p(m, n) = \Theta \left( \exp( - \frac{m^2}{2n} ) ( 1 - m / n ) \right).<br>$$</p>
-<p>Replacing $m = \sqrt{2 n\ln 2}$, then<br>$$<br>p(m, n) = \frac{1}{2} + \Theta( \frac{1}{\sqrt n}).<br>$$</p>
-<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference."></a>Reference.</h3><p>[1]. Ryan O’Donnell, Lecture 3, CS Theory Toolkit, CARNEGIE MELLON UNIVERSITY</p>
+        <p>Suppose that we throw <span class="math inline">\(m\)</span> balls into <span class="math inline">\(n\)</span> bins uniformly at random, where <span class="math inline">\(n\)</span> is a fixed number. What is the probability that some pair of balls are placed in the same bin?</p>
+<p>Define <span class="math inline">\(X_{i, j}\)</span> be the indicator variable that the <span class="math inline">\(i\)</span>-th ball and the <span class="math inline">\(j\)</span>-th ball go to the same bin. Its expectation is given by</p>
+<p><span class="math display">\[
+E[X_{i,j}] = 1\cdot P[ X_{i,j} = 1] + 0 \cdot P[X_{i,j} = 0] = \frac{1}{n}.
+\]</span></p>
+<p>By linearity of expectation, we have <span class="math display">\[
+E[\sum_{1 \le i &lt; j \le m} X_{i,j}] = \sum_{1 \le i &lt; j \le m} E[X_{i,j}] = \frac{m (m - 1)}{2n}.
+\]</span></p>
+<p>When <span class="math inline">\(m \approx \sqrt{2n}\)</span>, in expectation, there is a pair of ball going to the same bin. However, this estimate is too loose.</p>
+<p>Define <span class="math inline">\(p(m, n)\)</span> the exact probability that no ball goes to the same bin. Then</p>
+<p><span class="math display">\[
+p(m, n) = \prod_{i = 0}^m \frac{n - i}{n} = \prod_{i = 0}^m (1 - \frac{i}{n}).
+\]</span></p>
+<p>By inequality <span class="math inline">\(1 - \frac{i}{n} \le e^{- \frac{i}{n} }\)</span>, we have a upper bound for the above probability: <span class="math display">\[
+p(m, n) \le  e^{- \frac{m (m - 1)}{2n} }. 
+\]</span></p>
+<p>Therefore, the probability that there is at least one collision is lower bounded by <span class="math display">\[
+1 - e^{- \frac{m (m - 1)}{2n} }. 
+\]</span></p>
+<p>If <span class="math inline">\(m = \sqrt n\)</span>, we get <span class="math inline">\(e^{- \frac{m (m - 1)}{2n} } \approx e^{-\frac{1}{2} } \approx 0.6\)</span>. If <span class="math inline">\(m = 2 \sqrt n\)</span>, we get <span class="math inline">\(e^{- \frac{m (m - 1)}{2n} } \approx e^{-2} \approx 0.14\)</span>.</p>
+<p>In the case <span class="math inline">\(n = 365\)</span>, we say that if there are <span class="math inline">\(\sqrt n \approx 19\)</span> people, <span class="math inline">\(40\%\)</span> of times some pair of them share the same birthday. If there are <span class="math inline">\(36\)</span> people, the probability is over <span class="math inline">\(80\%\)</span>.</p>
+<p><em>Remark:</em> let's play some math to bound <span class="math inline">\(p(m, n)\)</span> asymptotically. First, when <span class="math inline">\(x \le 1 / 2\)</span>, we have <span class="math display">\[
+e^x = \sum_{i = 0}^\infty x^i / i! \le 1 + x + \frac{x^2}{2} \left( \sum_{i = 0}^\infty ( \frac{1}{2})^i \right) \le 1 + 2 x.
+\]</span></p>
+<p>Hence, <span class="math display">\[
+p(m, n) \le  e^{- \frac{m (m - 1)}{2n} } \le \exp( -\frac{m^2}{2n} ) \cdot (1 + \frac{m}{n} ). 
+\]</span></p>
+<p>On the other hand, for <span class="math inline">\(k \in \mathbb{N}^+\)</span>, <span class="math display">\[
+(1 - x) ( \sum_{i = 0}^k  x^k) = 1 - x^{k + 1}.
+\]</span></p>
+<p>when <span class="math inline">\(|x| &lt; 1\)</span>, <span class="math display">\[
+(1 - x) ( \sum_{i = 0}^\infty  x^i) = \lim_{k \rightarrow \infty} (1 - x^{k + 1} ) = 1.
+\]</span></p>
+<p>Therefore, when <span class="math inline">\(|x| &lt; 1\)</span>, <span class="math display">\[
+\frac{1}{1 - x} = \sum_{i = 0}^\infty x^i. 
+\]</span></p>
+<p>Replacing <span class="math inline">\(x\)</span> with <span class="math inline">\(-x\)</span>, we get <span class="math display">\[
+\frac{1}{1 + x} = \sum_{i = 0}^\infty (-1)^i x^i = 1 - x + x^2 - x^3 + ...
+\]</span></p>
+<p>By <span class="math inline">\((\ln (1 + x) )&#39; = \frac{1}{1 + x}\)</span>, we get <span class="math display">\[
+\ln (1 + x) = x - \frac{x^2}{2} + \frac{x^3}{3} - ...
+\]</span></p>
+<p>and <span class="math display">\[
+\ln (1 - x) = - x - \frac{x^2}{2} - \frac{x^3}{3} - ...
+\]</span></p>
+<p>When <span class="math inline">\(x \le 1 / 2\)</span>, we get <span class="math display">\[
+\ln (1 - x) \ge - x - \frac{x^2}{2}( \sum_{i = 0}^\infty (\frac{1}{2})^i ) = -x - x^2.
+\]</span></p>
+<p>So, when <span class="math inline">\(m &lt; n / 2\)</span>, <span class="math display">\[
+\begin{aligned}
+    p(m, n) 
+        &amp;= \prod_{i = 0}^m (1 - \frac{i}{n}) \\
+        &amp;\ge \exp( - \sum_{i = 0}^m \frac{i}{n} - \sum_{i = 0}^m \frac{i^2}{n^2}) \\
+        &amp;\ge \exp( - \frac{m (m - 1)}{2n} ) ( 1 - \sum_{i = 0}^m \frac{i^2}{n^2}) \\
+        &amp;\ge \exp( - \frac{m^2}{2n} ) ( 1 - O( \frac{m^3}{n^2} ) ). 
+\end{aligned}
+\]</span></p>
+<p>Combined, we get <span class="math display">\[
+\exp( - \frac{m^2}{2n} ) ( 1 - O( \frac{m^3}{n^2} ) ) \le p(m, n) \le \exp( - \frac{m^2}{2n} ) ( 1 - m / n ). 
+\]</span></p>
+<p>If <span class="math inline">\(m &lt; \sqrt n\)</span>, then <span class="math inline">\(m^3 / n^2 &lt; m / n\)</span>. In this case, <span class="math display">\[
+p(m, n) = \Theta \left( \exp( - \frac{m^2}{2n} ) ( 1 - m / n ) \right). 
+\]</span></p>
+<p>Replacing <span class="math inline">\(m = \sqrt{2 n\ln 2}\)</span>, then <span class="math display">\[
+p(m, n) = \frac{1}{2} + \Theta( \frac{1}{\sqrt n}). 
+\]</span></p>
+<h3 id="reference.">Reference.</h3>
+<p>[1]. Ryan O'Donnell, Lecture 3, CS Theory Toolkit, CARNEGIE MELLON UNIVERSITY</p>
 
     </div>
 
@@ -299,7 +342,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">1.</span> <span class="nav-text">Reference.</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#reference."><span class="nav-number">1.</span> <span class="nav-text">Reference.</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

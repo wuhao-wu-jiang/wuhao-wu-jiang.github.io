@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Given a set of $n$ elements $S$ that belongs to some finite domain $\mathcal{X}&#x3D; { x_1, x_2, …, x_m }$, we want to release the (normalized) histogram in a differentially private manner. Define $\foral">
+  <meta name="description" content="Given a set of \(n\) elements \(S\) that belongs to some finite domain \(\mathcal{X}&#x3D; \{ x_1, x_2, ..., x_m \}\), we want to release the (normalized) histogram in a differentially private manner. Defi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Releasing Histogram Privately">
 <meta property="og:url" content="http://example.com/2020/11/25/Releasing-Histogram-Privately/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Given a set of $n$ elements $S$ that belongs to some finite domain $\mathcal{X}&#x3D; { x_1, x_2, …, x_m }$, we want to release the (normalized) histogram in a differentially private manner. Define $\foral">
+<meta property="og:description" content="Given a set of \(n\) elements \(S\) that belongs to some finite domain \(\mathcal{X}&#x3D; \{ x_1, x_2, ..., x_m \}\), we want to release the (normalized) histogram in a differentially private manner. Defi">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-11-24T23:19:09.000Z">
 <meta property="article:modified_time" content="2020-11-25T11:11:21.039Z">
@@ -188,77 +188,113 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Given a set of $n$ elements $S$ that belongs to some finite domain $\mathcal{X}= { x_1, x_2, …, x_m }$, we want to release the (normalized) histogram in a differentially private manner. Define $\forall x_i \in \mathcal{X}$:</p>
-<ol>
-<li>$F_S(x_i) \doteq$ the number of times $x_i$ appears in $S$;  </li>
-<li>$f_S(x_i) \doteq \frac{F_S(x_i) }{ |S| } = \frac{F_S(x_i) }{ n }$, the frequency of $x_i$ in $S$.</li>
+        <p>Given a set of <span class="math inline">\(n\)</span> elements <span class="math inline">\(S\)</span> that belongs to some finite domain <span class="math inline">\(\mathcal{X}= \{ x_1, x_2, ..., x_m \}\)</span>, we want to release the (normalized) histogram in a differentially private manner. Define <span class="math inline">\(\forall x_i \in \mathcal{X}\)</span>:</p>
+<ol type="1">
+<li><span class="math inline">\(F_S(x_i) \doteq\)</span> the number of times <span class="math inline">\(x_i\)</span> appears in <span class="math inline">\(S\)</span>;<br />
+</li>
+<li><span class="math inline">\(f_S(x_i) \doteq \frac{F_S(x_i) }{ |S| } = \frac{F_S(x_i) }{ n }\)</span>, the frequency of <span class="math inline">\(x_i\)</span> in <span class="math inline">\(S\)</span>.</li>
 </ol>
-<p>The (normalized) histogram of $h_S$ is a frequency vector:<br>$$<br>h_S \doteq \left&lt; f_S(x_1), f_S(x_2), …, f_S(x_m) \right&gt; \in \mathbb{R}^m<br>$$</p>
-<p>Consider another set $S’$ obtained by replacing an element $x_k$ in $S$ to another element $x_l$, such that </p>
-<ol>
-<li>$F_{S’} (x_k) = F_{S} (x_k) - 1$;</li>
-<li>$F_{S’} (x_l) = F_{S} (x_l) + 1$;</li>
-<li>$F_{S’} (x_i) = F_{S} (x_i), \forall i \notin {k, l}$. </li>
+<p>The (normalized) histogram of <span class="math inline">\(h_S\)</span> is a frequency vector: <span class="math display">\[
+h_S \doteq \left&lt; f_S(x_1), f_S(x_2), ..., f_S(x_m) \right&gt; \in \mathbb{R}^m
+\]</span></p>
+<p>Consider another set <span class="math inline">\(S&#39;\)</span> obtained by replacing an element <span class="math inline">\(x_k\)</span> in <span class="math inline">\(S\)</span> to another element <span class="math inline">\(x_l\)</span>, such that</p>
+<ol type="1">
+<li><span class="math inline">\(F_{S&#39;} (x_k) = F_{S} (x_k) - 1\)</span>;</li>
+<li><span class="math inline">\(F_{S&#39;} (x_l) = F_{S} (x_l) + 1\)</span>;</li>
+<li><span class="math inline">\(F_{S&#39;} (x_i) = F_{S} (x_i), \forall i \notin \{k, l\}\)</span>.</li>
 </ol>
-<p>Let $h_{S’}$ be the histogram of $S’$. Our goal is to design some mechanism $M$ that adds noise to the normalized so that the output distribution of $M(h_S)$ and $M(h_{S’})$ are indistinguishable. </p>
-<h3 id="Naive-Laplacian"><a href="#Naive-Laplacian" class="headerlink" title="Naive Laplacian"></a>Naive Laplacian</h3><p>One way is to add Laplacian noise directly to each dimension of the histogram. For any vector $v \in \mathbb{R}^m$, $M$ outputs a new perturbed vector:<br>$$<br>M(v) \doteq v + L<br>$$</p>
-<p>where $L \doteq \left&lt; l_1, l_2, …, l_m\right&gt;$ and each $l_i$ is sampled independently from $Lap( \frac{2 }{ n \epsilon } )$. </p>
-<h4 id="Privacy"><a href="#Privacy" class="headerlink" title="Privacy"></a>Privacy</h4><p>We claim this mechanism is $(\epsilon, 0)$-differentially private. For $u \in \mathbb{R}^n$, we have<br>$$<br>\begin{aligned}<br>    \frac{ p(M(h_S) = u) }{ p(M(h_{S’}) = u) }<br>        &amp;= \frac{ \prod_{i \in [m] } p( f_S (x_i) + l_i = u_i) }{ \prod_{i \in [m] } p( f_{S’} (x_i) + l_i = u_i) } \<br>        &amp;= \frac{ \prod_{i \in {k, l} } p( f_S (x_i) + l_i = u_i) }{ \prod_{i \in {k, l} } p( f_{S’} (x_i) + l_i = u_i) } \<br>        &amp;\le \exp( - (|u_k - f_S(x_k)| - |u_k - f_{S’} (x_k) |) \frac{n\epsilon}{2} ) \<br>        &amp;\quad \cdot \exp( - (|u_l - f_S(x_l)| - |u_l - f_{S’} (x_l) |) \frac{n\epsilon}{2} ) \<br>        &amp;\le \exp( |f_S(x_k) - f_{S’} (x_k) | \frac{n\epsilon}{2} ) \cdot \exp( |f_S(x_l) - f_{S’} (x_l) | \frac{n\epsilon}{2} ) \<br>        &amp;= \exp( \frac{1}{n} \frac{ n \epsilon}{2} ) \cdot \exp( \frac{1}{n} \frac{n\epsilon}{2} ) \<br>        &amp;= \exp( \epsilon).<br>\end{aligned}<br>$$</p>
-<h4 id="Accuracy"><a href="#Accuracy" class="headerlink" title="Accuracy"></a>Accuracy</h4><p>We prove that $|M(h_S) - h_S |_\infty = O (\frac{1}{ n \epsilon } \log \frac{m}{\delta})$ with probability at least $1 - \delta$. </p>
-<p>Let $b = \frac{2 }{ n \epsilon }$. For a failure probability $\delta$,<br>$$<br>\Pr[ |f_S(x_i) + l_i - f_S(x_i) | \ge b \log \frac{m}{\delta} ] = \int_{ b \log \frac{m}{\delta} }^\infty \frac{1}{b} \exp( - x / b ) \ dx = \exp(- \log \frac{m}{\delta} ) = \frac{\delta}{m}<br>$$</p>
-<p>By union bound, it holds that<br>$$<br>\Pr[ |M(h_S) - h_S |_\infty \ge b \log \frac{m}{\delta} ] \le \delta.<br>$$</p>
-<p>$\square$</p>
-<h3 id="Rounding-Small-Values"><a href="#Rounding-Small-Values" class="headerlink" title="Rounding Small Values"></a>Rounding Small Values</h3><p>When $|\mathcal{X}| = m \gg n$, we could improve the release mechanism. As shown in the previous section, we would like to achieve error $O(\frac{1}{n})$. This inspire to round the small frequencies (roughly $O(\frac{1}{n})$) to zero. Of course, we should carry out this in a differentially private manner. </p>
+<p>Let <span class="math inline">\(h_{S&#39;}\)</span> be the histogram of <span class="math inline">\(S&#39;\)</span>. Our goal is to design some mechanism <span class="math inline">\(M\)</span> that adds noise to the normalized so that the output distribution of <span class="math inline">\(M(h_S)\)</span> and <span class="math inline">\(M(h_{S&#39;})\)</span> are indistinguishable.</p>
+<h3 id="naive-laplacian">Naive Laplacian</h3>
+<p>One way is to add Laplacian noise directly to each dimension of the histogram. For any vector <span class="math inline">\(v \in \mathbb{R}^m\)</span>, <span class="math inline">\(M\)</span> outputs a new perturbed vector: <span class="math display">\[
+M(v) \doteq v + L
+\]</span></p>
+<p>where <span class="math inline">\(L \doteq \left&lt; l_1, l_2, ..., l_m\right&gt;\)</span> and each <span class="math inline">\(l_i\)</span> is sampled independently from <span class="math inline">\(Lap( \frac{2 }{ n \epsilon } )\)</span>.</p>
+<h4 id="privacy">Privacy</h4>
+<p>We claim this mechanism is <span class="math inline">\((\epsilon, 0)\)</span>-differentially private. For <span class="math inline">\(u \in \mathbb{R}^n\)</span>, we have <span class="math display">\[
+\begin{aligned}
+    \frac{ p(M(h_S) = u) }{ p(M(h_{S&#39;}) = u) } 
+        &amp;= \frac{ \prod_{i \in [m] } p( f_S (x_i) + l_i = u_i) }{ \prod_{i \in [m] } p( f_{S&#39;} (x_i) + l_i = u_i) } \\
+        &amp;= \frac{ \prod_{i \in \{k, l\} } p( f_S (x_i) + l_i = u_i) }{ \prod_{i \in \{k, l\} } p( f_{S&#39;} (x_i) + l_i = u_i) } \\
+        &amp;\le \exp( - (|u_k - f_S(x_k)| - |u_k - f_{S&#39;} (x_k) |) \frac{n\epsilon}{2} ) \\
+        &amp;\quad \cdot \exp( - (|u_l - f_S(x_l)| - |u_l - f_{S&#39;} (x_l) |) \frac{n\epsilon}{2} ) \\
+        &amp;\le \exp( |f_S(x_k) - f_{S&#39;} (x_k) | \frac{n\epsilon}{2} ) \cdot \exp( |f_S(x_l) - f_{S&#39;} (x_l) | \frac{n\epsilon}{2} ) \\
+        &amp;= \exp( \frac{1}{n} \frac{ n \epsilon}{2} ) \cdot \exp( \frac{1}{n} \frac{n\epsilon}{2} ) \\
+        &amp;= \exp( \epsilon).
+\end{aligned}
+\]</span></p>
+<h4 id="accuracy">Accuracy</h4>
+<p>We prove that <span class="math inline">\(|M(h_S) - h_S |_\infty = O (\frac{1}{ n \epsilon } \log \frac{m}{\delta})\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
+<p>Let <span class="math inline">\(b = \frac{2 }{ n \epsilon }\)</span>. For a failure probability <span class="math inline">\(\delta\)</span>, <span class="math display">\[
+\Pr[ |f_S(x_i) + l_i - f_S(x_i) | \ge b \log \frac{m}{\delta} ] = \int_{ b \log \frac{m}{\delta} }^\infty \frac{1}{b} \exp( - x / b ) \ dx = \exp(- \log \frac{m}{\delta} ) = \frac{\delta}{m}
+\]</span></p>
+<p>By union bound, it holds that <span class="math display">\[
+\Pr[ |M(h_S) - h_S |_\infty \ge b \log \frac{m}{\delta} ] \le \delta. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="rounding-small-values">Rounding Small Values</h3>
+<p>When <span class="math inline">\(|\mathcal{X}| = m \gg n\)</span>, we could improve the release mechanism. As shown in the previous section, we would like to achieve error <span class="math inline">\(O(\frac{1}{n})\)</span>. This inspire to round the small frequencies (roughly <span class="math inline">\(O(\frac{1}{n})\)</span>) to zero. Of course, we should carry out this in a differentially private manner.</p>
 <blockquote>
-<p>Mechanism $M$<br>$===============================$<br>INPUT: a set $S$ of $n$ elements.<br>OUTPUT: a histogram of $S$ in differentially private manner.<br>$————————$<br>For $i \in [m]$ do<br>$\qquad$ If $f_S(x_i) = 0$, then $M(h_S)_i \leftarrow 0$<br>$\qquad$ Else<br>$\qquad$ $\qquad$ $M(h_S)_i \leftarrow f_S(x_i) + l_i$, where $l_i \sim Lap(\frac{2}{n \epsilon} )$.<br>$\qquad$ $\qquad$ If $M(h_S)_i &lt; \frac{1}{n} +\frac{2 \log 2 / \delta }{ \epsilon n}$, then $M(h_S)_i \leftarrow 0$.<br>Release $M(h_S) \doteq \left&lt; M(h_S)_1, M(h_S)_2, … , M(h_S)_n \right&gt;$<br>$————————$   </p>
+<p>Mechanism <span class="math inline">\(M\)</span><br />
+<span class="math inline">\(===============================\)</span><br />
+INPUT: a set <span class="math inline">\(S\)</span> of <span class="math inline">\(n\)</span> elements.<br />
+OUTPUT: a histogram of <span class="math inline">\(S\)</span> in differentially private manner.<br />
+<span class="math inline">\(------------------------\)</span><br />
+For <span class="math inline">\(i \in [m]\)</span> do<br />
+<span class="math inline">\(\qquad\)</span> If <span class="math inline">\(f_S(x_i) = 0\)</span>, then <span class="math inline">\(M(h_S)_i \leftarrow 0\)</span><br />
+<span class="math inline">\(\qquad\)</span> Else<br />
+<span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(M(h_S)_i \leftarrow f_S(x_i) + l_i\)</span>, where <span class="math inline">\(l_i \sim Lap(\frac{2}{n \epsilon} )\)</span>.<br />
+<span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> If <span class="math inline">\(M(h_S)_i &lt; \frac{1}{n} +\frac{2 \log 2 / \delta }{ \epsilon n}\)</span>, then <span class="math inline">\(M(h_S)_i \leftarrow 0\)</span>.<br />
+Release <span class="math inline">\(M(h_S) \doteq \left&lt; M(h_S)_1, M(h_S)_2, ... , M(h_S)_n \right&gt;\)</span><br />
+<span class="math inline">\(------------------------\)</span></p>
 </blockquote>
-<h4 id="Privacy-1"><a href="#Privacy-1" class="headerlink" title="Privacy"></a>Privacy</h4><p>We claim this mechanism is $(\epsilon, \delta)$-differentially private. </p>
+<h4 id="privacy-1">Privacy</h4>
+<p>We claim this mechanism is <span class="math inline">\((\epsilon, \delta)\)</span>-differentially private.</p>
 <ul>
-<li><p>Case 1. If $S$ and $S’$ have the same set of supports, i.e., $f_S(x_i) &gt; 0 \leftrightarrow f_{S’}(x_i) &gt; 0$, then $M$ is $(\epsilon, 0)$ differentially private.</p>
-</li>
-<li><p>Case 2. </p>
-<ol>
-<li><p>$F_{S} (x_k) = 1$, then $F_{S’} (x_k) = F_{S} (x_k) - 1 = 0$. For $S’$, it is guaranteed that $M(h_{S’})_k = 0$. For $S$, as $f_S(x_k) = \frac{1}{n}$,<br> $$</p>
-<pre><code> \Pr[ M(h_S)_k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h_&#123;S&#39;&#125;)_k ] = \frac&#123;\delta&#125;&#123;2&#125;
-</code></pre>
-<p> $$</p>
-</li>
-<li><p>$F_{S} (x_l) = 0$, then  $F_{S’} (x_l) = F_{S} (x_l) + 1 = 1$. For $S$, it is guaranteed that $M(h_S)<em>k = 0$. For $S’$, by similar argument, we have $\Pr[ M(h</em>{S’})<em>k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h</em>{S’})_k ] = \frac{\delta}{2}$. </p>
-<p>There are three combinations such that either $F_S(x_k) = 1$ or $F_{S} (x_l) = 0$ holds, namely </p>
-</li>
-<li><p>$F_S(x_k) = 1, F_{S} (x_l) = 0$,</p>
-</li>
-<li><p>$F_S(x_k) = 1, F_{S} (x_l) &gt; 0$,</p>
-</li>
-<li><p>$F_S(x_k) &gt; 1, F_{S} (x_l) = 0$.</p>
-<p>We give a proof for the first case. The proofs for the other two are similar.<br>Now, for $\forall$ measurable $E \subset \mathbb{R}^n$,<br>$$<br>\begin{aligned}<br> \Pr[ M(h_S) \in E] </p>
-<pre><code> &amp;= \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_&#123;S&#39;&#125;)_l = 0] \\
- &amp;\ + \Pr[ M(h_S) \in E \mid M(h_S)_k \neq 0 \vee M(h_&#123;S&#39;&#125;)_l \neq 0] \\
- &amp;\le \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_&#123;S&#39;&#125;)_l = 0] \\
- &amp;\ + \Pr[M(h_S)_k \neq 0 ] + \Pr[ M(h_&#123;S&#39;&#125;)_l \neq 0] \\
- &amp;= \Pr[ M(h_&#123;S&#39;&#125;) \in E \mid M(h_S)_k = 0, M(h_&#123;S&#39;&#125;)_l = 0] + \delta \\
- &amp;\le \Pr[ M(h_&#123;S&#39;&#125;) \in E] + \delta
-</code></pre>
-<p>\end{aligned}<br>$$</p>
-</li>
+<li><p>Case 1. If <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> have the same set of supports, i.e., <span class="math inline">\(f_S(x_i) &gt; 0 \leftrightarrow f_{S&#39;}(x_i) &gt; 0\)</span>, then <span class="math inline">\(M\)</span> is <span class="math inline">\((\epsilon, 0)\)</span> differentially private.</p></li>
+<li><p>Case 2.</p>
+<ol type="1">
+<li><span class="math inline">\(F_{S} (x_k) = 1\)</span>, then <span class="math inline">\(F_{S&#39;} (x_k) = F_{S} (x_k) - 1 = 0\)</span>. For <span class="math inline">\(S&#39;\)</span>, it is guaranteed that <span class="math inline">\(M(h_{S&#39;})_k = 0\)</span>. For <span class="math inline">\(S\)</span>, as <span class="math inline">\(f_S(x_k) = \frac{1}{n}\)</span>, <span class="math display">\[
+     \Pr[ M(h_S)_k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h_{S&#39;})_k ] = \frac{\delta}{2}
+ \]</span></li>
+<li><span class="math inline">\(F_{S} (x_l) = 0\)</span>, then <span class="math inline">\(F_{S&#39;} (x_l) = F_{S} (x_l) + 1 = 1\)</span>. For <span class="math inline">\(S\)</span>, it is guaranteed that <span class="math inline">\(M(h_S)_k = 0\)</span>. For <span class="math inline">\(S&#39;\)</span>, by similar argument, we have <span class="math inline">\(\Pr[ M(h_{S&#39;})_k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h_{S&#39;})_k ] = \frac{\delta}{2}\)</span>.</li>
 </ol>
-</li>
+<p>There are three combinations such that either <span class="math inline">\(F_S(x_k) = 1\)</span> or <span class="math inline">\(F_{S} (x_l) = 0\)</span> holds, namely</p>
+<ol type="1">
+<li><span class="math inline">\(F_S(x_k) = 1, F_{S} (x_l) = 0\)</span>,</li>
+<li><span class="math inline">\(F_S(x_k) = 1, F_{S} (x_l) &gt; 0\)</span>,</li>
+<li><span class="math inline">\(F_S(x_k) &gt; 1, F_{S} (x_l) = 0\)</span>.</li>
+</ol>
+<p>We give a proof for the first case. The proofs for the other two are similar. Now, for <span class="math inline">\(\forall\)</span> measurable <span class="math inline">\(E \subset \mathbb{R}^n\)</span>, <span class="math display">\[
+  \begin{aligned}
+      \Pr[ M(h_S) \in E] 
+          &amp;= \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] \\
+          &amp;\ + \Pr[ M(h_S) \in E \mid M(h_S)_k \neq 0 \vee M(h_{S&#39;})_l \neq 0] \\
+          &amp;\le \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] \\
+          &amp;\ + \Pr[M(h_S)_k \neq 0 ] + \Pr[ M(h_{S&#39;})_l \neq 0] \\
+          &amp;= \Pr[ M(h_{S&#39;}) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] + \delta \\
+          &amp;\le \Pr[ M(h_{S&#39;}) \in E] + \delta
+  \end{aligned}
+  \]</span></p></li>
 </ul>
-<h4 id="Accuracy-1"><a href="#Accuracy-1" class="headerlink" title="Accuracy"></a>Accuracy</h4><p>We prove that $|M(h_S) - h_S |_\infty = O (\frac{1}{ n \epsilon } \log \frac{1}{\delta})$ with probability at least $1 - \delta$, if $\delta \le \frac{1}{n}$.</p>
-<ol>
-<li><p>If $f_S(x_i) = 0$, then there is no error.   </p>
+<h4 id="accuracy-1">Accuracy</h4>
+<p>We prove that <span class="math inline">\(|M(h_S) - h_S |_\infty = O (\frac{1}{ n \epsilon } \log \frac{1}{\delta})\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>, if <span class="math inline">\(\delta \le \frac{1}{n}\)</span>.</p>
+<ol type="1">
+<li>If <span class="math inline">\(f_S(x_i) = 0\)</span>, then there is no error.<br />
 </li>
-<li><p>Otherwise, if $M(h_S)_i$ is not truncated, with probability at most $\frac{\delta}{n}$, it $|M(h_S)_i - f_S(x_i)|\le \frac{2\log 1 / \delta}{n\epsilon}$. If it is truncated, this will introduce an additional error of at most $\frac{1}{n} +\frac{2 \log 2 / \delta }{ \epsilon n}$. The overall error is at most $\frac{1}{n} +\frac{4 \log 2 / \delta }{ \epsilon n}$, which is $O( \frac{ \log 1 / \delta }{ \epsilon n})$  if $\epsilon \le \log n$. </p>
+<li>Otherwise, if <span class="math inline">\(M(h_S)_i\)</span> is not truncated, with probability at most <span class="math inline">\(\frac{\delta}{n}\)</span>, it <span class="math inline">\(|M(h_S)_i - f_S(x_i)|\le \frac{2\log 1 / \delta}{n\epsilon}\)</span>. If it is truncated, this will introduce an additional error of at most <span class="math inline">\(\frac{1}{n} +\frac{2 \log 2 / \delta }{ \epsilon n}\)</span>. The overall error is at most <span class="math inline">\(\frac{1}{n} +\frac{4 \log 2 / \delta }{ \epsilon n}\)</span>, which is <span class="math inline">\(O( \frac{ \log 1 / \delta }{ \epsilon n})\)</span> if <span class="math inline">\(\epsilon \le \log n\)</span>.</li>
+</ol>
 <!-- Let $b = \frac{2 }{ n \epsilon }$. For a failure probability $\delta$, 
 $$
 \Pr[ |f_S(x_i) + l_i - f_S(x_i) | \ge b \log \frac{m}{\delta} ] = \int_{ b \log \frac{m}{\delta} }^\infty \frac{1}{b} \exp( - x / b ) \ dx = \exp(- \log \frac{m}{\delta} ) = \frac{\delta}{m}
 $$
 
-</li>
-</ol>
-<p>By union bound, it holds that<br>$$<br>\Pr[ |M(h_S) - h_S |_\infty \ge b \log \frac{m}{\delta} ] \le \delta.<br>$$ –&gt;</p>
-<p>$\square$</p>
-<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p>[1] S. Vadhan, “The Complexity of Differential Privacy,” in Tutorials on the Foundations of Cryptography, Y. Lindell, Ed. Cham: Springer International Publishing, 2017, pp. 347–450.  </p>
+By union bound, it holds that 
+$$
+\Pr[ |M(h_S) - h_S |_\infty \ge b \log \frac{m}{\delta} ] \le \delta. 
+$$ -->
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="reference">Reference</h3>
+<p>[1] S. Vadhan, “The Complexity of Differential Privacy,” in Tutorials on the Foundations of Cryptography, Y. Lindell, Ed. Cham: Springer International Publishing, 2017, pp. 347–450.</p>
 <!-- Now, for $\forall$ measurable $E \subset \mathbb{R}^n$, define  
 $$
     E_1 \doteq \{ v \in E : v_k = 0, v_l = 0 \}
@@ -277,8 +313,6 @@ $$
 $$
 
 The last inequality follows from $\Pr[ M(h_{S'}) \in E_1 \mid M(h_{S'})_l = 0] = \Pr[ M(h_S) \in E_1 \mid M(h_S)_k = 0]$.  -->
-
-
 
     </div>
 
@@ -359,7 +393,7 @@ The last inequality follows from $\Pr[ M(h_{S'}) \in E_1 \mid M(h_{S'})_l = 0] =
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Naive-Laplacian"><span class="nav-number">1.</span> <span class="nav-text">Naive Laplacian</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Privacy"><span class="nav-number">1.1.</span> <span class="nav-text">Privacy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Accuracy"><span class="nav-number">1.2.</span> <span class="nav-text">Accuracy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rounding-Small-Values"><span class="nav-number">2.</span> <span class="nav-text">Rounding Small Values</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Privacy-1"><span class="nav-number">2.1.</span> <span class="nav-text">Privacy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Accuracy-1"><span class="nav-number">2.2.</span> <span class="nav-text">Accuracy</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#naive-laplacian"><span class="nav-number">1.</span> <span class="nav-text">Naive Laplacian</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#privacy"><span class="nav-number">1.1.</span> <span class="nav-text">Privacy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#accuracy"><span class="nav-number">1.2.</span> <span class="nav-text">Accuracy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rounding-small-values"><span class="nav-number">2.</span> <span class="nav-text">Rounding Small Values</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#privacy-1"><span class="nav-number">2.1.</span> <span class="nav-text">Privacy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#accuracy-1"><span class="nav-number">2.2.</span> <span class="nav-text">Accuracy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

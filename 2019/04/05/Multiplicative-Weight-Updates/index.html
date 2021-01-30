@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Consider a problem that might arises from many application scenarios. We have a sequence of $T$ binary variables indexed by time $X_1, X_2, …, X_T$, where $X_t \in {0, 1}, \forall t \in [T]$. We try t">
+  <meta name="description" content="Consider a problem that might arises from many application scenarios. We have a sequence of \(T\) binary variables indexed by time \(X_1, X_2, ..., X_T\), where \(X_t \in \{0, 1\}, \forall t \in [T]\)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Multiplicative Weight Updates">
 <meta property="og:url" content="http://example.com/2019/04/05/Multiplicative-Weight-Updates/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Consider a problem that might arises from many application scenarios. We have a sequence of $T$ binary variables indexed by time $X_1, X_2, …, X_T$, where $X_t \in {0, 1}, \forall t \in [T]$. We try t">
+<meta property="og:description" content="Consider a problem that might arises from many application scenarios. We have a sequence of \(T\) binary variables indexed by time \(X_1, X_2, ..., X_T\), where \(X_t \in \{0, 1\}, \forall t \in [T]\)">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/MultiplicativeWeightUpdate/MultiplicativeWeightUpdate.png?raw=true">
 <meta property="article:published_time" content="2019-04-05T07:05:10.000Z">
@@ -196,106 +196,199 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Consider a problem that might arises from many application scenarios. We have a sequence of $T$ binary variables indexed by time $X_1, X_2, …, X_T$, where $X_t \in {0, 1}, \forall t \in [T]$. We try to predict the value of $X_t$, such that we win $1$ dollar if our guess is correct and $0$ dollar otherwise.</p>
-<p>We don’t make decision on our own. Instead, we resort a group of $n$ experts. At each time $t$, each expert $i$ gives a prediction $p_i^t$ of $X_t$. Based on the experts’ prediction,  we make prediction our prediction $p_A^t$. The value of $X_t$ is then revealed and we make a mistake if our prediction is wrong. The goal to minimize the number of mistakes. </p>
-<h3 id="How-Good-Can-We-Do"><a href="#How-Good-Can-We-Do" class="headerlink" title="How Good Can We Do"></a>How Good Can We Do</h3><p>The first question is how good can we do? Define </p>
-<ol>
-<li> $L_i^t:$ the indicator variable of whether the expert $i$ makes a mistake at round $t$. </li>
-<li> $L_i = \sum_{t \in [T] } L_i^t:$ the total number of mistakes expert $i$ makes, when $T$ is fixed. </li>
-<li> $L_A:$ the one made by our algorithm. </li>
+        <p>Consider a problem that might arises from many application scenarios. We have a sequence of <span class="math inline">\(T\)</span> binary variables indexed by time <span class="math inline">\(X_1, X_2, ..., X_T\)</span>, where <span class="math inline">\(X_t \in \{0, 1\}, \forall t \in [T]\)</span>. We try to predict the value of <span class="math inline">\(X_t\)</span>, such that we win <span class="math inline">\(1\)</span> dollar if our guess is correct and <span class="math inline">\(0\)</span> dollar otherwise.</p>
+<p>We don't make decision on our own. Instead, we resort a group of <span class="math inline">\(n\)</span> experts. At each time <span class="math inline">\(t\)</span>, each expert <span class="math inline">\(i\)</span> gives a prediction <span class="math inline">\(p_i^t\)</span> of <span class="math inline">\(X_t\)</span>. Based on the experts' prediction, we make prediction our prediction <span class="math inline">\(p_A^t\)</span>. The value of <span class="math inline">\(X_t\)</span> is then revealed and we make a mistake if our prediction is wrong. The goal to minimize the number of mistakes.</p>
+<h3 id="how-good-can-we-do">How Good Can We Do</h3>
+<p>The first question is how good can we do? Define</p>
+<ol type="1">
+<li><span class="math inline">\(L_i^t:\)</span> the indicator variable of whether the expert <span class="math inline">\(i\)</span> makes a mistake at round <span class="math inline">\(t\)</span>.</li>
+<li><span class="math inline">\(L_i = \sum_{t \in [T] } L_i^t:\)</span> the total number of mistakes expert <span class="math inline">\(i\)</span> makes, when <span class="math inline">\(T\)</span> is fixed.</li>
+<li><span class="math inline">\(L_A:\)</span> the one made by our algorithm.</li>
 </ol>
-<p>Ideally, we would like achieve as few mistakes as<br>$$<br>    \sum_{t \in [T] } \min_{i \in [n]} L_i^t.<br>$$</p>
-<p>However, this is impossible. To see this, suppose $X_t$ is a sequence of independent Bernoulli random variable with probability $0.5$ equal to<br>$1$. No matter what strategy we use, the expected number of mistakes is always $T / 2$. On the other hand, $\sum_{t \in [T] } \min_{i \in [n]} L_i^t$ could be $0$. </p>
-<p>Despite the negative result, there is hope to achieve as few mistakes as the best expert (up to some constant), that is<br>$$<br>O \left( \min_{i \in [n]} \sum_{t \in [T] } L_i^t \right) = O \left( \min_{i \in [n] } L_i \right).<br>$$</p>
-<h3 id="Follow-the-Majority"><a href="#Follow-the-Majority" class="headerlink" title="Follow the Majority"></a>Follow the Majority</h3><p>We start with an easy case where there exists an expert who always gives the correct guess. Under this assumption, we can achieve<br>$$<br>\min_{i \in [n] } L_i + \log n<br>$$</p>
-<p>mistakes. We simply keep track of a set of experts who do not make any mistake so far. Each time we make a decision, we follow the majority of the set. </p>
+<p>Ideally, we would like achieve as few mistakes as<br />
+<span class="math display">\[
+    \sum_{t \in [T] } \min_{i \in [n]} L_i^t. 
+\]</span></p>
+<p>However, this is impossible. To see this, suppose <span class="math inline">\(X_t\)</span> is a sequence of independent Bernoulli random variable with probability <span class="math inline">\(0.5\)</span> equal to <span class="math inline">\(1\)</span>. No matter what strategy we use, the expected number of mistakes is always <span class="math inline">\(T / 2\)</span>. On the other hand, <span class="math inline">\(\sum_{t \in [T] } \min_{i \in [n]} L_i^t\)</span> could be <span class="math inline">\(0\)</span>.</p>
+<p>Despite the negative result, there is hope to achieve as few mistakes as the best expert (up to some constant), that is<br />
+<span class="math display">\[
+O \left( \min_{i \in [n]} \sum_{t \in [T] } L_i^t \right) = O \left( \min_{i \in [n] } L_i \right). 
+\]</span></p>
+<h3 id="follow-the-majority">Follow the Majority</h3>
+<p>We start with an easy case where there exists an expert who always gives the correct guess. Under this assumption, we can achieve <span class="math display">\[
+\min_{i \in [n] } L_i + \log n
+\]</span></p>
+<p>mistakes. We simply keep track of a set of experts who do not make any mistake so far. Each time we make a decision, we follow the majority of the set.</p>
 <blockquote>
-<p>Algorithm 1. <strong>Follow the Majority</strong>  </p>
-<ol>
-<li>Let $E_0 \leftarrow { 1, 2, …, n }$ be the set of all experts.    </li>
-<li>For $t \leftarrow 1$ to $T$   </li>
-<li>$\qquad$ Let $S$ be the subset of $E_{t - 1}$ that predicts 0 at time $t$.   </li>
-<li>$\qquad$ Let $\bar S$ be the subset of $E_{t - 1}$ that predicts 1 at time $t$.   </li>
-<li>$\qquad$ If $|S| &gt; |\bar S|$,  then predict 0 ($p_A^t \leftarrow 0$);   </li>
-<li>$\qquad\qquad\qquad\quad$      else predict 1 ($p_A^t \leftarrow 1$).  </li>
-<li>$\qquad$ Reveal $X_t$.  </li>
-<li>$\qquad$ If $X_t = 0$, then $E_t \leftarrow S$;   </li>
-<li>$\qquad\qquad\qquad$   else $E_t \leftarrow \bar S$.   </li>
+<p>Algorithm 1. <strong>Follow the Majority</strong></p>
+<ol type="1">
+<li>Let <span class="math inline">\(E_0 \leftarrow \{ 1, 2, ..., n \}\)</span> be the set of all experts.<br />
+</li>
+<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 0 at time <span class="math inline">\(t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 1 at time <span class="math inline">\(t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(|S| &gt; |\bar S|\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\qquad\quad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(X_t = 0\)</span>, then <span class="math inline">\(E_t \leftarrow S\)</span>;<br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\qquad\)</span> else <span class="math inline">\(E_t \leftarrow \bar S\)</span>.</li>
 </ol>
 </blockquote>
-<p><em>Theorem. If there is a perfect expert, the algorithm <em>Follow the Majority</em> makes at most $\log n$ mistakes.</em><br><em>Proof.</em>  Let $M$ be the number of mistakes the algorithm makes. Each time it makes a mistake, the size of $E_{t}$ shrink by half.  Hence,<br>$$<br>1 \le |E_T| \le |E_1| \frac{1}{2^M}  = \frac{n}{2^M}.<br>$$</p>
-<p>The first inequality follows from the existence of perfect expert. It concludes that<br>$$<br>M \le \log n.<br>$$<br>$\square$</p>
-<h3 id="Follow-the-Majority-With-Reset"><a href="#Follow-the-Majority-With-Reset" class="headerlink" title="Follow the Majority With Reset"></a>Follow the Majority With Reset</h3><p>We continue with the case without a perfect expert. By modifying the <em>Follow the Majority</em> a little, we can achieve<br>$$<br>\left( \min_{i \in [n] } L_i  + 1 \right) \cdot \log n<br>$$<br>mistakes. As before, we maintain a set of experts who do not make any mistake so far and we follow the majority of the set to make decisions. </p>
+<p><em>Theorem. If there is a perfect expert, the algorithm </em>Follow the Majority* makes at most <span class="math inline">\(\log n\)</span> mistakes.*<br />
+<em>Proof.</em> Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. Each time it makes a mistake, the size of <span class="math inline">\(E_{t}\)</span> shrink by half. Hence, <span class="math display">\[
+1 \le |E_T| \le |E_1| \frac{1}{2^M}  = \frac{n}{2^M}. 
+\]</span></p>
+<p>The first inequality follows from the existence of perfect expert. It concludes that <span class="math display">\[
+M \le \log n.  
+\]</span> <span class="math inline">\(\square\)</span></p>
+<h3 id="follow-the-majority-with-reset">Follow the Majority With Reset</h3>
+<p>We continue with the case without a perfect expert. By modifying the <em>Follow the Majority</em> a little, we can achieve <span class="math display">\[
+\left( \min_{i \in [n] } L_i  + 1 \right) \cdot \log n
+\]</span> mistakes. As before, we maintain a set of experts who do not make any mistake so far and we follow the majority of the set to make decisions.</p>
 <blockquote>
-<p>Algorithm 2. <strong>Follow the Majority With Reset</strong>  </p>
-<ol>
-<li>Let $E_0 \leftarrow { 1, 2, …, n }$ be the set of all experts.    </li>
-<li>For $t \leftarrow 1$ to $T$   </li>
-<li>$\qquad$ Let $S$ be the subset of $E_{t - 1}$ that predicts 0 at time $t$.   </li>
-<li>$\qquad$ Let $\bar S$ be the subset of $E_{t - 1}$ that predicts 1 at time $t$.   </li>
-<li>$\qquad$ If $|S| &gt; |\bar S|$,  then predict 0 ($p_A^t \leftarrow 0$);   </li>
-<li>$\qquad\qquad\qquad\quad$      else predict 1 ($p_A^t \leftarrow 1$).  </li>
-<li>$\qquad$ Reveal $X_t$.  </li>
-<li>$\qquad$ If $X_t = 0$, then $E_t \leftarrow S$;   </li>
-<li>$\qquad\qquad\qquad$   else $E_t \leftarrow \bar S$.   </li>
-<li>$\qquad$ If $E_t = \emptyset$, then reset $E_t \leftarrow {1, 2, …, n}$. </li>
+<p>Algorithm 2. <strong>Follow the Majority With Reset</strong></p>
+<ol type="1">
+<li>Let <span class="math inline">\(E_0 \leftarrow \{ 1, 2, ..., n \}\)</span> be the set of all experts.<br />
+</li>
+<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 0 at time <span class="math inline">\(t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 1 at time <span class="math inline">\(t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(|S| &gt; |\bar S|\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\qquad\quad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(X_t = 0\)</span>, then <span class="math inline">\(E_t \leftarrow S\)</span>;<br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\qquad\)</span> else <span class="math inline">\(E_t \leftarrow \bar S\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(E_t = \emptyset\)</span>, then reset <span class="math inline">\(E_t \leftarrow \{1, 2, ..., n\}\)</span>.</li>
 </ol>
 </blockquote>
-<p><em>Theorem. If there isn’t a perfect expert, the algorithm <em>Follow the Majority</em> makes at most $\left( \min_{i \in [n] } L_i + 1 \right) \cdot \log n$ mistakes.</em><br><em>Proof.</em>  Let $M$ be the number of mistakes the algorithm makes. As analysed before, between two consecutive resets of $E_t$, the algorithm makes at most $\log n$ mistakes while the best expert makes at least one mistake. Therefore,<br>$$<br>\frac{M}{ \log n } \le \min_{i \in [n] } L_i + 1\implies M \le \left( \min_{i \in [n]}  L_i  + 1\right) \cdot \log n<br>$$</p>
-<p>$\square$</p>
-<h3 id="Follow-the-Weighted-Majority"><a href="#Follow-the-Weighted-Majority" class="headerlink" title="Follow the Weighted Majority"></a>Follow the Weighted Majority</h3><p>One drawback of the previous approach is that, the algorithm forgets the relative performance of the experts each time it resets $E_t$. To fix this, we assign each expert $i$ a weight $w_i^t$ and we follow the weighted majority at time $t$. This reduces the number of mistakes to<br>$$<br>    2.41 \cdot ( \min_{i \in [n]} L_i + \log n).<br>$$</p>
+<p><em>Theorem. If there isn't a perfect expert, the algorithm </em>Follow the Majority* makes at most <span class="math inline">\(\left( \min_{i \in [n] } L_i + 1 \right) \cdot \log n\)</span> mistakes.*<br />
+<em>Proof.</em> Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. As analysed before, between two consecutive resets of <span class="math inline">\(E_t\)</span>, the algorithm makes at most <span class="math inline">\(\log n\)</span> mistakes while the best expert makes at least one mistake. Therefore, <span class="math display">\[
+\frac{M}{ \log n } \le \min_{i \in [n] } L_i + 1\implies M \le \left( \min_{i \in [n]}  L_i  + 1\right) \cdot \log n
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="follow-the-weighted-majority">Follow the Weighted Majority</h3>
+<p>One drawback of the previous approach is that, the algorithm forgets the relative performance of the experts each time it resets <span class="math inline">\(E_t\)</span>. To fix this, we assign each expert <span class="math inline">\(i\)</span> a weight <span class="math inline">\(w_i^t\)</span> and we follow the weighted majority at time <span class="math inline">\(t\)</span>. This reduces the number of mistakes to <span class="math display">\[
+    2.41 \cdot ( \min_{i \in [n]} L_i + \log n).
+\]</span></p>
 <blockquote>
-<p>Algorithm 3. <strong>Follow the Weighted Majority</strong>  </p>
-<ol>
-<li>Set $w_i \leftarrow 1, \forall i \in [n].$    </li>
-<li>For $t \leftarrow 1$ to $T$   </li>
-<li>$\qquad$ Let $S$ be the set of experts who predict 0.   </li>
-<li>$\qquad$ Let $\bar S$ be the set of experts who predict 1.   </li>
-<li>$\qquad$ If $\sum_{i \in S} w_i &gt; \sum_{i \in \bar S} w_i$,  then predict 0 ($p_A^t \leftarrow 0$);   </li>
-<li>$\qquad\qquad\qquad\qquad\qquad\qquad$      else predict 1 ($p_A^t \leftarrow 1$).  </li>
-<li>$\qquad$ Reveal $X_t$.  </li>
-<li>$\qquad$ For each expert $i$ who predicts wrong</li>
-<li>$\qquad\qquad$ $w_i \leftarrow w_i / 2$</li>
+<p>Algorithm 3. <strong>Follow the Weighted Majority</strong></p>
+<ol type="1">
+<li>Set <span class="math inline">\(w_i \leftarrow 1, \forall i \in [n].\)</span><br />
+</li>
+<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the set of experts who predict 0.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the set of experts who predict 1.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(\sum_{i \in S} w_i &gt; \sum_{i \in \bar S} w_i\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\qquad\qquad\qquad\qquad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> For each expert <span class="math inline">\(i\)</span> who predicts wrong</li>
+<li><span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(w_i \leftarrow w_i / 2\)</span></li>
 </ol>
 </blockquote>
-<p><strong><em>Analysis.</em></strong> Let $w_i^t$ be the weight of player $i$ at time $t$ and define $W^t = \sum_{i = 1}^n w_i^t$. Each time we make a mistake, the experts who make wrong the prediction have sum of weight $\ge \frac{1}{2} W^t$. Since their weights halve, we have<br>$$<br>W^{t + 1} \le W^t ( 1 - \frac{1}{2}\frac{1}{2}) = \frac{3}{4} W^t.<br>$$ </p>
-<p>Let $M$ be the number of mistakes the algorithm makes. It follows that $\forall i \in [n]$,<br>$$<br> \left( \frac{1}{2} \right)^{L_i} = w_i^T \le W^T \le \left( \frac{3}{4} \right)^M W_0 = \left( \frac{3}{4} \right)^M n,<br>$$</p>
-<p>which implies<br>$$<br>M \le  \frac{1}{ \log \frac{4}{3} } ( L_i + \log n) \le 2.41 \cdot (L_i + \log n).<br>$$</p>
-<p><em>Remark:</em> it is not necessary to halve an expert’s weight when it makes a mistake. We can decrease it by any factor $(1 - \epsilon)$ for $\epsilon \in (0, 1)$. In such case, we get<br>$$<br>\begin{aligned}<br>    &amp;\qquad (1- \epsilon)^{L_i} \le \left( 1 - \frac{1 - (1 - \epsilon)}{2} \right)^M n \<br>    &amp;\implies L_i \cdot \ln (1 -\epsilon) \le M \ln \left( 1 - \frac{\epsilon}{ 2 } \right) + \ln n \<br>    &amp;\implies M \le \frac{ L_i \ln \frac{1}{1 - \epsilon} + \ln n}{ \ln \frac{ 2 }{ 2 - \epsilon } }.<br>\end{aligned}<br>$$</p>
-<p>Let $x = \frac{1}{1 - \epsilon} &gt; 0$, then $1 - \epsilon = \frac{1}{x}$ and $\frac{2 - \epsilon }{ 2 } = \frac{x + 1}{2x}$. Define<br>$$<br>y = \frac{ L_i \ln x + \ln n}{ \ln 2x - \ln ( x + 1  ) }.<br>$$</p>
-<p>Then<br>$$<br>\begin{aligned}<br>    y’ \ge 0<br>        &amp;\implies  \frac{L_i}{x} (\ln 2x - \ln ( x + 1  ) ) - \left( \frac{1}{x} - \frac{1}{x + 1} \right) (L_i \ln x + \ln n ) \ge 0 \<br>        &amp;\implies  L_i(x + 1) (\ln 2x - \ln ( x + 1  ) ) - (L_i \ln x + \ln n ) \ge 0 \<br>        &amp;\implies  (x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x \ge \frac{\ln n}{L_i}<br>\end{aligned}<br>$$</p>
-<p>It is not easy to compute a closed-form solution for $x$. But observe that the function $(x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x$ equals to $0$ for $x = 1$ and is increasing for $x &gt; 1$. Hence, there exists some $x &gt; 1$, s.t., the value of the functions equal to $\frac{ \ln n }{ L_i }$. </p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/MultiplicativeWeightUpdate/MultiplicativeWeightUpdate.png?raw=true"></p>
-<p>$\square$</p>
-<h3 id="Multiplicative-Weight-Updates"><a href="#Multiplicative-Weight-Updates" class="headerlink" title="Multiplicative Weight Updates"></a>Multiplicative Weight Updates</h3><p>We are in good shape so far. Let’s extend the problem to more general settings. In this cases, the experts interact with the environment in round-robin fashion. At each round $t$,  </p>
-<ol>
-<li>The expert $i$ performs action, termed $a_i^t$. </li>
-<li>The environment returns the loss of performing $a_i^t$, denoted as $l_i^t \in [0, 1]$.</li>
+<p><strong><em>Analysis.</em></strong> Let <span class="math inline">\(w_i^t\)</span> be the weight of player <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span> and define <span class="math inline">\(W^t = \sum_{i = 1}^n w_i^t\)</span>. Each time we make a mistake, the experts who make wrong the prediction have sum of weight <span class="math inline">\(\ge \frac{1}{2} W^t\)</span>. Since their weights halve, we have <span class="math display">\[
+W^{t + 1} \le W^t ( 1 - \frac{1}{2}\frac{1}{2}) = \frac{3}{4} W^t.
+\]</span></p>
+<p>Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. It follows that <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
+ \left( \frac{1}{2} \right)^{L_i} = w_i^T \le W^T \le \left( \frac{3}{4} \right)^M W_0 = \left( \frac{3}{4} \right)^M n,  
+\]</span></p>
+<p>which implies <span class="math display">\[
+M \le  \frac{1}{ \log \frac{4}{3} } ( L_i + \log n) \le 2.41 \cdot (L_i + \log n).
+\]</span></p>
+<p><em>Remark:</em> it is not necessary to halve an expert's weight when it makes a mistake. We can decrease it by any factor <span class="math inline">\((1 - \epsilon)\)</span> for <span class="math inline">\(\epsilon \in (0, 1)\)</span>. In such case, we get <span class="math display">\[
+\begin{aligned}
+    &amp;\qquad (1- \epsilon)^{L_i} \le \left( 1 - \frac{1 - (1 - \epsilon)}{2} \right)^M n \\
+    &amp;\implies L_i \cdot \ln (1 -\epsilon) \le M \ln \left( 1 - \frac{\epsilon}{ 2 } \right) + \ln n \\
+    &amp;\implies M \le \frac{ L_i \ln \frac{1}{1 - \epsilon} + \ln n}{ \ln \frac{ 2 }{ 2 - \epsilon } }.
+\end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(x = \frac{1}{1 - \epsilon} &gt; 0\)</span>, then <span class="math inline">\(1 - \epsilon = \frac{1}{x}\)</span> and <span class="math inline">\(\frac{2 - \epsilon }{ 2 } = \frac{x + 1}{2x}\)</span>. Define <span class="math display">\[
+y = \frac{ L_i \ln x + \ln n}{ \ln 2x - \ln ( x + 1  ) }.
+\]</span></p>
+<p>Then <span class="math display">\[
+\begin{aligned}
+    y&#39; \ge 0 
+        &amp;\implies  \frac{L_i}{x} (\ln 2x - \ln ( x + 1  ) ) - \left( \frac{1}{x} - \frac{1}{x + 1} \right) (L_i \ln x + \ln n ) \ge 0 \\
+        &amp;\implies  L_i(x + 1) (\ln 2x - \ln ( x + 1  ) ) - (L_i \ln x + \ln n ) \ge 0 \\
+        &amp;\implies  (x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x \ge \frac{\ln n}{L_i}
+\end{aligned}
+\]</span></p>
+<p>It is not easy to compute a closed-form solution for <span class="math inline">\(x\)</span>. But observe that the function <span class="math inline">\((x + 1) (\ln 2x - \ln ( x + 1 ) ) - \ln x\)</span> equals to <span class="math inline">\(0\)</span> for <span class="math inline">\(x = 1\)</span> and is increasing for <span class="math inline">\(x &gt; 1\)</span>. Hence, there exists some <span class="math inline">\(x &gt; 1\)</span>, s.t., the value of the functions equal to <span class="math inline">\(\frac{ \ln n }{ L_i }\)</span>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/MultiplicativeWeightUpdate/MultiplicativeWeightUpdate.png?raw=true" /></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="multiplicative-weight-updates">Multiplicative Weight Updates</h3>
+<p>We are in good shape so far. Let's extend the problem to more general settings. In this cases, the experts interact with the environment in round-robin fashion. At each round <span class="math inline">\(t\)</span>,</p>
+<ol type="1">
+<li>The expert <span class="math inline">\(i\)</span> performs action, termed <span class="math inline">\(a_i^t\)</span>.</li>
+<li>The environment returns the loss of performing <span class="math inline">\(a_i^t\)</span>, denoted as <span class="math inline">\(l_i^t \in [0, 1]\)</span>.</li>
 </ol>
-<p>Although there is no restriction of the experts’ actions and their losses, we can come up with some strategy the expected loss of which is almost as good as the best expert:<br>$$<br>    \min_{i \in [n] } L_i + 2 \sqrt{ T \ln n },<br>$$</p>
-<p>where $L_i \doteq \sum_{t \in [T] } l_i^t$ is the loss of expert $i$. This implies that the average expected loss converges at a rate of $\sqrt \frac{1}{T}$ to the best one.  </p>
+<p>Although there is no restriction of the experts' actions and their losses, we can come up with some strategy the expected loss of which is almost as good as the best expert: <span class="math display">\[
+    \min_{i \in [n] } L_i + 2 \sqrt{ T \ln n }, 
+\]</span></p>
+<p>where <span class="math inline">\(L_i \doteq \sum_{t \in [T] } l_i^t\)</span> is the loss of expert <span class="math inline">\(i\)</span>. This implies that the average expected loss converges at a rate of <span class="math inline">\(\sqrt \frac{1}{T}\)</span> to the best one.</p>
 <blockquote>
-<p>Algorithm 4. <strong>Multiplicative Weight Update</strong>  </p>
-<ol>
-<li>Set $w_i \leftarrow 1, \forall i \in [n].$    </li>
-<li>For $t \leftarrow 1$ to $T$   </li>
-<li>$\qquad$ Let $W = \sum_{i \in [n] } w_i$.   </li>
-<li>$\qquad$ Follow action $a_i^t$ with probability $w_i / W$. </li>
-<li>$\qquad$ For each expert $i$:</li>
-<li>$\qquad\qquad$ $w_i \leftarrow w_i \cdot (1 - \epsilon l_i^t)$</li>
+<p>Algorithm 4. <strong>Multiplicative Weight Update</strong></p>
+<ol type="1">
+<li>Set <span class="math inline">\(w_i \leftarrow 1, \forall i \in [n].\)</span><br />
+</li>
+<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(W = \sum_{i \in [n] } w_i\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Follow action <span class="math inline">\(a_i^t\)</span> with probability <span class="math inline">\(w_i / W\)</span>.</li>
+<li><span class="math inline">\(\qquad\)</span> For each expert <span class="math inline">\(i\)</span>:</li>
+<li><span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(w_i \leftarrow w_i \cdot (1 - \epsilon l_i^t)\)</span></li>
 </ol>
 </blockquote>
-<p><strong><em>Analysis.</em></strong> Let $l_A^t$ be the loss of the algorithm at round $t$ and $L_A \doteq \sum_{t \in [T] } l_A^t$. Let $w_i^t$ be the weight of expert $i$ and $W^t$ be the sum of weights at round $t$. Then<br>$$<br>\mathbb{E} [ l_A^t ] = \sum_{i \in [n] } \frac{ \epsilon w_i^t l_i^t }{ W^t }.<br>$$</p>
-<p>By the update rule of the $w_i$’s, we see<br>$$<br>W^{t + 1} = \sum_{i \in [n] } w_i^t (1 - \epsilon l_i^t) = W^t ( 1 - \epsilon \mathbb{E} [ l_A^t ] ) \le W^t \exp( - \epsilon \mathbb{E} [ l_A^t ] ).<br>$$</p>
-<p>By induction, we can write<br>$$<br>W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot \exp( - \epsilon \mathbb{E} [ L_A ] ).<br>$$</p>
-<p>To upper bound $\mathbb{E} [ L_A ]$, we try to lower bound the value of $n \cdot \exp( - \epsilon \mathbb{E} [ L_A ] )$. We uses that $\forall i \in [n]$,<br>$$<br>    \prod_{t \in [T] } (1 - \epsilon l_i^t) = w_i^T \le W^T.<br>$$</p>
-<p>Using the fact that $\ln(1 - \epsilon ) \ge \epsilon - \epsilon^2$ for $0 &lt; \epsilon &lt; 0.5$, we know that $\forall i \in [n]$, </p>
-<p>$$<br>\exp \left( - \sum_{i \in [T] } \epsilon l_i^t  - \sum_{i \in [T] } (\epsilon l_i^t)^2 \right) \le n \cdot \exp ( - \epsilon \mathbb{E} [ l_A^t ] ).<br>$$</p>
-<p>Taking the log, we get<br>$$<br>\mathbb{E} [ l_A^t ] \le \frac{1}{\epsilon } \ln n  + L_i + \epsilon \sum_{i \in [T] } (l_i^t)^2.<br>$$</p>
-<p>There are various ways to upper bound $\sum_{i \in [T] } (l_i^t)^2$. Naively, this is at most $T$. Hence,<br>$$<br>\mathbb{E} [ l_A^t ] \le \frac{1}{\epsilon } \ln n  + L_i + \epsilon T.<br>$$</p>
-<p>Setting $\epsilon = \sqrt{ \frac{ \ln n}{T} }$, we get<br>$$<br>\mathbb{E} [ l_A^t ] \le L_i + 2 \sqrt{ T \ln n}.<br>$$</p>
-<p>$\blacksquare$</p>
-<h4 id="Last-Updated-Date-Dec-14th-2020"><a href="#Last-Updated-Date-Dec-14th-2020" class="headerlink" title="Last Updated Date: Dec 14th, 2020."></a>Last Updated Date: <strong>Dec 14th, 2020</strong>.</h4><h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p>[1] Aaron Roth, “The Polynomial Weights Algorithm”, NETS 412: Algorithmic Game Theory, </p>
+<p><strong><em>Analysis.</em></strong> Let <span class="math inline">\(l_A^t\)</span> be the loss of the algorithm at round <span class="math inline">\(t\)</span> and <span class="math inline">\(L_A \doteq \sum_{t \in [T] } l_A^t\)</span>. Let <span class="math inline">\(w_i^t\)</span> be the weight of expert <span class="math inline">\(i\)</span> and <span class="math inline">\(W^t\)</span> be the sum of weights at round <span class="math inline">\(t\)</span>. Then <span class="math display">\[
+\mathbb{E} [ l_A^t ] = \sum_{i \in [n] } \frac{ \epsilon w_i^t l_i^t }{ W^t }. 
+\]</span></p>
+<p>By the update rule of the <span class="math inline">\(w_i\)</span>'s, we see <span class="math display">\[
+W^{t + 1} = \sum_{i \in [n] } w_i^t (1 - \epsilon l_i^t) = W^t ( 1 - \epsilon \mathbb{E} [ l_A^t ] ) \le W^t \exp( - \epsilon \mathbb{E} [ l_A^t ] ). 
+\]</span></p>
+<p>By induction, we can write <span class="math display">\[
+W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot \exp( - \epsilon \mathbb{E} [ L_A ] ).
+\]</span></p>
+<p>To upper bound <span class="math inline">\(\mathbb{E} [ L_A ]\)</span>, we try to lower bound the value of <span class="math inline">\(n \cdot \exp( - \epsilon \mathbb{E} [ L_A ] )\)</span>. We uses that <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
+    \prod_{t \in [T] } (1 - \epsilon l_i^t) = w_i^T \le W^T. 
+\]</span></p>
+<p>Using the fact that <span class="math inline">\(\ln(1 - \epsilon ) \ge \epsilon - \epsilon^2\)</span> for <span class="math inline">\(0 &lt; \epsilon &lt; 0.5\)</span>, we know that <span class="math inline">\(\forall i \in [n]\)</span>,</p>
+<p><span class="math display">\[
+\exp \left( - \sum_{i \in [T] } \epsilon l_i^t  - \sum_{i \in [T] } (\epsilon l_i^t)^2 \right) \le n \cdot \exp ( - \epsilon \mathbb{E} [ l_A^t ] ). 
+\]</span></p>
+<p>Taking the log, we get <span class="math display">\[
+\mathbb{E} [ l_A^t ] \le \frac{1}{\epsilon } \ln n  + L_i + \epsilon \sum_{i \in [T] } (l_i^t)^2. 
+\]</span></p>
+<p>There are various ways to upper bound <span class="math inline">\(\sum_{i \in [T] } (l_i^t)^2\)</span>. Naively, this is at most <span class="math inline">\(T\)</span>. Hence, <span class="math display">\[
+\mathbb{E} [ l_A^t ] \le \frac{1}{\epsilon } \ln n  + L_i + \epsilon T.  
+\]</span></p>
+<p>Setting <span class="math inline">\(\epsilon = \sqrt{ \frac{ \ln n}{T} }\)</span>, we get <span class="math display">\[
+\mathbb{E} [ l_A^t ] \le L_i + 2 \sqrt{ T \ln n}.
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h4 id="last-updated-date-dec-14th-2020.">Last Updated Date: <strong>Dec 14th, 2020</strong>.</h4>
+<h3 id="reference">Reference</h3>
+<p>[1] Aaron Roth, “The Polynomial Weights Algorithm”, NETS 412: Algorithmic Game Theory,</p>
 
     </div>
 
@@ -376,7 +469,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Good-Can-We-Do"><span class="nav-number">1.</span> <span class="nav-text">How Good Can We Do</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Follow-the-Majority"><span class="nav-number">2.</span> <span class="nav-text">Follow the Majority</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Follow-the-Majority-With-Reset"><span class="nav-number">3.</span> <span class="nav-text">Follow the Majority With Reset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Follow-the-Weighted-Majority"><span class="nav-number">4.</span> <span class="nav-text">Follow the Weighted Majority</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multiplicative-Weight-Updates"><span class="nav-number">5.</span> <span class="nav-text">Multiplicative Weight Updates</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Last-Updated-Date-Dec-14th-2020"><span class="nav-number">5.1.</span> <span class="nav-text">Last Updated Date: Dec 14th, 2020.</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#how-good-can-we-do"><span class="nav-number">1.</span> <span class="nav-text">How Good Can We Do</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#follow-the-majority"><span class="nav-number">2.</span> <span class="nav-text">Follow the Majority</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#follow-the-majority-with-reset"><span class="nav-number">3.</span> <span class="nav-text">Follow the Majority With Reset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#follow-the-weighted-majority"><span class="nav-number">4.</span> <span class="nav-text">Follow the Weighted Majority</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#multiplicative-weight-updates"><span class="nav-number">5.</span> <span class="nav-text">Multiplicative Weight Updates</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#last-updated-date-dec-14th-2020."><span class="nav-number">5.1.</span> <span class="nav-text">Last Updated Date: Dec 14th, 2020.</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
