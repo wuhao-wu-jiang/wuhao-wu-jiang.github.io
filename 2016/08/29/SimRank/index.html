@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="SimRankGiven a directed graph $G &#x3D; \left&lt; V, E \right&gt;$, SimRank score is defined as follows$$s(i,j) &#x3D;    \begin{cases}        \begin{array}{ll}        1, &amp;\text{ if } i &#x3D; j \        \frac{c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SimRank">
+<meta property="og:url" content="http://example.com/2016/08/29/SimRank/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="SimRankGiven a directed graph $G &#x3D; \left&lt; V, E \right&gt;$, SimRank score is defined as follows$$s(i,j) &#x3D;    \begin{cases}        \begin{array}{ll}        1, &amp;\text{ if } i &#x3D; j \        \frac{c">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2016-08-29T10:38:54.000Z">
+<meta property="article:modified_time" content="2020-05-19T11:34:01.000Z">
+<meta property="article:author" content="WOW">
+<meta property="article:tag" content="Reading Notes">
+<meta property="article:tag" content="Graph">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2016/08/29/SimRank/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>SimRank | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/08/29/SimRank/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SimRank
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-08-29 20:38:54" itemprop="dateCreated datePublished" datetime="2016-08-29T20:38:54+10:00">2016-08-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-19 21:34:01" itemprop="dateModified" datetime="2020-05-19T21:34:01+10:00">2020-05-19</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><strong>SimRank</strong><br>Given a directed graph $G = \left&lt; V, E \right&gt;$, SimRank score is defined as follows<br>$$<br>s(i,j) =<br>    \begin{cases}<br>        \begin{array}{ll}<br>        1, &amp;\text{ if } i = j \<br>        \frac{c}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} s(a,b), &amp;\text{otherwise}<br>        \end{array}<br>    \end{cases}<br>$$</p>
+<p>where $I(i)$ is the set of in-neighbors of $i \in V$, and $c \in (0, 1)$. </p>
+<p>By the definition of <em>SimRank</em>, $s(i,j)$ can be interpreted as the value of<br>$$<br>E[c^{T_{i,j} } ]<br>$$</p>
+<p>where $T_{i,j}$ is the random variable of the first time that a reverse random walk (a random walk that travel along the incoming edges of a vertex randomly at each step) from $i$ and a reverse random walk from $j$ meets. Note that<br>$$<br>T_{i,j} =<br>    \begin{cases}<br>        \begin{array}{ll}<br>        0, &amp;\text{ if } i = j \<br>        \frac{1}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} T_{a,b}, &amp;\text{otherwise}<br>        \end{array}<br>    \end{cases}<br>$$</p>
+<p>Therefore,<br>$$<br>\begin{aligned}<br>E[c^{T_{i,j} } ]<br>    &amp;= c^0 \cdot \Pr[T_{i,j} = 0] + \frac{1}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} E[c^{1 + T_{a, b}} ] \<br>    &amp;= \mathfrak{1}<em>{i = j} +  \frac{c}{|I(i)| |I(j)|} \sum</em>{a \in I(i), b \in I(j)} E[c^{ T_{a, b}} ] \<br>    &amp;= \mathfrak{1}<em>{i = j} +  \frac{c}{|I(i)| |I(j)|} \sum</em>{a \in I(i), b \in I(j)} s(a, b) \<br>\end{aligned}<br>$$</p>
+<p>However, there is another random walk interpretation as follows:</p>
+<ol>
+<li><p>First, notice that when $i \neq j$, [TX16] rewrites the SimRank as<br>$$<br>s(i,j) = \frac{ \sqrt c \sqrt c} {|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} s(a,b)<br>$$</p>
+</li>
+<li><p>Second, [TX16] defines the $\sqrt c$-random walk as </p>
+<ul>
+<li>In any step, the walk stops with probability $1 - \sqrt c$.</li>
+<li>With the other $\sqrt c$ probability, the walk chose the in-neighbors of the current vertex uniformly at random.</li>
+</ul>
+</li>
+<li><p>Finally $s(i,j)$ is interpreted as </p>
+<blockquote>
+<p>The probability of two $\sqrt c$ random walks ever meet, such that one of the random walks starts at vertex $i$ and the other starts at $j$.</p>
+</blockquote>
+</li>
+</ol>
+<p><strong>Monte Carlo</strong><br>A straightforward solution is to perform Monte Carlo simulation to calculate $s(i,j)$ – we initialize two random walks from $i$ and $j$ respectively and simulate the two walks until they meet or either walk dies.</p>
+<p>We need not to worry about that this process continues forever. Since the expected number of steps of a $\sqrt c$ random walk  is given by<br>$$<br>\sqrt c + \sqrt c^2 + \sqrt c^3 + …… = \frac{ \sqrt c}{ 1 - \sqrt c}<br>$$<br>which is a constant number. </p>
+<p><strong>Chernoff Bound</strong><br>We repeat this process $n_w$ times and use $X_k$ to indicate whether the two walks meet in the k-th trial, i.e., $X_k = 1$ if the two walks meet and $0$ otherwise. It is easy to see that ${ X_k }$ is a set of i.i.d random variables with $E[ X_k ] = s(i, j)$.</p>
+<p>Let $\bar{X} \doteq \frac{1}{n_w} \sum_{k = 1}^{n_w} X_k$ and $\mu \doteq s(i,j)$, So by <em>Chernoff Bound</em>,<br>$$<br>P({| \bar{X} - \mu | &gt; (1 + \lambda) \mu }) \le 2 \exp(- \frac{n_w \mu \lambda^2}{3}) = \delta<br>$$<br>where $\lambda$ is relative error ratio and $\delta$ the error probability we can tolerate. </p>
+<p><strong>Time Complexity</strong><br>The previous section implies $n_w = \frac{3 }{ \mu \lambda ^2}\log \frac{ 2 }{ \delta }$.  By setting $\epsilon = (1 + \lambda) \mu \Leftrightarrow \lambda = \frac{\epsilon}{\mu} - 1$, we get </p>
+<p>$$<br>n_w = \frac{ 3 }{ \mu ( \frac{\epsilon}{\mu}^2 -  2\frac{\epsilon}{\mu}  + 1 ) }\log \frac{ 2 }{ \delta }<br>= O( \frac{ \mu }{ \epsilon^2 }\log \frac{ 1 }{ \delta })<br>$$</p>
+<p>Notice that when $\epsilon$ is small, say $0.01$, $\frac{1}{\epsilon^2}$ is large thus can not be neglected. The problem remains whether we could reduce the number of random walks.</p>
+<p><strong>Hitting probability</strong><br>Another acute observation from [TX16] is that if two walks reach the same vertex, their following behavior follows the same probability distribution (since the walks are memoryless). </p>
+<p>Motivated by this, we define $h_i^l(k)$ as the probability such that a walk begins at vertex $i$ and reaches vertex $j$ at the l-th step. $h_i^l(k)$ can be updated iteratively using<br>$$<br>h_i^l(k) = \frac{ \sqrt c }{ |I(i) |  } \sum_{j \in I(i)} h_j^{l -1}(k)<br>$$</p>
+<p><strong>SimRank and Hitting Probability</strong><br>Now we set about bridging the gap between SimRank score and hitting probability. </p>
+<p>Define $E(i,j)$ as the event that two random walks starting from i and j respectively ever meet. $P(E(i,j)) = s(i,j)$. </p>
+<p>$E(i, j, k, l)$ denotes the event that two random walks, starting from $i$ and $j$ respectively, meet at $l$-th step at $k$ and this is the last time they meet. In other word, these two walk never meet again after $l$-th step at $k$. It is easy to see that for different $k$ and $l$, the $E(i, j, k, l)$’s are mutually exclusive and constitute a partition of $E(i,j)$,</p>
+<p>$$<br>E(i,j) = \bigcup_l \bigcup_l E(i, j, k, l)<br>$$</p>
+<p>Let $d_k$ be the probability that two walks from k do not meet each other after $0$-th step. Then $P(E(i, j, k, l)) = h_i^l(k) h_j^l(k) d_k$. Thus</p>
+<p>$$<br>\begin{aligned}<br>P( E(i,j) ) &amp;=<br>P(\bigcup_l \bigcup_l E(i, j, k, l))  \<br>&amp;= \sum_{l = 0}^{\infty}  \sum_{k = 1}^{n} P(E(i, j, k, l)) \<br>&amp;= \sum_{l = 0}^{\infty}  \sum_{k = 1}^{n} h_i^l(k) h_j^l(k) d_k<br>\end{aligned}<br>$$</p>
+<p><strong>Computation</strong><br>Notice that for a given $i$, there infinity many $h_i^l(k)$’s we need to kept, which is unfeasible. To get around this, we only keep the $h_i^l(k)$’s greater than $\epsilon_h$, where $\epsilon_h = O(\epsilon)$.</p>
+<p>The probability that the $\sqrt c$-random walk does not to stop before $l$-th step is $\sqrt c ^l$, i.e.,<br>$$<br>\sum_{k = 1}^n h_i^l(k) = \sqrt c^l<br>$$ </p>
+<p>For a fixed $l$, at most $\sqrt c ^l / \epsilon_h$ number of $h_i^l(k)$’s are kept. So the total number of $h_i^l(k)$’s kept is bounded by<br>$$<br>\frac{1}{\epsilon_h} (\sqrt c + \sqrt c^2 + \sqrt c^3 + ……  )= O(\frac{1}{\epsilon_h}) = O(\frac{1}{\epsilon})<br>$$</p>
+<p>On the other hand, estimation of $d_k$ could be done by monte carlo simulation. Similar to analysis in <strong>Chernoff Bound</strong> and <strong>Time Complexity</strong> section, we can show that with $O \left( \frac{1}{\epsilon_d^2} \log \frac{1}{\delta_d} \right)$ expected time, $d_k$ could be estimated by $\bar{d_k}$ such that $| \bar{d_k} - d_k| &lt; \epsilon_d$ holds with at least $1 - \delta_d$ probability, where $\epsilon_d = O(\epsilon)$.</p>
+<p><strong>Reference</strong><br>[TX16] Boyu. Tian and Xiaokui. Xiao SLING: A Near-Optimal Index Structure for SimRank. <em>SIGMOD’16</em></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Reading-Notes/" rel="tag"># Reading Notes</a>
+              <a href="/tags/Graph/" rel="tag"># Graph</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/12/01/Random%20Sampling%20and%20Cuts%20II/" rel="prev" title="Random Sampling and Cuts II">
+      <i class="fa fa-chevron-left"></i> Random Sampling and Cuts II
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/09/10/Nonuniform%20Sampling/" rel="next" title="Nonuniform Sampling">
+      Nonuniform Sampling <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

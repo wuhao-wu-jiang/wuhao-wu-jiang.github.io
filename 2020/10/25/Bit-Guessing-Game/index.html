@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="The bit guessing game models two players, namely Alice and Bob, where Alice has a secret vector $\vec x \in {0, 1 }^n$ which Bob tries to learn. Bob is only allowed to ask Alice the value of$$\vec c \">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bit Guessing Game">
+<meta property="og:url" content="http://example.com/2020/10/25/Bit-Guessing-Game/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="The bit guessing game models two players, namely Alice and Bob, where Alice has a secret vector $\vec x \in {0, 1 }^n$ which Bob tries to learn. Bob is only allowed to ask Alice the value of$$\vec c \">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-10-25T04:33:16.000Z">
+<meta property="article:modified_time" content="2020-11-02T23:23:55.211Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2020/10/25/Bit-Guessing-Game/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Bit Guessing Game | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/Bit-Guessing-Game/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Bit Guessing Game
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-25 15:33:16" itemprop="dateCreated datePublished" datetime="2020-10-25T15:33:16+11:00">2020-10-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-03 10:23:55" itemprop="dateModified" datetime="2020-11-03T10:23:55+11:00">2020-11-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>The bit guessing game models two players, namely Alice and Bob, where Alice has a secret vector $\vec x \in {0, 1 }^n$ which Bob tries to learn. Bob is only allowed to ask Alice the value of<br>$$<br>\vec c \cdot \vec x<br>$$</p>
+<p>for bit vector $\vec c \in {0, 1}^n$ he comes up with. Under this setting, it is trivial for Bob to learn each bit of $x$: he needs to just query Alice for $\vec e_i \cdot \vec x$, where $\vec e_i$ is the indicator vector with its $i$-th dimension equal to 1 and other dimensions equal to 0. </p>
+<p>One way for Alice to prevent information leakage is to add some bounded noise $Z$ to the query result and returns<br>$$<br>r(\vec c) \doteq \vec c \cdot \vec x + Z<br>$$</p>
+<p>For example, $Z$ could be a bounded random variable. Is is still a chance for Bob to learn the vector $\vec x$?</p>
+<p><strong><em>Theorem 1.</em></strong> If Bob is allowed to query $r(\vec c)$ for all $\vec c \in {0, 1}^n$, and suppose that $Z$ is bounded by some real number $R$, then Bob can have an estimation $\vec y$ such that<br>$$<br>|\vec x - \vec y| = \sum_{i = 1}^n | x_i - y_i | \le 4R<br>$$</p>
+<p><strong>Remark:</strong> <em>In this case Bob queries for $2^n$ vectors. This result implies that is Bob is able to ask exponential number of questions, then it is hard to prevent information leakage. E.g., suppose $R = n / 400$, which is a relatively large number when $n$ is large, the theorem says that Bob can recover $99%$ of bits in $\vec x$.</em>  </p>
+<p><em>Proof:</em> We say a vector $\vec y$ is consistent with a query result $r(\vec c)$ if<br>$$<br>| r(\vec c) - \vec c \cdot \vec y| \le R.<br>$$</p>
+<p>The strategy of Bob is to choose any $\vec y$ that is consistent with all $\vec c \in {0, 1}^n$. Such $\vec y$ exits, a special of which is given by $\vec y = \vec x$. It remains to prove that such an $\vec y$ satisfies the constraint. </p>
+<p>Consider the special case of $\vec c = \vec x$,<br>$$<br>|r(\vec x) - \vec x \cdot \vec y| \le R \<br>|r(\vec x) - \vec x \cdot \vec x| \le R \<br>$$</p>
+<p>By triangle inequality, it holds<br>$$<br>|\vec x \cdot \vec y - \vec x \cdot \vec x| \le 2R.<br>$$  </p>
+<p>Observe that $\vec x \cdot \vec x \ge \vec x \cdot \vec y$, which implies<br>$$<br>|\vec x \cdot \vec y - \vec x \cdot \vec x| = \vec x \cdot \vec x - \vec x \cdot \vec y \le 2R<br>$$</p>
+<p>Hence, $\vec y$ and $\vec x$ differ by at most $2R$ bits, on the non-zero dimensions of $\vec x$. </p>
+<p>Let $\bar x$ be the bit-wise complement of $\vec x$. By similar arguments, we get<br>$$<br>|\bar x \cdot \vec y - \bar x \cdot \vec x|\le 2R.<br>$$  </p>
+<p>and $\vec x$ and $\vec y$ differ by at most $2R$ bits, on the zero dimensions of $\vec x$. It concludes that $|\vec x - \vec y | \le 4R$.  </p>
+<!-- Define $S$ to be the set of non-zero dimensions of $\vec x$: 
+$$
+S \doteq \{ i \in [n]: x_i > 0 \}
+$$
+
+Let $\vec e_S \in \{0, 1\}^n$ ($\vec e_{\bar S} \in \{0, 1\}^n$) be the indicator vector that takes $1$ on dimensions belonging to $S$ ($\bar S$).  It follows that 
+$$
+|r(\vec e_S) - \vec e_S \cdot \vec y| \le R \\
+|r(\vec e_S) - \vec e_S \cdot \vec x| \le R \\
+$$ -->
+
+<!-- By triangle inequality, it holds 
+$$
+|\vec e_S \cdot \vec y - \vec e_S \cdot \vec x|\le 2R.
+$$   -->
+
+<!-- Similarly, $|\vec e_{\bar S} \cdot \vec y - \vec e_{\bar S} \cdot \vec x| \le 2R$. As $S$ and $\bar S$ is a partition of $[n]$, 
+$$
+| \vec x - \vec y| = |\vec e_S \cdot \vec y - \vec e_S \cdot \vec x| + |\vec e_{\bar S} \cdot \vec y - \vec e_{\bar S} \cdot \vec x| \le 4R
+$$ -->
+
+<p>$\blacksquare$</p>
+<p>What if Bob asks $O(n)$ questions? The following theorem states that if $Z$ is bounded by $O(\sqrt n)$, then Bob is able to have a good estimation of $\vec x$.</p>
+<p><strong><em>Theorem 2.</em></strong> If Bob is able to ask $\frac{n \log 2 + \ln n}{\log \frac{3}{2} - \log \lambda }$ queries, and $Z$ is bounded by $\alpha \sqrt n$, then Bob can obtains an estimation $\vec y$, such that<br>$$<br>|\vec x - \vec y| \le (3e \frac{\alpha}{\lambda } )^2 \cdot n<br>$$</p>
+<p><em>Proof:</em> As before, a vector $\vec y$ is said to be consistent with a query result $r(\vec c)$ if<br>$$<br>| r(\vec c) - \vec c \cdot \vec y| \le \alpha \sqrt n.<br>$$</p>
+<p>It suffices to find a sequence of vectors $\vec c_1, \vec c_2, …, \vec c_k$ ($k$ is a value to be determined), such that </p>
+<ol>
+<li>$k = O(n)$,</li>
+<li>For any $\vec y$ with $|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n$, there exists at least one $\vec c_i$, such that $\vec y$ is not consistent with $r(\vec c_i)$, with high probability.</li>
+</ol>
+<p>If Bob can find a sequence of query vectors with the specified properties, he can rule out any $\vec y$ such that $|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n$. Note that not every vector in ${0, 1}^n$ will be ruled out. At least $\vec x$ will remain. Bob can output any $\vec y$ that is not ruled out as his guess of $\vec x$. </p>
+<p>It turns out that fining $\vec c_i$’s is simple: each $\vec c_i$ is sampled independently and uniformly at random from ${0, 1}^n$. It remains to prove that any $\vec y$ with $|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n$ will be ruled out with high probability. </p>
+<p>For a fix $i$, consider the probability of<br>$$<br>\Pr[ | r(\vec c_i) - \vec c_i \cdot \vec y| &gt; \alpha \sqrt n ] = \Pr[ |\vec c_i \cdot (\vec x - \vec y) | &gt; \alpha \sqrt n ].<br>$$</p>
+<p>Lower bounding this probability is equivalent to upper bounding the probability<br>$$<br>\Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ].<br>$$</p>
+<p><em>Lemma.</em> <strong>For a value $l \in \mathbb{N}$</strong>,<br>$$<br>\Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] \le \frac{e }{\sqrt {|\vec x - \vec y| } }<br>$$</p>
+<p>We leave the proof of the lemma at the end of our discussion. It following by union bound that<br>$$<br>\begin{aligned}<br>    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ]<br>        &amp;= \sum_{l = -\alpha \sqrt n}^{\alpha \sqrt n} \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] \<br>        &amp;\le \frac{2 e \cdot \alpha \sqrt n}{\sqrt {|\vec x - \vec y| } }<br>\end{aligned}<br>$$</p>
+<p>Conditioning on that $|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n$, this probability is at most<br>$$<br>\begin{aligned}<br>    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ]<br>        &amp;\le \frac{2}{3} \lambda<br>\end{aligned}<br>$$</p>
+<p>The probability that this holds simultaneously for all $\vec c_i$ is therefore $(\frac{2\lambda }{3})^k$. Applying union bound over all $\vec y$ such that $|\vec x - \vec y| &gt; (3e\alpha)^2 \cdot n$, we have an upper bound of failure probability<br>$$<br>(\frac{2 \lambda }{3})^k 2^n = \exp( k \log \frac{2 \lambda }{3} + n \log 2)<br>$$</p>
+<p>If we take $k = \frac{n \log 2 + \ln n}{\log \frac{3}{2} - \log \lambda }$, this probability becomes $\frac{1}{n}$. </p>
+<p><em>Proof of the lemma:</em> Without lose of generality, suppose that $l \ge 0$. Observe that $\vec x - \vec y$ is a vector in ${-1, 0, 1 }^n$. Denote $v = |\vec x - \vec y|$ be the number of non-zero dimensions in $\vec x - \vec y$. Further, let $v_+$ ($v_-$) be the number of positive (negative) dimensions in $\vec x - \vec y$. Hence, $v = v_+ + v_-$. As $\vec c_i$ is sampled uniformly from ${0, 1}^n$, we have<br>$$<br>\begin{aligned}<br>    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ]<br>    &amp;= \frac{1}{2^{v} } \sum_{j = 0}^{ \min { v_+ - l, v_- } } \binom{v_+}{l + j} \binom{v_-}{j} \<br>    &amp;= \frac{1}{2^{v} } \sum_{j = 0}^{ \min { v_+ - l, v_- } } \binom{v_+}{l + j} \binom{v_-}{v_- - j} \<br>    &amp;\le \frac{1}{2^{v} } \binom{v_+ + v_- }{l + v_-} \<br>    &amp;\le \frac{1}{2^{v} } \binom{v }{ \lfloor v / 2 \rfloor } \<br>\end{aligned}<br>$$</p>
+<p>By Stirling’s approximation,<br>$$<br>v! \le e \sqrt v (\frac{v}{e} )^v  \<br>\lfloor v / 2 \rfloor! \ge \sqrt{2 \pi v} (\frac{ \lfloor v / 2 \rfloor }{e} )^{\lfloor v / 2 \rfloor }  \<br>\lceil v / 2 \rceil ! \ge \sqrt{2 \pi v} ( \frac{ \lceil v / 2 \rceil }{ e } )^{\lceil v / 2 \rceil }   \<br>$$</p>
+<p>Assuming that $\lfloor v / 2\rfloor \ge 1$, we get<br>$$<br>\begin{aligned}<br>    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ]<br>    &amp;\le \frac{1}{2^{v} } \binom{v }{ \lfloor v / 2 \rfloor } \<br>    &amp;\le \frac{1}{2^{v} } \frac{e}{2 \pi} \frac{v^{ v + 0.5 } }{ (v / 2)^{ v + 1 } } (\frac{ v / 2 }{ \lfloor v / 2 \rfloor })^{ \lfloor v / 2 \rfloor + 0.5 } (\frac{ v / 2 }{ \lceil v / 2 \rceil })^{ \lceil v / 2 \rceil + 0.5 } \<br>    &amp;\le \frac{ 1 }{ \sqrt v } ( \frac{ v / 2 }{ \lfloor v / 2 \rfloor })^{ \lfloor v / 2 \rfloor + 0.5 } \<br>    &amp;\le \frac{ 1 }{ \sqrt v } \exp( \frac{ 1 }{ 2 \lfloor v / 2 \rfloor } ( \lfloor v / 2 \rfloor + 0.5 )  ) \<br>    &amp;\le \frac{ e }{ \sqrt v }  \<br>\end{aligned}<br>$$</p>
+<p>$\square$</p>
+<p>The idea behind Theorem 2 is more obvious if we study the scenario where $\vec  x \in {-1, 1}^n$. For any estimation $\vec y \in {-1, 1}^n$, if $\vec c$ is sampled uniformly at random from ${-1, 1}^n$, then<br>$$<br>\mathbb{E}[ \vec c (\vec x - \vec y)] = 0<br>$$</p>
+<p>If $|\vec x - \vec y| = O(\alpha^2 n)$, by anti-concentration property, the probability<br>$$<br>\Pr[ |\vec c (\vec x - \vec y) | \ge \alpha \sqrt n]<br>$$</p>
+<p>equals to some constant. Equivalently, $\Pr[ |\vec c (\vec x - \vec y) | &lt; \alpha \sqrt n]$ is some constant. By sampling $\vec c$ repeatedly, the probability that $|\vec c (\vec x - \vec y) | &lt; \alpha \sqrt n$ holds for all sampled $\vec c$ decreases exponentially. That is why we can rule out any $\vec y$ such that $|\vec x - \vec y| = O(\alpha^2 n)$ with high probability.  </p>
+<!-- First, observe that 
+$$
+\mathbb{E}[ \vec c_i \cdot ( \vec x - \vec y) ] = \mathbb{E}[ \vec c_i \cdot ( \vec x - \vec y) ] \ge 0.
+$$ -->
+
+<!-- We re-write the event of $\vec c_i$ not consistent with $\vec y$ as 
+$$
+\begin{array}{ll}
+\{ | r(\vec c_i) - \vec c_i \cdot \vec y| > \alpha \sqrt n \} \\
+= \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] + \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n \} \\
+= \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | + |\mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n \} \\
+\supset \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n  \} 
+\end{array}
+$$
+
+and 
+$$
+\Pr[ \vec c \cdot (\vec x - \vec y) - \mathbb{E}[ \vec c \cdot ( \vec x - \vec y) ] \ge \sqrt n] ] \le \binom{\alpha n}{ \alpha n / 2} \frac{1}{2^{\alpha n} } 
+$$ -->
+
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p>[1] C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,” Foundations and Trends in Theoretical Computer Science, vol. 9, no. 3–4, pp. 211–407, 2013    </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/10/24/Littlewood%E2%80%93Offord-Problem/" rel="prev" title="Littlewood–Offord Problem">
+      <i class="fa fa-chevron-left"></i> Littlewood–Offord Problem
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/26/Norm/" rel="next" title="Norm">
+      Norm <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">1.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

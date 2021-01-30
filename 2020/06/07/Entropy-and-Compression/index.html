@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="One interpretation of entropy of a random variable is as a measure of how many unbiased, independent random bits in expectation we can extract from the random variable. Another one comes from compress">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Entropy and Compression">
+<meta property="og:url" content="http://example.com/2020/06/07/Entropy-and-Compression/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="One interpretation of entropy of a random variable is as a measure of how many unbiased, independent random bits in expectation we can extract from the random variable. Another one comes from compress">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Encoding.png">
+<meta property="article:published_time" content="2020-06-07T02:24:22.000Z">
+<meta property="article:modified_time" content="2020-07-13T13:57:00.772Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Encoding.png">
+
+<link rel="canonical" href="http://example.com/2020/06/07/Entropy-and-Compression/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Entropy and Compression | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/07/Entropy-and-Compression/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Entropy and Compression
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-07 12:24:22" itemprop="dateCreated datePublished" datetime="2020-06-07T12:24:22+10:00">2020-06-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-13 23:57:00" itemprop="dateModified" datetime="2020-07-13T23:57:00+10:00">2020-07-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>One interpretation of entropy of a random variable is as a measure of how many unbiased, independent random bits in expectation we can extract from the random variable. Another one comes from compression of a sequence.</p>
+<p>Assume that the sequence studied (denoted as $s$) is a binary one. It consists of a concatenation of the outcomes of $n$ independent Bernoulli random variables. Without lose of generality, we assume that each bit comes up $1$ with probability $p \le { 1 / 2 }$. This is one of the simplest models of a sequence. </p>
+<p>The fact that sequence could be a biased one makes it possible to represent it by a new sequence with shorter length in expectation. For example, suppose that $p = \frac{1}{4}$, then for a pair of consecutive bits, it have   </p>
+<ol>
+<li>probability $\frac{1}{16}$ of being $11$,   </li>
+<li>probability $\frac{3}{16}$ of being $01$, </li>
+<li>probability $\frac{3}{16}$ of being $10$,</li>
+<li>probability $\frac{9}{16}$ of being $00$.  </li>
+</ol>
+<p>If we use $111$ to represent $11$, $110$ to represent $01$, $10$ to represent $10$, and $0$ to represent $00$,  then the expected number of representation bits per pair is<br>$$<br>\begin{array}{r}<br>    3 \cdot \frac{1}{16} + 3 \cdot \frac{3}{16} + 2 \cdot  \frac{3}{16} + 1 \cdot  \frac{9}{16}<br>    = \frac{27}{16}<br>    &lt; 2<br>\end{array}<br>$$</p>
+<p>In general, compression is not limited to the way described above. We call the rule with which we compress a string <em>a compression function</em>. </p>
+<h3 id="Compression-Function"><a href="#Compression-Function" class="headerlink" title="Compression Function"></a><strong><em>Compression Function</em></strong></h3><p><em>Let $S = {0, 1}^n$ be the set of binary sequence of length $n$, and $T = { 0, 1}^+$ the set of binary sequence of any positive length. A compression function $h: S \rightarrow T$ is an injective (one-to-one) function from $S$ to $T$.</em>    </p>
+<p>In other words, each $s \in S$ is assigned a unique non-empty sequence (of arbitrary length) by $h$. </p>
+<p>Observe that the size of $S$ is $2^n$. On the other hand, the number of sequences with length less than $n$ is $\sum_{i = 1}^{n - 1} 2^{i} = 2^n - 1 &lt; 2^n$. For any $h$, it is impossible for $h$ to map every $s \in S$ to a sequence with length less than $n$. Under adversarial input, $h$ can not compress at all.</p>
+<p>The hope is that when there is a distribution $\mathfrak{D}$ on $S$, the expected length of the compressed sequences would be small:<br>$$<br>\mathbf{E} [ |h(s)| ] = \sum_{s \in S} p_s \cdot |h(s)|<br>$$</p>
+<p>To illustrate the meaning of entropy, we study a simple case where $\mathfrak{D}$ is the joint distribution of $n$ <em>i.i.d.</em> Bernoulli random variables that come up $1$ with probability $p \le { 1 / 2 }$ (by symmetry, the claim holds for the case of $p &gt; { 1 / 2 }$).</p>
+<p>The following theorem formalizes how good a compression function we can find. </p>
+<h3 id="Entropy-as-Lower-Bound-and-Upper-Bound"><a href="#Entropy-as-Lower-Bound-and-Upper-Bound" class="headerlink" title="Entropy as Lower Bound and Upper Bound"></a><strong><em>Entropy as Lower Bound and Upper Bound</em></strong></h3><p><em>Theorem.</em></p>
+<ol>
+<li>$\forall \delta &gt; 0$, $\exists$ a compression $h$ and integer $N &gt; 0$, s.t., $\forall n \ge N$, it holds that<br>$$<br>\mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)<br>$$</li>
+<li>$\forall \delta &gt; 0$, $\exists$ integer $N &gt; 0$, s.t., $\forall n \ge N$, it holds that for any compression $h$,<br> $$<pre><code> \mathbf&#123;E&#125;[ |h(s)| ] \ge (1 - \delta) n \mathbf&#123;H&#125;(p)
+</code></pre>
+ $$</li>
+</ol>
+<p><em>Intuitively, the entropy $\mathbf{H}(p)$ is the measure of the average number of bits in expectation we need after compression to represent a Bernoulli random variable that comes up $1$ with probability $p$.</em> </p>
+<p><em>The high level idea of the proof is that, with high probability, the number of ones in a $s \in S$ is roughly $np$. There are roughly $2^{n\mathbf{H}(p)}$ such sequences. Therefore, we can use $n \mathbf{H}(p)$ bits to represent each sequence.</em></p>
+<p><strong><em>Proof.</em></strong> The claim is trivially true if $p = { 1 / 2 }$. Otherwise, $p &lt; { 1 / 2 }$. We can pick some $\epsilon &gt; 0$, such that $p + \epsilon &lt; { 1 / 2 }$. Further, if $n$ is large enough,  $np + n\epsilon \le n / 2 - 1$. Hence, we may assume that $\lceil np + n\epsilon \rceil \le n / 2$ . </p>
+<p>Denote $Z$ be the number of ones in the string $s$. By Hoeffding Inequality, it holds that<br>$$<br>\Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)<br>$$</p>
+<p>By the fact that $Z$ takes only integer values, we have<br>$$<br>\Pr[Z \ge \lceil np + n\epsilon \rceil] \le \exp(-2 n \epsilon^2 )<br>$$</p>
+<p>We use the first bit output of $h$ as a flag. For a string $s$ with $Z \ge \lceil np + n\epsilon \rceil$, we set the first bit to $0$ and then output the same sequence, i.e., $h(s) = 0s$. In such case we do not compress the string at all and use $n + 1$ bits to represent it. </p>
+<p>We set the first bit output to $1$ if $Z &lt; \lceil np + n \epsilon \rceil \le n / 2$.  The number of such sequences is bounded by<br>$$<br>\sum_{k = 0}^{\lceil np + n\epsilon \rceil - 1} \binom{n}{k} \le  \frac{n}{2} \binom{n}{\lceil np + n\epsilon \rceil - 1 } \le \frac{n}{2} 2^{ n \cdot \mathbf{H} \left( \frac{ \lceil np + n\epsilon \rceil - 1 }{n} \right) } \le \frac{n}{2} 2^{ n \mathbf{H} \left( p + \epsilon  \right) }<br>$$</p>
+<p>The first inequality holds because $\binom{n}{k}$ increases for $k &lt; n / 2$ and that the summation is over $\lceil np + n \epsilon \rceil \le n / 2$ terms. The last inequality holds since $(\lceil np + n\epsilon \rceil - 1) / n \le ( np + n\epsilon ) / n = p + \epsilon &lt; 1 / 2$ and $\mathbf{H}( \cdot )$ is a increasing function in the range $[0, 1/2]$. </p>
+<p>We compress these sequences by representing each of them with a unique sequence of at most<br>$$<br>\begin{array}{rl}<br>    \log \left[ (n / 2) \cdot  2^{ n \cdot\mathbf{H} \left( p + \epsilon  \right) } \right]<br>    = n \cdot\mathbf{H} \left( p + \epsilon  \right)  + \log n -1<br>\end{array}<br>$$</p>
+<p>bits. Considering the leading flag bit 1 (to indicate the sequence is a compressed one), we output at most $n \mathbf{H} \left( p + \epsilon  \right)  + \log n$ bits for sequences with $Z &lt; \lceil np + n \epsilon \rceil$. This can be written as $\left[ \mathbf{H} \left( p + \epsilon  \right)  + (1 / n) \cdot (\log n - 1) \right] n$ bits and is smaller than<br>$$<br>(1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n<br>$$</p>
+<p>is $\epsilon$ is smaller enough and $n$ is large enough.</p>
+<p>We are almost done with the proof. It is left to consider sequences with $Z \ge \lceil np + n \epsilon \rceil$. For those sequence, we don’t compress them and and set the leading flag bit to 0. The outputs for those sequences consist of at most $1 + n$ bits. However, by Hoeffding inequality, such sequences do not appear frequently and the expected output length can be made arbitrary small.</p>
+<p>Specifically, $\forall \delta &gt; 0$, we can find large enough $N$, such that $\forall n &gt; N$, it holds  </p>
+<p>$$<br>(n + 1 ) \cdot \exp(-2 n \epsilon^2 ) \le n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)<br>$$</p>
+<p>Then, in expectation, the bits outputted by $h$ is at most<br>$$<br>\begin{aligned}<br>    &amp;(n + 1) \cdot \exp(-2 n \epsilon^2 ) + [n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ] \cdot [ 1 - \exp(-2 n \epsilon^2 ) ] \<br>    \le&amp; n \cdot (\delta / 2)  \cdot  \mathbf{H}(p) + [ n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ]\<br>    \le&amp; n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)  +  (1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n\<br>    \le&amp; \left(  1 + \delta \right) \cdot \mathbf{H}(p) \cdot n<br>\end{aligned}<br>$$</p>
+<p>To prove the lower bound, first we need the following lemma.</p>
+<p><strong><em>Lemma.</em></strong> <em>for $s_1, s_2 \in S$, if $s_1$ has more ones than $s_2$, i.e., $\Pr(s_1) \ge \Pr(s_2)$, then the $h$ that minimizes the expected output length $\mathbf{E}[ |h(s)| ]$ should assign $s_1$ a sequence at most as long as $s_2$, i.e., $|h(s_1)| \le |h(s_2)|$.</em> </p>
+<p><em>Proof</em>. Otherwise, if we swap the output sequences of $h(s_1)$ and $h(s_2)$, we lower value of  $\mathbf{E}[ |h(s)| ]$.  </p>
+<p>$\square$</p>
+<p>Further, consider the number of $s \in S$ with $\lfloor np - n \epsilon \rfloor$ ones,<br>$$<br>\begin{aligned}<br>\binom{n}{\lfloor np - n\epsilon \rfloor }<br>    &amp;\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H} \left( { \lfloor np - n\epsilon \rfloor } / { n} \right) } \<br>    &amp;\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H}( { (np - n\epsilon - 1) } / {n} )} \<br>    &amp;\ge 2^{ \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) -  \log (n + 1)  \rfloor }<br>\end{aligned}<br>$$</p>
+<p>Let $k = \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) - \log (n + 1)  \rfloor$. For large enough $n$, it holds that<br>$$<br>k \ge (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)<br>$$</p>
+<p>Further, since<br>$$<br>\sum_{i = 1}^{  k - 1  } 2^i \le \sum_{i = 0}^{  k - 1  } 2^i = 2^{  k } - 1 &lt; 2^k,<br>$$</p>
+<p>there are strictly less than $2^k$ distinct binary sequences with length at most $k - 1$. </p>
+<p>Therefore, for the set of $s \in S$ with $\lfloor np - n\epsilon \rfloor$ ones, at least one of them has output length at least $k$. </p>
+<p>By the previous lemma, all sequences with more than $\lfloor np - n\epsilon \rfloor$ ones has length at least $k$. </p>
+<p>Denote $Z$ be the number of ones in the string $s$. By Hoeffding Inequality, it holds that<br>$$<br>\Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)<br>$$</p>
+<p>By the fact that $Z$ takes only integer values, we have<br>$$<br>\Pr[Z \le \lfloor np - n\epsilon \rfloor] \le \exp(-2 n \epsilon^2 )<br>$$</p>
+<p>The expected output length of the sequences with more than $\lfloor np - n\epsilon \rfloor$ ones is at least<br>$$<br>\begin{aligned}<br>    &amp;[ 1 - \exp(-2n\epsilon^2) ] \cdot k \<br>    =&amp;[ 1 - \exp(-2n\epsilon^2) ] \cdot  (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)<br>\end{aligned}<br>$$</p>
+<p>This is at least $(1 - \delta) \cdot n \cdot \mathbf{H}(p)$ when $n$ is large enough. </p>
+<p>$\blacksquare$</p>
+<h3 id="Huffman-Code"><a href="#Huffman-Code" class="headerlink" title="Huffman Code"></a><strong><em>Huffman Code</em></strong></h3><p>In this section, we show that the upper bound can be achieved by Huffman code. </p>
+<blockquote>
+<p><em>$\forall \delta &gt; 0$, $\exists$ a compression $h$ and integer $N &gt; 0$, s.t., $\forall n \ge N$, it holds that</em><br> $$<br>   \mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)<br>   $$</p>
+</blockquote>
+<p>We begin with an important property of Huffman Code. Suppose that we have an alphabet $\mathbb{U}$ such that probability associated with each element in $\mathbb{U}$ is $2^{-l}$ for some integer $l$. Then $\exists h$, such that<br>$$<br>   \mathbf{E}_{X \in \mathbb{U} } [ |h(X)| ] =  n \mathbf{H}(X)<br>$$</p>
+<p>For example, if $\mathbb{U} = {0, 1, 2, 3 }$ and the distribution $p = { 0.5, 0.25, 0.125, 0.125 }$, then we can have the following encoding </p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Encoding.png"></p>
+<p>The expected coding length is<br>$$<br>0.5 \cdot 1 + 0.25 \cdot 2 + 2 \cdot 0.125 \cdot 3 = 1.75<br>$$</p>
+<p>which is exactly the entropy of the random variable. </p>
+<p>In general, if we have a random variable $X$, we can round down its probability to the nearest integer negative power of $2$. The expected code length is given by<br>$$<br>\sum_{i } p_i \left\lceil \log \frac{1}{p_i} \right\rceil \le \mathbf{H}(p) + 1<br>$$</p>
+<p>Intuitively, the $\left\lceil \log \frac{1}{p_i} \right\rceil$ has enough slot to accommodate all elements with probabilities $p_i$’s. </p>
+<p>In particular, we view ${0, 1}^n$ as a large alphabet $\mathbf{\Sigma }$. The alphabet has entropy $n \cdot \mathbf{H}(p)$. We can have a encoding such that the expected output length is at most $n \cdot \mathbf{H}(p) + 1$. For large enough $n$, this is at most $(1 + \delta) n \cdot \mathbf{H}(p)$. </p>
+<h3 id="Relative-Entropy-and-Mutual-Information"><a href="#Relative-Entropy-and-Mutual-Information" class="headerlink" title="Relative Entropy and Mutual Information"></a><strong><em>Relative Entropy and Mutual Information</em></strong></h3><h4 id="Relative-Entropy"><a href="#Relative-Entropy" class="headerlink" title="Relative Entropy"></a>Relative Entropy</h4><p>Given a distribution $p$, we mistaken it as a distribution $q$, the expected coding length is roughly<br>$$<br>\sum_i p_i \log \frac{1}{q_i}<br>$$</p>
+<p>The discrepancy between the optimal coding is given by<br>$$<br>D(p || q) = \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i} = \sum_i p_i \log \frac{p_i}{q_i}<br>$$</p>
+<p>By definition, we know that this gap is always non-negative. We can prove it rigorously algebraically. We show two different approaches here. </p>
+<ol>
+<li>By that $f(x) = x \log x$ is convex for $x \ge 0$, we have<br>$$<br>\begin{aligned}<pre><code>D(p || q) &amp;= \sum_i p_i \log \frac&#123;p_i&#125;&#123;q_i&#125; \\
+&amp;= \sum_i q_i \cdot \frac&#123;p_i&#125;&#123;q_i&#125; \log \frac&#123;p_i&#125;&#123;q_i&#125; \\
+&amp;\ge \left( \sum_i q_i \cdot \frac&#123;p_i&#125;&#123;q_i&#125; \right) \log \left( \sum_i q_i \cdot \frac&#123;p_i&#125;&#123;q_i&#125; \right) \\
+&amp;= 0
+</code></pre>
+\end{aligned}<br>$$</li>
+<li>By that $f(x) = -\log x$ is convex (for $x \ge 0$ ), we have<br>$$<br>\begin{aligned}<pre><code>D(p || q) &amp;= \sum_i - p_i \log \frac&#123;q_i&#125;&#123;p_i&#125; \\
+&amp;\ge  -\log \left( \sum_i p_i \cdot \frac&#123;q_i&#125;&#123;p_i&#125; \right) \\
+&amp;= 0
+</code></pre>
+\end{aligned}<br>$$</li>
+</ol>
+<h4 id="Mutual-Information"><a href="#Mutual-Information" class="headerlink" title="Mutual Information"></a>Mutual Information</h4><p>Given two random variable, the mutual information between them is defined as<br>$$<br>I(X; Y) = I(Y; X) = \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(x, y)}{p(x) p(y) } \right]<br>$$</p>
+<p>If we know $p(x,y)$ we use in expectation $\mathbb{E}_{p(x, y) } \left[ \log \frac{1} { p(x, y)} \right]$ to describe them. If we know only $p(x)$ and $p(y)$, the mutual information measured the bits we waste.</p>
+<p>$$<br>\begin{aligned}<br>    &amp;\sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } \<br>    =&amp;  \sum p(x, y) \log \frac{ 1 }{p(x)} \<br>    &amp;+  \sum p(x, y) \log \frac{ 1 }{p(y)} \<br>    &amp;-  \sum p(x, y) \log \frac{ 1 }{p(x, y)} \<br>    =&amp; \mathbf{H} ( X ) + \mathbf{H} ( Y ) - \mathbf{H} ( X, Y ) \<br>    =&amp;\sum p(x, y) \log \frac{ p(x | y)}{p(x)  } \<br>    =&amp; \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y) \<br>    =&amp;\sum p(x, y) \log \frac{ p(x | y)}{ p(x) }  \<br>    =&amp; \mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y) \<br>\end{aligned}<br>$$</p>
+<p><strong><em>Lemma.</em></strong><br>$$<br>\mathbf{I}(X; Y) \ge 0<br>$$</p>
+<p><strong><em>Proof.</em></strong><br>$$<br>\mathbf{I}(X; Y) = D( p(x, y) \mid p(x) p(y) ) \ge 0<br>$$</p>
+<p>Or<br>$$<br>\begin{aligned}<br>    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) }<br>    &amp;= -\sum p(x, y) \log \frac{p(x) p(y) }{ p(x, y)} \<br>    &amp;\ge - \log \sum p(x, y) \frac{p(x) p(y) }{ p(x, y)} \<br>    &amp;=0<br>\end{aligned}<br>$$</p>
+<p>$\blacksquare$</p>
+<p><strong><em>Corollary</em></strong><br>$$<br>\mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y) = \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y) \ge 0<br>$$</p>
+<p>$\blacksquare$</p>
+<p><strong><em>Definition</em></strong> Conditional Relative Entropy<br>$$<br>\begin{aligned}<br>    \mathbf{D}( p(y \mid x) || q(y \mid x) ) &amp;\doteq  \mathbb{E}<em>{p(x, y) } \left[ \log \frac{ p(Y \mid X) }{ q(Y \mid X) }  \right]\<br>    &amp;=\sum</em>{x}  \sum_{ y } p(y \mid x) \log \frac{ p(y \mid x) }{ q(y \mid x) }<br>\end{aligned}<br>$$</p>
+<p><strong><em>Lemma.</em></strong> Relative entropy $\mathbf{D}( p || q )$ is convex in the pair $(p, q)$: if there are two distribution pairs $(p_1, q_1)$ and $(p_2, q_2)$, then .<br>$$<br>\mathbf{D}( \lambda p_1 + (1 - \lambda) p_2 || \lambda q_1 + (1 - \lambda_1) q_2 ) \le \lambda \mathbf{D}( p_1 ||  q_1 ) + (1 - \lambda) \mathbf{D}( p_2 ||  q_2 )<br>$$</p>
+<p><strong><em>Proof.</em></strong><br>For any fix value $x$, it holds that<br>$$<br>\begin{aligned}<br>    &amp;[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \frac{ \lambda p_1(x) + (1 - \lambda) p_2(x) }{ \lambda q_1(x) + (1 - \lambda) q_2(x) } \<br>    &amp;=-[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \frac { \lambda q_1(x) + (1 - \lambda) q_2(x) } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \<br>    &amp;= -[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \left( \frac { \lambda p_1(x)  } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \frac { \lambda q_1(x) } { \lambda p_1(x)  } + \frac { (1 - \lambda) p_2(x)  } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \frac { (1 - \lambda) q_2(x) } { (1 - \lambda) p_2(x)  } \right) \<br>    &amp;\le -\lambda p_1(x) \log   \frac { \lambda q_1(x) } { \lambda p_1(x)  } - (1 - \lambda) p_2(x) \log \frac { (1 - \lambda) q_2(x) } { (1 - \lambda) p_2(x)  }<br>\end{aligned}<br>$$</p>
+<p>$\blacksquare$</p>
+<h3 id="Chain-Rules"><a href="#Chain-Rules" class="headerlink" title="Chain Rules"></a><strong><em>Chain Rules</em></strong></h3><p>Let $X_1, X_2, …, X_n$ be random variables whose density function is $p(x_1, x_2, …, x_n)$, then   </p>
+<ol>
+<li><p>$\mathbf{H}(X_1, X_2, …, X_n) = \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, …, X_{i - 1})$<br> <strong><em>Proof.</em></strong><br> $$<br> \begin{aligned}</p>
+<pre><code> \mathbf&#123;H&#125;(X_1, X_2, ..., X_n) 
+     &amp;= \sum_&#123;x_1, x_2, ..., x_n&#125; p(x_1, x_2, ..., x_n)  \log \frac&#123;1&#125;&#123;\prod_&#123;i = 1&#125;^n p(x_i \mid x_1, ..., x_&#123;i - 1&#125;)  &#125;  \\
+     &amp;= \sum_&#123;x_1, x_2, ..., x_n&#125; p(x_1, x_2, ..., x_n) \sum_&#123;i = 1&#125;^n \log \frac&#123;1&#125;&#123; p(x_i \mid x_1, ..., x_&#123;i - 1&#125;)  &#125;  \\
+     &amp;=\sum_&#123;i = 1&#125;^n \mathbf&#123;H&#125;(X_i \mid X_1, ..., X_&#123;i - 1&#125;) \\
+</code></pre>
+<p> \end{aligned}<br> $$  </p>
+<p> <strong><em>Corollary</em></strong><br> $$<br> \mathbf{H} ( X_1, X_2, …, X_n) = \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, …, X_{i - 1}) \le \sum_{i = 1}^n \mathbf{H}(X_i)<br> $$</p>
+<p> $\blacksquare$</p>
+</li>
+<li><p>$\mathbf{I}(X_1, X_2, …, X_n; Y) = \sum_{i = 1}^n \mathbf{I}(X_i ; Y\mid X_1, …, X_{i - 1})$<br> <strong><em>Proof.</em></strong><br> $$<br> \begin{aligned}</p>
+<pre><code> \mathbf&#123;I&#125;(X_1, X_2, ..., X_n; Y)
+ &amp;=  \mathbf&#123;H&#125;(X_1, X_2, ..., X_n) -  \mathbf&#123;H&#125;(X_1, X_2, ..., X_n \mid Y) \\
+ &amp;= \sum_&#123;i = 1&#125;^n \mathbf&#123;H&#125;(X_i \mid X_1, ..., X_&#123;i - 1&#125;)  - \sum_&#123;i = 1&#125;^n \mathbf&#123;H&#125;(X_i \mid X_1, ..., X_&#123;i - 1&#125;, Y) \\
+ &amp;= \sum_&#123;i = 1&#125;^n \mathbf&#123;I&#125;(X_i ; Y\mid X_1, ..., X_&#123;i - 1&#125;) \\
+</code></pre>
+<p> \end{aligned}<br> $$  </p>
+</li>
+<li><p>$\mathbf{D}( p(x, y) || q(x, y) ) = \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) )$<br><strong><em>Proof.</em></strong><br>$$<br> \begin{aligned}</p>
+<pre><code> \mathbf&#123;D&#125;( p(x, y) || q(x, y) ) 
+ &amp;= \sum_&#123;x, y&#125; p(x, y) \log \frac&#123; p(x) p(y \mid x) &#125;&#123;q(x) q (y \mid x) &#125;
+ \\
+ &amp;= \sum_&#123;x, y&#125; p(x, y) \log \frac&#123; p(x)  &#125;&#123;q(x) &#125; + \sum_&#123;x, y&#125; p(x, y) \log \frac&#123;  p(y \mid x) &#125;&#123;  q (y \mid x) &#125;
+ \\
+ &amp;= \mathbf&#123;D&#125;( p(x) || q(x) ) + \mathbf&#123;D&#125;( p(y \mid x) || q(y \mid x) )
+</code></pre>
+<p> \end{aligned}<br> $$</p>
+</li>
+</ol>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference."></a>Reference.</h3><p>[1]M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/01/Entropy-and-Random-Bits/" rel="prev" title="Entropy and Random Bits">
+      <i class="fa fa-chevron-left"></i> Entropy and Random Bits
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/18/Entropy-and-Message-Transmission/" rel="next" title="Entropy and Message Transmission">
+      Entropy and Message Transmission <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Compression-Function"><span class="nav-number">1.</span> <span class="nav-text">Compression Function</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Entropy-as-Lower-Bound-and-Upper-Bound"><span class="nav-number">2.</span> <span class="nav-text">Entropy as Lower Bound and Upper Bound</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Huffman-Code"><span class="nav-number">3.</span> <span class="nav-text">Huffman Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Relative-Entropy-and-Mutual-Information"><span class="nav-number">4.</span> <span class="nav-text">Relative Entropy and Mutual Information</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Relative-Entropy"><span class="nav-number">4.1.</span> <span class="nav-text">Relative Entropy</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mutual-Information"><span class="nav-number">4.2.</span> <span class="nav-text">Mutual Information</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chain-Rules"><span class="nav-number">5.</span> <span class="nav-text">Chain Rules</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference.</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

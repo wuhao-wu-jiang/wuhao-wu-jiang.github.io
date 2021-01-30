@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="EntropyThe entropy of a random variable $X$ is defined as$$\mathbf{H}[X] &#x3D; \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right]$$ Here we adopt the convention that $0 \log 0 &#x3D; 0$, as $\lim_{x \rightarro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Entropy and Random Bits">
+<meta property="og:url" content="http://example.com/2020/06/01/Entropy-and-Random-Bits/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="EntropyThe entropy of a random variable $X$ is defined as$$\mathbf{H}[X] &#x3D; \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right]$$ Here we adopt the convention that $0 \log 0 &#x3D; 0$, as $\lim_{x \rightarro">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Entropy.png">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.5.png">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.3.png">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.1.png">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=1000_P=0.1.png">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/ExtractingRandomBits.png">
+<meta property="article:published_time" content="2020-05-31T14:16:09.000Z">
+<meta property="article:modified_time" content="2020-07-13T14:15:12.535Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Entropy.png">
+
+<link rel="canonical" href="http://example.com/2020/06/01/Entropy-and-Random-Bits/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Entropy and Random Bits | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/01/Entropy-and-Random-Bits/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Entropy and Random Bits
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-01 00:16:09" itemprop="dateCreated datePublished" datetime="2020-06-01T00:16:09+10:00">2020-06-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-14 00:15:12" itemprop="dateModified" datetime="2020-07-14T00:15:12+10:00">2020-07-14</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h4 id="Entropy"><a href="#Entropy" class="headerlink" title="Entropy"></a>Entropy</h4><p>The entropy of a random variable $X$ is defined as<br>$$<br>\mathbf{H}[X] = \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right]<br>$$</p>
+<p>Here we adopt the convention that $0 \log 0 = 0$, as $\lim_{x \rightarrow 0^+} x \log x = \lim_{x \rightarrow \infty} \frac{1 }{ x } \log \frac{1 }{ x } = 0$. </p>
+<p>The entropy is oblivious to the specific values $X$ takes and is only sensitive to the probabilities with which $X$ takes these values.</p>
+<blockquote>
+<p>Example.  </p>
+<ol>
+<li>$X_1 = \begin{cases}<br>e^{1000}, \text{with probability 0.5} \ 0, \text{with probability 0.5}<br>\end{cases}$      </li>
+<li>$X_2 = \begin{cases}<br>1, \text{with probability 0.5} \ -1, \text{with probability 0.5}<br>\end{cases}$  </li>
+</ol>
+</blockquote>
+<p>By definition, both<br>$$<br>\mathbf{H}[X_1] = \mathbf{H}[X_2] = 0.5 \log_2 2 + 0.5 \log_2 2 = 1<br>$$</p>
+<p>We also notice that the entropy of a random variable may not reflect the whether a random variable is concentrated at its mean or not. </p>
+<p>The binary entropy function $\mathbf{H}(p)$ of a Bernoulli random variable $X$ that takes value $1$ with probability $p$ is<br>$$<br>\begin{aligned}<br>    \mathbf{H}(p) = &amp;p \log_2 \frac{1}{p} + (1 - p) \log_2 \frac{1}{1 - p} \<br>    = &amp;-p \log_2 p - (1 - p) \log_2 (1 - p)<br>\end{aligned}<br>$$</p>
+<p>By concavity of $\log_2(\cdot )$, we know that<br>$$<br>\begin{aligned}<br>    \mathbf{H}(p)<br>    &amp;\le \log_2 \left( p \frac{1}{p} + (1 - p) \frac{1}{1 - p} \right)<br>    &amp;= 1<br>\end{aligned}<br>$$</p>
+<p>The equality holds when $p = 0.5$. </p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Entropy.png"></p>
+<p>Some interesting values:</p>
+<ul>
+<li>$p = 0.5$, $\mathbf{H}(p) = 1$</li>
+<li>$p = 0.2/0.8$, $\mathbf{H}(p) \approx 0.7$</li>
+<li>$p = 0.1/0.9$, $\mathbf{H}(p) \approx 0.5$</li>
+</ul>
+<p><strong><em>Lemma.</em></strong> Given a discrete range $\mathcal{U}$, the entropy of a random variable $X$ defined on $\mathcal{U}$ is maximized when $X$ has uniform distribution, i.e.,<br>$$<br>\mathbf{H} (X) \le \log |\mathcal{U}|<br>$$</p>
+<p><strong><em>Proof.</em></strong><br>$$<br>\begin{aligned}<br>    \mathbf{H} (X)<br>        &amp;= \sum_{x} p(x) \log \frac{1}{p(x) } \<br>        &amp;\le  \log \sum_{x} p(x) \frac{1}{p(x) } \<br>        &amp;= \log |\mathcal{U}|<br>\end{aligned}<br>$$</p>
+<p>The inequality holds with equality only when $p(x) = 1/ |\mathcal{U}|$. </p>
+<p>$\blacksquare$</p>
+<p><strong><em>Lemma.</em></strong> Let $p(x)$ and $q(x)$ be two distributions and $\lambda \in [0, 1]$, then<br>$$<br>\mathbf{H} (\lambda p(x) + (1 - \lambda) q(x) ) \ge \lambda \mathbf{H}(p(x) ) + (1 - \lambda) \mathbf{H} (q(x) )<br>$$</p>
+<p><strong><em>Proof.</em></strong><br>$$<br>\begin{aligned}<br>    \lambda \mathbf{H}(p(x) ) + (1 - \lambda) \mathbf{H} (q(x) )<br>        &amp;= \sum_{x} \left( \lambda p(x) \log \frac{1}{p(x)} + (1 - \lambda) q(x) \log \frac{1}{q(x) }  \right) \<br>        &amp;= (  \lambda p(x) + (1 - \lambda) q(x) )\sum_{x} \left( \frac{ \lambda p(x) }{  \lambda p(x) + (1 - \lambda) q(x) } \log \frac{1}{p(x)} + \frac{(1 - \lambda) q(x) }{ \lambda p(x) + (1 - \lambda) q(x) } \log \frac{1}{q(x) }  \right) \<br>        &amp;\le \sum_{x} ( \lambda p(x) + (1 - \lambda) q(x) ) \log \frac{1}{ \lambda p(x) + (1 - \lambda) q(x) } \<br>        &amp;= \mathbf{H} ( \lambda p(x) + (1 - \lambda) q(x) )<br>\end{aligned}<br>$$</p>
+<p>$\blacksquare$</p>
+<p><strong><em>Lemma.</em></strong> For two independent random variables $X$ and $Y$, we have<br>$$<br>\mathbb{E} \left[ \log_2 \frac{1}{\Pr[X + Y] } \right] = \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] + \mathbb{E} \left[ \log_2 \frac{1}{\Pr[Y] } \right]<br>$$</p>
+<p>i.e.,<br>$$<br>\mathbf{H}[X + Y] = \mathbf{H}[X] + \mathbf{H}[Y]<br>$$</p>
+<p><strong><em>Proof.</em></strong> We prove it for the case of discrete random variables.<br>$$<br>\begin{array}{rrl}<br>    &amp;\mathbb{E} \left[ \log_2 \frac{1}{\Pr[X + Y] }  \right]<br>    &amp;= \sum_{x, y} p(x, y) \log_2 \frac{1}{p(x, y)} \<br>    &amp;&amp;= \sum_{x, y} p(x) p(y) \left( \log_2 \frac{1}{p(x)} + \log_2 \frac{1}{p(y) } \right) \<br>    &amp;&amp;= \sum_{x} p(x) \sum_{y} p(y) \log_2 \frac{1}{p(x)} + \sum_{y} p(y) \sum_{x} p(x) \log_2 \frac{1}{p(y) } \<br>    &amp;&amp;= \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] + \mathbb{E} \left[ \log_2 \frac{1}{\Pr[Y] } \right]<br>\end{array}<br>$$<br>$\blacksquare$</p>
+<p><strong><em>Definition.</em></strong> Given random variable $X$ and $Y$, the joint entropy $\mathbf{H}(X, Y)$ with a distribution $p(x, y)$ is defined as<br>   $$<br>    \mathbf{H}(X,Y) = \mathbb{E}\left[ \log \frac{1}{p(x, y)} \right]<br>   $$<br>   When $X$ and $Y$ are discrete random variables, it is equivalent to<br>   $$<br>    \mathbf{H}(X,Y) = \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(x, y) }.<br>   $$</p>
+<p><strong><em>Definition.</em></strong> The conditional entropy $\mathbf{H}(Y \mid X)$ with a distribution $p(x, y)$ is defined as<br>   $$<br>   \begin{aligned}<br>       \mathbf{H}(Y \mid X)<br>        &amp;= \sum_{x \in \mathcal{X} } p(x) \cdot \mathbf{H} (Y \mid X = x) \<br>        &amp;= \sum_{x \in \mathcal{X} } p(x) \cdot \sum_{y \in \mathcal{Y} } p(y \mid x) \log \frac{1}{p(y \mid x) } \<br>        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) } \<br>        &amp;= \mathbb{E} \left[  \log \frac{1}{p(y \mid x) } \right]<br>   \end{aligned}<br>   $$</p>
+<ul>
+<li><strong>Remark.</strong> <em>Conditioned on $X = x$, $Y$ is a random variable and therefore we can define its Entropy as $\mathbf{H}(Y \mid X = x)$. The conditional entropy $\mathbf{H}(Y \mid X)$ is the average of the $\mathbf{H}(Y \mid X = x)$ over the distribution of $X$. Both $\mathbf{H}(Y \mid X)$ and $\mathbf{H}(Y \mid X = x)$ represent a value. This is different from the conditional expectation: $\mathbb{E}[Y \mid X]$ is a random variable and $\mathbb{E}[Y \mid X = x]$ is a value.</em> </li>
+</ul>
+<p><strong><em>Chain Rule.</em></strong> For random variable $X$ and $Y$, it holds that<br>   $$<br>   \begin{aligned}<br>       \mathbf{H}(X, Y)<br>        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(x, y) } \<br>        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) p(x) } \<br>        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) } + \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{ p(x) } \<br>        &amp;= \mathbf{H}(Y \mid X) + \mathbf{H}(X)<br>   \end{aligned}<br>   $$</p>
+<p><em>Corollary of</em> <strong><em>Chain Rule.</em></strong><br>   $$<br>   \mathbf{H}(X) + \mathbf{H}(Y \mid X) =<br>   \mathbf{H}(Y) + \mathbf{H}(X \mid Y)<br>   $$</p>
+<p>   Or<br>   $$<br>   \mathbf{H}(X) - \mathbf{H}(X \mid Y)=<br>   \mathbf{H}(Y) - \mathbf{H}(Y \mid X)<br>   $$</p>
+<h3 id="Binomial-Distribution"><a href="#Binomial-Distribution" class="headerlink" title="Binomial Distribution"></a>Binomial Distribution</h3><p>We study the relationship of binomial distribution $B(n, p)$ and entropy. As a rule of thumb, for reasonably large $n$ (say, $n \ge 100$) and moderate size of $p$ (e.g., $0.1 \le p \le 0.9$), the probability is concentrated on the interval $[np - \sqrt n, np + \sqrt n]$. </p>
+<p>$N = 100, p = 0.5$.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.5.png"></p>
+<p>$N = 100, p = 0.3$.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.3.png"></p>
+<p>$N = 100, p = 0.1$.<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.1.png"></p>
+<p>$N = 1000, p = 0.1$. Note that<br>$$<br>\Pr[ 100 - \sqrt{1000} \le X \le 100 + \sqrt{1000} ] \approx 0.9993<br>$$<br><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=1000_P=0.1.png"></p>
+<p>*<strong>Lemma</strong>.* For $n\in \mathbf{Z}^+$, $k \in [n]$, it holds that<br>$$<br>\binom{n}{k} \ge \frac{1}{n + 1} 2^{n \mathbf{H}(\frac{k}{n} ) }<br>$$</p>
+<p>*<strong>Proof</strong>.* Define $q = \frac{k}{n}$. Then<br>$$<br>\begin{aligned}<br>    (q + (1 - q))^n &amp;= \sum_{i = 0}^n \binom{n}{i} q^i (1 - q)^{n - i}<br>\end{aligned}<br>$$</p>
+<p>The summation consists of $(n + 1)$ terms. We claim that<br>$$<br>\binom{n}{k} q^k (1 - q)^{n - k}<br>$$</p>
+<p>is the largest one. For $i \in [n]$,<br>$$<br>\frac{ \binom{n}{i + 1} q^{i + 1} (1 - q)^{n - i - 1} }{ \binom{n}{i } q^{i} (1 - q)^{n - i } } = \frac{n - i }{i + 1} \frac{ q}{1 - q}<br>$$</p>
+<p>The ratio is at least $1$ when $\frac{n - i}{i + 1} \ge \frac{1 -  q}{ q }$. We see that when $i = nq - 1 = k - 1$, it holds that<br>$$<br>\frac{n - i}{i + 1} = \frac{n - nq + 1}{ n q} \ge \frac{1 -  q}{ q }<br>$$<br>and when $i = k$,<br>$$<br>\frac{n - i}{i + 1} = \frac{n - nq}{ n q + 1} &lt; \frac{1 -  q}{ q }<br>$$</p>
+<p>Therefore,<br>$$<br>\begin{aligned}<br>    \binom{n}{k} q^k (1 - q)^{n - k}<br>        &amp;= \binom{n}{k} 2^{k \log_2 q} 2^{ (n - k )\log_2 (1 - q)} \<br>        &amp;= \binom{n}{k} 2^{ n [ q \log_2 q +  (1 - q )\log_2 (1 - q) ]} \<br>        &amp;\ge \frac{1}{n + 1}<br>\end{aligned}<br>$$</p>
+<p>$\blacksquare$</p>
+<h4 id="Extracting-Random-Bits"><a href="#Extracting-Random-Bits" class="headerlink" title="Extracting Random Bits"></a>Extracting Random Bits</h4><p>Consider a uniform random variable $X$ at $[0, m - 1]$. By definition we know that<br>$$<br>\mathbf{H}[X] = \sum_{i = 0}^{m - 1} \frac{1}{m} \log_2 \frac{1}{\frac{1}{m} } = \log_2 m<br>$$</p>
+<p>Given $X$ as an input, the following algorithm outputs a binary string $s$, such that each bit of $s$ can be interpreted as the outcome of independently Bernoulli random variables with probability $0.5$. </p>
+<p>On the high level, we divide $m$ into intervals of powers of 2. When $X$ falls into an interval, we return a binary number that is within the range of that interval. Specifically, we rewrite<br>$$<br>m = 2^{d_k} + 2^{d_{k - 1} } + … + 2^{d_1}<br>$$</p>
+<p>where $\lfloor \mathbf{H}[X] \rfloor = \lfloor \log_2 m \rfloor = d_k &gt; d_{k - 1} &gt; … &gt; d_1 \ge 0$ are the indexes of non-zero bits in the binary representation of $m$. The extraction is as follows:</p>
+<blockquote>
+<p><strong><em>Algorithm 1.</em></strong>  </p>
+<ol>
+<li>for $i \leftarrow k$ <em>down-to</em> $1$ <em>do</em>:  </li>
+<li>$\quad$ <em>if</em> $X &lt; 2^{d_i}$ <em>then</em>:  </li>
+<li>$\quad$ $\quad$ <em>return a $d_i$-bit binary representation of</em> $X$;  </li>
+<li>$\quad$ <em>else:</em>  </li>
+<li>$\quad$ $\quad$ $X \leftarrow X - 2^{d_i}$;  </li>
+</ol>
+</blockquote>
+<p><strong>Example ($m = 13$).</strong><br><em>It is interesting to note that when $X = 12$, our proposed extraction method return no random bit, as $0 &lt; 2^0$. In this case our proposed method has wasted some randomness.</em></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/ExtractingRandomBits.png"></p>
+<p><em>Question to ponder: Come up with some method that uses $n$ i.i.d. $X$’s to extract binary string with expected length close to $n \mathbf{H}[X]$.</em> </p>
+<p>Let $s$ be the binary string returned by Algorithm 1. </p>
+<p><strong><em>Theorem 1</em></strong>.<br>$$<br>\lfloor \log_2 m \rfloor - 1 \le \mathbf{E}[|s|] \le \log_2 m<br>$$</p>
+<p><em>Proof.</em> It is easy to see that<br>$$<br>  \mathbf{E}[|s| ] = \sum_{i = 1}^k d_i \frac{2^{d_i} }{m }<br>$$<br>which depends on $m$. To show the upper bound,<br>$$<br>\begin{array}{lll}<br>    \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } - \log_2 m<br>    = \sum_{i = 1}^k \frac{2^{d_i} }{m } \log_2 \frac{2^{d_i} }{m } \le 0<br>\end{array}<br>$$<br>The inequality follows from $\log_2 \frac{2^{d_i} }{m } \le 0$ for $1 \le i \le k$. </p>
+<p>To show the lower bound, define the function<br>$$<br>f(m) = \sum_{i = 1}^k d_i \frac{2^{d_i} }{m }<br>$$</p>
+<p>We prove by induction on $m$ that $f(m) \ge \lfloor \log_2 m \rfloor - 1 = d_k - 1$. The cases holds trivially when $m = 1$. Now suppose it holds for all integer less than $m$. We prove that it holds for $m$.   </p>
+<p>Case 1. $m = 2^{d_k}$. Then $f(m) = d_k = \log_2 m$.   </p>
+<p>Case 2. $m &gt; 2^{d_k}$. Now<br>$$<br>\begin{aligned}<br>    f(m) &amp;= \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } \<br>    &amp;= d_k \frac{2^{d_k} }{m} + \left( \sum_{i = 1}^{k - 1} d_i \frac{2^{d_i} }{m - 2^{d_k}  }  \right) \frac{m - 2^{d_k} }{m} \<br>\end{aligned}<br>$$</p>
+<p>But $\sum_{i = 1}^{k - 1} 2^{d_i} = m - 2^{d_k}$. It follows by induction<br>$$<br>\sum_{i = 1}^{k - 1} d_i \frac{2^{d_i} }{m - 2^{d_k}  } = f(m - 2^{d_k}) \ge d_{k - 1} - 1<br>$$</p>
+<p>Finally,<br>$$<br>\begin{aligned}<br>    f(m)<br>    &amp;\ge d_k \frac{2^{d_k} }{m} + \left( d_{k - 1} -1 \right) \frac{m - 2^{d_k} }{m} \<br>    &amp;= d_k +  \left( d_{k - 1}- d_k -1 \right)  \frac{m - 2^{d_k} }{m} \<br>    &amp;= d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( 1 - \frac{ 2^{d_k} }{m} \right)\<br>    &amp;\ge  d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( 1 - \frac{ 2^{d_k} }{2^{d_k} + 2^{d_{k - 1} } } \right)\<br>    &amp;=  d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( \frac{ 2^{d_{k - 1} } }{2^{d_k} + 2^{d_{k - 1} } } \right)\<br>    &amp;=  d_k -  \left( \frac{ d_k  - d_{k - 1} + 1  }{2^{d_k - d_{k - 1} } + 1 } \right)\<br>    &amp;\ge  d_k -  \left( \frac{ d_k  - d_{k - 1} + 1  }{2^{d_k - d_{k - 1} } } \right)\<br>    &amp;\ge d_k - 1<br>\end{aligned}<br>$$</p>
+<p>The last inequality holds since $d_{k - 1} \le d_k - 1$ and the function $f(x) = \frac{x + 1}{2^x}$ decreases when $x \ge 1$. </p>
+<p>$\blacksquare$</p>
+<h5 id="Binary-Strings"><a href="#Binary-Strings" class="headerlink" title="Binary Strings"></a>Binary Strings</h5><p>To illustrate the idea of entropy, we study another example of random bit extraction. </p>
+<p><strong><em>Problem.</em></strong> <em>Let $t$ be an $n$-bit binary string each bit of which is interpreted as the outcome of independent bias coin flip that comes up head probability $p \le 0.5$. Given $t$ as input, we want to output a binary string $s$ (not necessary of length $n$) of independent unbiased random bits.</em></p>
+<p><strong><em>Theorem.</em></strong><br>There is an extraction algorithm, such that,   </p>
+<ol>
+<li>$\forall \delta \in (0, 1)$, $\exists N &gt; 0$, $s.t.$, $\forall n \ge N$, $\mathbf{E}[|s|] \ge (1 - \delta) n\mathbf{H}(p)$.    </li>
+<li>$\forall n &gt; 0$, $\mathbf{E}[|s|] \le n\mathbf{H}(p)$.</li>
+</ol>
+<p>The theorem states that the expected length of $s$ approximates $n\mathbf{H}(p)$. Equivalently,<br>$$<br>\lim_{n \rightarrow \infty} \frac{\mathbf{E}[|s|]}{n} = \mathbf{H}(p)<br>$$</p>
+<p><strong><em>Proof.</em></strong><br>Define the random variable $Z$ to be the number of ones in $t$. For any integer $k \ge 0$, there are $\binom{n}{k}$ strings with $k$ ones. We can map these strings to ${0, 1, …, \binom{n}{k} - 1 }$. Conditioned on $Z = k$, the mapping of $t$ is uniform on ${0, 1, …, \binom{n}{k} - 1 }$. We can use Algorithm 1 to return  a binary string $s$. Now its expected length is<br>$$<br>\mathbf{E}[|s|] = \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k]<br>$$</p>
+<p>Further, by Hoeffding’s inequality, it holds that for $0 &lt; \epsilon &lt; p$,<br>$$<br>\Pr[ |Z - np | \ge n\epsilon] \le \exp\left(- 2 n \epsilon^2 \right)<br>$$</p>
+<p>By setting the failure probability $\exp(-2 n \epsilon^2) = \delta / 2$, we get $\epsilon = \sqrt{\frac{\ln \frac{2}{\delta} }{2n} }$. </p>
+<p>Let $LB = \lceil np - n\epsilon \rceil$ and $UB = \lfloor np + n\epsilon \rfloor$. Observing that $Z$ is an integer, we have<br>$$<br>\begin{array}{rl}<br>    \Pr[LB \le Z \le UB] &amp;= \Pr[np - n\epsilon \le Z \le np + n\epsilon] \<br>    &amp;\ge 1 - \delta/2<br>\end{array}<br>$$</p>
+<p>As $p \le 0.5$, it holds that<br>$$<br>n = \lceil n/2 - n\epsilon \rceil + \lfloor n/2 + n\epsilon \rfloor \ge \lceil np - n\epsilon \rceil + \lfloor np + n\epsilon \rfloor<br>$$</p>
+<p>Therefore,<br>$$<br>LB \le UB \le n - LB \<br>$$</p>
+<p>Since $\binom{n}{k}$ increase for $k &lt; n / 2$ and decrease $k &gt; n / 2$, it holds that<br>$$<br>\binom{n}{LB} \le \binom{n}{UB}<br>$$</p>
+<p>For $LB \le k \le UB$, we have<br>$$<br>\binom{n}{LB} \le \binom{n}{k}<br>$$</p>
+<p>Define $q = \frac{ LB }{n}$,<br>$$<br>\binom{n}{LB}  \ge \frac{1}{n + 1} 2^{n \mathbf{H}( \frac{ LB }{n} ) } \ge \frac{1}{n + 1} 2^{n\mathbf{H}(p - \epsilon)}<br>$$</p>
+<p>By <strong><em>Theorem 1</em></strong>, we have<br>$$<br>\begin{aligned}<br>    \mathbf{E}[|s|] &amp;= \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \<br>    &amp;\ge \sum_{k = LB}^{UB} \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \<br>    &amp;\ge \sum_{k = LB }^{UB } \left( \left\lfloor \log_2 \binom{n}{k} \right\rfloor - 1 \right) \binom{n}{k} p^k (1 - p)^{n - k}  \<br>    &amp;\ge \sum_{k = LB }^{UB } \left( \left\lfloor \log_2  \binom{n}{ LB  } \right\rfloor - 1 \right) \binom{n}{k} p^k (1 - p)^{n - k}  \<br>    &amp;=  \left( \left\lfloor \log_2  \binom{n}{ LB  } \right\rfloor - 1 \right) \Pr[LB \le Z \le UB] \<br>    &amp;\ge \left( n \mathbf{H}(p - \epsilon)  - \log_2 (n + 1) \right) (1- \delta / 2) \<br>    &amp;=  \left( \frac{\mathbf{H}(p - \epsilon)}{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) (1- \delta / 2 ) \cdot n \cdot \mathbf{H}(p) \<br>    &amp;=  \left( \frac{\mathbf{H} \left(p - \sqrt{\frac{\ln \frac{2}{\delta} }{2n} } \right) }{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) (1- \delta / 2 ) \cdot n \cdot \mathbf{H}(p) \<br>\end{aligned}<br>$$</p>
+<p>$\exists N &gt; 0$, s.t.,  $\forall n &gt; N$, $\left( \frac{\mathbf{H} \left(p - \sqrt{\frac{\ln \frac{2}{\delta} }{2n} } \right) }{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) \ge (1 - \delta / 2)$, which finishes the proof of lower bound.</p>
+<p>As for the upper bound, observe that<br>$$<br>\binom{n}{k} p^k ( 1- p)^{n - k} \le 1<br>$$</p>
+<p>Therefore, $\binom{n}{k} \le p^{-k} ( 1- p)^{-(n - k) }$. Thus, we have<br>$$<br>\begin{aligned}<br>       \mathbf{E}[|s|] &amp;= \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \<br>       &amp;\le \sum_{k = 1}^n \left( \log_2 \binom{n}{k} \right) \binom{n}{k} p^k (1 - p)^{n - k} \<br>       &amp;\le \sum_{k = 1}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k (1 - p)^{n - k} }<br>\end{aligned}<br>$$</p>
+<p>The last term is exactly the entropy of the string. By independence of the bits, we know that it is equal to $n \mathbf{H}(p)$. </p>
+<p>Remark: we may also prove it algebraically.<br>$$<br>\begin{aligned}<br>       \mathbf{E}[|s|]<br>       &amp;\le \sum_{k = 0}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k (1 - p)^{n - k} } \<br>       &amp;= \sum_{k = 1}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k } + \sum_{k = 0}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ (1 - p)^{n - k} } \<br>       &amp;= \left( p \log_2 \frac{1}{p} \right) \sum_{k = 1}^n  \binom{n}{k} k p^{k - 1} (1 - p)^{n - k}  \<br>       &amp;\quad +  \left( ( 1- p) \log_2 \frac{1}{ 1 - p } \right) \sum_{k = 0}^{n - 1} \binom{n}{k} (n - k) p^k (1 - p)^{n - k - 1} \<br>       &amp;= \left( p \log_2 \frac{1}{p} \right) [(x + (1 - p))^n]_{x = p}’  +  \left( (1 - p) \log_2 \frac{1}{ 1 - p } \right) [(p + x)^n]_{x = 1-p}’ \<br>       &amp;= n \mathbf{H}(p)<br>\end{aligned}<br>$$</p>
+<p>$\blacksquare$</p>
+<h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference."></a>Reference.</h4><p>[1] S. Har-Peled, “Chapter 26 Entropy, Randomness, and Information,” p. 6.<br>[2] M. Mitzenmacher and E. Upfal, Probability and Computing: Randomized Algorithms and Probabilistic Analysis. Cambridge: Cambridge University Press, 2005.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/30/Integer-Shortest-Path/" rel="prev" title="Integer Shortest Path">
+      <i class="fa fa-chevron-left"></i> Integer Shortest Path
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/07/Entropy-and-Compression/" rel="next" title="Entropy and Compression">
+      Entropy and Compression <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Entropy"><span class="nav-number">1.</span> <span class="nav-text">Entropy</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Binomial-Distribution"><span class="nav-number"></span> <span class="nav-text">Binomial Distribution</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Extracting-Random-Bits"><span class="nav-number">1.</span> <span class="nav-text">Extracting Random Bits</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Binary-Strings"><span class="nav-number">1.1.</span> <span class="nav-text">Binary Strings</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Reference"><span class="nav-number">2.</span> <span class="nav-text">Reference.</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

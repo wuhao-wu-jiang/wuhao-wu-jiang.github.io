@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Although there is no polynomial algorithm for computing the prime decomposition of an integer, testing primality can be done in polynomial time. The central idea of is to find a certificate that we ca">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Primality Test">
+<meta property="og:url" content="http://example.com/2019/09/03/Primality-Test/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Although there is no polynomial algorithm for computing the prime decomposition of an integer, testing primality can be done in polynomial time. The central idea of is to find a certificate that we ca">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-09-03T07:15:48.000Z">
+<meta property="article:modified_time" content="2019-12-02T08:56:55.565Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2019/09/03/Primality-Test/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Primality Test | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/03/Primality-Test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Primality Test
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-03 17:15:48" itemprop="dateCreated datePublished" datetime="2019-09-03T17:15:48+10:00">2019-09-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-02 19:56:55" itemprop="dateModified" datetime="2019-12-02T19:56:55+11:00">2019-12-02</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Although there is no polynomial algorithm for computing the prime decomposition of an integer, testing primality can be done in polynomial time. The central idea of is to find a certificate that we can verify in polynomial time for the compositeness of an integer.</p>
+<p>We begin with Fermat’s Test, which gives false positive but works for most cases. It relies on the Fermat’s Little Theorem and Lagrange Theorem.</p>
+<h3 id="Fermat’s-Little-theorem"><a href="#Fermat’s-Little-theorem" class="headerlink" title="Fermat’s Little theorem."></a>Fermat’s Little theorem.</h3><p>If $n$ is a prime number, then for any $x \in [n - 1]$, we have<br>$$<br>x^{n - 1} \equiv 1 \mod n<br>$$</p>
+<p>where throughout the article we use $[n - 1]$ to denote the integer set ${1, 2, …, n - 1}$.</p>
+<p><strong>Proof:</strong> Consider the set of numbers $\langle x, 2x, 3x, …, (n - 1)x \rangle$. Note that all numbers are different in terms of $\mod n$. Otherwise $ix \equiv jx \mod n$ implies that $(i - j) x \equiv 0 \mod n$. But $i \neq j$ and $x \neq 0$ concludes that $n$ in not prime, a contradiction. $\blacksquare$</p>
+<h4 id="Lagrange-Theorem"><a href="#Lagrange-Theorem" class="headerlink" title="Lagrange Theorem"></a>Lagrange Theorem</h4><p>If $Z$ is a finite group and $S$ is a subgroup of $Z$, then the size of $S$ divides that of $Z$, i.e., $|S| \equiv 0 \mod |Z|$. </p>
+<p><strong>Proof</strong>: Order the elements in $Z$ as $z_1, z_2, … z_n$. Consider the sets defined by<br>$$<br>z_i S \doteq { z \in S, s.t., z = z_i \cdot s, where \quad  s \in S}<br>$$<br>We claim $|z_i S| = |S|$. This is true as for $x \in S, y \in S$ and $x \neq y$, we have $z_i x \neq z_i y$. </p>
+<p>Now we have the collection of sets $z_1 S, z_2 S, …, z_n S$. We remove duplicates among them and keep only one copy of each set. Suppose $m$ sets are left and reorder them as $S_1, S_2, …, S_m$, then they constitute a partition of $Z$. </p>
+<ol>
+<li>Clearly $S_1 \cup S_2 \cup … \cup S_m = Z$. </li>
+<li>Moreover, $S_i \cap S_j = \emptyset$. for $i \neq j$. Otherwise, let $x \in S_i \cap S_j$. By definition of $S_i$ and $S_j$, there exists $z’ \in Z$ and $z’’ \in Z$, such that $S_i = z’ S$ and $S_j = z’’ S$. Then $x = z’ x = z’’ y$ for some $x, y \in S$. It follows that $z’ = z’’ y x^{-1} \in z’’ S$ and $S_i = S_j$, contradiction the construction of $S_i$ and $S_j$. </li>
+</ol>
+<p>$\blacksquare$</p>
+<p>Before proceeding to the algorithm, we introduce a lemma. </p>
+<h4 id="Lemma"><a href="#Lemma" class="headerlink" title="Lemma"></a>Lemma</h4><p>Given two positive integers $n$ and $m$, if $gcd(n, m) = k$, then $\exists a, b \in Z$, s.t., $an + bm = k$. </p>
+<p><strong>Proof.</strong>. Consider the set $E = { an + bm, a, b\in Z}$ and define $c = \min_{e \in E \wedge e &gt; 0} e$. Note that $c$ is well-defined – since both $n$ and $m$ are positive, there are positive integers in $E$. Further, it holds that $c \le n (a = 1, b = 0)$ and $c \le m (a = 0, b = 1)$. </p>
+<p>We claim that $c \equiv 0 \mod n$ and $c \equiv 0 \mod m$. WLOG, we prove only the former case. Suppose it is not, let $y \equiv c \mod n$. There exists integers $x$ s.t., $cx + y = n$ . But now it follows that $y = n - xc \in E$, contradicting the definition of $c$. </p>
+<p>Now $c$ is common divisor of $n$ and $m$. It is also the greatest one, since every divisor of $n$ and $m$ divides any element in $E$. </p>
+<p>$\blacksquare$</p>
+<h3 id="Algorithm-Fermat’s-Test"><a href="#Algorithm-Fermat’s-Test" class="headerlink" title="Algorithm :  Fermat’s Test."></a>Algorithm :  Fermat’s Test.</h3><p>The algorithm is relatively easy and shown as follows.</p>
+<ol>
+<li>Input: an integer $n$.</li>
+<li>Output: whether $n$ is a prime number. </li>
+<li>Take a number of $x \in [n - 1]$ uniformly at random. </li>
+<li>Check whether $x^{n - 1} \equiv 1 \mod n$. If not, output “NO”. </li>
+<li>Repeat steps $3, 4$ a specified number of times. </li>
+<li>Output “YES”. </li>
+</ol>
+<p>Now we analyze the algorithm. Given $n$, denote $Z_n^* = { x \in [n - 1] \wedge  gcd(x, n) = 1 }$, i.e., the set of numbers in $[n - 1]$ that are coprime to $n$. Note that $Z_n^*$ is a group under multiplication: </p>
+<ul>
+<li>$1 \in Z_n^*$.</li>
+<li>If $x \in Z_n^*$, then $\exists a, b \in Z$,  s.t., $ax + bn = 1$ by definition of $Z_n^*$. Hence $(a \mod n ) \in Z_n^*$ and $x^{-1} = (a \mod n )$. </li>
+<li>If $x, y \in Z_n^*$, then $gcd(xy, n) = 1$, therefore $xy \in Z_n^*$.</li>
+<li>Clearly multiplication is associative. </li>
+</ul>
+<p>On the other hand, consider the set of integers that satisfies Fermat’s Little Theorem: $S = { x \in [n - 1] \wedge x^{n - 1} \equiv 1 \mod n }$. Clearly $S$ is a subset of $Z_n^*$, since elements in $S$ are invertible module $n$. Besides, $S$ is itself a group:</p>
+<ul>
+<li>$1 \in S$.</li>
+<li>If $x \in S$, then $x^{(n - 2)(n - 1)} \equiv x^{(n - 1)(n - 2)} \equiv 1 \mod n$. It holds that $x^{n - 2} \in S$ and $x^{-1} = x^{n - 2}$. (The other way to see this is that $1 \equiv x x^{-1} \equiv x^{n - 1} x^{- (n - 1)} \equiv x^{- (n - 1)}$, hence $x^{-1} \in S$.)</li>
+<li>Clearly multiplication is associative. </li>
+<li>If $x, y \in S$, then $(xy)^{n - 1} \equiv x^{n - 1} y^{n - 1} \equiv 1 \mod n$. </li>
+</ul>
+<p>Therefore, $S$ is a subgroup of $Z_n^*$. As $Z_n^*$ is finite, by <em>Lagrange’s Theorem</em>, </p>
+<p>$$<br>|Z_n^*| \text{ is a multiple of } |S|<br>$$</p>
+<p>If there is an element $x \in Z_n^*$ but $x \notin S$, then $|Z_n^*| \ge 2 |S|$ and step $3, 4$ successfully reports “NO” with probability at least a half. </p>
+<p>However relative rare, systematic error exists. There are numbers such that all numbers coprime to them satisfy Fermat’s Little Theorem, i.e., $|Z_n^*| = |S|$. The smallest one, 561, was found by Carmichael in 1910 and such number are called Carmichael numbers. This motivates the invention of the Rabin/Miller test. The heart lies on finding a pseudo square root of $1$. </p>
+<h5 id="Theorem"><a href="#Theorem" class="headerlink" title="Theorem"></a>Theorem</h5><p>If $n$ is prime and $x^2 \equiv 1 \mod n$,  then $x = \pm 1 \mod n$, where $-1 \mod n$  is defined as $n - 1$. </p>
+<p>Proof: $x^2 \equiv 1 \mod n$ implies $(x - 1)(x  + 1) \equiv 0 \mod n$. As $n$ is a prime, $x - 1 \equiv 0 \mod n$ or  $x + 1 \equiv 0 \mod n$. $\blacksquare$</p>
+<p>Observe that when $n &gt; 2$, $n - 1 \neq 1$. </p>
+<h3 id="Algorithm-2-Rabin-Miller-Test"><a href="#Algorithm-2-Rabin-Miller-Test" class="headerlink" title="Algorithm 2: Rabin Miller Test"></a>Algorithm 2: Rabin Miller Test</h3><ol>
+<li><p>Input: an integer $n$.</p>
+</li>
+<li><p>Output: whether $n$ is a prime number. </p>
+</li>
+<li><p>If $n \neq 2$ and $n$ is even, output “NO”. </p>
+</li>
+<li><p>If $n$ is the power of some integer, output “NO”. </p>
+</li>
+<li><p>Find the maximum integer $k$, such that $n - 1 = 2^k m$ for some odd number $m$. </p>
+</li>
+<li><p>Take a number of $x \in [n - 1]$ uniformly at random. </p>
+</li>
+<li><p>Check whether $x^{n - 1} \equiv 1 \mod n$. If not, output “NO”.  [Now Fermat’s Test Is Passed. Need Further Verification.]</p>
+</li>
+<li><p>Otherwise, compute the certificate<br>$$<br>C = (x^m, x^{2m}, x^{4m}, …, x^{2^{k - 1}m}, x^{2^km})<br>$$<br>We must have $x^{2^km} \equiv 1$ since it passes Fermat’s test. We check whether $\exists i$, such that $x^{2^i m} \neq \pm 1$ but $x^{2^{i + 1} m} = 1$. If so, we find a pseudo square root of unity and output “NO”. </p>
+</li>
+<li><p>Repeat steps $6 - 8$ a specified number of times. </p>
+</li>
+<li><p>Output “YES”. </p>
+</li>
+</ol>
+<p>We claim that line 4 runs in polynomial time. If $n$ is the power of some integer, the smallest integer is $2$, which gives the power value $\log n$. Therefore we need only to check for each integer $i \in [\log n]$ whether it holds that $n^{1/i}$ is a integer, which can be computed in polynomial time. </p>
+<p>Now we prove the main theorem. </p>
+<p><strong>Theorem</strong>: If $n$ is composite, then the algorithm output “YES” with probability at least $1/2$.</p>
+<p>Proof: we call $x \in [n - 1]$ a Rabin Miller witness, if $n$ is a composite and the algorithm outputs “YES” when choosing $x$. Otherwise we call $x$ a Rabin Miller non-witness. Such $x$’s satisfies<br>$$<br>    x^m \equiv 1 \text{ or } x^{2^i m} \equiv -1 \mod n \text{ for } 0 \le i &lt; k<br>$$</p>
+<p>We are going to construct a proper subgroup $S \subset Z_n^*$, such that all Rabin Miller non-witness belong to $S$. Then by Lagrange Theorem, it holds that<br>$$<br>|{ \text{Rabin Miller non-witness} } | \le |S| \le \frac{1}{2} |Z_n^*| \le \frac{n}{2}<br>$$</p>
+<p>The construction considers the collection of subsets:<br>$$<br>S_r = { x \in [n -  1] : x^r \equiv \pm 1 \mod n }<br>$$<br>for $r = m, 2m, 4m, …, 2^k m$. Define<br>$$<br>S = \max_r S_r, s.t., \exists x \in S_r: x^r \equiv -1 \mod n<br>$$<br>In other words, $S$ is defined to be the set $S_r$ that contains an element whose $r$-th power equals to $-1$ for the largest $r$. Such $S$ must exists since $-1 \in S_m$. $S$ has two important properties: </p>
+<ol>
+<li>All Rabin Miller non-witness belongs to $S$. </li>
+<li>$S$ is subgroup of $Z_n^*$.</li>
+<li>$\exists y \in Z_n^*$, s.t., $y \notin S$, i.e., $S \neq Z_n^*$</li>
+</ol>
+<p>Property (1) is obvious by the definition of Rabin Miller non-witness. To show (2), we need to verify $S$ is close under multiplication,  each element in $S$  belongs to $Z_n^*$ and is invertible in $S$: </p>
+<ul>
+<li>If $x \in S, y \in S$, then $(xy)^r \pm x^r y^r \equiv \pm 1 \mod n$. </li>
+<li>If $x \in S$, then $x^r \equiv 1 \mod n$ or $x^{2r} \equiv 1 \mod n$. Clearly $x$ is invertible. Hence $x \in Z_n^*$. </li>
+<li>If $x \in S$, then $1 \equiv (x x^{-1})^r \equiv x^r x^{-r} \equiv x^{-r} \mod n$. </li>
+</ul>
+<p>Finally, we prove Property (3). As $n$ is composite, we can write $n = ab$, where $a$ and $b$ are coprime. By definition of $S$, $\exists x \in S$, such that<br>$$<br>x^r \equiv -1 \mod n<br>$$<br>By Chinese Remainder Theorem, this is equivalent to<br>$$<br>x^r \equiv n-1 \mod a \wedge x^r \equiv n-1 \mod b<br>$$<br>i.e.,<br>$$<br>x^r \equiv -1 \mod a \wedge x^r \equiv -1 \mod b<br>$$</p>
+<p>However, another use of Chinese Remainder Theorem asserts $\exists y \in [n]$, such that<br>$$<br>y \equiv x \mod a \wedge y \equiv 1 \mod b<br>$$</p>
+<p>which implies that<br>$$<br>y^r \equiv x^r \equiv -1 \mod a \wedge y^r \equiv 1 \mod b<br>$$</p>
+<p>Hence it is impossible that $y^r \equiv \pm 1 \mod n$. It is left to prove $y$ is invertible module $n$:</p>
+<ul>
+<li>$y \in Z_n^*$, as $\gcd(x, n) = \gcd(x, ab) = 1 \rightarrow \gcd(x,a ) = 1 \wedge \gcd(x, b) = 1 \rightarrow \gcd(y, a) = \gcd(x, a) = 1 \rightarrow \gcd(y, ab) = 1$. </li>
+</ul>
+<p>$\blacksquare$</p>
+<h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference:"></a>Reference:</h4><ol>
+<li> <a target="_blank" rel="noopener" href="http://theory.stanford.edu/~valiant/teaching/CS265/primality.pdf">Primality Testing, CS265/CME309, Fall 2017. Gregory Valiant</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/09/03/Less-Communication/" rel="prev" title="Less Communication">
+      <i class="fa fa-chevron-left"></i> Less Communication
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/09/18/Divided-by-Three/" rel="next" title="Divided by Three">
+      Divided by Three <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Fermat%E2%80%99s-Little-theorem"><span class="nav-number">1.</span> <span class="nav-text">Fermat’s Little theorem.</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Lagrange-Theorem"><span class="nav-number">1.1.</span> <span class="nav-text">Lagrange Theorem</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Lemma"><span class="nav-number">1.2.</span> <span class="nav-text">Lemma</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Algorithm-Fermat%E2%80%99s-Test"><span class="nav-number">2.</span> <span class="nav-text">Algorithm :  Fermat’s Test.</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Theorem"><span class="nav-number">2.0.1.</span> <span class="nav-text">Theorem</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Algorithm-2-Rabin-Miller-Test"><span class="nav-number">3.</span> <span class="nav-text">Algorithm 2: Rabin Miller Test</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Reference"><span class="nav-number">3.1.</span> <span class="nav-text">Reference:</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

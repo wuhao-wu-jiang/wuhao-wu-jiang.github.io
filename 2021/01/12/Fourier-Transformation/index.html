@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Let $f: [-\pi, \pi]: \rightarrow \mathbb{R}$ be a real function. As $f$ itself can be complicated, we want to decompose it into a linear combination of simpler functions.   Example. A typical family o">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fourier Transformation">
+<meta property="og:url" content="http://example.com/2021/01/12/Fourier-Transformation/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Let $f: [-\pi, \pi]: \rightarrow \mathbb{R}$ be a real function. As $f$ itself can be complicated, we want to decompose it into a linear combination of simpler functions.   Example. A typical family o">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-12T05:21:21.000Z">
+<meta property="article:modified_time" content="2021-01-26T12:51:21.223Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/01/12/Fourier-Transformation/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Fourier Transformation | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/12/Fourier-Transformation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Fourier Transformation
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-12 16:21:21" itemprop="dateCreated datePublished" datetime="2021-01-12T16:21:21+11:00">2021-01-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-26 23:51:21" itemprop="dateModified" datetime="2021-01-26T23:51:21+11:00">2021-01-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Let $f: [-\pi, \pi]: \rightarrow \mathbb{R}$ be a real function. As $f$ itself can be complicated, we want to decompose it into a linear combination of simpler functions. </p>
+<blockquote>
+<p><strong>Example.</strong> A typical family of simple functions are polynomials:<br>$$<br>    { 1, t, t^2, t^3, … }.<br>$$<br>Under proper condition, e.g., if $f$ is infinitely differentiable, it can be indeed decomposed into a linear combination of polynomials, such as:<br>$$<br>    f = f(0) + f’(0)  t + \frac{f’’(t)}{2!} t^2 + …<br>$$  </p>
+</blockquote>
+<h2 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a><strong>Problem</strong></h2><p>Here we study the problem of approximating $f$ with trigonometric functions:<br>$$<br>    \mathfrak{T} = { 1, \sin t, \cos t, \sin 2t, \cos 2t, …. }.<br>$$</p>
+<p>Although $f: [-\pi, \pi]: \rightarrow \mathbb{R}$ is a function with output on $\mathbb{R}$, we view it as a function $[-\pi, \pi]: \rightarrow \mathbb{C}$ to take advantage of complex exponential. Now, we approximate $f$ with a set of sinusoids:<br>$$<br>   \Gamma = { 1, \exp(it), \exp(-it), \exp(i2t), \exp(-i2t), \exp(i3t), \exp(-i3t)… }.<br>$$ </p>
+<p>Observe that $\Gamma$ generalizes $\mathfrak{T}$, as for $\forall k \in \mathbb{N}$,<br>$$<br>2 \cos kt =  \exp(ikt) + \exp(-ikt), \<br>2 \sin kt =  \exp(ikt) - \exp(-ikt).<br>$$</p>
+<p>Define the span $S(\Gamma)$ as the set of all possible linear combinations of functions in $\Gamma$:<br>$$<br>S(\Gamma) \doteq \left{ \sum_{k \in \mathbb{Z} } c_k \exp(ikt) : \forall k \in \mathbb{Z}, c_k \in \mathbb{C} \right}.<br>$$ </p>
+<p><strong><em>The goal is to find the closest function to $f$ in $S(\Gamma)$</em></strong>.  </p>
+<p>The key issues with the approximation are </p>
+<ol>
+<li><p>How do we measure the closeness between two functions?   </p>
+</li>
+<li><p>Under what condition, can $f$ be rewrite as a linear combination of functions in $\Gamma$?</p>
+</li>
+<li><p>What is the approximation error, between $f$ and the linear combination?</p>
+</li>
+</ol>
+<h2 id="Norm"><a href="#Norm" class="headerlink" title="Norm"></a><strong>Norm</strong></h2><p>Despite the goal stated above, the closeness between $f$ and a function in $S(\Gamma)$ has not yet been defined. This raises the question of measuring the distance between two functions in $[-\pi, \pi] \rightarrow \mathcal{C}$. </p>
+<p>In $\mathbb{R}^n$, the Euclidean distance between two vectors $u, v$ is defined as<br>$$<br>    || u - v || = \sqrt{\sum_{i = 1}^n (u_i - v_i)^2 }.<br>$$</p>
+<p>If we define $w = u - v$, then the problem of measuring the distance between two vectors reduces to the one of measuring the length of a vector<br>$$<br>|| u - v || = || w || = \sqrt{\sum_{i = 1}^n w_i^2 }.<br>$$</p>
+<!-- We call the function $||\cdot || : \mathbb{R}^n \rightarrow \mathbb{R}$ as norm and it satisfies the following three properties:
+
+1. Positive-definite: $||w|| = 0 \rightarrow w = 0, \forall w \in \mathbb{R}^n$;
+2. Absolutely homogeneous: $|| a w|| = |a| \cdot ||w||, \forall a \in \mathbb{R}, \forall w \in \mathbb{R}^n$; 
+3. Triangle inequality: $||w + w'|| \le ||w|| + ||w'||, \forall w, w' \in \mathbb{R}^n$. -->
+
+<p>In a similar manner, if we view a function $h: [-\pi, \pi] \rightarrow \mathcal{C}$ as an (uncountable) infinite dimension vector, it is natural to defined its length<br>$$<br>    || h || \doteq \sqrt{ \int_{ [-\pi, \pi] }   ||h(t) ||^2 } = \sqrt{ \int_{ [-\pi, \pi] }   \overline{h(t) } \cdot h(t)  }.<br>$$</p>
+<blockquote>
+<p><em>Remark:</em> </p>
+<ol>
+<li><em>$|| h ||^2$ needs to be integrable.</em>   </li>
+<li><em>Verify that $|| \cdot ||$ is a norm.</em> </li>
+</ol>
+</blockquote>
+<p>As $f - g$ is also a function in $[-\pi, \pi] \rightarrow \mathcal{C}$, the distance between two functions $f$ and $g$ is given by<br>$$<br>\begin{aligned}<br>    ||f - g||<br>        &amp;= \sqrt{ \int_{ [-\pi, \pi] }   ||f(t) - g(t)||^2  } \<br>        &amp;= \sqrt{ \int_{ [-\pi, \pi] }   \overline{ (f(t) - g(t) ) } \cdot (f(t) - g(t) )  } \<br>        &amp;= \sqrt{ \int_{ [-\pi, \pi] }   \overline{ f(t) } \cdot f(t) + \int_{ [-\pi, \pi] }  \overline{ g(t) } \cdot g(t) - \int_{ [-\pi, \pi] }  \overline{ f(t) } \cdot g(t) - \int_{ [-\pi, \pi] }  \overline{ g(t) } \cdot f(t) \   } \<br>        &amp;= \sqrt{ ||f||^2 + || g ||^2 - \int_{ [-\pi, \pi] }  \overline{ f(t) } \cdot g(t) - \int_{ [-\pi, \pi] }  \overline{ g(t) } \cdot f(t) \   }. \<br>\end{aligned}<br>$$</p>
+<blockquote>
+<p><em>Remark:</em> </p>
+<ol>
+<li>$|| f - g ||^2$ needs to be integrable. </li>
+<li>The integration operation is required to be linear. </li>
+</ol>
+</blockquote>
+<h3 id="Hermitian-Product"><a href="#Hermitian-Product" class="headerlink" title="Hermitian Product"></a><strong>Hermitian Product</strong></h3><p>To simplify the expansion of $||f - g||$, we introduce another operation, termed Hermitian product, as follows:<br>$$<br>\left&lt; g, f \right&gt;<em>H \doteq \int</em>{ [-\pi, \pi] }  \overline{ g(t) } \cdot f(t).<br>$$</p>
+<p>The operation is not symmetric. By definition,<br>$$<br>\left&lt; f, g \right&gt;<em>H \doteq \int</em>{ [-\pi, \pi] }  \overline{ f(t) } \cdot g(t).<br>$$</p>
+<p>$\left&lt; g, f \right&gt;_H$ is the complex conjugate of $\left&lt; f, g \right&gt;_H$:<br>$$<br>\left&lt; g, f \right&gt;_H = \overline{ \left&lt; f, g \right&gt;_H }.<br>$$</p>
+<p>For any $c \in \mathbb{C}$, it holds that<br>$$<br>\left&lt; c \cdot g, f \right&gt;_H = \bar c \cdot \left&lt; g, f \right&gt;_H,  \<br>\left&lt; g, c \cdot f \right&gt;_H = c  \cdot \left&lt; g, f \right&gt;_H. \<br>$$</p>
+<p>Now the expansion of $||f - g||$ is simplified as<br>$$<br>\begin{aligned}<br>    ||f - g||<br>        &amp;= \sqrt{ ||f||^2 + ||g||^2 - ( \overline{ \left&lt; g, f \right&gt;_H } + \left&lt; g, f \right&gt;_H ) } \<br>        &amp;= \sqrt{ ||f||^2 + ||g||^2 - 2 \cdot \mathbb{Re}( \left&lt; g, f \right&gt;_H ) }. \<br>\end{aligned}<br>$$</p>
+<h4 id="Geometric-Interpretation"><a href="#Geometric-Interpretation" class="headerlink" title="Geometric Interpretation"></a><strong>Geometric Interpretation</strong></h4><p>We have just introduced the notation of Hermitian product to simplify the expression. Its “geometric” interpretation is related to the idea of “projection”. We start by reviewing the ideas of “Projection, Dot Product and Orthogonality” in $\mathbb{R}^2$. </p>
+<blockquote>
+<p><strong>Projection</strong> in $\mathbb{R}^2$. Given $u, v \in \mathbb{R}^2$, the projection of $u$ to $v$ is the vector in the subspace<br>$$<br>    S(v) \doteq { c \cdot v : c \in \mathbb{R} }<br>$$<br>that is closest to $u$. </p>
+<p><strong>Dot Product</strong> in $\mathbb{R}^2$. Given $u, v \in \mathbb{R}^2$, their dot product is defined as<br> $$<br>    \left&lt; u, v \right&gt; = u_1 v_1 + u_2 v_2.<br>$$<br>The projection of $u$ to $v$ (closest vector to $u$ in $S(v)$) is given by<br>$$<br>    \frac{1}{ ||v||^2 } \left&lt; u, v \right&gt; \cdot v = \frac{ \left&lt; u, v \right&gt; }{ ||v|| }  \cdot \frac{ v }{ ||v|| }.<br>$$<br>The first term of the final product $\frac{ \left&lt; u, v \right&gt; }{ ||v|| } = \frac{ ||u|| \cdot ||v|| \cdot \cos \angle (u, v) }{ ||v|| } = ||u|| \cdot \cos \angle (u, v)$ gives the length of $u$’s projection to $v$, and the second term $\frac{ v }{ ||v|| }$ is a unit vector that shares the same direction as $v$. </p>
+<p><strong>Orthogonality</strong> in $\mathbb{R}^2$.  Given $u, v \in \mathbb{R}^2$, they are orthogonal if the projection of $u$ to $v$ is $\vec 0$. In this case,<br>$$<br>    \left&lt; u, v \right&gt; = 0.<br>$$</p>
+</blockquote>
+<p>We can extend these ideas to $[-\pi, \pi] \rightarrow \mathbb{C}$.  </p>
+<h4 id="Projection"><a href="#Projection" class="headerlink" title="Projection"></a><strong>Projection</strong></h4><p>Given $f, g:[-\pi, \pi] \rightarrow \mathcal{C}$, the projection of $f$ to $g$ is the function in the linear span of $g$<br>$$<br>    S(g) \doteq { c \cdot g : c \in \mathbb{C} }<br>$$<br>that minimize $||f - c \cdot g||, \forall c \in \mathbb{C}$.</p>
+<h4 id="Hermitian-Product-1"><a href="#Hermitian-Product-1" class="headerlink" title="Hermitian Product"></a><strong>Hermitian Product</strong></h4><p>Hermitian product is related to projection and arises naturally when we try to solve<br>$$<br>    \min_{c \in \mathbb{C} }  ||f - c \cdot g||,<br>$$</p>
+<p>or equivalently,<br>$$<br>    \min_{c \in \mathbb{C} }  ||f - c \cdot g||^2.<br>$$</p>
+<p>Expanding $||f - c \cdot g||^2$ and let $c = x + iy$, $\left&lt; g, f \right&gt;_H = a + i b$, we get<br>$$<br>\begin{aligned}<br>    ||f - c \cdot g||^2<br>        &amp;= ||f||^2 + ||c||^2 \cdot ||g||^2 -  2 \cdot \mathbb{Re}( \left&lt; c \cdot g, f \right&gt;_H )  \<br>        &amp;= ||f||^2 + ||c||^2 \cdot ||g||^2 - 2 \cdot \mathbb{Re} ( \bar c \cdot \left&lt; g, f \right&gt;_H ) \<br>        &amp;= ||f||^2 + (x^2 + y^2) \cdot ||g||^2 - 2 \cdot \mathbb{Re} ( ( x- i y)  \cdot (a + i b) ) \<br>        &amp;= ||f||^2 + (x^2 + y^2) \cdot ||g||^2 - 2 \cdot (a x + by) \<br>\end{aligned}<br>$$</p>
+<blockquote>
+<p><em>Remark:</em> <em>The derivation above requires the integration operation to be linear.</em> </p>
+</blockquote>
+<p>Taking the derivate of RHS with respect to $x$, setting it to zero and assuming that $||g|| \neq 0$, we see<br>$$<br>    2x\cdot ||g||^2 - 2 a = 0 \Rightarrow x = \frac{ a }{ ||g||^2 }.<br>$$</p>
+<p>Similarly,<br>$$<br>    2y\cdot ||g||^2 - 2 b = 0 \Rightarrow y = \frac{ b }{ ||g||^2 }.<br>$$</p>
+<p>Combined, $c$ is given by<br>$$<br>    c = x + iy = \frac{ \left&lt; g, f \right&gt;_H  }{ ||g||^2 } = \left&lt; \frac{g }{ ||g|| }, f \right&gt;_H \cdot \frac{ 1 }{ ||g|| }.<br>$$</p>
+<p>This implies that<br>$$<br>    c \cdot g = \frac{ \left&lt; g, f \right&gt;_H  }{ ||g||^2 } \cdot g = \left&lt; \frac{g }{ ||g|| }, f \right&gt;_H \cdot \frac{g }{ ||g|| }.<br>$$</p>
+<p>Now it is clear that the Hermitian product computes the coefficient for the projection of $f$ to $g$, scaled by a factor of $1/ ||g||^2$. When $|| g ||$ has unit length,<br>$$<br>    c \cdot g = \left&lt; g, f \right&gt;_H \cdot g.<br>$$</p>
+<p>The Hermitian product $\in \mathbb{C}$ is the just the coefficient for the projection.</p>
+<h4 id="Orthogonality"><a href="#Orthogonality" class="headerlink" title="Orthogonality"></a><strong>Orthogonality</strong></h4><p>Given $f, g:[-\pi, \pi] \rightarrow \mathcal{C}$, $f$ is orthogonal to $g$ if the projection of $f$ to $g$ is the zero function, i.e., the closest function (measured by $|| \cdot ||$) to $f$ in the linear span $S(g)$ is the constant function zero. It holds that, either $||g||^2 = 0$ or<br>$$<br>    \arg\min_{ c \in \mathbb{C} } \left| \left|f - c \cdot g \right| \right|^2 = \frac{ \left&lt; g, f \right&gt;_H  }{ ||g||^2 } = 0.<br>$$</p>
+<p>In both cases,<br>$$<br>    \overline{ \left&lt; g, f \right&gt;_H } = \left&lt; f, g \right&gt; = 0.<br>$$</p>
+<h2 id="Properties-of-Gamma"><a href="#Properties-of-Gamma" class="headerlink" title="Properties of $\Gamma$"></a><strong>Properties of $\Gamma$</strong></h2><p>We are now ready to discuss the properties of $\Gamma = { 1, \exp(it), \exp(-it), \exp(i2t), \exp(-i2t), … }$. </p>
+<ol>
+<li><p>For $k \in \mathbb{Z}$,<br>$$<br>|| \exp(ikt) || = \sqrt{ \int_{ [-\pi, \pi] }  \overline{\exp(ikt) } \exp(ikt) \  } = \sqrt{2 \pi }.<br>$$</p>
+</li>
+<li><p>For $k, l \in \mathbb{Z}$, $k \neq l$, $\exp(ikt)$ and $\exp(ilt)$ are orthogonal.<br>$$<br>\begin{aligned}</p>
+<pre><code>\left&lt; \exp(ikt), \exp(ilt) \right&gt;_H 
+ &amp;= \int_&#123; [ -\pi, \pi] &#125; \exp(-ikt) \cdot \exp(ilt)  \\
+ &amp;= \int_&#123; [ -\pi, \pi] &#125; \exp(i (l - k) t) \\
+ &amp;= \frac&#123;1&#125;&#123; i(l - k) &#125; \exp(i (l - k) t) \mid_&#123;- \pi&#125;^\pi \\
+ &amp;= 0.
+</code></pre>
+<p>\end{aligned}<br>$$</p>
+</li>
+</ol>
+<p>If we normalize the function in $\Gamma$ by $1 / \sqrt{2 \pi}$, then each function has norm 1. We call this family an orthonormal family, and rewrite it as<br>$$<br>\mathfrak{F} = { e_0,  e_1, e_2, e_3, …, },<br>$$</p>
+<p>where $e_0 = 1$, and for $k \in \mathbb{N}$,   </p>
+<ul>
+<li><p>$e_{2k + 1} = \exp(ikt) / \sqrt{2 \pi}$;  </p>
+</li>
+<li><p>$e_{2k + 2} = \exp(- ikt) / \sqrt{2 \pi}$.  </p>
+</li>
+</ul>
+<h2 id="Approximating-f-with-mathfrak-F"><a href="#Approximating-f-with-mathfrak-F" class="headerlink" title="Approximating $f$ with $\mathfrak{F}$"></a><strong>Approximating $f$ with $\mathfrak{F}$</strong></h2><p>As discuss before, we have construct an orthogonal family of $\mathfrak{F}$, such that </p>
+<ol>
+<li>$||e_i|| = 1$ for $e_i \in \mathfrak{F}$. </li>
+<li>$\left&lt; e_i, e_j \right&gt;_H = 0$ for $e_i, e_j \in \mathfrak{F}, e_i \neq e_j$. </li>
+</ol>
+<!-- We continue to study the following two questions. 
+
+2. Under what condition, can $f$ be rewrite as a linear combination of functions in $\mathfrak{F}$?
+   
+3. What is the approximation error, between $f$ and the linear combination?
+
+For the second question, we provide a sufficient condition as an answer:
+
+> $f^2$ is integrable. 
+
+Hence,  -->
+
+<p><strong>Definition.</strong> Define $S(\mathfrak{F}_k)$ the span of the first $k + 1$ elements in $\mathfrak{F}$:<br>$$<br>    S(\mathfrak{F}<em>k ) \doteq \left{ \sum</em>{i = 0}^k c_i \cdot e_i : \forall \ 0 \le i \le k, c_i \in \mathbb{C} \right}.<br>$$</p>
+<blockquote>
+<p><strong>Theorem.</strong> The closest function to $f$ in $S(\mathfrak{F}<em>k )$, denoted as $g_k$, is given by<br>$$<br>    g_k \doteq \sum</em>{i = 0 }^k a_i \cdot e_i.<br>$$<br>where $a_i \doteq \left&lt; e_i, f \right&gt;_H, 0 \le i \le k$.</p>
+</blockquote>
+<blockquote>
+<p><em>Remark: implicitly, we assume that $f^2$, $\bar e_i f$ is integrable.</em> </p>
+</blockquote>
+<p><em>Proof:</em> For $0 \le i \le k$, it holds that<br>$$<br>\left&lt; e_i, g_k \right&gt;<em>H = \sum</em>{j = 0 }^k \left&lt; e_i, a_j \cdot e_j \right&gt;_H =  a_i = \left&lt; e_i, f \right&gt;_H.<br>$$</p>
+<p>Hence,<br>$$<br>\left&lt; e_i, g_k - f\right&gt;_H = \overline{ \left&lt; g_k - f, e_i \right&gt;_H  } = 0.<br>$$</p>
+<p>Let<br>$$<br>    f_k = \sum_{i = 0}^k c_i \cdot e_i,<br>$$</p>
+<p>be a function in $S(\mathfrak{F}_k )$. Then,<br>$$<br>\begin{aligned}<br>    || f - f_k||^2<br>        &amp;= ||f - g_k + g_k - f_k ||^2 \<br>        &amp;= ||f - g_k||^2 + ||g_k - f_k||^2 + \left&lt; f - g_k, g_k - f_k\right&gt;_H + \left&lt; g_k - f_k, f - g_k \right&gt;_H.<br>\end{aligned}<br>$$</p>
+<p>It holds that<br>$$<br>\left&lt; f - g_k, g_k - f_k\right&gt;<em>H = \sum</em>{i = 0}^k (a_i - c_i) \cdot \left&lt; f - g_k,  e_i \right&gt;_H = 0.<br>$$</p>
+<p>Similarly, $\left&lt; g_k - f_k, f - g_k \right&gt;_H = 0$. So,<br>$$<br>\begin{aligned}<br>    || f - f_k||^2<br>        &amp;= ||f - g_k||^2 + ||g_k - f_k||^2,<br>\end{aligned}<br>$$</p>
+<p>which is minimized when $f_k = g_k$. </p>
+<p>$\square$</p>
+<!-- $$
+\begin{aligned}
+    ||f - f_k||^2 
+        &= \left< f - f_k, f - f_k \right>_H \\
+        &= \left<  f, f\right>_H + \left<  f_k, f_k \right>_H - \left<  f, f_k \right>_H - \left<  f_k , f\right>_H \\
+        &= ||f||^2 + \sum_{i = 0}^k \left( \left< c_i \cdot e_i, c_i \cdot e_i \right>_H - \left<  f, c_i \cdot e_i \right>_H - \left< c_i \cdot e_i , f \right>_H \right) \\
+        &= ||f||^2 + \sum_{i = 0}^k \left( \bar c_i \cdot c_i - c_i \cdot \left<  f, e_i \right>_H - \bar c_i \cdot \left< e_i , f \right>_H + \bar a_i \cdot a_i \right) - \sum_{i = 0}^k ||a_i||^2 \\
+        &= ||f||^2 + \sum_{i = 0}^k \left( \bar c_i \cdot c_i - c_i \cdot \bar a_i - \bar c_i \cdot a_i + \bar a_i \cdot a_i \right) - \sum_{i = 0}^k ||a_i||^2 \\
+        &= ||f||^2 + \sum_{i = 0}^k ||c_i - a_i||^2 - \sum_{i = 0}^k ||a_i||^2. \\
+\end{aligned}
+$$ -->
+
+<!-- Thus, when $c_i = a_i$, the distance between $f_k$ and $f$ is minimized.  -->
+
+<blockquote>
+<p><strong>Corollary. (Bessel Ineuqality)</strong>.<br>$$<br>    \sum_{i = 0}^\infty ||a_i||^2 \le ||f||^2.<br>$$</p>
+</blockquote>
+<p><em>Proof.</em> We see that<br>$$<br>\begin{aligned}<br>    || f - g_k ||^2<br>        &amp;= \left&lt; f - g_k, f \right&gt;_H - \left&lt; f - g_k, g_k \right&gt;<em>H \<br>        &amp;= \left&lt; f , f \right&gt;_H - \left&lt;  g_k, f \right&gt;_H \<br>        &amp;= ||f||^2 - \sum</em>{i = 0}^k ||a_i||^2 \<br>        &amp;\ge 0.<br>\end{aligned}<br>$$</p>
+<p>Therefore,<br>$$<br>    \sum_{i = 0}^k ||a_i||^2 \le ||f||^2.<br>$$</p>
+<p>Taking the limit of $k$ we get the desired result. </p>
+<p>$\square$</p>
+<p>The function series $g_1, g_2, g_3, …$ is called a Cauchy series, as $\forall \epsilon &gt; 0$, $\exists N \ge 0$, $\forall N \le i &lt; j$, it holds that<br>$$<br>    ||g_j - g_i|| = || \sum_{t = i + 1}^j a_t \cdot e_t ||<br>    = \sqrt{ \sum_{t = i + 1}^j ||a_t||^2 } \le \epsilon.<br>$$</p>
+<p>Suppose that we are using some kind of integration and let $I^2([-\pi, \pi])$ be the set of square integrable functions. Further, assume that $g_1, g_2, g_3, …$ are also elements in $I^2([-\pi, \pi])$. We are interested in </p>
+<blockquote>
+<p>Whether a Cauchy series in $I^2([-\pi, \pi])$ converges to a function in $I^2([-\pi, \pi])$? </p>
+</blockquote>
+<p>Define<br>$$<br>    g = \lim_{k \rightarrow \infty} g_k = \sum_{i = 0}^\infty a_i \cdot e_i.<br>$$</p>
+<p>It is important that $g \in I^2([-\pi, \pi])$, as we need the length of $|| g ||$ to be well-defined. Further, $f - g$ should also be in $I^2([-\pi, \pi])$. </p>
+<p>However, if we are using Riemann integration, the answer is no. Let $r_1, r_2, ….$ be the rational number in the interval of $[0, 1]$ and define<br>$$<br>    h_i(x) = \begin{cases}<br>        \begin{aligned}<br>            &amp;1,  &amp;\text{if } x \in \cup_{t = 1}^i { r_t } \<br>            &amp;0,  &amp;\text{otherwise}<br>        \end{aligned}<br>    \end{cases}<br>$$</p>
+<p>Then $h_i \in I^2([-\pi, \pi])$ but $\lim_{i \rightarrow \infty} h_i$ is not Riemann integrable, hence not in $I^2([-\pi, \pi])$.</p>
+<p>If we are using Lebesgue integration, the answer is yes. </p>
+<blockquote>
+<p>Fact. If we are using Lebesgue integration, then $I^2([-\pi, \pi])$ is complete, i.e., if $g_1, g_2, …, \in I^2([-\pi, \pi])$ is Cauchy, then $\lim_k g_k \in I^2([-\pi, \pi])$. </p>
+</blockquote>
+<h2 id="Approximating-Error"><a href="#Approximating-Error" class="headerlink" title="Approximating Error"></a><strong>Approximating Error</strong></h2><p>It is left to study the error of approximating $f$ with $g$. </p>
+<blockquote>
+<p><strong>Lemma. Cauchy-Schwartz Inequality.</strong> Let $h_1, h_2 \in I^2([-\pi, \pi])$, then<br>$$<br>    | \left&lt; h_1, h_2 \right&gt;_H | \le ||h_1|| \cdot ||h_2 ||<br>$$</p>
+</blockquote>
+<p><em>Proof.</em> If $||h_2|| = 0$, then $h_2 = 0$ almost everywhere and the case is trivial. Otherwise, $\forall c \in \mathbb{C}$, we have<br>$$<br>\begin{aligned}<br>    || h_1 - c \cdot h_2 ||^2<br>        &amp;= || h_1||^2 + ||c||^2 ||h_2||^2 -  \left&lt; h_1, c \cdot h_2 \right&gt;_H -   \left&lt; c \cdot h_2, h_1 \right&gt;_H \<br>        &amp;= || h_1||^2 + ||c||^2 ||h_2||^2 - c \cdot \left&lt; h_1, h_2 \right&gt;_H - \bar c \cdot \left&lt; h_2, h_1 \right&gt;_H \<br>\end{aligned}<br>$$</p>
+<p>Let $c = \frac{1}{ ||h_2||^2 } \cdot \left&lt; h_2, h_1 \right&gt;_H$, then<br>$$<br>\begin{aligned}<br>    || h_1 - c \cdot h_2 ||^2<br>        &amp;= || h_1||^2 - \frac{1}{ ||h_2||^2 } \cdot \left| \left&lt; h_2, h_1 \right&gt;_H \right|^2<br>        &amp;\ge 0.<br>\end{aligned}<br>$$</p>
+<!-- As  -->
+<!-- $$
+    || \left< h_1, h_2 \right>_H || \le ||h_1|| \cdot ||h_2 || \longleftrightarrow
+    \left|\left| \left< \frac{h_1}{ ||h_1|| }, \frac{h_2}{ ||h_2 || } \right>_H \right|\right| \le  1
+$$
+
+Without lose of generality, we assume that $||h_1|| = 1$ and $||h_2|| = 1$. 
+
+$$
+\begin{aligned}
+    2 \cdot \mathbb{Re} \left( \left< h_1, h_2 \right>_H \right) 
+        &= \left< h_1, h_2 \right>_H  + \overline{ \left< h_2, h_1 \right>_H } \\
+        &= \int_{ [ -\pi, \pi] } \bar h_1 h_2  + \bar h_2 h_1 \\
+        &\le \int_{ [ -\pi, \pi] } 2 \left( ||h_1||^2 + ||h_2||^2 \right)
+\end{aligned}
+$$ -->
+
+<!-- We will prove that 
+$$
+    || \left< h_1, h_2 \right>_H ||^2 \le 1.
+$$
+
+$$
+    \begin{aligned}
+        \left|\left| \int_{ [ -\pi, \pi] } \bar h_1 h_2 \right|\right|^2 
+        &= \left|\left| \int_{ [ -\pi, \pi] } \mathbb{Re} (\bar h_1 h_2) + i \mathbb{Im} (\bar h_1 h_2) \right|\right|^2 \\
+        &= \left( \int_{ [ -\pi, \pi] } \mathbb{Re} (\bar h_1 h_2) \right)^2 +  \left( \int_{ [ -\pi, \pi] } \mathbb{Im} (\bar h_1 h_2) \right)^2 \\
+        &\le \left( \int_{ [ -\pi, \pi] } \mathbb{Re} (\bar h_1 h_2) \right)^2 +  \left( \int_{ [ -\pi, \pi] } \mathbb{Im} (\bar h_1 h_2) \right)^2
+    \end{aligned}
+$$ -->
+
+
+<p>$\square$</p>
+<blockquote>
+<p><strong>Lemma.</strong> $\forall i \in \mathbb{N}$, $\left&lt;  e_i, g \right&gt;_H =a_i$. </p>
+</blockquote>
+<p><em>Proof.</em> By Cauchy-Schwartz inequality, </p>
+<p>$$<br>\begin{aligned}<br>    \left|\left| \int_{ [ -\pi, \pi] } \bar e_i (g_k - g) \right|\right|^2<br>        &amp;\le \left( \int_{ [ -\pi, \pi] } ||e_i||^2 \right) \cdot \left( \int_{ [ -\pi, \pi] } ||g_k - g||^2 \right) \<br>        &amp;= \int_{ [ -\pi, \pi] } ||g_k - g||^2 \<br>        &amp;= \int_{ [ -\pi, \pi] } \lim_l ||g_k - g_l ||^2<br>\end{aligned}<br>$$</p>
+<p>By <strong>Fatou’s lemma</strong>,<br>$$<br>    \int_{ [ -\pi, \pi] } \lim_l ||g_k - g_l ||^2 \le \liminf_l \int_{ [ -\pi, \pi] } ||g_k - g_l ||^2<br>$$</p>
+<p>Finally,<br>$$<br>    \lim_k  \left|\left|  \left&lt;  e_i, g_k - g \right&gt;<em>H \right|\right|^2 = \lim_k \left|\left|  \int_{ [ -\pi, \pi] } \bar e_i (g_k - g) \right|\right|^2 \le \lim_k \liminf_l \int</em>{ [ -\pi, \pi] } ||g_k - g_l ||^2  = 0.<br>$$</p>
+<p>$\square$</p>
+<blockquote>
+<p>Remark: the above proof involves the operation of exchanging the order of two limiting operations, namely $\lim$ and $\int$. Exchanging order like this is dangerous for Riemann integration, but we can do it safely under Lebesgue integration, under proper condition. Here we use <strong>Fatou’s lemma</strong>. </p>
+</blockquote>
+<p>By the above lemma, the function $g$ has an important property, such that  $\forall i \in \mathbb{N}$,<br>$$<br>    \left&lt; e_i, f - g \right&gt;_H = 0.<br>$$ </p>
+<blockquote>
+<p><strong>Lemma.</strong> Let $h \in I^2([-\pi, \pi])$. If $\forall i \in N$,<br>$$<br>    \left&lt; e_i, h \right&gt;_H = 0,<br>$$<br>then $h = 0$ almost everywhere. </p>
+</blockquote>
+<p><em>Proof.</em> First, we assume that $h$ is a continuous function on $[-\pi, \pi]$. If $h \not\equiv 0$, then $|h(x)|$ achieves maximum value at some point $x^* \in [-\pi, \pi]$. Without lose of generality, we assume that<br>$$<br>    h(x^*) = M &gt; 0.<br>$$</p>
+<p>By continuity of $h$, $\exists \delta \in (0, \pi)$, such that $h(x) &gt; M / 2$ in the interval<br>$$<br>    I \doteq (x^* - \delta, x^* + \delta) \cap [-\pi, \pi].<br>$$</p>
+<p>We will capture the maximum value of $f$, by taking Hermitian product of $f$ with a signal function that </p>
+<ol>
+<li>is a linear combination of functions in $\mathfrak{F}$;</li>
+<li>is $\ge 1$ in $I$;</li>
+<li>is $&lt; 1$ in $[-\pi, \pi] \setminus I$.</li>
+</ol>
+<p>The signal function is given by<br>$$<br>    s(x) = 1 + \cos \left( \frac{1}{2} \cdot (x - x^*) \right) - \cos \frac{\delta}{2}.<br>$$</p>
+<p>Observe that $s$ </p>
+<ol>
+<li>achieves maximum value $s(x^*) = 2 - \cos \frac{\delta}{2}$;</li>
+<li>is $\ge 1$ for $x \in I$;</li>
+<li>has period $4 \pi$. </li>
+</ol>
+<p>Hence, it increases on the interval $[x^* - 2\pi, x^*]$ and decreases on $[x^*, x^* + 2\pi]$. So</p>
+<ol start="4">
+<li>$s(x) &lt; 1$ for $x \in [-\pi, \pi] \setminus I$.</li>
+</ol>
+<p>For $n \ge 1$, $s^n(x)$ is also a linear combination of functions in  $\mathfrak{F}$. It always holds that $\left&lt; s^n(x), f \right&gt;_H \in \mathbb{R}$ and by assumption on $f$, it holds that<br>$$<br>    \left&lt; s^n(x), f \right&gt;_H = 0.<br>$$</p>
+<p>But this is impossible. By monotonicity of integration,<br>$$<br>\int_{ [-\pi, \pi] \setminus I } f(x) s^n(x) \ dx \ge \int_{ [-\pi, \pi] \setminus I } (-M) \cdot 1 \ dx = - 2 \cdot \pi \cdot M.<br>$$</p>
+<p>Define<br>$$<br>    I’ \doteq (x^* - \delta / 2, x^* + \delta / 2) \cap [-\pi, \pi].<br>$$</p>
+<p>Then $|I’| \ge \delta / 2$ and $m \doteq \min_{x \in I’} s(x) &gt; 1$.<br>$$<br>    \int_{ I } f(x) s^n(x) \ dx \ge \int_{ I’ } \frac{M}{2} \cdot m^n \ dx \ge \frac{M \cdot m^n \cdot \delta }{ 4 }.<br>$$</p>
+<p>This implies as $n \rightarrow \infty$,<br>$$<br>    \left&lt; s^n(x), f \right&gt;_H \ge - 2 \cdot \pi \cdot M + \frac{M \cdot m^n \cdot \delta }{ 4 } \rightarrow \infty,<br>$$</p>
+<p>which is a contradiction. </p>
+<p>Next, we consider the general case of $h \in I^2([-\pi, \pi])$. Define<br>$$<br>    w(x) = \int_{-\pi}^x h(t) \ dt.<br>$$</p>
+<p>The function is absolutely continuous on $[-\pi, \pi]$. Moreover,<br>$w(0) = 0$ and by assumption, $w(\pi) = \left&lt; e_0, h \right&gt;<em>H = 0$. For $k \in \mathbb{N}$, integrating by part gives<br>$$<br>    \begin{aligned}<br>        \sqrt{2 \cdot \pi} \cdot \left&lt; e_{2k + 1}, w \right&gt;<em>H<br>            &amp;= \int</em>{ [-\pi, \pi] } \exp(-ikx) w(x) \ dx \<br>            &amp;= \frac{1}{ik} \exp(-ikx) w(x) \mid</em>{-\pi}^\pi - \frac{1}{ik}  \int_{ [-\pi, \pi] } \exp(-ikx) w’(x) \ dx \<br>            &amp;=  - \frac{1}{ik}  \int_{ [-\pi, \pi] } \exp(-ikx) h(x) \ dx \<br>            &amp;=  - \frac{1}{ik}  \left&lt; e_{2k + 1}, h\right&gt;_H \<br>            &amp;= 0.<br>    \end{aligned}<br>$$</p>
+<p>Similarly, we can prove that $\left&lt; e_{2k + 2}, w \right&gt;_H = 0$. </p>
+<p>Hence, $\forall k \ge 1$, $\left&lt; e_k, w \right&gt;_H = 0$. But it is not guaranteed that $\left&lt; e_0, w \right&gt;_H = 0$. To fix this, we construct another function<br>$$<br>    W(x) \doteq w(x) - B.<br>$$</p>
+<p>where $B = \left&lt; e_0, w \right&gt;_H$ is a constant. It holds that </p>
+<ol>
+<li>$\forall k \ge 1$, $\left&lt; e_k, W \right&gt;_H = \left&lt; e_k, w \right&gt;_H - \left&lt; e_k, B \right&gt;_H = - B \cdot \left&lt; e_k, e_0 \right&gt;_H = 0$.   </li>
+<li>$\left&lt; e_0, W \right&gt;_H = \left&lt; e_0, w \right&gt;_H + \left&lt; e_0, B \right&gt;_H = B - B \cdot \left&lt; e_0, e_0 \right&gt;_H = 0$.   </li>
+</ol>
+<p>By previous result, $W(x) \equiv 0$ and $w(x) \equiv B$. This implies<br>$$<br>w’(x) = h(x) = 0, \quad a.e.<br>$$</p>
+<p>$\square$</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/24/Gamma-Function/" rel="prev" title="Gamma Function">
+      <i class="fa fa-chevron-left"></i> Gamma Function
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Norm"><span class="nav-number">2.</span> <span class="nav-text">Norm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hermitian-Product"><span class="nav-number">2.1.</span> <span class="nav-text">Hermitian Product</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Geometric-Interpretation"><span class="nav-number">2.1.1.</span> <span class="nav-text">Geometric Interpretation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Projection"><span class="nav-number">2.1.2.</span> <span class="nav-text">Projection</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hermitian-Product-1"><span class="nav-number">2.1.3.</span> <span class="nav-text">Hermitian Product</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Orthogonality"><span class="nav-number">2.1.4.</span> <span class="nav-text">Orthogonality</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Properties-of-Gamma"><span class="nav-number">3.</span> <span class="nav-text">Properties of $\Gamma$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approximating-f-with-mathfrak-F"><span class="nav-number">4.</span> <span class="nav-text">Approximating $f$ with $\mathfrak{F}$</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Approximating-Error"><span class="nav-number">5.</span> <span class="nav-text">Approximating Error</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

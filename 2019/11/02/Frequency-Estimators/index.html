@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="The task of frequency estimation is to count the number of times each element appears in the multi-set $S$. There are $n$ elements in $S$ and each element belongs to a finite domain $U &#x3D; [1, , 2, …, u">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Frequency Estimators">
+<meta property="og:url" content="http://example.com/2019/11/02/Frequency-Estimators/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="The task of frequency estimation is to count the number of times each element appears in the multi-set $S$. There are $n$ elements in $S$ and each element belongs to a finite domain $U &#x3D; [1, , 2, …, u">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-11-02T09:47:52.000Z">
+<meta property="article:modified_time" content="2021-01-21T12:06:51.950Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2019/11/02/Frequency-Estimators/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Frequency Estimators | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/02/Frequency-Estimators/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Frequency Estimators
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-11-02 20:47:52" itemprop="dateCreated datePublished" datetime="2019-11-02T20:47:52+11:00">2019-11-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-21 23:06:51" itemprop="dateModified" datetime="2021-01-21T23:06:51+11:00">2021-01-21</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>The task of frequency estimation is to count the number of times each element appears in the multi-set $S$. There are $n$ elements in $S$ and each element belongs to a finite domain $U = [1, , 2, …, u]$. If we use a balanced binary search, this can be done in $O(n \log \min{n, u})$ time and $\Theta(\min{n, u})$ space. If we use a hash table, this can be done in $\Theta(\min{n, u})$ time and space.</p>
+<p>Here is the question: can we do it in sub-linear space? </p>
+<p>If we are allowed to make some errors, this is possible. Let $a = \left&lt; a_1, a_2, …, a_{u} \right&gt;$ be the frequency of elements in $U$ and $b = \left&lt; b_1, …, b_{u} \right&gt;$ be our estimation. Our goal is to minimize the maximum possible error $\max_i |b_i - a_i|$. </p>
+<h1 id="Count-Min-Sketch"><a href="#Count-Min-Sketch" class="headerlink" title="Count-Min Sketch"></a>Count-Min Sketch</h1><p>If we use array $A$ with length $m &lt; \min{n, u}$ to count the frequency of the elements, then some elements must share the same slot in the array. Now we apply the following strategy: </p>
+<blockquote>
+<ol>
+<li>Pick a perfect hash function $h : U \rightarrow [m]$ (this condition can be weaken, but for convenience of discussion, we assume perfectness here), that maps the elements uniformly to every bucket in the array.   </li>
+<li>For $\forall s \in S$,<br>   $\qquad A[h(s)] \leftarrow A[h(s)] + 1$    .</li>
+<li>Return $b_i = A[h(i)]$ as the estimation of $a_i$.   </li>
+</ol>
+</blockquote>
+<p>Intuitively, each slot obtains $\frac{1}{m}$ fraction of the total mass $\sum_i a_i = |a|$ (where $|\cdot |$ denotes the $l_1$ norm). Conditioned on $i$-th element is hashed to the $h(i)$ slots, $\frac{1}{m}$ fraction of the rest mass $\sum_{j \neq i} a_j = n - a_i$ is hashed to the $h(i)$-th slot. Therefore, in expectation,<br>$$<br>0 \le \mathbb{E}[b_i - a_i] \le \frac{|a|}{m}<br>$$</p>
+<p>An interesting property is that, if some $a_j$ ($j \neq i$) (or a small subset of $a_j$’s) constitutes, say $0.99$ percent of the mass $|a|$, as long as it is not hashed to $h(i)$, then the expected error is less than $0.01 \frac{|a|}{m}$. </p>
+<p>Formally, define the binary random variables $X_j$ for $j \neq i$ such that<br>$$<br>X_j = \begin{cases}<br>    a_j     &amp;\quad \text{if} \quad h(i) = h(j)\<br>    0       &amp;\quad \text{otherwise}<br>\end{cases}<br>$$<br>Then by perfectness of $h$, $\Pr[X_j = a_j] = \frac{1}{m}$ and $\mathbb{E}[X_j] = \frac{a_j}{m}$. (Indeed, pairwise independence of $h$ suffices to guarantee this condition). </p>
+<p>Then<br>$$<br>    \mathbb{E} [b_i - a_i] = \mathbb{E} \left[ \sum_{j \neq i} X_j \right] = \sum_{j \neq i} \mathbb{E}[X_j] \le \frac{|a|}{m}<br>$$</p>
+<p>As $b_i - a_i$ is non-negative, by Markov inequality,<br>$$<br>\Pr \left[ b_i - a_i \ge \epsilon |a| \right] \le \frac{\mathbb{E}[b_i - a_i]}{\epsilon |a|}  \le \frac{1}{\epsilon m}<br>$$<br>If we would like to achieve failure probability $\delta$, we can set $m = \epsilon^{-1} \delta^{-1}$. </p>
+<p>Question to ponder: can we improve this? </p>
+<p>Yes, by repetition. Instead of using just one array, we set $d$ arrays (to be set latter) and choose $d$ hash functions independently. Then the probability that all estimations deviate more than $\epsilon |a|$ is at most<br>$$<br>\left( \frac{1}{\epsilon m} \right)^d<br>$$</p>
+<p>When $d = \ln{\delta} / \ln \frac{1}{\epsilon m} = \ln{ \frac{1}{\delta} } / \ln \epsilon m$, the failure probability decreases to $\delta$. To minimize the space usage, we solve the following optimization problem:<br>$$<br>\begin{aligned}<br>    &amp;\min           &amp;\ln \frac{1} {\delta} \frac{m}{\ln m + \ln \epsilon} \<br>    &amp;\text{s.t. }   &amp;m \ge \frac{1}{\epsilon}<br>\end{aligned}<br>$$</p>
+<p>Solving the equation gives $m = e \epsilon^{-1}$. The space consumption is $\frac{e}{\epsilon} \ln \frac{1}{\delta}$.</p>
+<p>Note: suppose that $|a| = 10000$ and $\epsilon = 0.1$, $\delta = 0.01$, then with $10 \cdot e \ln 100 \approx 125$ words, we can estimate a particular $a_i$ with the absolute error less than $1000$. If $a_i = 9000$, the relative error is small. However, if $a_i = 1$, basically our estimation if rather inaccurate.</p>
+<p>Question to ponder: what if we analyze this by Chernoff style inequality?</p>
+<p>If we make $d$ repetition, then the confidence interval of the mean estimation is given by (Hoeffding’s inequality)<br>$$<br>|a|\sqrt{\frac{\log \frac{2}{\delta} }{2 d} }<br>$$<br>If we want this interval to be smaller than $\epsilon |a|$, then we need $d = \frac{ \log \frac{2}{\delta} }{2 \epsilon^2}$, which is a $\frac{1}{\epsilon }$ worse than the above analysis. Intuitively, we require stronger condition for concentration of mean value than that for existence of near-min value. </p>
+<h1 id="Count-Sketch"><a href="#Count-Sketch" class="headerlink" title="Count-Sketch"></a>Count-Sketch</h1><p>One drawback of Count-Min Sketch is that the estimator constructed is one-sided and not unbiased. This can be fixed by introducing an additional function $g : U \rightarrow { - 1, 1 }$ that gives each elements in $U$ a sign (“+” or “-“) independently and uniformly at random.  Now, </p>
+<ol start="2">
+<li>For each element $s \in S$, we increase the counter $h(s)$ in the array by 1 if $g(s) &gt; 0$ or $-1$ if $g(s) &lt; 0$. </li>
+<li>Finally, we set $b_i = A[h(i)] \cdot g(i)$ as the estimation of $a_i$. </li>
+</ol>
+<p>In expectation, each slot obtains $\frac{1}{m}$ fraction of the total mass $\sum_i a_i = |a|$. But as each element “flips” it sign randomly, the expected value obtained is 0. Now, conditioned on $i$-th element is hashed to the $h(i)$ slots, $\frac{1}{m}$ fraction of the rest mass $\sum_{j \neq i} a_j = n - a_i$ is hashed to the $h(i)$-th slot. With their signs flipped randomly, they contribute 0 to the $h(i)$-th slot. Hence,<br>$$<br>\mathbb{E}[b_i - a_i] = 0<br>$$<br>Formally, define the binary random variables $X_j$ for $j \neq i$ such that<br>$$<br>X_j = \begin{cases}<br>    a_j     &amp;\text{if} \quad h(i) = h(j) \wedge g(j) = g(i) \<br>    - a_j   &amp;\text{if} \quad h(i) = h(j) \wedge g(j) \neq g(i) \<br>    0       &amp;\text{otherwise}<br>\end{cases}<br>$$<br>Then by perfectness and independence of $h$ and $g$, </p>
+<p>$$<br>    \Pr[X_j = a_j] = \frac{1}{2m} \<br>    \Pr[X_j = -a_j] = \frac{1}{2m} \<br>    \Pr[X_j = 0] = 1 - \frac{1}{m}<br>$$</p>
+<p>and<br>$$<br>\begin{aligned}<br>    \mathbb{E}[X_j]<br>    &amp;= 0 \<br>    \mathbb{E}[b_i - a_i]<br>    &amp;= \mathbb{E}[\sum_{j \neq i} X_j]<br>    = \sum_{j \neq i} \mathbb{E}[X_j]<br>    = 0 \<br>    \mathbb{Var} \left[ X_j \right]<br>    &amp;= \mathbb{E} [X_j^2] - (\mathbb{E}[X_j])^2<br>    = \frac{a_j^2}{m} \<br>    \mathbb{Var} \left[ \sum_{j \neq i} X_j \right]<br>    &amp;= \sum_{j \neq i} \mathbb{Var} [X_j]<br>    = \sum_{j \neq i} \frac{a_j^2}{m}<br>    \le \frac{|a|_2^2}{m}<br>    \end{aligned}<br>$$</p>
+<p>where $|a|_2^2$ is the $l_2$ norm of $a$. Note that the above analysis requires only pair independence. The random variable $X_j$ is two sided, therefore we can not use Markov Inequality for analysis. </p>
+<p>Question to ponder: is it possible to analyze this directly by Chernoff style inequality? </p>
+<p>The tool we resort to is Chebyshev’s inequality:<br>$$<br>\Pr \left[ |\sum_{j \neq i} X_j - 0| \ge \epsilon |a|<em>2 \right] \le \frac{\mathbb{Var} [\sum</em>{j \neq i} X_j]}{\epsilon^2 |a|_2^2 } \le \frac{1}{m\epsilon^2 }<br>$$<br>we take $m = k\epsilon^{-2}$ for some integer $k&gt; 2$. </p>
+<p>How do we amplify the successful probability? We repeat the experiment $d$ times, and take the median. The only way that the median makes a mistake is when more than half of the estimations deviate more  $\epsilon |a|_2$.  Denote $Y$ the number of estimation such that the error is more than $\epsilon |a|_2$. By Chernoff,<br>$$<br>\begin{aligned}<br>    \Pr \left[ Y - \frac{d}{k}\ge \frac{d}{2} - \frac{d}{k} \right]<br>    &amp;= \Pr \left[ Y - \frac{d}{k}\ge (\frac{1}{2} - \frac{1}{k})\cdot k \cdot \frac{d}{k} \right] \<br>    &amp;\le \exp \big( -\frac{d}{3 k} (\frac{k}{2} - 1)^2  \big) \<br>    &amp;= \delta<br>\end{aligned}<br>$$</p>
+<p>which solves to<br>$$<br>d= \frac{3k}{(k/2  -1)^2} \log \frac{1}{\delta}<br>$$<br>The overall space usage is therefore<br>$$<br>md = \frac{3k^2}{\epsilon^2 (k/2  -1)^2} \log \frac{1}{\delta}<br>= \frac{3}{\epsilon^2 (1/2  - \frac{1}{k} )^2} \log \frac{1}{\delta}<br>$$<br>Question to ponder: the expression is wired, which implies that $k \rightarrow \infty$, the space usage converges to $\frac{12}{\epsilon^2} \log \frac{1}{\delta}$, which is worse than count-min hash than a $\frac{1}{\epsilon}$ factor. </p>
+<h4 id="Relation-between-a-1-and-a-2"><a href="#Relation-between-a-1-and-a-2" class="headerlink" title="Relation between $|a|_1$ and $|a|_2$."></a>Relation between $|a|_1$ and $|a|_2$.</h4><p>Their relation is given as follows (by concavity of the $\sqrt \cdot$ function)<br>$$<br>|a|_2 \le |a|_1 \le \sqrt{ |u| } |a|_2<br>$$<br>In particular, when $|u| = 2$, the inequality becomes<br>$$<br>|a_1 + a_2| \le \sqrt 2 \sqrt{a_1^2 + a_2^2 }<br>$$<br>When the dimension is higher than $2$, the factor in the RHS can not bounded to $\sqrt 2$. </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/11/02/AM-GM-Inequality/" rel="prev" title="AM-GM Inequality">
+      <i class="fa fa-chevron-left"></i> AM-GM Inequality
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/07/Approximate-Membership-Problem/" rel="next" title="Approximate Membership Problem">
+      Approximate Membership Problem <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Count-Min-Sketch"><span class="nav-number">1.</span> <span class="nav-text">Count-Min Sketch</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Count-Sketch"><span class="nav-number">2.</span> <span class="nav-text">Count-Sketch</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Relation-between-a-1-and-a-2"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">Relation between $|a|_1$ and $|a|_2$.</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

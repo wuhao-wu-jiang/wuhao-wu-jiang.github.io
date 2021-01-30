@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Singular vector decomposition is one of the highlights of linear algebra.  Before diving into the topic, we have a brief review of linear transformation. Given a matrix $A \in R^{m \times n}$ with ran">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SVD">
+<meta property="og:url" content="http://example.com/2018/05/21/SVD/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Singular vector decomposition is one of the highlights of linear algebra.  Before diving into the topic, we have a brief review of linear transformation. Given a matrix $A \in R^{m \times n}$ with ran">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Linear%20Mapping.jpg">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Rotation.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-a11c6a482d1f70b3ee0052ee132cbef9_hd.jpg">
+<meta property="article:published_time" content="2018-05-21T00:49:11.000Z">
+<meta property="article:modified_time" content="2020-01-04T11:50:56.936Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Linear%20Mapping.jpg">
+
+<link rel="canonical" href="http://example.com/2018/05/21/SVD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>SVD | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/05/21/SVD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SVD
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-21 10:49:11" itemprop="dateCreated datePublished" datetime="2018-05-21T10:49:11+10:00">2018-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-01-04 22:50:56" itemprop="dateModified" datetime="2020-01-04T22:50:56+11:00">2020-01-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Singular vector decomposition is one of the highlights of linear algebra. </p>
+<p>Before diving into the topic, we have a brief review of linear transformation. Given a matrix $A \in R^{m \times n}$ with rank $r$, we can view it as a linear transformation from $R^n \rightarrow R^m: f(x) = Ax,  \forall x \in R^n$. It takes a vector in the row space, i.e., the subspace spanned by row vectors of $A$, to a vector in the column space, the subspace spanned by column vectors of $A$. </p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Linear%20Mapping.jpg"></p>
+<p>Denote the row space as $S(A^T) = { \sum_{i = 1}^n \lambda_i A[i,:], \lambda_i \in R, \forall i \in [n] }$, and the subspace perpendicular to $S(A^T)$ as $N(A^T) = { x \in R^m, s.t., Ax = 0}$. Similarly, we can define $S(A)$ the columns space of $A$ and $N(A)$ the space perpendicular to $S(A)$. Note that $S(A^T)$ and $S(A)$ has the same dimension $r$. For any $x \in R^m$, we can write $x = y + z$, such that $y \in S(A^T)$ and $z \in N(A^T)$. The operation $Ax = Ay + Az$, takes the $y$ component to a vector in $S(A)$ and the $z$ component to point $0$, as illustrated by the figure. </p>
+<p><em>The goal of singular vector decomposition is to find an orthogonal base $v_1, v_2, …, v_r$ in $S(A^T)$, and an orthogonal base $u_1, u_2, …, u_r$, such that $f(v_i) = A v_i = \sigma_i u_i$ for all $i \in [r]$ and $\sigma_1 \ge \sigma_2 \ge … \ge \sigma_r &gt; 0$.</em></p>
+<p>In some sense, there is a one to one correspondence between the orthogonal bases ${ v_1, v_2, …, v_r }$ and ${ u_1, u_2, …, u_r }$.</p>
+<p>If we write $V = [v_1, v_2, …, v_r]$, $\Sigma = \left[ \begin{aligned} \begin{matrix} &amp;\sigma_1 \ &amp;&amp;\sigma_2 \ &amp;&amp;&amp; … \ &amp;&amp;&amp;&amp;\sigma_r \end{matrix} \end{aligned} \right]$ and $U = [u_1, u_2, …, u_r]$, then<br>$$<br>A V = U \Sigma<br>$$</p>
+<p>As the columns of $V$ are orthogonal base, it is invertible and $V^{-1} = V^T$. Hence<br>$$<br>A = U \Sigma V^{-1} = U \Sigma V^T<br>$$</p>
+<p>Expanding the expression gives:<br>$$<br>A = \sigma_1 u_1 v_1^T + \sigma_2 u_2 v_2^T + … + \sigma_r u_r v_r^T<br>$$</p>
+<p>Further,<br>$$<br>A^T A = V \Sigma^2 V^T, A A^T = U \Sigma^2 U^T<br>$$<br>which implies that<br>$$<br>A^T A V = V \Sigma^2, A A^T U = U \Sigma^2<br>$$<br>The $v_i$’s and $u_i$’s are eigenvectors of $A^T A$ and $A A^T$ respectively. </p>
+<h2 id="EXISTENCE"><a href="#EXISTENCE" class="headerlink" title="EXISTENCE"></a>EXISTENCE</h2><p><em>Proof Of The Existence of SVD</em>: </p>
+<p>The key is to look at $A^T A$. Note that $A^TA$ is semi-positive and rank $r$. As $A^T A x = 0 \Leftrightarrow x A^T A x = 0 \Leftrightarrow Ax = 0$. It follows that $A^T A$ and $A$ has the same null space and therefore the same row space. Further, as $A^T A$ is semi-positive, it has $r$ positive eigenvalue. Denote the eigenvalues of $A^TA$ in decreasing order as $\lambda_1 \ge \lambda_2 \ge  … \ge \lambda_r &gt; 0$ and the corresponding (unit length) eigenvectors as $v_1, v_2, …, v_r$. The $v_i$’s are orthogonal, as</p>
+<ul>
+<li>For $i \neq j$, $v_i^T A^T A v_j = \lambda_i v_i^T v_j = \lambda_j v_i^T v_j$. As $\lambda_i \neq \lambda_j$, $v_i^T v_j = 0$. </li>
+</ul>
+<p>They constitute an orthogonal base of the row space of $A^T A$ and the row space $A$. </p>
+<p>Now we use the $v_i$’s to search for $u_i$’s as follows: let $\sigma = \sqrt{\lambda_i}$, we claim the<br>$$<br>u_i = \frac{1}{\sigma_i} A v_i, \forall i \in [r]<br>$$<br>are what we want. </p>
+<ol>
+<li>The $u_i$’s are orthogonal: $u_i^T u_j = \frac{1}{\sigma_i \sigma_j} v_i^T A^T A v_j =   \frac{\sigma_j^2 }{\sigma_i \sigma_j} v_i^T v_j = 0$</li>
+<li>The $u_i$’s are unite vectors: $u_i^T u_i = \frac{1}{\sigma_i^2} v_i^T A^T A v_i = 1$</li>
+</ol>
+<p>Hence $u_i$’s are an orthogonal base. As the columns of $A$ has dimension $r$, the $u_i$’s covers the entire columns space. This completes the proof.<br>$\blacksquare$</p>
+<h2 id="GEOMETRIC-INTERPRETATION"><a href="#GEOMETRIC-INTERPRETATION" class="headerlink" title="GEOMETRIC INTERPRETATION"></a>GEOMETRIC INTERPRETATION</h2><p>To understand the geometry of SVD, we first extend the matrix $V$ to an orthogonal base in $R^n$ and $U$ to an orthogonal base in $R^m$. By adding proper zero rows and columns to $\Sigma$, we still have $A = U \Sigma V^T$. </p>
+<p>Now, the transformation $f(x)$ is decomposed into three steps:<br>$$<br>x \rightarrow V^Tx \rightarrow \Sigma (V^T x) \rightarrow U(\Sigma V^T x)<br>$$</p>
+<p>It suffices to under the effect of multiplying an orthogonal matrix $V$. It is indeed a rotation. To see this, multiply $V$ by $e_i$ gives $v_i$, i.e., $V e_i = v_i$, for all for $i \in [n]$. Therefore, $V$ takes the orthogonal base $I = [e_1, e_2, …, e_n]$ to the orthogonal base $V = [v_1, v_2, …, v_n]$. </p>
+<p>Note that the inverse $V^{-1}$ of $V$ is also an orthogonal matrix and hence a rotation. Indeed it rotates the orthogonal base $V = [v_1, v_2, …, v_n]$ back to $I = [e_1, e_2, …, e_n]$. To understand this, observe that $V^{-1} = V^T$. For arbitrary $v_i$, we have $V^T v_i = e_i$. </p>
+<p>Therefore, $V^T x$ corresponds to a rotation, in the reverse direction to the one defined by $V$. </p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Rotation.jpg"></p>
+<p>Next, the matrix $\Sigma$ scales the $i$-th dimension of $V^T x$ by $\sigma_i$, for all $i \in [n]$. Combined with the first step, if $x = v_i$, then it is first rotation to the direction $e_i$, then scaled by a factor $\sigma_i$. </p>
+<p>Finally, $U$ is an orthogonal matrix and corresponds to another rotation, which take $e_i \in R^m$ to a vector $u_i$. </p>
+<p><em>Corollary</em>: Define the Frobenius norm of a matrix $A$ as<br>$$<br>||A|<em>F = \sqrt{\sum</em>{i, j} a_{i, j}^2 }<br>$$<br>Then $||A||<em>F^2 = ||\Sigma||^2 = \sum</em>{i = 1}^r \sigma_i^2$. </p>
+<p><em>Proof:</em> Note that rotating the vectors do not change their distance from the origin. Recall that $U^T$ and $V$ are both rotations. Hence $||A||_F^2 = ||AV||_F^2 = ||U^T A V||_F^2 = ||U^T U \Sigma V^T V||_F^2= ||\Sigma||_F^2$. </p>
+<p>$\square$. </p>
+<h2 id="APPLICATIONS"><a href="#APPLICATIONS" class="headerlink" title="APPLICATIONS"></a>APPLICATIONS</h2><p>An important property of the $v_i$ is that </p>
+<ol>
+<li>$v_1 = \arg\max_{v \in R^n, ||v|| = 1} ||Av||$. </li>
+<li>$v_2 = \arg\max_{v \in R^n, ||v|| = 1, v \perp v_1} ||Av||$.</li>
+<li>…</li>
+<li>$v_r = \arg\max_{v \in R^n, ||v|| = 1, v \perp v_1, v \perp v_2, …, v \perp v_{r - 1}} ||Av||$</li>
+</ol>
+<p><em>Proof</em>: For any $v \in R^n, ||v|| = 1$, we can write $v = \sum_{i = 1}^n a_i v_i$, where $\sum_{i = 1}^n a_i^2 = 1$, since $v_i$’s are an orthogonal base. Then<br>$$<br>\begin{aligned}<br>||Av||^2<br>    &amp;= x^T A^T A x \<br>    &amp;=  x^T V \Sigma U^T U \Sigma V^T x \<br>    &amp;= ||\Sigma V^T x||^2 \<br>    &amp;= \sum_{i = 1}^r a_i^2 \sigma_i^2<br>\end{aligned}<br>$$<br>which is maximized to $\sigma_1^2$ when $a_1 = 1$ and $a_i = 0, i \ge 2$. Hence (1) is proved. </p>
+<p>Similarly, when $||v|| = 1, v \perp v_1, v_2, …, v_k$ for some $k &lt; r$, then $a_1 = a_2 = … a_k = 0$, and $v = \sum_{i = k + 1}^r a_i v_i$.<br>$$<br>\begin{aligned}<br>||Av||^2<br>    &amp;= \sum_{i = k + 1}^r a_i^2 \sigma_i^2<br>\end{aligned}<br>$$<br>which achieves maximum when $a_{k + 1} = 1$ and $a_i = 0, i &gt; k + 1$. In this case $v = v_{k + 1}$. </p>
+<h3 id="Best-Fit-k-subspace"><a href="#Best-Fit-k-subspace" class="headerlink" title="Best Fit $k$ subspace"></a>Best Fit $k$ subspace</h3><p>An implication is that, the subspace space $V_k$ spanned by $(v_1, v_2, …, v_k)$, is the best $k$-dimension subspace of $R^n$ that fits the row vectors of $A$, namely, $A[1, :], A[2, :], …, A[m, :]$. Here fits mean the sum of the square of the perpendicular distance from the row vector to their projections on the subspace is minimized. Denote $S$ any subspace of $R^n$, then for $v \in R^n$, we can decompose $v$ into two part: the part $v_S$ that is within $S$ and the part $v_{S_\perp}$ perpendicular to $S$. Then<br>$$<br>||v||^2 = ||v_{S}||^2 + ||v_{S_\perp}||^2<br>$$<br>Minimizing $||v_{S_\perp}||^2$ is equivalent to maximizing $||v_{S}||^2$. The subspace space by $(v_1, v_2, …, v_k)$ is the subspace that maximize the sum of the squares of the projections of row vectors to the subspace.</p>
+<p>We prove this by induction. When $k = 1$, the proof holds trivially by the definition of $v_1$. In particular, $A v_1$ is the lengths of the projections of the row to the line that go through $v_1$, since $v_1$ is a unit vector.  Further, the corresponding projected vectors in $R^n$ are<br>$$<br>Av_1 v_1^T  = \sigma_1 u_1 v_1^T<br>$$</p>
+<p>For general $k$, by induction hypothesis $V_{k - 1}$ is the best $k-1$ dimension space that fit rows of $A$. Denote $N(V_{k -1})$ the subspace that is perpendicular to $V_{k - 1}$, which has dimension $n - k + 1$. For any $k$ dimensional subspace $S \cap N(V_{k  - 1}) \neq \empty$, since $dim(S) + dim(N(V_{k  - 1})) = k + n - k + 1 \ge n$. Let $s_k \in S \cap N(V_{k  - 1})$ be a unit vector. By the definition of $v_k$, we have<br>$$<br>||Av_k||^2 \ge ||As_k||^2<br>$$<br>Now we can extend $s_k$ to a base of $S$, denoted as $s_1, s_2, …, s_k$. By induction hypothesis, it holds<br>$$<br>\sum_{i = 1}^{k - 1} ||A v_i||^2 \ge \sum_{i = 1}^{k - 1} ||A s_i||^2<br>$$<br>Hence<br>$$<br>\sum_{i = 1}^{k} ||A v_i||^2 \ge \sum_{i = 1}^{k} ||A s_i||^2<br>$$<br>But the former is exactly sum of the squares of the lengths of the projections to $V_k$ and the later is the one to $S$. Finally, we mention that the projection of $A$ to $V_k$ is given by<br>$$<br>A_k = \sum_{i = 1}^k \sigma_i u_i v_i ^T<br>$$</p>
+<p>Corollary 1.<br>For any rank $k$ matrix $B$, we have<br>$$<br>||A - A_k||_F \le ||A - B||_F<br>$$</p>
+<p>Intuitively, if we view square root of the sum of square distance of row vectors to the origin (note that the origin can be viewed as a zero dimension subspace.)</p>
+<p>Corollary 2. Define the 2-norm of a matrix $A$ as<br>$$<br>||A||_2 = \sigma_1 = \max_{v \in R^n, ||v|| = 1} ||Av||<br>$$<br>The $2$-norm is the square root of the maximum sum of squares of the projections of the row vectors to a one dimension subspace. Then an implication of the SVD is that, for any rank $k$ matrix $B$, we have<br>$$<br>||A - A_k||_2 \le ||A - B||_2<br>$$</p>
+<p><em>Proof:</em> First note that for $v = \sum_{i = 1}^r a_i v_i$, such that $\sum_{i = 1}^k a_i^2 = 1$,<br>$$<br>||(A - A_k) v|| = \sum_{i = k + 1}^r a_i \sigma_i<br>$$<br>it is maximized when $a_{k + 1} = 1$ and $||A - A_k||<em>2 = \sigma</em>{k + 1}$. Now, as $dim(A_{k + 1}) + dim(N(B^T)) = k + 1 + n - k \ge n$, $\exists v \in R^n$, such that $Bv = 0$ and $v = \sum_{i = 1}^{k + 1} a_i v_i$ and $||v|| = 1$. Now<br>$$<br>||A - B||<em>2 \ge ||(A - B)v|| = ||Av|| = \sqrt{\sum</em>{i = 1}^{k + 1} a_i^2 \sigma_i^2 } \ge \sigma_{k + 1}<br>$$<br>which finishes our proof. </p>
+<!-- *Proof 2:* Rewrite $A = \sum_{i = 1}^n \sigma_i u_i v_i^T$. Note that $v_i$'s are an orthogonal base of $R^n$. Therefore, we can rewrite the rows of any matrix $B$ as a linear combination of $v_i$'s.   -->
+
+<h3 id="Computing-SVD"><a href="#Computing-SVD" class="headerlink" title="Computing SVD"></a>Computing SVD</h3><p>If suffices to compute the eigenvectors and eigenvalues of $A^T A$, i.e., $\sigma_i^2$’s and $v_i$’s. In the simplest case, $\sigma_1 &gt; \sigma_2 \ge \sigma_3 \ge … \ge \sigma_r$, then we can take powers of $A^T A$,<br>$$<br>(A^T A)^k = V \Sigma^{2k} V^T = \sum_{i = 1}^r \sigma_i^{2k} v_i v_i^T<br>$$<br>Dividing the matrix by $\sigma_1^{2k}$,<br>$$<br>\frac{1}{\sigma_1^{2k} } (A^T A)^k = V \Sigma^{2k} V^T = v_1 v_1^T + \sum_{i = 2}^r \frac{\sigma_i^{2k}}{\sigma_1^{2k} }  v_i v_i^T<br>$$<br>The second part converges to 0 as $k \rightarrow \infty$. Then for any vector $v$ that is not perpendicular to $v_1$, we have<br>$$<br>\lim_k \frac{1}{\sigma_1^{2k} } (A^T A)^k v =  v_1 (v_1^T v) = (v_1^T v) v_1<br>$$<br>which is a multiple of $v_1$. Normalizing the vector recovers $v_1$. </p>
+<p>When there is a tie of the largest eigenvalues, that is $\sigma_1 = \sigma_2 = … = \sigma_t$ for some $t &lt; r$, and suppose that $v$ is not perpendicular to $v_1, v_2, …, v_t$ simultaneously, then<br>$$<br>\lim_k \frac{1}{\sigma_1^{2k} } (A^T A)^k v =  \text{the projection of } v \text { to  }  V_t<br>$$<br>Suppose we are satisfied with this result, we still need to address two problems. </p>
+<ol>
+<li>We use $\sigma_1^{2k}$ to normalize the resulting vector, which is unknown.</li>
+<li>How can we find a vector $v$ that is not perpendicular to all $v_1, .., v_t$ simultaneously, i.e., its projection to $V_t$ is not zero. </li>
+</ol>
+<!-- The first one is much easier: we use $\sum_{i = 1}^k \sigma_i^{2k}$ as the denominator instead. This can be computed by the Frobenius norm of $A^{2k}$.  Indeed we have the following lemma
+
+
+Hence 
+$$
+\lim_k \frac{1}{||(A^T A)^{k} ||_F } (A^T A)^k  =  \lim_k \sum_{i = 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  v_i v_i^T
+$$
+For the largest $t$ singular values, the terms $\sum_{i = 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } \rightarrow \frac{1}{t}$, and the rest converge to $0$.  -->
+
+<p>We defer the discussion of the first issue. As for the second issue, we tackle the problem for picking a vector $v$ uniformly at random from the $n$-dimension unit ball, and then normalize it by $v / ||v||$, in the hope that it is a “good” vector. </p>
+<p><em>Lemma:</em> With probability at least $1 / 2$, that $v^T v_1 \ge 1 /\sqrt{n}$. </p>
+<p><img src="https://pic2.zhimg.com/80/v2-a11c6a482d1f70b3ee0052ee132cbef9_hd.jpg"></p>
+<p><em>Proof:</em> By symmetry of the $n$-dimension unit ball, it suffices to show that for an arbitrary given fixed direction, the projection of $v$ to that direction is at least $1 / 4 \sqrt n$ with probability $1 / 2$. For convenience, we choose this direction to be $e_1$. </p>
+<p>Denote the volume of an $n$-dimensional unit ball as $V(n)$. </p>
+<p>Now, we would like to use two cylinders to estimate the probability of $|e_1 ^T  v| / ||v|| \le  \frac{1}{4 \sqrt n}$. </p>
+<p>Note that the points ${v }$ inside the ball with $e_1^T v / ||v|| \le \frac{1}{4 \sqrt n}$ is completely contained in a cylinder centered in the equator, with radius one and height $\frac{1}{4 \sqrt n}$  that is parallel to $e_1$. Its volume is given by $\frac{1}{4 \sqrt n} V(n - 1)$. Hence:<br>$$<br>\Pr \left[ |v^T e_1| \le \frac{1}{4 \sqrt n} \right] \le \frac{2 \frac{1}{4 \sqrt n} V(n - 1)}{V(n)}<br>$$<br>On the other hand, we can use a cylinder centered at the equator to lower bound the volume of $n$-dimension unit ball. The cylinder is inside the ball, with height $2\frac{1}{\sqrt n}$ and radius $(1 -  (\frac{1}{ \sqrt n})^2)^{1/ 2}$ . Therefore,<br>$$<br>\begin{aligned}<br>    V(n)<br>    &amp; \ge 2 \frac{1}{\sqrt n} \left(1 - (\frac{1}{\sqrt n})^2 \right)^{(n - 1) / 2} V(n - 1) \<br>    &amp;\ge 2 \frac{1}{\sqrt n} \left( 1 - \frac{1}{n} \right)^{n / 2} V(n - 1)<br>\end{aligned}<br>$$<br>Note that $(1 - \frac{1}{n})^n$ increases with $n$, and for $n \ge 2$, $(1 - \frac{1}{n})^n \ge \frac{1}{4}$ and  $\left( 1 - \frac{1}{n} \right)^{n / 2} \ge \frac{1}{2}$<br>$$<br>\Pr \left[ v^T e_1 \le \frac{1}{4 \sqrt n} \right] \le \frac{\frac{1}{4 \sqrt n} V(n - 1)}{V(n)} \le \frac{1}{2}<br>$$<br>$\square$</p>
+<p><em>Theorem</em> After $\frac{1}{\epsilon} \ln \frac{n}{\epsilon}$ iterations, we can obtain a vector whose component that is perpendicular to $V_t$ is at most $\epsilon$ fraction of its square length, with probability at least $\frac{1}{2}$. </p>
+<p><em>Proof:</em> If $\sigma_i &lt; (1 - \epsilon) \sigma_1$, then<br>$$<br>\frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } \le \frac{\sigma_i}{\sigma_1}^{2k} \le (1-\epsilon)^{2k}<br>$$<br>Denote $\sigma_1 = \sigma_2 = … = \sigma_t$ for some $t &lt; r$ the largest singular values. By the previous lemma, we pick a $v$ from the unit ball at random, and take $v \leftarrow v  / ||v||$. Denote $v = \sum_{i = 1}^n {a_i} v_i$, then with probability at least $1/ 2$ we have $\sqrt{ \sum_{i = 1}^t a_i^2} \ge \frac{1}{4 \sqrt n}$. On the other hand, $v$ is a unit vector, hence $\sum_{i = 1}^n a_i^2 = 1$. Therefore, $\sum_{i = t + 1}^n a_i^2 \le 1 - \frac{1}{16 n}$</p>
+<p>Now<br>$$<br>\begin{aligned}<br>\frac{1}{||(A^T A)^{k} ||<em>F } (A^T A)^k v<br>    &amp;= \sum</em>{i = 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  v_i v_i^T v \<br>    &amp;= \sum_{i = 1}^r \frac{a_i \sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  v_i \<br>    &amp;= \sum_{i = 1}^t \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } a_i v_i  + \sum_{i = t + 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i v_i<br>\end{aligned}<br>$$</p>
+<p>For the second term<br>$$<br>\begin{aligned}<br>||\sum_{i = t + 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i v_i ||^2<br>    &amp;= \sum_{i = t + 1}^r (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i)^2 \<br>    &amp;\le \sum_{i = t + 1}^r (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^t \sigma_1^{2k} }  a_i)^2 \<br>    &amp;\le \frac{ (1 - \epsilon)^{4k} }{t^2} \sum_{i = t + 1}^r a_i^2 \<br>    &amp;\le \frac{ (1 - \epsilon)^{4k} }{t^2}<br>\end{aligned}<br>$$</p>
+<p>For the first term<br>$$<br>\begin{aligned}<br>||\sum_{i = 1}^t \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } a_i v_i ||^2<br>    &amp;= \sum_{i = 1}^t (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} })^2 a_i^2 \<br>    &amp;\ge \sum_{i = 1}^t (\frac{ 1 }{ t + (n - t)(1 - \epsilon)^{2k} })^2 a_i^2 \<br>    &amp;\ge (\frac{ 1 }{ t + n (1 - \epsilon)^{2k} } )^2 \sum_{i = 1}^t a_i^2 \<br>    &amp;\ge (\frac{ 1 }{ t + n (1 - \epsilon)^{2k} } )^2 \frac{1}{16n}<br>\end{aligned}<br>$$</p>
+<p>If we take $k = O( \frac{1}{\epsilon} \ln \frac{n}{\epsilon})$, then the second term is at most $\epsilon$ fraction of the first term. </p>
+<p>Remark: picking a point uniformly at random can be done as follows: first pick a point $v$ uniformly at random from the high dimension cube: $[-1, 1]^n$, then checks whether the point is inside the ball ($||v|| &lt; 1$). This however, could suffers from efficiency problem as the volume of the ball approaches to $0$ as the number of dimension increases. More efficient sampling method is needed. But it is not the current focus of this article. </p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ol>
+<li>GILBERT STRANG, Introduction to Linear Algebra.</li>
+<li> Venkatesan Guruswami and Ravi Kannan, Note 2, Singular Value Decomposition, 15-496/15-859X: Computer Science Theory for the Information Age, Spring 2012, CMU</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/04/18/FORA/" rel="prev" title="FORA [1]">
+      <i class="fa fa-chevron-left"></i> FORA [1]
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/20/Bennett-s-Inequality/" rel="next" title="Bennett's Inequality">
+      Bennett's Inequality <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#EXISTENCE"><span class="nav-number">1.</span> <span class="nav-text">EXISTENCE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GEOMETRIC-INTERPRETATION"><span class="nav-number">2.</span> <span class="nav-text">GEOMETRIC INTERPRETATION</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#APPLICATIONS"><span class="nav-number">3.</span> <span class="nav-text">APPLICATIONS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Best-Fit-k-subspace"><span class="nav-number">3.1.</span> <span class="nav-text">Best Fit $k$ subspace</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Computing-SVD"><span class="nav-number">3.2.</span> <span class="nav-text">Computing SVD</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

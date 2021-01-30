@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Let $X$ be a Bernoulli random variable with unknown probability$$\begin{aligned}P[X &#x3D; 1] &amp;&#x3D; \mu. \P[X &#x3D; 0] &amp;&#x3D; 1 - \mu\end{aligned}$$ where $\frac{1}{n} \le \mu \le 1$ for some integer $n &gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Interval Estimate">
+<meta property="og:url" content="http://example.com/2018/09/02/Interval-Estimate/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Let $X$ be a Bernoulli random variable with unknown probability$$\begin{aligned}P[X &#x3D; 1] &amp;&#x3D; \mu. \P[X &#x3D; 0] &amp;&#x3D; 1 - \mu\end{aligned}$$ where $\frac{1}{n} \le \mu \le 1$ for some integer $n &gt;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://imglf6.nosdn.127.net/img/Y1FUYmVJRmJqaTNrbC9RWmRCdlpzYVQyNS9OR00wSUwzdGgwRU9rZGV0anhzUlpaMVhBWVB3PT0.jpg?imageView&thumbnail=1969y285&type=jpg&quality=96&stripmeta=0&type=jpg">
+<meta property="article:published_time" content="2018-09-02T09:23:25.000Z">
+<meta property="article:modified_time" content="2018-09-16T09:52:14.000Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://imglf6.nosdn.127.net/img/Y1FUYmVJRmJqaTNrbC9RWmRCdlpzYVQyNS9OR00wSUwzdGgwRU9rZGV0anhzUlpaMVhBWVB3PT0.jpg?imageView&thumbnail=1969y285&type=jpg&quality=96&stripmeta=0&type=jpg">
+
+<link rel="canonical" href="http://example.com/2018/09/02/Interval-Estimate/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Interval Estimate | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/09/02/Interval-Estimate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Interval Estimate
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-09-02 19:23:25" itemprop="dateCreated datePublished" datetime="2018-09-02T19:23:25+10:00">2018-09-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-09-16 19:52:14" itemprop="dateModified" datetime="2018-09-16T19:52:14+10:00">2018-09-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Let $X$ be a Bernoulli random variable with unknown probability<br>$$<br>\begin{aligned}<br>P[X = 1] &amp;= \mu. \<br>P[X = 0] &amp;= 1 - \mu<br>\end{aligned}<br>$$</p>
+<p>where $\frac{1}{n} \le \mu \le 1$ for some integer $n &gt; 0$. The goal is to estimate $\mu$ (denoted by $\tilde \mu$) via sampling. </p>
+<p>By law of large number, $\tilde \mu$ converges to $\mu$ when we sample enough numbers of $X$. The convergence behavior is captured by Chernoff inequality and $O(\frac{1}{\delta^2 \mu}\log{1 \over p_{fail} })$ samples are needed to get an estimation $\tilde \mu$ such that $P [ \tilde \mu \in (1 \pm \delta) \mu] \ge 1 - p_{fail}$ (See Exercise 1). Such an $\tilde \mu$ is called an $(\delta, p_{fail})$-estimation of $\mu$. </p>
+<p>As $\mu \ge \frac{1}{n}$, $O(\frac{n}{\delta^2}\log{1 \over p_{fail} })$ samples are enough. The problem is, if $\mu$ is much larger than $1/n$, we waste a lot of samples. E.g., when $n = 1000$ and $\mu = \frac{1}{2}$,  $\frac{1}{\delta^2 \mu}\log{1 \over p_{fail} }$ gives us $\frac{2}{\delta^2}\log{1 \over p_{fail} }$ while $\frac{n}{\delta^2}\log{1 \over p_{fail} }$ equals to $\frac{1000}{\delta^2}\log{1 \over p_{fail} }$.  </p>
+<p>Can we obtain an $(\delta, p_{fail})$-estimation $\tilde \mu$ with just $O(\frac{1}{\delta^2 \mu}\log{1 \over p_{fail} })$ samples, even though $\mu$ itself is unknown?  </p>
+<p>Yes we can (with the lost of a factor $\log \log n$, which is almost negligible). First we relax the goal a little bit – finding a $\tilde \mu \in [\mu/2, 2 \mu]$ instead of a $\tilde \mu \in (1 \pm \delta) \mu$. We show how to achieve this with $O(\frac{1}{\mu}\log{\log n \over p_{fail} })$ samples. </p>
+<p>The high level idea is to divide $[\frac{1}{n}, 1]$ into a set of intervals<br>$$<br>{ [\frac{1}{n}, \frac{1}{2^{ \log n  -1} }], …, [\frac{1}{2^{i} }, \frac{1}{2^{i - 1} }], …,, [\frac{1}{4}, \frac{1}{2}],   [\frac{1}{2}, 1]}<br>$$<br>Let $[\frac{1}{2^{j} }, \frac{1}{2^{j - 1} }]$ $(j \in N)$ be the interval that $u$ belongs to. </p>
+<p><img src="http://imglf6.nosdn.127.net/img/Y1FUYmVJRmJqaTNrbC9RWmRCdlpzYVQyNS9OR00wSUwzdGgwRU9rZGV0anhzUlpaMVhBWVB3PT0.jpg?imageView&thumbnail=1969y285&type=jpg&quality=96&stripmeta=0&type=jpg" alt="Figure"></p>
+<p>Given an integer $i$, such that $i \le j - 2$ or $i \ge j + 1$, we can determine whether $\mu \ge \frac{1}{2^i}$ with high probability. We generate $O(2^i \log \frac{\log n}{p_{fail} })$ samples and test whether their average (i.e., $\tilde \mu$) is greater than $\frac{1}{2^i}$. If $\tilde \mu &gt; \frac{1}{2^i}$, by Chernoff inequality, $\mu &gt; \frac{1}{2^i}$ with high probability and the test returns true. </p>
+<p>To search for the interval $[\frac{1}{2^{j} }, \frac{1}{2^{j - 1} }]$ that $\mu$ belongs to, we perform the test for increasing values of $i = 1, 2, …$ until we find the first $i$, such that the test for $\mu \ge \frac{1}{2^i}$ returns true. We claim that with high probability, $i$ takes one of the following values: ${j - 1, j, j + 1 }$. The reason is that the test returns false (with high probability) when $i  \le j - 2$. The results for $i = j - 1$ and $j$ are undetermined. Even if the test fails to return true for both $i = j - 1$ and $j$, it returns true for $i = j + 1$ with high probability. </p>
+<p>Finally, after we find an $i \in {j - 1, j, j + 1 }$, we know that $\mu \ge \frac{1}{2 \cdot 2^i}$. Therefore, $O(2^i \log \frac{\log n}{p_{fail} })$ samples gives an $(\delta, p_{fail})$-estimate of $\mu$. </p>
+<p>Then the total number of samples we generate is at most:<br>$$<br>\sum_{k = 1}^{j+1}O(2^k\log \frac{\log n}{p_{fail} }) = O(2^{j+2}\log \frac{\log n}{p_{fail} }) = O(\frac{1}{\mu}\log \frac{\log n}{p_{fail} })<br>$$</p>
+<p>The procedure code is shown by Algorithm 1. </p>
+<blockquote>
+<p><strong>Algorithm 1</strong> </p>
+<ol>
+<li><strong>for</strong> $i \leftarrow 1$ to $\log n - 1$ <strong>do</strong></li>
+<li>$\quad$        Let $\theta = 6 \cdot 2^i \log \frac{\log n}{p_{fail} }$.</li>
+<li>$\quad$        Let $Y = 0$</li>
+<li>$\quad$        <strong>for</strong> $j \leftarrow 1$ to $\theta$ <strong>do</strong> </li>
+<li>$\quad$$\quad$                Generate a sample of $X$, denoted by $X_j$.</li>
+<li>$\quad$$\quad$                $Y = Y + X_j$.</li>
+<li>$\quad$        <strong>if</strong> $\frac{Y}{\theta} &gt; \frac{1}{2^i}$ <strong>then</strong> </li>
+<li>$\quad$ $\quad$               <strong>return</strong> $\frac{Y}{\theta}$</li>
+<li><strong>return</strong> $\frac{1}{n}$</li>
+</ol>
+</blockquote>
+<p>To analyse Algorithm 1, we use the following Chernoff Bounds.</p>
+<p><strong>Chernoff Bound</strong></p>
+<blockquote>
+<p>Let $X_1, X_2, …, X_\theta$ be $i.i.d.$ Bernoulli random variables with mean $\mu$ and $Y = \frac{1}{\theta} \sum_{k =1}^\theta X_k$. Then </p>
+<ol>
+<li>$P[Y \ge (1 + \delta) \mu] \le \exp(- \frac{\delta^2}{\delta + 2} \theta \mu)$.</li>
+<li>$P[Y \le (1 - \delta) \mu] \le \exp(- \frac{\delta^2}{2} \theta \mu)$</li>
+</ol>
+</blockquote>
+<p>Corollary</p>
+<blockquote>
+<p>For an integer $k \ge 1$, </p>
+<ol>
+<li>$P[Y \ge 2^k \mu] \le \exp (- \frac{(2^k -1)^2}{2^k + 1} \theta \mu) \le \exp(- \frac{2^{2k - 2} }{2^k + 1}  \theta \mu) = \exp(-\frac{2^k}{4(1+ {1} / {2^k})}  \theta \mu) \le \exp(-\frac{2^k}{6} \theta \mu)$</li>
+<li>$P[Y \le \frac{1}{2^k}\mu] \le \exp(-\frac{(1-\frac{1}{2^k})^2}{2}  \theta \mu) \le \exp(-\frac{1}{8}\theta \mu)$</li>
+</ol>
+</blockquote>
+<p><strong>Theorem</strong></p>
+<blockquote>
+<p>Let $X_1, X_2, …, X_\theta$ be $i.i.d.$ Bernoulli random variables with mean $\mu \in [\frac{1}{2^j}, \frac{1}{2^{j - 1} }]$ and $Y = \frac{1}{\theta} \sum_{k =1}^\theta X_k$. Suppose $\theta = 6 \cdot 2^i \log \frac{\log n}{p_{fail} }$ for some $i$, then </p>
+<ol>
+<li>$P[Y \ge \frac{1}{2^i}] \le \frac{p_{fail} }{\log n}$,  if $i \le j - 2$,</li>
+<li>$P[Y \le \frac{1}{2^i}] \le \frac{p_{fail} }{2^{i - j - 1} \log n}$,  if $i \ge j + 1$.</li>
+</ol>
+</blockquote>
+<p>Proof: First consider $i \le j - 2$. Then  $\frac{1}{2^i} \ge 2^{j - 1 - i} \mu$ , $2^{j - 1} \mu \ge 1$ and<br>$$<br>\begin{aligned}<br>P[Y \ge \frac{1}{2^i}]<br>&amp;\le P[Y \ge 2^{j - 1 - i} \mu] \<br>&amp;\le \exp(-\frac{2^{j- 1 - i} }{6}\theta \mu) \<br>&amp;= \exp(-\frac{2^{j - 1} \mu \cdot 2^{-i}\theta}{6}) \<br>&amp;\le\exp(-\frac{2^{-i}\theta}{6}) \<br>&amp;\le \frac{p_{fail} }{\log n}<br>\end{aligned}<br>$$</p>
+<p>For $i \ge j + 1$, we have $\frac{1}{2^{i} } \le \frac{1}{2^{i - j} } \mu$ , $i - j \ge 1$ and<br>$$<br>\begin{aligned}<br>P[ Y \le \frac{1}{2^{i} }] &amp;\le P [Y \le \frac{1}{2^{i - j} } \mu] \<br>&amp;\le \exp(-\frac{\mu \theta}{8}) \<br>&amp;\le \exp(-\frac{2^{-j}\theta }{8}) \<br>&amp;\le \frac{p_{fail} }{2^{i - j -1}\log n}<br>\end{aligned}<br>$$</p>
+<p>It follows that by union bound the test fails for all $i = 1, 2, …, j - 2, j + 1$ is at most $\frac{p_{fail} }{\log n} \cdot (j - 1) \le p_{fail}$.</p>
+<h5 id="Exercise"><a href="#Exercise" class="headerlink" title="Exercise"></a>Exercise</h5><ol>
+<li>Given a Bernoulli random variable $X$ with mean $\mu$, prove that (with Chernoff bound) if we generate $\Omega(\frac{1}{\delta^2 \mu}\log{1 \over p_{fail} })$ independent samples, we get an estimate of $X$ with relative error $\delta$ with probability $1 - p_{fail}$. </li>
+</ol>
+<h5 id="Reference"><a href="#Reference" class="headerlink" title="Reference:"></a>Reference:</h5><ol>
+<li>Tang Youze, Xiaokui Xiao, and Yanchen Shi. “Influence maximization: Near-optimal time complexity meets practical efficiency.” <em>Proceedings of the 2014 ACM SIGMOD international conference on Management of data</em>. ACM, 2014. </li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/09/01/Vertex-Cover/" rel="prev" title="Vertex Cover">
+      <i class="fa fa-chevron-left"></i> Vertex Cover
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/09/11/Confidence-Interval-of-Berstein-Inequality/" rel="next" title="Confidence Interval of Berstein Inequality">
+      Confidence Interval of Berstein Inequality <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#Exercise"><span class="nav-number">1.</span> <span class="nav-text">Exercise</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Reference"><span class="nav-number">2.</span> <span class="nav-text">Reference:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

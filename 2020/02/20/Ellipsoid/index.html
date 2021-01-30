@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Ellipsoid method is a weakly polynomial algorithm for solving linear programming. The preliminary version was introduced by the Russian mathematician Shor in 1977 for general convex optimization probl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ellipsoid method">
+<meta property="og:url" content="http://example.com/2020/02/20/Ellipsoid/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Ellipsoid method is a weakly polynomial algorithm for solving linear programming. The preliminary version was introduced by the Russian mathematician Shor in 1977 for general convex optimization probl">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod1.jpg">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod2.jpg">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod3.jpg">
+<meta property="article:published_time" content="2020-02-20T10:19:42.000Z">
+<meta property="article:modified_time" content="2020-02-22T11:39:05.531Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod1.jpg">
+
+<link rel="canonical" href="http://example.com/2020/02/20/Ellipsoid/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Ellipsoid method | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/20/Ellipsoid/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="你生之前悠悠千載已逝，未來還會有千年沉寂的期待">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Ellipsoid method
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-02-20 21:19:42" itemprop="dateCreated datePublished" datetime="2020-02-20T21:19:42+11:00">2020-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-02-22 22:39:05" itemprop="dateModified" datetime="2020-02-22T22:39:05+11:00">2020-02-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Ellipsoid method is a weakly polynomial algorithm for solving linear programming. The preliminary version was introduced by the Russian mathematician Shor in 1977 for general convex optimization problems. Then it was applied to linear programming by Khachyan in 1979 [1]. Before interior point method, it was the first polynomial time algorithm for LP. </p>
+<h2 id="Feasibility-implies-Optimality"><a href="#Feasibility-implies-Optimality" class="headerlink" title="Feasibility implies Optimality"></a>Feasibility implies Optimality</h2><p>Now, consider the primal LP:<br>$$<br>\mathcal{P}:  \qquad<br>\begin{aligned}<br>  &amp;\max   &amp;c^T x    &amp; \<br>  &amp;s.t.   &amp;Ax \le b &amp; \<br>  &amp;       &amp; x \ge 0 &amp;<br>\end{aligned}<br>$$</p>
+<p>whose dual is given by<br>$$<br>\mathcal{D}:  \qquad<br>\begin{aligned}<br>  &amp;\min   &amp;y^Tb    \ \  &amp; \<br>  &amp;s.t.   &amp;y^TA \ge c^T &amp; \<br>  &amp;       &amp;y \ge 0 \ \  &amp;<br>\end{aligned}<br>$$</p>
+<p>The ellipsoid does not optimize the primal directly. Instead, it try to return a feasible point $(x, y)$ that satisfies the following constraints:<br>$$<br>\begin{aligned}<br>         c^T x &amp;= y^Tb  &amp; \<br>         Ax    &amp;\le b   &amp; \<br>          x    &amp;\ge 0       &amp; \<br>         y^TA  &amp;\ge c^T &amp; \<br>         y     &amp;\ge 0 \ \  &amp;<br>\end{aligned}<br>$$</p>
+<p>By weak duality, if such point exists, then $x$ is the optimal solution for the primal program. (Note that, if there is no feasible point for the third program, the primal could be either infeasible or unbounded.)</p>
+<h2 id="Ellipsoid"><a href="#Ellipsoid" class="headerlink" title="Ellipsoid"></a>Ellipsoid</h2><p>Ellipsoid is a unit ball that has been squashed or stretched along orthogonal directions. We illustrate this by an example in two dimension. The following picture shows an ellipse obtained by enlarging the unit ball by a facto of $2$ along the $v_1$ direction and squashing it ball by half along the $v_2$ direction, where $v_1$ and $v_2$ constitute an orthogonal base. </p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod1.jpg"></p>
+<p>It is equivalent to first squash or stretch the ball along the directions of $e_1, e_2$, </p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod2.jpg"></p>
+<p>then rotate the resulting ellipsoid to corresponding orthogonal directions. </p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod3.jpg"></p>
+<p>The rotation can be done by left multiplying an orthogonal matrix<br>$$<br>V = [v_1, v_2]<br>$$</p>
+<p>where $v_1, v_2$ are the orthogonal base for which the squash and stretch are performed. </p>
+<p>To recover the unit ball, we can first perform the reverse rotation:<br>$$<br>x \leftarrow V^T x<br>$$</p>
+<p>followed by a reverse scaling:<br>$$<br>x \leftarrow<br>  \begin{bmatrix}<br>    1/2  &amp; \<br>    &amp;  2<br>  \end{bmatrix}<br>  x<br>$$</p>
+<p>Note that the reverse rotation is represented by matrix $V^T$ as $V V^T  = I$. Therefore, the ellipsoid is denoted as<br>$$<br>  \left(<br>  \begin{bmatrix}<br>    1/2  &amp; \<br>    &amp;  2<br>  \end{bmatrix}<br>  V^T x \right)^T<br>  \left(<br>  \begin{bmatrix}<br>    1/2  &amp; \<br>    &amp;  2<br>  \end{bmatrix}<br>  V^T x \right) \le 1<br>$$</p>
+<p>That is<br>$$<br>  x^T \left( V<br>  \begin{bmatrix}<br>    1/2  &amp; \<br>    &amp;  2<br>  \end{bmatrix}^2<br>  V^T \right) x  \le 1<br>$$</p>
+<p>In general, an ellipsoid is represented by<br>$$<br>E(s, P) = { x : (x - s)^T P^{-1} (x - s) \le 1}<br>$$</p>
+<p>where $s \in \mathcal{R}^n$ is the center of the ellipsoid and $P$ is a positive semi-definite matrix. </p>
+<p>Recall that a positive semi-definite matrix $P$ can be rewritten as<br>$$<br>P = V \Sigma V^T<br>$$<br>and<br>$$<br>P^{-1} = V \Sigma^{-1} V^T<br>$$</p>
+<p>where $V$ is an orthogonal matrix and $\Sigma$ is a diagonal matrix. Geometrically, $V$ are the directions and $\sqrt \Sigma$ are the ratios of the squashes or stretches. If we define $B = V \sqrt \Sigma$,  then $B^T = \sqrt \Sigma V^T$, $B^{-1} = \sqrt \Sigma^{-1} V^T$ and $P = B B^T$, $P^{-1} = (B^{-1} )^T B^{-1}$.   </p>
+<p>The representation can be viewed as merely a recipe for converting the ellipsoid back to the unit ball:</p>
+<ol>
+<li>First perform a translation $x \leftarrow (x - s)$ so that the center of the ellipsoid is now the center. </li>
+<li>Rotate the ellipsoid, such that its axes are aligned with $e_1, e_2, …, e_n$. This is done by multiplying the matrix $V^T$: $x \leftarrow V^T x$. </li>
+<li>Squash or stretch along the axes $e_1, e_2, …, e_n$: $x \leftarrow \sqrt \Sigma^{-1} x$. </li>
+<li>Therefore, the linear transformation for the recovery is<br>$$<br>x \leftarrow B^{-1} (x - s)<br>$$</li>
+</ol>
+<p>Conversely, $E(s, P) = E(s, V \sqrt \Sigma \sqrt \Sigma V^T)$ tells us how to get the ellipsoid from the unit ball:</p>
+<ol>
+<li>Scale unit ball along the axes $e_1, e_2, .., e_n$ by factors that $\sqrt \Sigma_{1, 1}, \sqrt \Sigma_{2, 2}, …, \sqrt \Sigma_{n, n}$.</li>
+<li>Rotate the ellipsoid by matrix $V$. </li>
+<li>Move the ellipsoid by $s$. </li>
+</ol>
+<p>That is, $x \leftarrow V \sqrt \Sigma y + s$ takes the unit ball ${ y : y^T y \le 1 }$ to the corresponding ellipsoid ${ x : (x - s)^T V \Sigma^{-1} V^T (x - s) \le 1 }$.</p>
+<h2 id="Goal"><a href="#Goal" class="headerlink" title="Goal"></a>Goal</h2><p>Now return to our discussion of ellipsoid method. Without lose of generality, we consider only the following  problem: </p>
+<p><em>Given $F = {x : Ax \le b}$, output any $x \in F$ or report $F = \emptyset$, where $A \in \mathcal{R}^{m \times n}, x \in \mathcal{R}^n, b \in \mathcal{R}^m$</em>. </p>
+<p>We assume further that</p>
+<ol>
+<li><p>$\exists R \in \mathcal{R}$, $F \subset B(0, R)$. Besides, if $F \neq \emptyset$, $\exists r \in \mathcal{R}$, and $t \in \mathcal{R}^n$, s.t., $B(t, r) \subset F$. Here $B(0, R) = { x : ||x||_2 \le R }$ and $B(t, r) = { x : ||x - t||_2 \le r }$. </p>
+</li>
+<li><p><em>Separation Oracle:</em> Given a vertex $s \in \mathcal{R}^n$, the separation oracle is a mechanism that asserts</p>
+<ul>
+<li>either $s \in F$</li>
+<li>or $s \notin F$ and returns a direction (which is a unit vector) $d \in \mathcal{R}^n$, such that $d^T s \ge d^T x$ for $\forall x \in F$. </li>
+</ul>
+</li>
+</ol>
+<p>The first assumption says that $F$ is neither too “large” nor too “small”. Note that $B(t, r) \subset F$ also implies that $F$ has full dimension. </p>
+<p>For LP, the separation is straightforward to implement: we just check whether $Ac \ge b$. If so, then $c \in F$. Otherwise, $\exists i \in [m]$, such that the $i$-th constraint is violated: $A_{i,\cdot} c &gt; b_i$. Just return $d^T = A_{i, \cdot}$. </p>
+<p><strong><em>Question to ponder: the feasible region of an LP may not satisfy the first assumption? It is possible to reduce it to one satisfying the first assumption?</em></strong></p>
+<h2 id="The-Algorithm"><a href="#The-Algorithm" class="headerlink" title="The Algorithm"></a>The Algorithm</h2><p>The algorithm begins with a special ellipsoid $E_0 = B(0, R)$. At each step, it queries the <em>separation oracle</em> and generates a smaller ellipsoid (with reduced volume). If $F$ is not empty, the ellipsoid at each step is guaranteed to contain it. The algorithm stops before the volume of the ellipsoid decreases below $vol(B(t, r))$. </p>
+<p>The algorithmic flow is shown below:</p>
+<hr>
+<ol>
+<li><p>$i = 0$.  </p>
+</li>
+<li><p>$E_0 = B(0, R)$.   </p>
+</li>
+<li><p><em>While</em> $vol(E_i(s_i, P_i)) \ge vol(B(t, r))$:  </p>
+</li>
+<li><p>$\qquad$ <em>if</em> $s_i \in F$, output $s_i$.  </p>
+</li>
+<li><p>$\qquad$ <em>else</em>,   </p>
+</li>
+<li><p>$\qquad$ $\qquad$ Obtain a direction $d_i$, s.t., $d_i^T s_i \ge d_i^T x$<br>for $x \in F$*.   </p>
+</li>
+<li><p>$\qquad$ $\qquad$ Calculate a ellipsoid $E_{i + 1} \supset E_{i} \cap {x : d_i^T s_i \ge d_i^T x }$.  </p>
+</li>
+<li><p>$\qquad$ $\qquad$ $i \leftarrow i + 1$.   </p>
+</li>
+<li><p> Output $F = \emptyset$.   </p>
+</li>
+</ol>
+<hr>
+<p>For the one dimension case, it is nothing more than a variant of binary search. </p>
+<h2 id="Bounding-the-Number-of-Iterations"><a href="#Bounding-the-Number-of-Iterations" class="headerlink" title="Bounding the Number of Iterations"></a>Bounding the Number of Iterations</h2><p>The main result that characterizes the running time is </p>
+<p><strong><em>Theorem: It is guaranteed that for $\forall i$</em></strong>,<br>$$<br>\frac{vol( E_{i + 1} ) } {vol(E_i) } \le \exp \left( -\frac{1}{2 (n + 1) } \right)<br>$$<br>$\square$.</p>
+<p><em>Corollary: the number of iterations of the ellipsoid method is bounded by</em><br>$$<br>2n(n + 1) \ln \frac{R}{r}<br>$$<br>$\square$.</p>
+<p>To simplify the notation further, we write $E_i = E(s, P)$, $d_i = d$ and $E_{i + 1} = E(s’, P’)$. The key lemma for the theorem is: </p>
+<p><em>Lemma: Given an ellipsoid $E(s, P) = { x \in \mathcal{R}^n : (x - s)^T P^{-1} (x - s) \le 1}$ and the half space $H(s, d) = { x \in \mathcal{R}^n : d^T (x - s)\le 0 }$, we can find an ellipsoid $E(s’, P’)$, such that</em></p>
+<ol>
+<li><em>$E(s’, P’)$ contains the intersection of $E(s, P)$ and $H(s, d)$ : $E(c, P) \cap { x \in \mathcal{R}^n : d^T (x - s)\le 0 }$</em>.  </li>
+<li><em>The volume of $E(s’, P’)$ is at most $\exp \left( -\frac{1}{2 (n + 1) } \right)$ times that of $E(s, P)$</em>. </li>
+</ol>
+<p>In particular, $s’$ and $P’$ is given by<br>$$<br>\begin{aligned}<br>s’ &amp;= s - \frac{1}{n + 1} \frac{P d}{\sqrt{d^T P d} } \<br>P’ &amp;= \frac{n^2}{n^2 - 1} \left( P - \frac{2}{n + 1} \frac{Pd}{\sqrt{d^T P d} } (\frac{Pd}{\sqrt{d^T P d} } )^T \right)<br>\end{aligned}<br>$$</p>
+<p><em>Proof.</em> </p>
+<p>The transformation $y = B^{-1} (x - s)$ maps $E(s, P)$ to $E(0， I)$, and ${x \in R^n: d^T B (B^{-1} (x - s)) \le 0}$ to $H(0, B^T d) = {y \in R^n: d^T B y \le 0}$. Let $e’ = \frac{B^T d}{\sqrt{d^T B B^T d} } = \frac{B^T d}{\sqrt{d^T P d} }$ so that $H(0, B^Td)$ is equivalent to $H(0, e’)$.</p>
+<p>It suffices to find an ellipsoid that contains $E(0, I) \cap H(0, e’)$. Then applying the reverse transformation $x = By + s$ will give us an ellipsoid that contains $E(s, P) \cap H(s, d)$. </p>
+<p>We can further reduce the problem to finding an ellipsoid that covers $E(0, I) \cap H(0, e_1)$ as we can recover the ellipsoid by rotating $e_1$ to $e’$. </p>
+<p><strong><em>Claim.</em></strong><br>The ellipsoid that covers $E(0,I) \cap H(0, e_1)$ is given by<br>$$<br>E \left( -\frac{1}{n + 1}e_1, \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T) \right)<br>$$<br>and has minimum volume $\exp ( -\frac{1}{2(n + 1)} )$. </p>
+<p>To under the ellipsoid, we check how it transforms the unit ball to an ellipsoid:</p>
+<ol>
+<li><p>It squashes the ball along the $e_1$ axis, by a factor of $\sqrt{ \frac{n^2} {n^2 - 1} \frac{n - 1} {n + 1} } = \frac{n}{ n + 1 }$.</p>
+</li>
+<li><p>Then it stretches all other directions $e_2, e_3, …, e_n$ by a factor of $\sqrt \frac{n^2}{n^2 - 1}$. </p>
+</li>
+<li><p>Finally, move the center of the ellipsoid to $-\frac{1}{n + 1}e_1$.</p>
+<p>Note that the ellipsoid has volume $(1 - \frac{1}{n + 1}) (1 + \frac{1}{n^2 -1} )^{(n - 1) / 2} \le e^{- \frac{1}{n + 1} + \frac{1}{n^2 -1} (n - 1) / 2} = e^{- \frac{1}{2(n + 1)} }$. This is also the ratio of the ellipsoid over that of the unit ball, whose value is 1.</p>
+</li>
+</ol>
+<p>Before we prove the claim, we show how to transform the ellipsoid back to $E(s’, P’)$ that covers $E(s, P) \cap H(s, d)$. First, by symmetry, the ellipsoid that covers $E(0, I) \cap H(0, e’)$ is given by<br>$$<br> E(-\frac{1}{n + 1}e’, \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e’ (e’)^T) )<br>$$</p>
+<p>Applying the mapping $B y + s = x$:<br>$$<br>E(-\frac{1}{n + 1} e’, \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e’ (e’)^T) ) \rightarrow E(s - \frac{1}{n + 1} B^T e’, \frac{n^2}{n^2 - 1} B (I - \frac{2}{n + 1}e’ (e’)^T) B^T )<br>$$</p>
+<p><strong>As linear transformation preserves the ratio of volumes, the ratio of the volume of the final ellipsoid over that of $E(s, P)$ is also $\exp(- \frac{1}{2 (n + 1)} )$.</strong></p>
+<p><strong><em>Question to ponder:</em></strong> </p>
+<ol>
+<li>Show that $\frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T)$ is positive definite.</li>
+<li>Show that $\left( \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T) \right)^{-1} =  \frac{n^2 - 1}{n^2} I + \frac{2n + 2}{n^2} e_1 e_1^T$.</li>
+<li>Show that $\frac{n^2}{n^2 - 1} B (I - \frac{2}{n + 1}e’ (e’)^T) B^T$ is positive definite.</li>
+</ol>
+<p><em>Proof of the claim</em>. </p>
+<p>As both $E(0,I)$ and $H(0, e_1)$ are symmetric to $e_1$, so should the ellipsoid covering the intersection of them. Therefore it should be of the form<br>$$<br>a_1 (x_1 - \lambda) + \sum_{i = 2}^n a_i x_i^2 \le 1<br>$$</p>
+<p>where $a_i$’s and $\lambda$ ($0 &lt; \lambda &lt; 1$) are the parameters to be determined. The goal is to minimize its volume: </p>
+<p>$$<br>\sqrt{\frac{1}{a_1} \prod_{i = 2}^n \frac{1}{a_i} } vol[ E(0, I) ]<br>$$</p>
+<p>where $vol[ E(0, I) ] = 1$ is the volume of unit ball in $R^n$. It is equivalent to maximize<br>$$<br>a_1 \prod_{i = 2}^n a_i<br>$$</p>
+<p>As the ellipsoid covers $E(0,I) \cap H(0, e_1)$ and should has as small volume as possible, the points $e_i$ ($i = 1, 2, …, n$) should be on its boundary. Therefore, </p>
+<p>$$<br>\begin{aligned}<br>a_1 (1 - \lambda)^2 + \sum_{i = 2}^n a_i 0^2 &amp;= 1 &amp;\rightarrow a_1(1 - \lambda)^2 = 1 &amp;\<br>a_1 (0 - \lambda)^2 + a_i 1^2 &amp;= 1  &amp;\rightarrow a_i = 1 - a_1 \lambda^2  &amp;\quad  \forall i = 2, 3, …, n  \<br>\end{aligned}<br>$$</p>
+<p>Replacing $a_i$ with $1 - a_1 \lambda^2$ and then $a_1$ with $\frac{1}{(1 - \lambda)^2}$, the goal becomes</p>
+<p>$$<br>\max \quad \frac{1}{(1 - \lambda)^2} \left[ 1 - \frac{\lambda^2}{(1 - \lambda)^2} \right]^{n - 1}<br>$$</p>
+<p>Substitute $\frac{1}{1 - \lambda}$ by a variable $x &gt; 1$, and let<br>$$<br>f \doteq x^2 [1 - (x - 1)^2]^{n - 1}<br>$$</p>
+<p>Its derivative is<br>$$<br>f’ = 2x [1 - (x - 1)^2]^{n - 1} - 2 (n - 1)(x - 1) x^2 [1 - (x - 1)^2]^{n - 2}<br>$$</p>
+<p>Setting the derivative to zero, we obtain </p>
+<p>$$<br>\begin{aligned}<br>&amp;[1 - (x - 1)^2] - (n - 1)(x - 1)x = 0 \<br>&amp;\Rightarrow 1 - x^2 + 2x - 1- (n -1 )x^2 + (n -1 )x = 0 \<br>&amp;\Rightarrow - n x^2 + (n + 1) x = 0 \<br>&amp;\Rightarrow x = \frac{n + 1}{n}<br>\end{aligned}<br>$$</p>
+<p>It follows that $a_1 = (\frac{n + 1}{n})^2$, $\lambda = \frac{1}{n + 1}$ and $a_i = \frac{n^2 - 1}{n^2}$ for $\forall i = 2, 3, …, n$. </p>
+<!-- Therefore, 
+$$
+c_1 = \left[ 
+    \begin{matrix}
+\frac{1}{n + 1} \\
+ 0 \\
+  ...\\
+0
+\end{matrix}
+\right] 
+= \frac{1}{n + 1} e_1
+$$
+and 
+$$
+P_1^{-1} = \left[ 
+\begin{matrix}
+(\frac{n + 1}{n} )^2 &                       &   ...     \\
+                    &   \frac{n^2 - 1}{n^2}  &   ...     \\
+                    &                        &   ...     \\
+                    &                        &   &\frac{n^2 - 1}{n^2}
+\end{matrix}
+\right] = \frac{n^2 - 1}{n^2} I + 2\frac{n + 1}{n^2} e_1 e_1^T \\
+P_1 = \left[ 
+\begin{matrix}
+(\frac{n}{n + 1} )^2 &                       &   ...     \\
+                    &   \frac{n^2}{n^2 - 1}  &   ...     \\
+                    &                        &   ...     \\
+                    &                        &   &\frac{n^2}{n^2 - 1}
+\end{matrix}
+\right] = \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T)
+$$
+
+The volume ratio between $E(c_1, P_1)$ and $E(0, I)$ is 
+
+$$
+\begin{aligned}
+\sqrt{\frac{1}{a_1} \prod_{i = 2}^n \frac{1}{a_i} } 
+&= \frac{n}{n + 1} \left[ \frac{n^2 }{n^2 - 1} \right]^{(n - 1) / 2} \\
+&\le \exp \left( -\frac{1}{n + 1} + \frac{1}{2}\frac{n - 1}{n^2 - 1} \right) \\
+&= \exp \left( -\frac{1}{2} \frac{1}{n + 1} \right)
+\end{aligned}
+$$ -->
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ol>
+<li>Michel X. Goemans, 7. Lecture notes on the ellipsoid algorithm, 18.433: Combinatorial Optimization, MIT,</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/02/18/Determinant,%20Cross%20Product%20and%20Cramer's-Rule/" rel="prev" title="Determinant, Cross Product and Cramer's-Rule">
+      <i class="fa fa-chevron-left"></i> Determinant, Cross Product and Cramer's-Rule
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/02/24/Eigenvalues-and-Eigenvectors/" rel="next" title="Eigenvalues, Eigenvectors and SVD">
+      Eigenvalues, Eigenvectors and SVD <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Feasibility-implies-Optimality"><span class="nav-number">1.</span> <span class="nav-text">Feasibility implies Optimality</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ellipsoid"><span class="nav-number">2.</span> <span class="nav-text">Ellipsoid</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Goal"><span class="nav-number">3.</span> <span class="nav-text">Goal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Algorithm"><span class="nav-number">4.</span> <span class="nav-text">The Algorithm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bounding-the-Number-of-Iterations"><span class="nav-number">5.</span> <span class="nav-text">Bounding the Number of Iterations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description">你生之前悠悠千載已逝，未來還會有千年沉寂的期待</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
