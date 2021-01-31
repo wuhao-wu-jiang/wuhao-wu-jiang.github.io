@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta property="og:type" content="website">
@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/06/Gradient-Descent/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/07/Entropy-and-Compression/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/03/06/Gradient-Descent/" class="post-title-link" itemprop="url">Gradient Descent</a>
+            <a href="/2020/06/07/Entropy-and-Compression/" class="post-title-link" itemprop="url">Entropy and Compression</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-03-06 10:10:45" itemprop="dateCreated datePublished" datetime="2020-03-06T10:10:45+11:00">2020-03-06</time>
+              <time title="Created: 2020-06-07 12:24:22" itemprop="dateCreated datePublished" datetime="2020-06-07T12:24:22+10:00">2020-06-07</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 00:46:03" itemprop="dateModified" datetime="2020-03-09T00:46:03+11:00">2020-03-09</time>
+                <time title="Modified: 2020-07-13 23:57:00" itemprop="dateModified" datetime="2020-07-13T23:57:00+10:00">2020-07-13</time>
               </span>
 
           
@@ -191,628 +191,837 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Gradient descent is a greedy search method for optimization. It approximates a function locally by a linear function. Its analysis varies depending on the what kinds of constraints you place on it.</p>
-<p>We study a baby version of the method. The problem at hand is given by: <span class="math display">\[
-\min_{x \in \mathbb{R }^n} f(x)
-\]</span> where <span class="math inline">\(f\)</span> is twice continuous differentiable and convex. The convexity of <span class="math inline">\(f\)</span> implies that it has a unique minimum value <span class="math inline">\(\min_{x \in \mathbb{R }^n} f(x)\)</span>. Assume that <span class="math inline">\(f\)</span> indeed achieves minimum at some point and denote the optimal point as <span class="math inline">\(x^*\)</span>. Note that is some case, <span class="math inline">\(f\)</span> can not achieve minimum value at any point. Consider <span class="math inline">\(f(x) = e^x\)</span>. Then <span class="math inline">\(\min_{x \in \mathbb{R } } e^x = 0\)</span>. <span class="math inline">\(f\)</span> can approach arbitrary close to <span class="math inline">\(0\)</span> but never achieve that value.</p>
-<p>Before we delve into the details, we need to define some frequently used notations.</p>
-<ul>
-<li><p>The gradient <span class="math inline">\(\nabla f(x):\mathbb{R }^n \rightarrow \mathbb{R }^n\)</span> is the vector of partial derivatives of <span class="math inline">\(f\)</span> at point <span class="math inline">\(x\)</span>: <span class="math display">\[
-\nabla f(x) = \left[ \frac{\partial f (x) }{\partial x_1}, \frac{\partial f (x)}{\partial x_2}, .., \frac{\partial f (x) }{\partial x_n} \right]
-\]</span></p></li>
-<li><p>The Hessian <span class="math inline">\(\nabla^2 f(x) : \mathbb{R }^n \rightarrow \mathbb{R }^{n \times n}\)</span> is the matrix of second order derivatives of <span class="math inline">\(f\)</span> at <span class="math inline">\(x\)</span>: <span class="math display">\[
-  \nabla f(x) = 
-      \left[
-      \begin{aligned}
-          \frac{\partial^2 f (x)}{\partial x_1 \partial x_1}, \frac{\partial^2 f (x)}{\partial x_1 \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_1 \partial x_n} \\
-          \frac{\partial^2 f (x)}{\partial x_2 \partial x_1}, \frac{\partial^2 f (x)}{\partial x_2 \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_2 \partial x_n} \\
-          &amp;...\\
-          \frac{\partial^2 f (x)}{\partial x_n \partial x_1}, \frac{\partial^2 f (x)}{\partial x_n \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_n \partial x_n} \\
-      \end{aligned}
-      \right]
-  \]</span> Since <span class="math inline">\(f\)</span> is twice continuous differentiable, the Hessian is symmetric.</p></li>
-</ul>
-<p>The algorithm is itself very simple.</p>
-<h3 id="algorithm"><strong>Algorithm</strong></h3>
-<p><strong><em>Gradient Descent</em></strong></p>
+          <p>One interpretation of entropy of a random variable is as a measure of how many unbiased, independent random bits in expectation we can extract from the random variable. Another one comes from compression of a sequence.</p>
+<p>Assume that the sequence studied (denoted as <span class="math inline">\(s\)</span>) is a binary one. It consists of a concatenation of the outcomes of <span class="math inline">\(n\)</span> independent Bernoulli random variables. Without lose of generality, we assume that each bit comes up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p \le { 1 / 2 }\)</span>. This is one of the simplest models of a sequence.</p>
+<p>The fact that sequence could be a biased one makes it possible to represent it by a new sequence with shorter length in expectation. For example, suppose that <span class="math inline">\(p = \frac{1}{4}\)</span>, then for a pair of consecutive bits, it have</p>
 <ol type="1">
-<li>Begin from some <span class="math inline">\(x_0 \in \mathbb{R }^n\)</span>.</li>
-<li><span class="math inline">\(x^{t + 1} \leftarrow x^t - \eta \nabla f(x^t)\)</span>.</li>
+<li>probability <span class="math inline">\(\frac{1}{16}\)</span> of being <span class="math inline">\(11\)</span>,<br />
+</li>
+<li>probability <span class="math inline">\(\frac{3}{16}\)</span> of being <span class="math inline">\(01\)</span>,</li>
+<li>probability <span class="math inline">\(\frac{3}{16}\)</span> of being <span class="math inline">\(10\)</span>,</li>
+<li>probability <span class="math inline">\(\frac{9}{16}\)</span> of being <span class="math inline">\(00\)</span>.</li>
 </ol>
-<p>where <span class="math inline">\(\eta &gt; 0\)</span> is called step size. Below is an example that show how <span class="math inline">\(f\)</span> decreases as the algorithm iterates.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/GradientDescent.jpg" /></p>
-<h2 id="convergence"><strong>Convergence</strong></h2>
-<p>To analyze the convergence behavior, we need additional assumptions on <span class="math inline">\(f\)</span>. We analyze a baby version of gradient descent with strong assumptions:</p>
+<p>If we use <span class="math inline">\(111\)</span> to represent <span class="math inline">\(11\)</span>, <span class="math inline">\(110\)</span> to represent <span class="math inline">\(01\)</span>, <span class="math inline">\(10\)</span> to represent <span class="math inline">\(10\)</span>, and <span class="math inline">\(0\)</span> to represent <span class="math inline">\(00\)</span>, then the expected number of representation bits per pair is <span class="math display">\[
+\begin{array}{r}
+    3 \cdot \frac{1}{16} + 3 \cdot \frac{3}{16} + 2 \cdot  \frac{3}{16} + 1 \cdot  \frac{9}{16} 
+    = \frac{27}{16} 
+    &lt; 2
+\end{array}
+\]</span></p>
+<p>In general, compression is not limited to the way described above. We call the rule with which we compress a string <em>a compression function</em>.</p>
+<h3 id="compression-function"><strong><em>Compression Function</em></strong></h3>
+<p><em>Let <span class="math inline">\(S = \{0, 1\}^n\)</span> be the set of binary sequence of length <span class="math inline">\(n\)</span>, and <span class="math inline">\(T = \{ 0, 1\}^+\)</span> the set of binary sequence of any positive length. A compression function <span class="math inline">\(h: S \rightarrow T\)</span> is an injective (one-to-one) function from <span class="math inline">\(S\)</span> to <span class="math inline">\(T\)</span>.</em></p>
+<p>In other words, each <span class="math inline">\(s \in S\)</span> is assigned a unique non-empty sequence (of arbitrary length) by <span class="math inline">\(h\)</span>.</p>
+<p>Observe that the size of <span class="math inline">\(S\)</span> is <span class="math inline">\(2^n\)</span>. On the other hand, the number of sequences with length less than <span class="math inline">\(n\)</span> is <span class="math inline">\(\sum_{i = 1}^{n - 1} 2^{i} = 2^n - 1 &lt; 2^n\)</span>. For any <span class="math inline">\(h\)</span>, it is impossible for <span class="math inline">\(h\)</span> to map every <span class="math inline">\(s \in S\)</span> to a sequence with length less than <span class="math inline">\(n\)</span>. Under adversarial input, <span class="math inline">\(h\)</span> can not compress at all.</p>
+<p>The hope is that when there is a distribution <span class="math inline">\(\mathfrak{D}\)</span> on <span class="math inline">\(S\)</span>, the expected length of the compressed sequences would be small: <span class="math display">\[
+\mathbf{E} [ |h(s)| ] = \sum_{s \in S} p_s \cdot |h(s)|
+\]</span></p>
+<p>To illustrate the meaning of entropy, we study a simple case where <span class="math inline">\(\mathfrak{D}\)</span> is the joint distribution of <span class="math inline">\(n\)</span> <em>i.i.d.</em> Bernoulli random variables that come up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p \le { 1 / 2 }\)</span> (by symmetry, the claim holds for the case of <span class="math inline">\(p &gt; { 1 / 2 }\)</span>).</p>
+<p>The following theorem formalizes how good a compression function we can find.</p>
+<h3 id="entropy-as-lower-bound-and-upper-bound"><strong><em>Entropy as Lower Bound and Upper Bound</em></strong></h3>
+<p><em>Theorem.</em></p>
 <ol type="1">
-<li><span class="math inline">\(f\)</span> is <span class="math inline">\(\beta\)</span> smooth, i.e., <span class="math inline">\(v^T \nabla^2 f(z) v \le \beta \| v \|^2\)</span> for <span class="math inline">\(\forall z, v \in \mathbb{R }^n\)</span>.</li>
-<li><span class="math inline">\(f\)</span> is <span class="math inline">\(\alpha\)</span> strongly convex, i.e., <span class="math inline">\(v^T \nabla^2 f(z) v \ge \alpha \| v \|^2\)</span> for <span class="math inline">\(\forall z, v \in \mathbb{R }^n\)</span>.</li>
+<li><span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> a compression <span class="math inline">\(h\)</span> and integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that <span class="math display">\[
+\mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)
+\]</span></li>
+<li><span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that for any compression <span class="math inline">\(h\)</span>, <span class="math display">\[
+     \mathbf{E}[ |h(s)| ] \ge (1 - \delta) n \mathbf{H}(p)
+ \]</span></li>
 </ol>
-<p>The interpretation is that, <span class="math inline">\(\beta\)</span> is the upper bound of the largest possible eigenvalue of the Hessian at any point and <span class="math inline">\(\alpha\)</span> is the lower bound. By definition we have <span class="math inline">\(\beta \ge \alpha\)</span>.</p>
-<p>Now define <span class="math display">\[
-\Delta_t = f(x^t) - f(x^*)
-\]</span> and <span class="math inline">\(\kappa = \frac{\beta}{\alpha}\)</span>. The following theorem characterize the convergence speed of the algorithm:</p>
-<p><strong><em>Theorem.</em></strong> <em>If we set <span class="math inline">\(\eta = \frac{1}{\beta}\)</span>, then it holds that</em> <span class="math display">\[
-\Delta_t \le \Delta_0 \left( 1 - \frac{1}{4 \kappa } \right)^t.
+<p><em>Intuitively, the entropy <span class="math inline">\(\mathbf{H}(p)\)</span> is the measure of the average number of bits in expectation we need after compression to represent a Bernoulli random variable that comes up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p\)</span>.</em></p>
+<p><em>The high level idea of the proof is that, with high probability, the number of ones in a <span class="math inline">\(s \in S\)</span> is roughly <span class="math inline">\(np\)</span>. There are roughly <span class="math inline">\(2^{n\mathbf{H}(p)}\)</span> such sequences. Therefore, we can use <span class="math inline">\(n \mathbf{H}(p)\)</span> bits to represent each sequence.</em></p>
+<p><strong><em>Proof.</em></strong> The claim is trivially true if <span class="math inline">\(p = { 1 / 2 }\)</span>. Otherwise, <span class="math inline">\(p &lt; { 1 / 2 }\)</span>. We can pick some <span class="math inline">\(\epsilon &gt; 0\)</span>, such that <span class="math inline">\(p + \epsilon &lt; { 1 / 2 }\)</span>. Further, if <span class="math inline">\(n\)</span> is large enough, <span class="math inline">\(np + n\epsilon \le n / 2 - 1\)</span>. Hence, we may assume that <span class="math inline">\(\lceil np + n\epsilon \rceil \le n / 2\)</span> .</p>
+<p>Denote <span class="math inline">\(Z\)</span> be the number of ones in the string <span class="math inline">\(s\)</span>. By Hoeffding Inequality, it holds that <span class="math display">\[
+\Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)
 \]</span></p>
-<p>By the theorem, given any <span class="math inline">\(\epsilon &gt; 0\)</span>, after <span class="math display">\[
-O \left( \kappa \log \frac{\Delta_0}{\epsilon} \right) 
+<p>By the fact that <span class="math inline">\(Z\)</span> takes only integer values, we have <span class="math display">\[
+\Pr[Z \ge \lceil np + n\epsilon \rceil] \le \exp(-2 n \epsilon^2 )
 \]</span></p>
-<p>iteration, the error <span class="math inline">\(\Delta_t\)</span> will be smaller than <span class="math inline">\(\epsilon\)</span>.</p>
-<p><em>Proof:</em></p>
-<p>The proof consists of two parts. <span class="math inline">\(\beta\)</span>-Smooth and <span class="math inline">\(\alpha\)</span>-Convexity play a role in each part separately.</p>
-<h4 id="beta-smoothness."><span class="math inline">\(\beta\)</span>-Smoothness.</h4>
-<p>The property guarantees that <span class="math inline">\(\epsilon_{t + 1} \le \epsilon_t - \frac{1}{2 \beta} \| f(x_t) \|^2\)</span>.</p>
-<p>First, by Taylor series expansion, we have for <span class="math inline">\(x, y \in \mathbb{R }^n\)</span>:</p>
-<p><span class="math display">\[
-\begin{aligned}
-    f(y)    &amp;= f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} (y - x)^T \nabla^2 f(z) (y - x) \\
-            &amp;\le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \|y - x \|^2
-\end{aligned}
-\]</span> where <span class="math inline">\(z = \lambda x + (1 - \lambda) y\)</span> for <span class="math inline">\(\lambda \in [0, 1]\)</span>. The second inequality comes from the <span class="math inline">\(\beta\)</span>-smoothness.</p>
-<p>Replacing <span class="math inline">\((y - x)\)</span> as <span class="math inline">\(-\eta \nabla f(x)\)</span>, we get <span class="math display">\[
-\begin{aligned}
-    f(y)  
-        &amp;\le f( x ) - \eta \| \nabla f(x) \|^2 + \frac{1}{2} \beta \eta^2 \| \nabla f( x ) \|^2 \\
-        &amp;\le f( x ) + (\frac{1}{2} \beta \eta^2 -\eta) \| \nabla f(x ) \|^2  \\ 
-\end{aligned}
+<p>We use the first bit output of <span class="math inline">\(h\)</span> as a flag. For a string <span class="math inline">\(s\)</span> with <span class="math inline">\(Z \ge \lceil np + n\epsilon \rceil\)</span>, we set the first bit to <span class="math inline">\(0\)</span> and then output the same sequence, i.e., <span class="math inline">\(h(s) = 0s\)</span>. In such case we do not compress the string at all and use <span class="math inline">\(n + 1\)</span> bits to represent it.</p>
+<p>We set the first bit output to <span class="math inline">\(1\)</span> if <span class="math inline">\(Z &lt; \lceil np + n \epsilon \rceil \le n / 2\)</span>. The number of such sequences is bounded by <span class="math display">\[
+\sum_{k = 0}^{\lceil np + n\epsilon \rceil - 1} \binom{n}{k} \le  \frac{n}{2} \binom{n}{\lceil np + n\epsilon \rceil - 1 } \le \frac{n}{2} 2^{ n \cdot \mathbf{H} \left( \frac{ \lceil np + n\epsilon \rceil - 1 }{n} \right) } \le \frac{n}{2} 2^{ n \mathbf{H} \left( p + \epsilon  \right) }
 \]</span></p>
-<p>The second coefficient <span class="math inline">\((\frac{1}{2} \beta \eta^2 -\eta)\)</span> is minimized when <span class="math inline">\(\beta \eta - 1 = 0\)</span>, i.e., <span class="math inline">\(\eta = \frac{1}{\beta}\)</span>. It follows <span class="math display">\[
-\begin{aligned}
-    f(y ) 
-        &amp;\le f( x ) + (\frac{1}{2} \beta \eta^2 -\eta) \| \nabla f(x ) \|^2  \\ 
-        &amp;\le f( x  ) - \frac{1}{2 \beta}  \| \nabla f(x ) \|^2  \\ 
-\end{aligned}
-\]</span></p>
-<p>Finally, substituting <span class="math inline">\(y\)</span> with <span class="math inline">\(x^{t + 1}\)</span> and <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span>, it becomes <span class="math display">\[
-\begin{aligned}
-    f(x^{t + 1}) 
-        &amp;\le f(x^t) - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2 \\
-        &amp;\longleftrightarrow    \\
-    \Delta_{t + 1} 
-        &amp;\le \Delta_t - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2 
-\end{aligned}
-\]</span></p>
-<h4 id="alpha-convexity."><span class="math inline">\(\alpha\)</span> Convexity.</h4>
-<p>We might still have a problem, if when <span class="math inline">\(x^t\)</span> approaches <span class="math inline">\(x^*\)</span>, <span class="math inline">\(\| \nabla f(x^t) \|\)</span> decreases too fast. That where <span class="math inline">\(\alpha\)</span> convexity comes into play. We will show that <span class="math display">\[
-\| \nabla f(x^t) \|^2 \ge \Delta_t \cdot\frac{1}{2} \alpha
-\]</span></p>
-<ol type="1">
-<li><p>Proof 1. By <span class="math inline">\(\alpha\)</span> convexity, we have for all <span class="math inline">\(y \in \mathbb{R}^n\)</span>,<br />
+<p>The first inequality holds because <span class="math inline">\(\binom{n}{k}\)</span> increases for <span class="math inline">\(k &lt; n / 2\)</span> and that the summation is over <span class="math inline">\(\lceil np + n \epsilon \rceil \le n / 2\)</span> terms. The last inequality holds since <span class="math inline">\((\lceil np + n\epsilon \rceil - 1) / n \le ( np + n\epsilon ) / n = p + \epsilon &lt; 1 / 2\)</span> and <span class="math inline">\(\mathbf{H}( \cdot )\)</span> is a increasing function in the range <span class="math inline">\([0, 1/2]\)</span>.</p>
+<p>We compress these sequences by representing each of them with a unique sequence of at most<br />
 <span class="math display">\[
-f(y) \ge f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2
-\]</span> Taking minimum of both sides, <span class="math display">\[
-\min_{y \in \R^n} f(y) \ge \min_{y \in \R^n} \left( f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2\right)
-\]</span> The left hand side equals to <span class="math inline">\(f(x^*)\)</span> while the right hand side minimized to <span class="math inline">\(f(x) - \frac{1}{2 \alpha} \| \nabla f(x) \|^2\)</span> when <span class="math inline">\(y - x = -\frac{1}{\alpha} \nabla f(x)\)</span>.</p>
-<p>Substituting <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span>, we get <span class="math display">\[
-\| \nabla f(x^t) \|^2 \ge 2 \alpha \left( f(x^t) - f(x^*) \right) = 2\alpha \Delta_t
-\]</span></p></li>
-<li><p>Proof 2. By convexity, we have</p>
+\begin{array}{rl}
+    \log \left[ (n / 2) \cdot  2^{ n \cdot\mathbf{H} \left( p + \epsilon  \right) } \right]
+    = n \cdot\mathbf{H} \left( p + \epsilon  \right)  + \log n -1
+\end{array}
+\]</span></p>
+<p>bits. Considering the leading flag bit 1 (to indicate the sequence is a compressed one), we output at most <span class="math inline">\(n \mathbf{H} \left( p + \epsilon \right) + \log n\)</span> bits for sequences with <span class="math inline">\(Z &lt; \lceil np + n \epsilon \rceil\)</span>. This can be written as <span class="math inline">\(\left[ \mathbf{H} \left( p + \epsilon \right) + (1 / n) \cdot (\log n - 1) \right] n\)</span> bits and is smaller than <span class="math display">\[
+(1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n
+\]</span></p>
+<p>is <span class="math inline">\(\epsilon\)</span> is smaller enough and <span class="math inline">\(n\)</span> is large enough.</p>
+<p>We are almost done with the proof. It is left to consider sequences with <span class="math inline">\(Z \ge \lceil np + n \epsilon \rceil\)</span>. For those sequence, we don't compress them and and set the leading flag bit to 0. The outputs for those sequences consist of at most <span class="math inline">\(1 + n\)</span> bits. However, by Hoeffding inequality, such sequences do not appear frequently and the expected output length can be made arbitrary small.</p>
+<p>Specifically, <span class="math inline">\(\forall \delta &gt; 0\)</span>, we can find large enough <span class="math inline">\(N\)</span>, such that <span class="math inline">\(\forall n &gt; N\)</span>, it holds</p>
 <p><span class="math display">\[
- \begin{aligned}
-     \nabla f(x)^T (x - x^*) 
-         &amp;\ge f(x) - f(x^*) 
- \end{aligned}
- \]</span></p>
-<p>Then by Taylor expansion and <span class="math inline">\(\alpha\)</span> convexity, <span class="math display">\[
- \begin{aligned}
-     f(x) - f(x^*) 
-         &amp;\ge \nabla f(x^*)^T (x - x^*) +  \frac{1}{2} \alpha \| x - x^* \|^2\\
-         &amp;=\frac{1}{2} \alpha \| x - x^* \|^2
- \end{aligned}
- \]</span></p>
-<p>Concatenating the inequalities, we get <span class="math display">\[
- \| \nabla f(x) \| \| x - x^* \| \ge \nabla f(x)^T (x - x^*) \ge f(x) - f(x^*) \ge \frac{1}{2} \alpha \| x - x^* \|^2
- \]</span> where the first inequality is Cauchy-Schwartz inequality. Multiplying the inequalities we get</p>
-<p><span class="math display">\[
- \| \nabla f(x) \|^2 \| x - x^* \|^2 \ge (f(x) - f(x^*)) \cdot\frac{1}{2} \alpha \| x - x^* \|^2
- \]</span></p>
-<p>which implies that <span class="math display">\[
- \| \nabla f(x) \|^2 \ge (f(x) - f(x^*)) \cdot\frac{1}{2} \alpha 
- \]</span></p>
-<p>Replacing <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span> and <span class="math inline">\(f(x) - f(x^*)\)</span> with <span class="math inline">\(\Delta_t\)</span>, we have <span class="math display">\[
- \| \nabla f(x^t) \|^2 \ge \Delta_t \cdot\frac{1}{2} \alpha 
- \]</span></p></li>
-</ol>
-<p>In combination, we conclude that <span class="math display">\[
+(n + 1 ) \cdot \exp(-2 n \epsilon^2 ) \le n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)
+\]</span></p>
+<p>Then, in expectation, the bits outputted by <span class="math inline">\(h\)</span> is at most <span class="math display">\[
 \begin{aligned}
-    \Delta_{t + 1}
-        &amp;\le \Delta_t \left( 1- \frac{\alpha }{4 \beta} \right)
+    &amp;(n + 1) \cdot \exp(-2 n \epsilon^2 ) + [n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ] \cdot [ 1 - \exp(-2 n \epsilon^2 ) ] \\
+    \le&amp; n \cdot (\delta / 2)  \cdot  \mathbf{H}(p) + [ n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ]\\
+    \le&amp; n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)  +  (1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n\\
+    \le&amp; \left(  1 + \delta \right) \cdot \mathbf{H}(p) \cdot n
 \end{aligned}
 \]</span></p>
-<p>which finishes the proof.</p>
+<p>To prove the lower bound, first we need the following lemma.</p>
+<p><strong><em>Lemma.</em></strong> <em>for <span class="math inline">\(s_1, s_2 \in S\)</span>, if <span class="math inline">\(s_1\)</span> has more ones than <span class="math inline">\(s_2\)</span>, i.e., <span class="math inline">\(\Pr(s_1) \ge \Pr(s_2)\)</span>, then the <span class="math inline">\(h\)</span> that minimizes the expected output length <span class="math inline">\(\mathbf{E}[ |h(s)| ]\)</span> should assign <span class="math inline">\(s_1\)</span> a sequence at most as long as <span class="math inline">\(s_2\)</span>, i.e., <span class="math inline">\(|h(s_1)| \le |h(s_2)|\)</span>.</em></p>
+<p><em>Proof</em>. Otherwise, if we swap the output sequences of <span class="math inline">\(h(s_1)\)</span> and <span class="math inline">\(h(s_2)\)</span>, we lower value of <span class="math inline">\(\mathbf{E}[ |h(s)| ]\)</span>.</p>
 <p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/05/Beta-Smoothness/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/05/Beta-Smoothness/" class="post-title-link" itemprop="url">Characterizations of Beta-Smoothness</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-05 20:05:37" itemprop="dateCreated datePublished" datetime="2020-03-05T20:05:37+11:00">2020-03-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-06 17:01:27" itemprop="dateModified" datetime="2020-03-06T17:01:27+11:00">2020-03-06</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h4 id="definition">Definition</h4>
-<p>A differential function <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}\)</span> is <span class="math inline">\(\beta\)</span>-smooth if <span class="math display">\[
-\|\nabla f(y) - \nabla f(x) \| \le \beta \|y - x\|
-\]</span> where <span class="math inline">\(\|\cdot \|\)</span> is <span class="math inline">\(\ell_2\)</span> norm.</p>
-<h4 id="theorem-1.">Theorem 1.</h4>
-<p>A twice continuously differential function <span class="math inline">\(f : \mathbb{R}^n \rightarrow \mathbb{R}\)</span> is <span class="math inline">\(\beta\)</span>-smooth if and only if <span class="math display">\[
-v^T \nabla^2 f(z) v \le \beta \|v\|^2
-\]</span> for any <span class="math inline">\(z, v \in \mathbb{R}^n\)</span>.</p>
-<p><strong><em>Proof.</em></strong></p>
+<p>Further, consider the number of <span class="math inline">\(s \in S\)</span> with <span class="math inline">\(\lfloor np - n \epsilon \rfloor\)</span> ones, <span class="math display">\[
+\begin{aligned}
+\binom{n}{\lfloor np - n\epsilon \rfloor } 
+    &amp;\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H} \left( { \lfloor np - n\epsilon \rfloor } / { n} \right) } \\
+    &amp;\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H}( { (np - n\epsilon - 1) } / {n} )} \\
+    &amp;\ge 2^{ \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) -  \log (n + 1)  \rfloor }
+\end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(k = \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) - \log (n + 1) \rfloor\)</span>. For large enough <span class="math inline">\(n\)</span>, it holds that <span class="math display">\[
+k \ge (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)
+\]</span></p>
+<p>Further, since <span class="math display">\[
+\sum_{i = 1}^{  k - 1  } 2^i \le \sum_{i = 0}^{  k - 1  } 2^i = 2^{  k } - 1 &lt; 2^k,
+\]</span></p>
+<p>there are strictly less than <span class="math inline">\(2^k\)</span> distinct binary sequences with length at most <span class="math inline">\(k - 1\)</span>.</p>
+<p>Therefore, for the set of <span class="math inline">\(s \in S\)</span> with <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones, at least one of them has output length at least <span class="math inline">\(k\)</span>.</p>
+<p>By the previous lemma, all sequences with more than <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones has length at least <span class="math inline">\(k\)</span>.</p>
+<p>Denote <span class="math inline">\(Z\)</span> be the number of ones in the string <span class="math inline">\(s\)</span>. By Hoeffding Inequality, it holds that <span class="math display">\[
+\Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)
+\]</span></p>
+<p>By the fact that <span class="math inline">\(Z\)</span> takes only integer values, we have <span class="math display">\[
+\Pr[Z \le \lfloor np - n\epsilon \rfloor] \le \exp(-2 n \epsilon^2 )
+\]</span></p>
+<p>The expected output length of the sequences with more than <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones is at least <span class="math display">\[
+\begin{aligned}
+    &amp;[ 1 - \exp(-2n\epsilon^2) ] \cdot k \\
+    =&amp;[ 1 - \exp(-2n\epsilon^2) ] \cdot  (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)
+\end{aligned}
+\]</span></p>
+<p>This is at least <span class="math inline">\((1 - \delta) \cdot n \cdot \mathbf{H}(p)\)</span> when <span class="math inline">\(n\)</span> is large enough.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h3 id="huffman-code"><strong><em>Huffman Code</em></strong></h3>
+<p>In this section, we show that the upper bound can be achieved by Huffman code.</p>
+<blockquote>
+<p><em><span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> a compression <span class="math inline">\(h\)</span> and integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that</em> <span class="math display">\[
+\mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)
+\]</span></p>
+</blockquote>
+<p>We begin with an important property of Huffman Code. Suppose that we have an alphabet <span class="math inline">\(\mathbb{U}\)</span> such that probability associated with each element in <span class="math inline">\(\mathbb{U}\)</span> is <span class="math inline">\(2^{-l}\)</span> for some integer <span class="math inline">\(l\)</span>. Then <span class="math inline">\(\exists h\)</span>, such that <span class="math display">\[
+   \mathbf{E}_{X \in \mathbb{U} } [ |h(X)| ] =  n \mathbf{H}(X)
+\]</span></p>
+<p>For example, if <span class="math inline">\(\mathbb{U} = \{0, 1, 2, 3 \}\)</span> and the distribution <span class="math inline">\(p = \{ 0.5, 0.25, 0.125, 0.125 \}\)</span>, then we can have the following encoding</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Encoding.png" /></p>
+<p>The expected coding length is <span class="math display">\[
+0.5 \cdot 1 + 0.25 \cdot 2 + 2 \cdot 0.125 \cdot 3 = 1.75
+\]</span></p>
+<p>which is exactly the entropy of the random variable.</p>
+<p>In general, if we have a random variable <span class="math inline">\(X\)</span>, we can round down its probability to the nearest integer negative power of <span class="math inline">\(2\)</span>. The expected code length is given by <span class="math display">\[
+\sum_{i } p_i \left\lceil \log \frac{1}{p_i} \right\rceil \le \mathbf{H}(p) + 1
+\]</span></p>
+<p>Intuitively, the <span class="math inline">\(\left\lceil \log \frac{1}{p_i} \right\rceil\)</span> has enough slot to accommodate all elements with probabilities <span class="math inline">\(p_i\)</span>'s.</p>
+<p>In particular, we view <span class="math inline">\(\{0, 1\}^n\)</span> as a large alphabet <span class="math inline">\(\mathbf{\Sigma }\)</span>. The alphabet has entropy <span class="math inline">\(n \cdot \mathbf{H}(p)\)</span>. We can have a encoding such that the expected output length is at most <span class="math inline">\(n \cdot \mathbf{H}(p) + 1\)</span>. For large enough <span class="math inline">\(n\)</span>, this is at most <span class="math inline">\((1 + \delta) n \cdot \mathbf{H}(p)\)</span>.</p>
+<h3 id="relative-entropy-and-mutual-information"><strong><em>Relative Entropy and Mutual Information</em></strong></h3>
+<h4 id="relative-entropy">Relative Entropy</h4>
+<p>Given a distribution <span class="math inline">\(p\)</span>, we mistaken it as a distribution <span class="math inline">\(q\)</span>, the expected coding length is roughly <span class="math display">\[
+\sum_i p_i \log \frac{1}{q_i}
+\]</span></p>
+<p>The discrepancy between the optimal coding is given by <span class="math display">\[
+D(p || q) = \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i} = \sum_i p_i \log \frac{p_i}{q_i}
+\]</span></p>
+<p>By definition, we know that this gap is always non-negative. We can prove it rigorously algebraically. We show two different approaches here.</p>
 <ol type="1">
-<li><p>(<strong><em>ONLY IF</em></strong>). <span class="math inline">\(v^T \nabla^2 f(z) v \le \beta \|v\|^2\)</span> is equivalent to that the maximum eigenvalue of <span class="math inline">\(\nabla^2 f(z)\)</span> is at most <span class="math inline">\(\beta\)</span>. Let <span class="math inline">\(v\)</span> be the eigenvector of <span class="math inline">\(\nabla^2 f(z)\)</span>. By mean value theorem <span class="math display">\[
-     \frac{\partial f}{\partial x_i} (z + v) - \frac{\partial f}{\partial x_i} (z) = \sum_{j = 1}^n \left( \frac{\partial f}{\partial x_i \partial x_j} (c) \right) v_j
- \]</span></p>
-<p>For some <span class="math inline">\(c\)</span> between <span class="math inline">\(z\)</span> and <span class="math inline">\(z + v\)</span>. As <span class="math inline">\(f\)</span> is twice continuously differentiable, for any given <span class="math inline">\(\epsilon &gt; 0\)</span>, <span class="math inline">\(\exists v\)</span> that is small enough, such that <span class="math display">\[
- \left| \frac{\partial f}{\partial x_i} (z + v) - \frac{\partial f}{\partial x_i} (z) \right| \in \left| \sum_{j = 1}^n \left( \frac{\partial f}{\partial x_i \partial x_j} (z) \right) v_j \right| \pm \frac{\epsilon}{n}
- \]</span></p>
-<p>Hence, <span class="math display">\[
- | \nabla f(z + v) - \nabla f(z) | \in |\nabla^2 f(z) v| + \epsilon 
- \]</span></p>
-<p>By equivalence of <span class="math inline">\(\ell_1\)</span>-norm and <span class="math inline">\(\ell_2\)</span> norm, we get for <span class="math inline">\(v\)</span> small enough, <span class="math display">\[
- \| \nabla f(z + v) - \nabla f(z) \| \in \| \nabla^2 f(z) v \| + \epsilon 
- \]</span></p>
-<p>As <span class="math inline">\(\epsilon\)</span> can be arbitrary small, it concludes that <span class="math display">\[
- \| \nabla^2 f(z) v \| \le \beta \|v \|
- \]</span></p>
-<p>which is equivalent to that the eigenvalues of <span class="math inline">\(\nabla^2 f(z)\)</span> is at most <span class="math inline">\(\beta\)</span>.</p></li>
-<li><p>(<strong><em>IF</em></strong>). We prove a stronger result that <span class="math display">\[
-     \| \nabla f(y) - \nabla f(x) \| \cdot \| \nabla f(y) - \nabla f(x) \| \le \beta \left( \nabla f(y) - \nabla f(x) \right)^T (y - x) 
- \]</span> By Cauchy-Schwartz inequality, we have <span class="math display">\[
- \left( \nabla f(y) - \nabla f(x) \right)^T (y - x) \le \| \nabla f(y) - \nabla f(x) \| \cdot \| y - x  \|
- \]</span> which will finish our proof.</p>
-<p>By Taylor series expansion, we have <span class="math display">\[
- \begin{aligned}
-     f(y) &amp;
-         = f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} (y - x)^T \nabla^2 f(z) (y - x)
-     \\
-         &amp;\le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \| y - x \|^2
- \end{aligned}
- \]</span></p>
-<p>for some <span class="math inline">\(z\)</span> between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>. The inequality holds since <span class="math inline">\(v^T \nabla^2 f(z) v \le \beta \|v\|^2\)</span> for any <span class="math inline">\(v \in \mathbb{R}^n\)</span>.</p>
-<p>By symmetry, we get <span class="math display">\[
- \begin{aligned}
-     f(x) &amp;\le f(y) + \nabla f(y)^T (x - y) + \frac{1}{2} \beta \| y - x \|^2
- \end{aligned}
- \]</span></p>
-<p>Summing up the two inequalities, we obtain <span class="math display">\[
- \left( \nabla f(y) - \nabla f(x) \right)^T (y - x)^T  \le \beta \| y - x \|^2
- \]</span></p></li>
-</ol>
-<p><span class="math inline">\(\square\)</span></p>
-<h4 id="theorem-2.">Theorem 2.</h4>
-<p>If <span class="math inline">\(f\)</span> is <span class="math inline">\(\beta\)</span>-smooth, then for <span class="math inline">\(x, y \in \mathbb{R}^n\)</span>, we have <span class="math display">\[
-f(y) \le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \| y - x \|^2
-\]</span></p>
-<p><em>Proof.</em> By fundamental theorem of calculus, <span class="math display">\[
+<li>By that <span class="math inline">\(f(x) = x \log x\)</span> is convex for <span class="math inline">\(x \ge 0\)</span>, we have <span class="math display">\[
 \begin{aligned}
-    f(y) - f(x) - \nabla f(x)^T (y - x)
-        &amp;=
-    \int_{0}^1 \nabla f(x + t(y - x))^T(y - x) \ dt - \nabla f(x)^T (y - x)
-    \\
-        &amp;= 
-    \int_{0}^1 \left( \nabla f(x + t(y - x)) - \nabla f(x) \right)^T(y - x) \ dt 
-    \\
-        &amp;\le
-    \int_{0}^1 \| \nabla f(x + t(y - x)) - \nabla f(x) \| \cdot \| y - x \| \ dt  
-    \\
-        &amp;\le
-    \int_{0}^1 \beta t \| y - x \|  \cdot \| y - x \| \ dt  
-    \\
-        &amp;\le 
-    \frac{1}{2} \beta \| y - x \|^2
+    D(p || q) &amp;= \sum_i p_i \log \frac{p_i}{q_i} \\
+    &amp;= \sum_i q_i \cdot \frac{p_i}{q_i} \log \frac{p_i}{q_i} \\
+    &amp;\ge \left( \sum_i q_i \cdot \frac{p_i}{q_i} \right) \log \left( \sum_i q_i \cdot \frac{p_i}{q_i} \right) \\
+    &amp;= 0
 \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/01/Counting-Triangle/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/01/Counting-Triangle/" class="post-title-link" itemprop="url">Counting Triangle</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-01 22:20:20" itemprop="dateCreated datePublished" datetime="2020-03-01T22:20:20+11:00">2020-03-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-05 20:20:54" itemprop="dateModified" datetime="2020-07-05T20:20:54+10:00">2020-07-05</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Given an undirected graph <span class="math inline">\(G = \left&lt; V, E \right&gt;\)</span> with <span class="math inline">\(|V| = n\)</span> vertices and <span class="math inline">\(|E| = m\)</span> edges, we can count the number of triangle in <span class="math inline">\(O(m^{1.5})\)</span> time.</p>
-<ol type="1">
-<li><p>Label the vertices in ascending order according their degrees. Break tie arbitrarily. After ordering, we assume that <span class="math inline">\(d_{v_1} \le d_{v_2} \le ... \le d_{v_n}\)</span>.</p></li>
-<li><p>Check all possible triangles <span class="math inline">\((u, v, w)\)</span> such that <span class="math inline">\(d_u \le d_v \le d_w\)</span>. This can be implemented as follows:</p>
-<ul>
-<li>Check all edges <span class="math inline">\((u, v)\)</span> such that <span class="math inline">\(d_u \le d_v\)</span>.</li>
-<li>Check each neighbor <span class="math inline">\(w\)</span> of <span class="math inline">\(u\)</span> such that <span class="math inline">\(d_w \ge d_v\)</span>. We can sort the neighbors of each vertex according to their degree. Then finding the first vertex with <span class="math inline">\(d_w \ge d_v\)</span> takes <span class="math inline">\(O(\log d_u)\)</span> time.</li>
-</ul></li>
-</ol>
-<p><em>Claim: This algorithm has complexity <span class="math inline">\(O(m^{1.5})\)</span>.</em></p>
-<p><em>Proof.</em></p>
-<ol type="1">
-<li>If <span class="math inline">\(d_w \ge \sqrt m\)</span>, then the number of such possible <span class="math inline">\(w\)</span> is bounded by <span class="math inline">\(O( m / \sqrt m) = O(\sqrt m)\)</span>. Therefore, the time spent on <span class="math inline">\((u,v )\)</span> for <span class="math inline">\(\{w : d_w \ge \sqrt m\}\)</span> is <span class="math inline">\(O(\sqrt m)\)</span>. The time spent over all edges is: <span class="math display">\[
- \sum_{(u, v) \in E} \sqrt m = m\sqrt m = m^{1.5}
- \]</span></li>
-<li>If <span class="math inline">\(d_w &lt; \sqrt m\)</span>, then <span class="math inline">\(d_u \le d_v \le d_w &lt; \sqrt m\)</span>. The number of such triangles is bounded by: <span class="math display">\[
- \sum_{u \in S} d_u^2 \le \sqrt m \left( \sum_{u \in S} d_u \right) \le \sqrt m \cdot 2m= 2m^{1.5}
- \]</span></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/27/Primal-Dual-Algorithm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/27/Primal-Dual-Algorithm/" class="post-title-link" itemprop="url">Primal-Dual Algorithm</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-02-27 21:57:12" itemprop="dateCreated datePublished" datetime="2020-02-27T21:57:12+11:00">2020-02-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-02-28 11:36:47" itemprop="dateModified" datetime="2020-02-28T11:36:47+11:00">2020-02-28</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Primal: <span class="math display">\[
+\]</span></li>
+<li>By that <span class="math inline">\(f(x) = -\log x\)</span> is convex (for <span class="math inline">\(x \ge 0\)</span> ), we have <span class="math display">\[
 \begin{aligned}
-    &amp;\min       &amp;c^T x \\
-    &amp;s.t.       &amp;Ax = b\\
-    &amp;           &amp;x \ge 0
+    D(p || q) &amp;= \sum_i - p_i \log \frac{q_i}{p_i} \\
+    &amp;\ge  -\log \left( \sum_i p_i \cdot \frac{q_i}{p_i} \right) \\
+    &amp;= 0
 \end{aligned}
-\]</span></p>
-<p>We assume that <span class="math inline">\(b \ge 0\)</span>. Otherwise we can flip the <span class="math inline">\(i\)</span> constraints <span class="math inline">\(A^T_i x = b_i\)</span> by <span class="math inline">\(- A^T_i x = -b_i\)</span>, where <span class="math inline">\(A^T_i\)</span> is the <span class="math inline">\(i\)</span>-th column of matrix <span class="math inline">\(A^T\)</span>, i.e, the <span class="math inline">\(i\)</span>-th row of matrix <span class="math inline">\(A\)</span>.</p>
-<p>Dual: <span class="math display">\[
-\begin{aligned}
-    &amp;\max       &amp;y^T b \\
-    &amp;s.t.       &amp;y^TA \le c^T \\
-\end{aligned}
-\]</span></p>
-<p>Suppose that we have a feasible solution <span class="math inline">\(y\)</span> for the dual (if <span class="math inline">\(c \ge 0\)</span>, then <span class="math inline">\(y = 0\)</span> is a feasible solution). Weak duality states that <span class="math display">\[
-c^T x \ge y^T A x = y^T b
-\]</span></p>
-<p>Denote <span class="math inline">\(S = \{ i : i \in [n], y^T A_i &lt; c_i \}\)</span> (the set of constraints that have slacks for increments) and <span class="math inline">\(\bar S = [n] \setminus S\)</span> (the set of indexes of tight dual constraints), where <span class="math inline">\(A_i\)</span> is the <span class="math inline">\(i\)</span>-th columns of <span class="math inline">\(A\)</span>.</p>
-<p>By weak duality, if we can find an <span class="math inline">\(x\)</span> such that</p>
-<ol type="1">
-<li><span class="math inline">\(x_{S } = 0\)</span>, where <span class="math inline">\(x_{S} \doteq (x_i : i \in {S})\)</span>.</li>
-<li><span class="math inline">\(x_{\bar S} \ge 0\)</span> and <span class="math inline">\(A_{\bar S} x_{\bar S} = b\)</span>, where <span class="math inline">\(A_{\bar S}\)</span> is the sub-matrix of <span class="math inline">\(A\)</span> containing only columns in <span class="math inline">\({\bar S}\)</span>.</li>
-</ol>
-<p>then both <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span> are optimal. However, as <span class="math inline">\(y\)</span> is not necessarily optimal, we have the following relaxed optimization problem, which is called <em>restricted primal</em></p>
-<p>Relaxation: <span class="math display">\[
-\begin{aligned}
-    &amp;\min       &amp;1^T \bar x \\
-    &amp;s.t.       &amp;A_{\bar S} x_{\bar S} + \bar x = b \\
-    &amp;           &amp;x_{\bar S} \ge 0 \\
-    &amp;           &amp;\bar x \ge 0
-\end{aligned}
-\]</span></p>
-<p>Note that <span class="math inline">\(x_{\bar S} = 0\)</span> and <span class="math inline">\(\bar x = b\)</span> is a feasible solution as we assume that <span class="math inline">\(b \ge 0\)</span>. Therefore, <em>restricted primal</em> is feasible. Further, it is bounded below by <span class="math inline">\(1^{\bar S} 0 = 0\)</span>. Indeed, if it achieves optimal solution value <span class="math inline">\(0\)</span>, it holds that <span class="math inline">\(\bar x = 0\)</span> so that <span class="math inline">\(A_{\bar S} x_{\bar S} = b\)</span>.</p>
-<p>Associated with the <em>restricted primal</em> is the <em>restricted dual</em> <span class="math display">\[
-\begin{aligned}
-    &amp;\max       &amp; \bar y^T b \\
-    &amp;s.t.       &amp; \bar y^TA_{\bar S} \le 0 \\
-    &amp;           &amp; \bar y^T \le 1^T
-\end{aligned}
-\]</span></p>
-<p>By strong duality, it optimal solution <span class="math inline">\(\bar y^T b = 1^T \bar x\)</span>. If <span class="math inline">\(1^T \bar x= \bar y^T b &gt; 0\)</span>, then we can improve the dual solution <span class="math inline">\(y\)</span> by <span class="math display">\[
-y \leftarrow y + \epsilon \bar y
-\]</span></p>
-<p>for some <span class="math inline">\(\epsilon\)</span>. To determine its value, first observe that <span class="math display">\[
-(y + \epsilon \bar y)^{T} A_{\bar S} = y^T A_{\bar S} + \epsilon \bar y^T A_{\bar S} \le y^T A_{\bar S} = c_{\bar S}^T
-\]</span></p>
-<p>Hence it is left to guarantee that <span class="math display">\[
-(y + \epsilon \bar y)^T A_S = y^T A_S + \epsilon \bar y^T A_S \le  c_S
-\]</span></p>
-<p>By definition of <span class="math inline">\({S}\)</span>, we have <span class="math inline">\(y^T A_{S} &lt; c_{S}^T\)</span>. If that <span class="math inline">\(\bar y^T A_i \le 0\)</span> for <span class="math inline">\(\forall i \in {S}\)</span>, then <span class="math inline">\(\epsilon\)</span> can be arbitrary large and the dual is unbounded. Otherwise,</p>
-<p><span class="math display">\[
-\epsilon = \min_{i \in S, \bar y^T A_i &gt; 0} \frac{c_i - y^T A_i } { \bar y^T A_i }
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/26/The-Remainder-Term-in-Taylor-Series/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/26/The-Remainder-Term-in-Taylor-Series/" class="post-title-link" itemprop="url">The Remainder Term in Taylor Series</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-02-26 13:57:00" itemprop="dateCreated datePublished" datetime="2020-02-26T13:57:00+11:00">2020-02-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-02-28 11:22:58" itemprop="dateModified" datetime="2020-02-28T11:22:58+11:00">2020-02-28</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="taylor-series">Taylor Series</h2>
-<p>The philosophy of Taylor series is to approximate a function with polynomials that use only the information of a single point in the domain of the function. Consider the function <span class="math inline">\(f: \mathbb{R} \rightarrow \mathbb{R}\)</span> and a point <span class="math inline">\(a \in \mathbb{R}\)</span>. Further, we would like to use <span class="math inline">\((x-a)^0\)</span>, <span class="math inline">\((x- a)^1\)</span>, <span class="math inline">\((x- a)^2\)</span>, ..., <span class="math inline">\((x- a)^n\)</span> as the basic building blocks of our approximation. The polynomial constructed is of the form: <span class="math display">\[
-p_n(x) = c_0 + c_1 (x - a) + c_2(x - a)^2 + ... + c_n (x - a)^n
-\]</span> Now, assume that the <span class="math inline">\(n\)</span>-th derivative of <span class="math inline">\(f\)</span> exits. To approximate <span class="math inline">\(f\)</span> well, <span class="math inline">\(p_n\)</span> should satisfy <span class="math display">\[
-p_n(a) = f(a)
-\]</span> so that <span class="math inline">\(c_0 = f(a)\)</span>.</p>
-<p>Further, <span class="math inline">\(f&#39;(a)\)</span> tell how the function <span class="math inline">\(f(x)\)</span> changes when <span class="math inline">\(x\)</span> moves from <span class="math inline">\(a\)</span> by a little bit. We require <span class="math inline">\(p_n(x)\)</span> to exhibit the same behavior: <span class="math display">\[
-p&#39;_n(a) = f&#39;(a)
-\]</span> so that <span class="math inline">\(c_1 = f&#39;(a)\)</span>.</p>
-<p>To fit <span class="math inline">\(f(x)\)</span> even better, we force the second order derivative of <span class="math inline">\(p_n(x)\)</span> at <span class="math inline">\(x\)</span> comply with <span class="math inline">\(f&#39;&#39;(a)\)</span>, hence <span class="math display">\[
-p_n&#39;&#39;(a) = f&#39;&#39;(a)
-\]</span> and <span class="math inline">\(c_2 = \frac{1}{2} f&#39;&#39;(a)\)</span>.</p>
-<p>Following the above procedure,we get <span class="math display">\[
-c_i = \frac{1}{i!}f^{(i) } (a)
-\]</span> and <span class="math display">\[
-p_n(x) = \sum_{k = 0}^n \frac{ f^{( k ) }(a) }{ k! }  (x - a)^k
-\]</span> where <span class="math inline">\(f^{(0)} \doteq f\)</span>, <span class="math inline">\(0! \doteq 1\)</span>. We have just show that the construct polynomial satisfies</p>
-<p><strong><em>Theorem. <span class="math inline">\(p^{ (k) }_n (a) = f^{ (k) } (a)\)</span>, for <span class="math inline">\(k \in [n]\)</span>.</em></strong></p>
-<h2 id="remainder">Remainder</h2>
-<p>One natural to ask is that, how accurate is the <span class="math inline">\(p_n(x)\)</span>. In particular, given <span class="math inline">\(x \neq a\)</span>, we want to measure the error <span class="math display">\[
-r_n(x) = f(x) - p_n(x)
-\]</span> quantitively.</p>
-<p>Note that if the function <span class="math inline">\(f\)</span> is itself a polynomial up to order <span class="math inline">\(n\)</span>, then the approximation is accurate that is <span class="math inline">\(r_n(x) \equiv 0\)</span> for <span class="math inline">\(x \in \mathbb{R}\)</span>. In this case, we recover <span class="math inline">\(f\)</span> globally using only local information at <span class="math inline">\(a\)</span>.</p>
-<p>In general, if <span class="math inline">\(f^{ (n + 1)} (x)\)</span> exists and is continuous, then the error is characterized as</p>
-<p><strong><em>Theorem</em></strong> <span class="math display">\[
-r_n(x) = \frac{1}{n!} \int_a^x f^{ (n + 1) } (t) (x - t)^{n } dt = -\int_a^x f^{ (n + 1) } (t)  d \left( \frac{(x - t)^{n + 1} }{(n + 1)!} \right)
-\]</span> <em>Proof.</em></p>
-<p>By fundamental theorem of calculus, we have <span class="math display">\[
-f(x) = f(a) + \int_{a}^x f&#39;(t) dt
-\]</span> On the other hand <span class="math display">\[
-\frac{\partial [f&#39;(t) (t - x)] }{\partial t} = f&#39;&#39;(t) (t - x) + f&#39;(t)
-\]</span> Therefore, <span class="math display">\[
-f&#39;(t) (t - x) \mid_{t = a}^x = f&#39;(a) (x -a)  = \int_{a}^x f&#39;&#39;(t) (t - x) dt  + \int_{a}^x f&#39;(t) dt
-\]</span> and <span class="math display">\[
-f(x) = f(a) + f&#39;(a) (x - a) +  \int_{a}^x f&#39;&#39;(t) (x - t) dt
-\]</span> Similarly, <span class="math display">\[
-\begin{aligned}
-\int_{a}^x f&#39;&#39;(t) (x - t) dt 
-    &amp;= - \int_{a}^x f&#39;&#39;(t) d \frac{ (x - t)^2}{2!} \\
-    &amp;= f&#39;&#39;(a) \frac{ (x - a)^2}{2!} + \int_{a}^x \frac{ (x - t)^2}{2!} f^{(3) } (t) dt
-\end{aligned}
-\]</span> As just shown, the proof can be finished by induction. <span class="math inline">\(\square\)</span></p>
-<p><strong><em>Weighted Mean Value Theorem.</em></strong> Given a continuous functions <span class="math inline">\(f \ge 0\)</span> and an Riemann integral function <span class="math inline">\(g \ge 0\)</span> defined on an closed interval <span class="math inline">\(I\)</span>, then <span class="math display">\[
-\int_I f(t) g(t) dt = f(c) \int_I g(t) dt
-\]</span> for some <span class="math inline">\(c \in I\)</span>.</p>
-<p><em>Proof.</em> As <span class="math inline">\(f\)</span> is continuous and <span class="math inline">\(I\)</span> is closed, <span class="math inline">\(\exists m, M \in \mathbb{R}\)</span>, s.t., <span class="math display">\[
-m \le f(t) \le M, \qquad \forall t \in I
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-mg(t) \le f(t) g(t) \le M g(t), \qquad \forall t \in I
-\]</span></p>
-<p>Define <span class="math inline">\(S = \int_I g(t) dt\)</span>. By monotonicity of Riemann integration, we have <span class="math display">\[
-m S \le \int_I f(t) g(t) dt \le M S
-\]</span></p>
-<p>Note that <span class="math inline">\(S f(t)\)</span> is a continuous function in <span class="math inline">\(I\)</span>. Hence, by mean value theorem, <span class="math inline">\(\exists c \in I\)</span>, such that <span class="math display">\[
-S f(c) = \int_I f(t) g(t) dt
-\]</span> <span class="math inline">\(\square\)</span></p>
-<p><strong><em>Corollary 1.</em></strong> By weighted mean value theorem, we have <span class="math display">\[
-\begin{aligned}
-r_n(x) 
-    &amp;= \frac{1}{n!} \int_a^x f^{ (n + 1) } (t) (x - t)^{n } dt  \\
-    &amp;= f^{ (n + 1) } (c) \int_a^x  \frac{1}{n!} (x - t)^{n } dt  \\
-    &amp;= \frac{f^{ (n + 1) } (c ) }{(n + 1) ! } (x - a)^{n + 1 }  
-\end{aligned}
-\]</span></p>
-<p>for some <span class="math inline">\(c \in [a, x]\)</span>.</p>
-<p><strong><em>Corollary 2.</em></strong> Let <span class="math inline">\(f:\rightarrow \mathbb{R}^n \rightarrow \mathbb{R}\)</span> be a function with continuous second partial derivatives, then given <span class="math inline">\(a \in \mathbb{R}^n\)</span>, it holds that <span class="math display">\[
-f(x) = f(a) + [\nabla f(c)]^T (x - a)
-\]</span> for some <span class="math inline">\(c \in a + t(x - a)\)</span>, where <span class="math inline">\(t \in [0, 1]\)</span>.</p>
-<p><em>Proof:</em> Define <span class="math inline">\(g(t) = f(a + t (x- a)) : [0,1] \rightarrow \mathbb{R}\)</span>. Then</p>
-<ol type="1">
-<li><span class="math inline">\(g(0) = f(a)\)</span>.</li>
-<li><span class="math inline">\(g(1) = f(x)\)</span>.</li>
-<li><span class="math inline">\(g&#39;(t) = [\nabla f(a + t (x- a) ) ]^T (x - a)\)</span></li>
-<li>By mean value theorem, <span class="math inline">\(\exists t \in [0, 1]\)</span>, s.t., <span class="math display">\[
- \frac{g(1) - g(0)}{1} = f(x) - f(a) = g&#39;(t) = [\nabla f(a + t (x- a) ) ]^T (x - a)
 \]</span></li>
 </ol>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong><em>Corollary 3.</em></strong> Let <span class="math inline">\(f\)</span>, <span class="math inline">\(g\)</span> and <span class="math inline">\(c\)</span> as defined before, then <span class="math display">\[
-f(x) = f(a) + [\nabla f(a)]^T (x - a) + \frac{1}{2} (x - a)^T [\nabla^2 f(c)] (x - a)
+<h4 id="mutual-information">Mutual Information</h4>
+<p>Given two random variable, the mutual information between them is defined as <span class="math display">\[
+I(X; Y) = I(Y; X) = \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(x, y)}{p(x) p(y) } \right]
 \]</span></p>
-<p><em>Proof:</em> <span class="math display">\[
-g&#39;&#39;(t) = (x - a)^T [\nabla^2 f(a + t (x- a) ) ] (x - a)
+<p>If we know <span class="math inline">\(p(x,y)\)</span> we use in expectation <span class="math inline">\(\mathbb{E}_{p(x, y) } \left[ \log \frac{1} { p(x, y)} \right]\)</span> to describe them. If we know only <span class="math inline">\(p(x)\)</span> and <span class="math inline">\(p(y)\)</span>, the mutual information measured the bits we waste.</p>
+<p><span class="math display">\[
+\begin{aligned}
+    &amp;\sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } \\
+    =&amp;  \sum p(x, y) \log \frac{ 1 }{p(x)} \\
+    &amp;+  \sum p(x, y) \log \frac{ 1 }{p(y)} \\
+    &amp;-  \sum p(x, y) \log \frac{ 1 }{p(x, y)} \\
+    =&amp; \mathbf{H} ( X ) + \mathbf{H} ( Y ) - \mathbf{H} ( X, Y ) \\
+    =&amp;\sum p(x, y) \log \frac{ p(x | y)}{p(x)  } \\
+    =&amp; \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y) \\
+    =&amp;\sum p(x, y) \log \frac{ p(x | y)}{ p(x) }  \\
+    =&amp; \mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y) \\
+\end{aligned}
 \]</span></p>
-<p>Then applying Corollary 1 gives <span class="math display">\[
-g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
+<p><strong><em>Lemma.</em></strong> <span class="math display">\[
+\mathbf{I}(X; Y) \ge 0
 \]</span></p>
-<p>for some <span class="math inline">\(t \in [0, 1]\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
+<p><strong><em>Proof.</em></strong> <span class="math display">\[
+\mathbf{I}(X; Y) = D( p(x, y) \mid p(x) p(y) ) \ge 0
+\]</span></p>
+<p>Or <span class="math display">\[
+\begin{aligned}
+    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } 
+    &amp;= -\sum p(x, y) \log \frac{p(x) p(y) }{ p(x, y)} \\
+    &amp;\ge - \log \sum p(x, y) \frac{p(x) p(y) }{ p(x, y)} \\
+    &amp;=0   
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Corollary</em></strong> <span class="math display">\[
+\mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y) = \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y) \ge 0
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Definition</em></strong> Conditional Relative Entropy <span class="math display">\[
+\begin{aligned}
+    \mathbf{D}( p(y \mid x) || q(y \mid x) ) &amp;\doteq  \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(Y \mid X) }{ q(Y \mid X) }  \right]\\
+    &amp;=\sum_{x}  \sum_{ y } p(y \mid x) \log \frac{ p(y \mid x) }{ q(y \mid x) }
+\end{aligned}
+\]</span></p>
+<p><strong><em>Lemma.</em></strong> Relative entropy <span class="math inline">\(\mathbf{D}( p || q )\)</span> is convex in the pair <span class="math inline">\((p, q)\)</span>: if there are two distribution pairs <span class="math inline">\((p_1, q_1)\)</span> and <span class="math inline">\((p_2, q_2)\)</span>, then . <span class="math display">\[
+\mathbf{D}( \lambda p_1 + (1 - \lambda) p_2 || \lambda q_1 + (1 - \lambda_1) q_2 ) \le \lambda \mathbf{D}( p_1 ||  q_1 ) + (1 - \lambda) \mathbf{D}( p_2 ||  q_2 )
+\]</span></p>
+<p><strong><em>Proof.</em></strong> For any fix value <span class="math inline">\(x\)</span>, it holds that <span class="math display">\[
+\begin{aligned}
+    &amp;[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \frac{ \lambda p_1(x) + (1 - \lambda) p_2(x) }{ \lambda q_1(x) + (1 - \lambda) q_2(x) } \\
+    &amp;=-[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \frac { \lambda q_1(x) + (1 - \lambda) q_2(x) } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \\
+    &amp;= -[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \left( \frac { \lambda p_1(x)  } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \frac { \lambda q_1(x) } { \lambda p_1(x)  } + \frac { (1 - \lambda) p_2(x)  } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \frac { (1 - \lambda) q_2(x) } { (1 - \lambda) p_2(x)  } \right) \\
+    &amp;\le -\lambda p_1(x) \log   \frac { \lambda q_1(x) } { \lambda p_1(x)  } - (1 - \lambda) p_2(x) \log \frac { (1 - \lambda) q_2(x) } { (1 - \lambda) p_2(x)  }
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h3 id="chain-rules"><strong><em>Chain Rules</em></strong></h3>
+<p>Let <span class="math inline">\(X_1, X_2, ..., X_n\)</span> be random variables whose density function is <span class="math inline">\(p(x_1, x_2, ..., x_n)\)</span>, then</p>
+<ol type="1">
+<li><p><span class="math inline">\(\mathbf{H}(X_1, X_2, ..., X_n) = \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1})\)</span><br />
+<strong><em>Proof.</em></strong><br />
+<span class="math display">\[
+ \begin{aligned}
+     \mathbf{H}(X_1, X_2, ..., X_n) 
+         &amp;= \sum_{x_1, x_2, ..., x_n} p(x_1, x_2, ..., x_n)  \log \frac{1}{\prod_{i = 1}^n p(x_i \mid x_1, ..., x_{i - 1})  }  \\
+         &amp;= \sum_{x_1, x_2, ..., x_n} p(x_1, x_2, ..., x_n) \sum_{i = 1}^n \log \frac{1}{ p(x_i \mid x_1, ..., x_{i - 1})  }  \\
+         &amp;=\sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1}) \\
+ \end{aligned}
+ \]</span></p>
+<p><strong><em>Corollary</em></strong> <span class="math display">\[
+ \mathbf{H} ( X_1, X_2, ..., X_n) = \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1}) \le \sum_{i = 1}^n \mathbf{H}(X_i)
+ \]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p></li>
+<li><p><span class="math inline">\(\mathbf{I}(X_1, X_2, ..., X_n; Y) = \sum_{i = 1}^n \mathbf{I}(X_i ; Y\mid X_1, ..., X_{i - 1})\)</span><br />
+<strong><em>Proof.</em></strong><br />
+<span class="math display">\[
+ \begin{aligned}
+     \mathbf{I}(X_1, X_2, ..., X_n; Y)
+     &amp;=  \mathbf{H}(X_1, X_2, ..., X_n) -  \mathbf{H}(X_1, X_2, ..., X_n \mid Y) \\
+     &amp;= \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1})  - \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1}, Y) \\
+     &amp;= \sum_{i = 1}^n \mathbf{I}(X_i ; Y\mid X_1, ..., X_{i - 1}) \\
+ \end{aligned}
+ \]</span><br />
+</p></li>
+<li><p><span class="math inline">\(\mathbf{D}( p(x, y) || q(x, y) ) = \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) )\)</span><br />
+<strong><em>Proof.</em></strong> <span class="math display">\[
+ \begin{aligned}
+     \mathbf{D}( p(x, y) || q(x, y) ) 
+     &amp;= \sum_{x, y} p(x, y) \log \frac{ p(x) p(y \mid x) }{q(x) q (y \mid x) }
+     \\
+     &amp;= \sum_{x, y} p(x, y) \log \frac{ p(x)  }{q(x) } + \sum_{x, y} p(x, y) \log \frac{  p(y \mid x) }{  q (y \mid x) }
+     \\
+     &amp;= \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) )
+ \end{aligned}
+ \]</span></p></li>
+</ol>
+<h3 id="reference.">Reference.</h3>
+<p>[1]M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/01/Entropy-and-Random-Bits/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/01/Entropy-and-Random-Bits/" class="post-title-link" itemprop="url">Entropy and Random Bits</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-01 00:16:09" itemprop="dateCreated datePublished" datetime="2020-06-01T00:16:09+10:00">2020-06-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-14 00:15:12" itemprop="dateModified" datetime="2020-07-14T00:15:12+10:00">2020-07-14</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="entropy">Entropy</h4>
+<p>The entropy of a random variable <span class="math inline">\(X\)</span> is defined as <span class="math display">\[
+\mathbf{H}[X] = \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right]
+\]</span></p>
+<p>Here we adopt the convention that <span class="math inline">\(0 \log 0 = 0\)</span>, as <span class="math inline">\(\lim_{x \rightarrow 0^+} x \log x = \lim_{x \rightarrow \infty} \frac{1 }{ x } \log \frac{1 }{ x } = 0\)</span>.</p>
+<p>The entropy is oblivious to the specific values <span class="math inline">\(X\)</span> takes and is only sensitive to the probabilities with which <span class="math inline">\(X\)</span> takes these values.</p>
+<blockquote>
+<p>Example.<br />
+1. <span class="math inline">\(X_1 = \begin{cases} e^{1000}, \text{with probability 0.5} \\ 0, \text{with probability 0.5} \end{cases}\)</span><br />
+2. <span class="math inline">\(X_2 = \begin{cases} 1, \text{with probability 0.5} \\ -1, \text{with probability 0.5} \end{cases}\)</span></p>
+</blockquote>
+<p>By definition, both <span class="math display">\[
+\mathbf{H}[X_1] = \mathbf{H}[X_2] = 0.5 \log_2 2 + 0.5 \log_2 2 = 1
+\]</span></p>
+<p>We also notice that the entropy of a random variable may not reflect the whether a random variable is concentrated at its mean or not.</p>
+<p>The binary entropy function <span class="math inline">\(\mathbf{H}(p)\)</span> of a Bernoulli random variable <span class="math inline">\(X\)</span> that takes value <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p\)</span> is <span class="math display">\[
+\begin{aligned}
+    \mathbf{H}(p) = &amp;p \log_2 \frac{1}{p} + (1 - p) \log_2 \frac{1}{1 - p} \\
+    = &amp;-p \log_2 p - (1 - p) \log_2 (1 - p)    
+\end{aligned}
+\]</span></p>
+<p>By concavity of <span class="math inline">\(\log_2(\cdot )\)</span>, we know that <span class="math display">\[
+\begin{aligned}
+    \mathbf{H}(p)
+    &amp;\le \log_2 \left( p \frac{1}{p} + (1 - p) \frac{1}{1 - p} \right) 
+    &amp;= 1
+\end{aligned}
+\]</span></p>
+<p>The equality holds when <span class="math inline">\(p = 0.5\)</span>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Entropy.png" /></p>
+<p>Some interesting values:</p>
+<ul>
+<li><span class="math inline">\(p = 0.5\)</span>, <span class="math inline">\(\mathbf{H}(p) = 1\)</span></li>
+<li><span class="math inline">\(p = 0.2/0.8\)</span>, <span class="math inline">\(\mathbf{H}(p) \approx 0.7\)</span></li>
+<li><span class="math inline">\(p = 0.1/0.9\)</span>, <span class="math inline">\(\mathbf{H}(p) \approx 0.5\)</span></li>
+</ul>
+<p><strong><em>Lemma.</em></strong> Given a discrete range <span class="math inline">\(\mathcal{U}\)</span>, the entropy of a random variable <span class="math inline">\(X\)</span> defined on <span class="math inline">\(\mathcal{U}\)</span> is maximized when <span class="math inline">\(X\)</span> has uniform distribution, i.e., <span class="math display">\[
+\mathbf{H} (X) \le \log |\mathcal{U}|
+\]</span></p>
+<p><strong><em>Proof.</em></strong> <span class="math display">\[
+\begin{aligned}
+    \mathbf{H} (X) 
+        &amp;= \sum_{x} p(x) \log \frac{1}{p(x) } \\ 
+        &amp;\le  \log \sum_{x} p(x) \frac{1}{p(x) } \\
+        &amp;= \log |\mathcal{U}|
+\end{aligned}
+\]</span></p>
+<p>The inequality holds with equality only when <span class="math inline">\(p(x) = 1/ |\mathcal{U}|\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Lemma.</em></strong> Let <span class="math inline">\(p(x)\)</span> and <span class="math inline">\(q(x)\)</span> be two distributions and <span class="math inline">\(\lambda \in [0, 1]\)</span>, then <span class="math display">\[
+\mathbf{H} (\lambda p(x) + (1 - \lambda) q(x) ) \ge \lambda \mathbf{H}(p(x) ) + (1 - \lambda) \mathbf{H} (q(x) )
+\]</span></p>
+<p><strong><em>Proof.</em></strong> <span class="math display">\[
+\begin{aligned}
+    \lambda \mathbf{H}(p(x) ) + (1 - \lambda) \mathbf{H} (q(x) ) 
+        &amp;= \sum_{x} \left( \lambda p(x) \log \frac{1}{p(x)} + (1 - \lambda) q(x) \log \frac{1}{q(x) }  \right) \\ 
+        &amp;= (  \lambda p(x) + (1 - \lambda) q(x) )\sum_{x} \left( \frac{ \lambda p(x) }{  \lambda p(x) + (1 - \lambda) q(x) } \log \frac{1}{p(x)} + \frac{(1 - \lambda) q(x) }{ \lambda p(x) + (1 - \lambda) q(x) } \log \frac{1}{q(x) }  \right) \\
+        &amp;\le \sum_{x} ( \lambda p(x) + (1 - \lambda) q(x) ) \log \frac{1}{ \lambda p(x) + (1 - \lambda) q(x) } \\ 
+        &amp;= \mathbf{H} ( \lambda p(x) + (1 - \lambda) q(x) ) 
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Lemma.</em></strong> For two independent random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, we have <span class="math display">\[
+\mathbb{E} \left[ \log_2 \frac{1}{\Pr[X + Y] } \right] = \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] + \mathbb{E} \left[ \log_2 \frac{1}{\Pr[Y] } \right]
+\]</span></p>
+<p>i.e., <span class="math display">\[
+\mathbf{H}[X + Y] = \mathbf{H}[X] + \mathbf{H}[Y]
+\]</span></p>
+<p><strong><em>Proof.</em></strong> We prove it for the case of discrete random variables. <span class="math display">\[
+\begin{array}{rrl}
+    &amp;\mathbb{E} \left[ \log_2 \frac{1}{\Pr[X + Y] }  \right] 
+    &amp;= \sum_{x, y} p(x, y) \log_2 \frac{1}{p(x, y)} \\
+    &amp;&amp;= \sum_{x, y} p(x) p(y) \left( \log_2 \frac{1}{p(x)} + \log_2 \frac{1}{p(y) } \right) \\
+    &amp;&amp;= \sum_{x} p(x) \sum_{y} p(y) \log_2 \frac{1}{p(x)} + \sum_{y} p(y) \sum_{x} p(x) \log_2 \frac{1}{p(y) } \\
+    &amp;&amp;= \mathbb{E} \left[ \log_2 \frac{1}{\Pr[X] } \right] + \mathbb{E} \left[ \log_2 \frac{1}{\Pr[Y] } \right]    
+\end{array}
+\]</span> <span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Definition.</em></strong> Given random variable <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, the joint entropy <span class="math inline">\(\mathbf{H}(X, Y)\)</span> with a distribution <span class="math inline">\(p(x, y)\)</span> is defined as <span class="math display">\[
+    \mathbf{H}(X,Y) = \mathbb{E}\left[ \log \frac{1}{p(x, y)} \right]
+   \]</span> When <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are discrete random variables, it is equivalent to <span class="math display">\[
+    \mathbf{H}(X,Y) = \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(x, y) }.
+   \]</span></p>
+<p><strong><em>Definition.</em></strong> The conditional entropy <span class="math inline">\(\mathbf{H}(Y \mid X)\)</span> with a distribution <span class="math inline">\(p(x, y)\)</span> is defined as <span class="math display">\[
+   \begin{aligned}
+       \mathbf{H}(Y \mid X) 
+        &amp;= \sum_{x \in \mathcal{X} } p(x) \cdot \mathbf{H} (Y \mid X = x) \\
+        &amp;= \sum_{x \in \mathcal{X} } p(x) \cdot \sum_{y \in \mathcal{Y} } p(y \mid x) \log \frac{1}{p(y \mid x) } \\
+        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) } \\
+        &amp;= \mathbb{E} \left[  \log \frac{1}{p(y \mid x) } \right]
+   \end{aligned}
+   \]</span></p>
+<ul>
+<li><strong>Remark.</strong> <em>Conditioned on <span class="math inline">\(X = x\)</span>, <span class="math inline">\(Y\)</span> is a random variable and therefore we can define its Entropy as <span class="math inline">\(\mathbf{H}(Y \mid X = x)\)</span>. The conditional entropy <span class="math inline">\(\mathbf{H}(Y \mid X)\)</span> is the average of the <span class="math inline">\(\mathbf{H}(Y \mid X = x)\)</span> over the distribution of <span class="math inline">\(X\)</span>. Both <span class="math inline">\(\mathbf{H}(Y \mid X)\)</span> and <span class="math inline">\(\mathbf{H}(Y \mid X = x)\)</span> represent a value. This is different from the conditional expectation: <span class="math inline">\(\mathbb{E}[Y \mid X]\)</span> is a random variable and <span class="math inline">\(\mathbb{E}[Y \mid X = x]\)</span> is a value.</em></li>
+</ul>
+<p><strong><em>Chain Rule.</em></strong> For random variable <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, it holds that <span class="math display">\[
+   \begin{aligned}
+       \mathbf{H}(X, Y) 
+        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(x, y) } \\
+        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) p(x) } \\
+        &amp;= \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{p(y \mid x) } + \sum_{x \in \mathcal{X} } \sum_{y \in \mathcal{Y} } p(x, y) \log \frac{1}{ p(x) } \\
+        &amp;= \mathbf{H}(Y \mid X) + \mathbf{H}(X)
+   \end{aligned}
+   \]</span></p>
+<p><em>Corollary of</em> <strong><em>Chain Rule.</em></strong> <span class="math display">\[
+   \mathbf{H}(X) + \mathbf{H}(Y \mid X) =  
+   \mathbf{H}(Y) + \mathbf{H}(X \mid Y)
+   \]</span></p>
+<p>Or <span class="math display">\[
+   \mathbf{H}(X) - \mathbf{H}(X \mid Y)=  
+   \mathbf{H}(Y) - \mathbf{H}(Y \mid X)
+   \]</span></p>
+<h3 id="binomial-distribution">Binomial Distribution</h3>
+<p>We study the relationship of binomial distribution <span class="math inline">\(B(n, p)\)</span> and entropy. As a rule of thumb, for reasonably large <span class="math inline">\(n\)</span> (say, <span class="math inline">\(n \ge 100\)</span>) and moderate size of <span class="math inline">\(p\)</span> (e.g., <span class="math inline">\(0.1 \le p \le 0.9\)</span>), the probability is concentrated on the interval <span class="math inline">\([np - \sqrt n, np + \sqrt n]\)</span>.</p>
+<p><span class="math inline">\(N = 100, p = 0.5\)</span>. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.5.png" /></p>
+<p><span class="math inline">\(N = 100, p = 0.3\)</span>. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.3.png" /></p>
+<p><span class="math inline">\(N = 100, p = 0.1\)</span>. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=100_P=0.1.png" /></p>
+<p><span class="math inline">\(N = 1000, p = 0.1\)</span>. Note that <span class="math display">\[
+\Pr[ 100 - \sqrt{1000} \le X \le 100 + \sqrt{1000} ] \approx 0.9993
+\]</span> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/BinomialDist_N=1000_P=0.1.png" /></p>
+<p><em><strong>Lemma</strong>.</em> For <span class="math inline">\(n\in \mathbf{Z}^+\)</span>, <span class="math inline">\(k \in [n]\)</span>, it holds that <span class="math display">\[
+\binom{n}{k} \ge \frac{1}{n + 1} 2^{n \mathbf{H}(\frac{k}{n} ) }
+\]</span></p>
+<p><em><strong>Proof</strong>.</em> Define <span class="math inline">\(q = \frac{k}{n}\)</span>. Then <span class="math display">\[
+\begin{aligned}
+    (q + (1 - q))^n &amp;= \sum_{i = 0}^n \binom{n}{i} q^i (1 - q)^{n - i}
+\end{aligned}
+\]</span></p>
+<p>The summation consists of <span class="math inline">\((n + 1)\)</span> terms. We claim that <span class="math display">\[
+\binom{n}{k} q^k (1 - q)^{n - k}
+\]</span></p>
+<p>is the largest one. For <span class="math inline">\(i \in [n]\)</span>, <span class="math display">\[
+\frac{ \binom{n}{i + 1} q^{i + 1} (1 - q)^{n - i - 1} }{ \binom{n}{i } q^{i} (1 - q)^{n - i } } = \frac{n - i }{i + 1} \frac{ q}{1 - q}
+\]</span></p>
+<p>The ratio is at least <span class="math inline">\(1\)</span> when <span class="math inline">\(\frac{n - i}{i + 1} \ge \frac{1 - q}{ q }\)</span>. We see that when <span class="math inline">\(i = nq - 1 = k - 1\)</span>, it holds that <span class="math display">\[
+\frac{n - i}{i + 1} = \frac{n - nq + 1}{ n q} \ge \frac{1 -  q}{ q }
+\]</span> and when <span class="math inline">\(i = k\)</span>, <span class="math display">\[
+\frac{n - i}{i + 1} = \frac{n - nq}{ n q + 1} &lt; \frac{1 -  q}{ q }
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+\begin{aligned}
+    \binom{n}{k} q^k (1 - q)^{n - k} 
+        &amp;= \binom{n}{k} 2^{k \log_2 q} 2^{ (n - k )\log_2 (1 - q)} \\
+        &amp;= \binom{n}{k} 2^{ n [ q \log_2 q +  (1 - q )\log_2 (1 - q) ]} \\
+        &amp;\ge \frac{1}{n + 1}
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h4 id="extracting-random-bits">Extracting Random Bits</h4>
+<p>Consider a uniform random variable <span class="math inline">\(X\)</span> at <span class="math inline">\([0, m - 1]\)</span>. By definition we know that <span class="math display">\[
+\mathbf{H}[X] = \sum_{i = 0}^{m - 1} \frac{1}{m} \log_2 \frac{1}{\frac{1}{m} } = \log_2 m
+\]</span></p>
+<p>Given <span class="math inline">\(X\)</span> as an input, the following algorithm outputs a binary string <span class="math inline">\(s\)</span>, such that each bit of <span class="math inline">\(s\)</span> can be interpreted as the outcome of independently Bernoulli random variables with probability <span class="math inline">\(0.5\)</span>.</p>
+<p>On the high level, we divide <span class="math inline">\(m\)</span> into intervals of powers of 2. When <span class="math inline">\(X\)</span> falls into an interval, we return a binary number that is within the range of that interval. Specifically, we rewrite <span class="math display">\[
+m = 2^{d_k} + 2^{d_{k - 1} } + ... + 2^{d_1}
+\]</span></p>
+<p>where <span class="math inline">\(\lfloor \mathbf{H}[X] \rfloor = \lfloor \log_2 m \rfloor = d_k &gt; d_{k - 1} &gt; ... &gt; d_1 \ge 0\)</span> are the indexes of non-zero bits in the binary representation of <span class="math inline">\(m\)</span>. The extraction is as follows:</p>
+<blockquote>
+<p><strong><em>Algorithm 1.</em></strong></p>
+<ol type="1">
+<li>for <span class="math inline">\(i \leftarrow k\)</span> <em>down-to</em> <span class="math inline">\(1\)</span> <em>do</em>:<br />
+</li>
+<li><span class="math inline">\(\quad\)</span> <em>if</em> <span class="math inline">\(X &lt; 2^{d_i}\)</span> <em>then</em>:<br />
+</li>
+<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span> <em>return a <span class="math inline">\(d_i\)</span>-bit binary representation of</em> <span class="math inline">\(X\)</span>;<br />
+</li>
+<li><span class="math inline">\(\quad\)</span> <em>else:</em><br />
+</li>
+<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span> <span class="math inline">\(X \leftarrow X - 2^{d_i}\)</span>;</li>
+</ol>
+</blockquote>
+<p><strong>Example (<span class="math inline">\(m = 13\)</span>).</strong> <em>It is interesting to note that when <span class="math inline">\(X = 12\)</span>, our proposed extraction method return no random bit, as <span class="math inline">\(0 &lt; 2^0\)</span>. In this case our proposed method has wasted some randomness.</em></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/ExtractingRandomBits.png" /></p>
+<p><em>Question to ponder: Come up with some method that uses <span class="math inline">\(n\)</span> i.i.d. <span class="math inline">\(X\)</span>'s to extract binary string with expected length close to <span class="math inline">\(n \mathbf{H}[X]\)</span>.</em></p>
+<p>Let <span class="math inline">\(s\)</span> be the binary string returned by Algorithm 1.</p>
+<p><strong><em>Theorem 1</em></strong>. <span class="math display">\[
+\lfloor \log_2 m \rfloor - 1 \le \mathbf{E}[|s|] \le \log_2 m
+\]</span></p>
+<p><em>Proof.</em> It is easy to see that <span class="math display">\[
+  \mathbf{E}[|s| ] = \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } 
+\]</span> which depends on <span class="math inline">\(m\)</span>. To show the upper bound, <span class="math display">\[
+\begin{array}{lll}
+    \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } - \log_2 m
+    = \sum_{i = 1}^k \frac{2^{d_i} }{m } \log_2 \frac{2^{d_i} }{m } \le 0
+\end{array}
+\]</span> The inequality follows from <span class="math inline">\(\log_2 \frac{2^{d_i} }{m } \le 0\)</span> for <span class="math inline">\(1 \le i \le k\)</span>.</p>
+<p>To show the lower bound, define the function <span class="math display">\[
+f(m) = \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } 
+\]</span></p>
+<p>We prove by induction on <span class="math inline">\(m\)</span> that <span class="math inline">\(f(m) \ge \lfloor \log_2 m \rfloor - 1 = d_k - 1\)</span>. The cases holds trivially when <span class="math inline">\(m = 1\)</span>. Now suppose it holds for all integer less than <span class="math inline">\(m\)</span>. We prove that it holds for <span class="math inline">\(m\)</span>.</p>
+<p>Case 1. <span class="math inline">\(m = 2^{d_k}\)</span>. Then <span class="math inline">\(f(m) = d_k = \log_2 m\)</span>.</p>
+<p>Case 2. <span class="math inline">\(m &gt; 2^{d_k}\)</span>. Now<br />
+<span class="math display">\[
+\begin{aligned}
+    f(m) &amp;= \sum_{i = 1}^k d_i \frac{2^{d_i} }{m } \\
+    &amp;= d_k \frac{2^{d_k} }{m} + \left( \sum_{i = 1}^{k - 1} d_i \frac{2^{d_i} }{m - 2^{d_k}  }  \right) \frac{m - 2^{d_k} }{m} \\
+\end{aligned}
+\]</span></p>
+<p>But <span class="math inline">\(\sum_{i = 1}^{k - 1} 2^{d_i} = m - 2^{d_k}\)</span>. It follows by induction <span class="math display">\[
+\sum_{i = 1}^{k - 1} d_i \frac{2^{d_i} }{m - 2^{d_k}  } = f(m - 2^{d_k}) \ge d_{k - 1} - 1
+\]</span></p>
+<p>Finally, <span class="math display">\[
+\begin{aligned}
+    f(m)
+    &amp;\ge d_k \frac{2^{d_k} }{m} + \left( d_{k - 1} -1 \right) \frac{m - 2^{d_k} }{m} \\
+    &amp;= d_k +  \left( d_{k - 1}- d_k -1 \right)  \frac{m - 2^{d_k} }{m} \\
+    &amp;= d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( 1 - \frac{ 2^{d_k} }{m} \right)\\
+    &amp;\ge  d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( 1 - \frac{ 2^{d_k} }{2^{d_k} + 2^{d_{k - 1} } } \right)\\
+    &amp;=  d_k -  \left( d_k + 1 - d_{k - 1}  \right) \left( \frac{ 2^{d_{k - 1} } }{2^{d_k} + 2^{d_{k - 1} } } \right)\\
+    &amp;=  d_k -  \left( \frac{ d_k  - d_{k - 1} + 1  }{2^{d_k - d_{k - 1} } + 1 } \right)\\     
+    &amp;\ge  d_k -  \left( \frac{ d_k  - d_{k - 1} + 1  }{2^{d_k - d_{k - 1} } } \right)\\
+    &amp;\ge d_k - 1
+\end{aligned}
+\]</span></p>
+<p>The last inequality holds since <span class="math inline">\(d_{k - 1} \le d_k - 1\)</span> and the function <span class="math inline">\(f(x) = \frac{x + 1}{2^x}\)</span> decreases when <span class="math inline">\(x \ge 1\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h5 id="binary-strings">Binary Strings</h5>
+<p>To illustrate the idea of entropy, we study another example of random bit extraction.</p>
+<p><strong><em>Problem.</em></strong> <em>Let <span class="math inline">\(t\)</span> be an <span class="math inline">\(n\)</span>-bit binary string each bit of which is interpreted as the outcome of independent bias coin flip that comes up head probability <span class="math inline">\(p \le 0.5\)</span>. Given <span class="math inline">\(t\)</span> as input, we want to output a binary string <span class="math inline">\(s\)</span> (not necessary of length <span class="math inline">\(n\)</span>) of independent unbiased random bits.</em></p>
+<p><strong><em>Theorem.</em></strong> There is an extraction algorithm, such that,<br />
+1. <span class="math inline">\(\forall \delta \in (0, 1)\)</span>, <span class="math inline">\(\exists N &gt; 0\)</span>, <span class="math inline">\(s.t.\)</span>, <span class="math inline">\(\forall n \ge N\)</span>, <span class="math inline">\(\mathbf{E}[|s|] \ge (1 - \delta) n\mathbf{H}(p)\)</span>.<br />
+2. <span class="math inline">\(\forall n &gt; 0\)</span>, <span class="math inline">\(\mathbf{E}[|s|] \le n\mathbf{H}(p)\)</span>.</p>
+<p>The theorem states that the expected length of <span class="math inline">\(s\)</span> approximates <span class="math inline">\(n\mathbf{H}(p)\)</span>. Equivalently, <span class="math display">\[
+\lim_{n \rightarrow \infty} \frac{\mathbf{E}[|s|]}{n} = \mathbf{H}(p)
+\]</span></p>
+<p><strong><em>Proof.</em></strong> Define the random variable <span class="math inline">\(Z\)</span> to be the number of ones in <span class="math inline">\(t\)</span>. For any integer <span class="math inline">\(k \ge 0\)</span>, there are <span class="math inline">\(\binom{n}{k}\)</span> strings with <span class="math inline">\(k\)</span> ones. We can map these strings to <span class="math inline">\(\{0, 1, ..., \binom{n}{k} - 1 \}\)</span>. Conditioned on <span class="math inline">\(Z = k\)</span>, the mapping of <span class="math inline">\(t\)</span> is uniform on <span class="math inline">\(\{0, 1, ..., \binom{n}{k} - 1 \}\)</span>. We can use Algorithm 1 to return a binary string <span class="math inline">\(s\)</span>. Now its expected length is <span class="math display">\[
+\mathbf{E}[|s|] = \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k]
+\]</span></p>
+<p>Further, by Hoeffding's inequality, it holds that for <span class="math inline">\(0 &lt; \epsilon &lt; p\)</span>, <span class="math display">\[
+\Pr[ |Z - np | \ge n\epsilon] \le \exp\left(- 2 n \epsilon^2 \right)
+\]</span></p>
+<p>By setting the failure probability <span class="math inline">\(\exp(-2 n \epsilon^2) = \delta / 2\)</span>, we get <span class="math inline">\(\epsilon = \sqrt{\frac{\ln \frac{2}{\delta} }{2n} }\)</span>.</p>
+<p>Let <span class="math inline">\(LB = \lceil np - n\epsilon \rceil\)</span> and <span class="math inline">\(UB = \lfloor np + n\epsilon \rfloor\)</span>. Observing that <span class="math inline">\(Z\)</span> is an integer, we have <span class="math display">\[
+\begin{array}{rl}  
+    \Pr[LB \le Z \le UB] &amp;= \Pr[np - n\epsilon \le Z \le np + n\epsilon] \\
+    &amp;\ge 1 - \delta/2
+\end{array}
+\]</span></p>
+<p>As <span class="math inline">\(p \le 0.5\)</span>, it holds that <span class="math display">\[
+n = \lceil n/2 - n\epsilon \rceil + \lfloor n/2 + n\epsilon \rfloor \ge \lceil np - n\epsilon \rceil + \lfloor np + n\epsilon \rfloor
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+LB \le UB \le n - LB \\
+\]</span></p>
+<p>Since <span class="math inline">\(\binom{n}{k}\)</span> increase for <span class="math inline">\(k &lt; n / 2\)</span> and decrease <span class="math inline">\(k &gt; n / 2\)</span>, it holds that <span class="math display">\[
+\binom{n}{LB} \le \binom{n}{UB}
+\]</span></p>
+<p>For <span class="math inline">\(LB \le k \le UB\)</span>, we have <span class="math display">\[
+\binom{n}{LB} \le \binom{n}{k} 
+\]</span></p>
+<p>Define <span class="math inline">\(q = \frac{ LB }{n}\)</span>, <span class="math display">\[
+\binom{n}{LB}  \ge \frac{1}{n + 1} 2^{n \mathbf{H}( \frac{ LB }{n} ) } \ge \frac{1}{n + 1} 2^{n\mathbf{H}(p - \epsilon)} 
+\]</span></p>
+<p>By <strong><em>Theorem 1</em></strong>, we have <span class="math display">\[
+\begin{aligned}
+    \mathbf{E}[|s|] &amp;= \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \\
+    &amp;\ge \sum_{k = LB}^{UB} \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \\
+    &amp;\ge \sum_{k = LB }^{UB } \left( \left\lfloor \log_2 \binom{n}{k} \right\rfloor - 1 \right) \binom{n}{k} p^k (1 - p)^{n - k}  \\
+    &amp;\ge \sum_{k = LB }^{UB } \left( \left\lfloor \log_2  \binom{n}{ LB  } \right\rfloor - 1 \right) \binom{n}{k} p^k (1 - p)^{n - k}  \\
+    &amp;=  \left( \left\lfloor \log_2  \binom{n}{ LB  } \right\rfloor - 1 \right) \Pr[LB \le Z \le UB] \\
+    &amp;\ge \left( n \mathbf{H}(p - \epsilon)  - \log_2 (n + 1) \right) (1- \delta / 2) \\
+    &amp;=  \left( \frac{\mathbf{H}(p - \epsilon)}{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) (1- \delta / 2 ) \cdot n \cdot \mathbf{H}(p) \\
+    &amp;=  \left( \frac{\mathbf{H} \left(p - \sqrt{\frac{\ln \frac{2}{\delta} }{2n} } \right) }{\mathbf{H}(p) }  - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) (1- \delta / 2 ) \cdot n \cdot \mathbf{H}(p) \\
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\exists N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n &gt; N\)</span>, <span class="math inline">\(\left( \frac{\mathbf{H} \left(p - \sqrt{\frac{\ln \frac{2}{\delta} }{2n} } \right) }{\mathbf{H}(p) } - \frac{\log_2 (n + 1) }{ n\mathbf{H}(p) }\right) \ge (1 - \delta / 2)\)</span>, which finishes the proof of lower bound.</p>
+<p>As for the upper bound, observe that <span class="math display">\[
+\binom{n}{k} p^k ( 1- p)^{n - k} \le 1
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\binom{n}{k} \le p^{-k} ( 1- p)^{-(n - k) }\)</span>. Thus, we have <span class="math display">\[
+\begin{aligned}
+       \mathbf{E}[|s|] &amp;= \sum_{k = 1}^n \mathbf{E}\left[ |s| \mid Z = k \right] \Pr[Z = k] \\
+       &amp;\le \sum_{k = 1}^n \left( \log_2 \binom{n}{k} \right) \binom{n}{k} p^k (1 - p)^{n - k} \\
+       &amp;\le \sum_{k = 1}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k (1 - p)^{n - k} } 
+\end{aligned}
+\]</span></p>
+<p>The last term is exactly the entropy of the string. By independence of the bits, we know that it is equal to <span class="math inline">\(n \mathbf{H}(p)\)</span>.</p>
+<p>Remark: we may also prove it algebraically. <span class="math display">\[
+\begin{aligned}
+       \mathbf{E}[|s|] 
+       &amp;\le \sum_{k = 0}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k (1 - p)^{n - k} } \\
+       &amp;= \sum_{k = 1}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ p^k } + \sum_{k = 0}^n \binom{n}{k} p^k (1 - p)^{n - k} \log_2 \frac{1}{ (1 - p)^{n - k} } \\
+       &amp;= \left( p \log_2 \frac{1}{p} \right) \sum_{k = 1}^n  \binom{n}{k} k p^{k - 1} (1 - p)^{n - k}  \\
+       &amp;\quad +  \left( ( 1- p) \log_2 \frac{1}{ 1 - p } \right) \sum_{k = 0}^{n - 1} \binom{n}{k} (n - k) p^k (1 - p)^{n - k - 1} \\
+       &amp;= \left( p \log_2 \frac{1}{p} \right) [(x + (1 - p))^n]_{x = p}&#39;  +  \left( (1 - p) \log_2 \frac{1}{ 1 - p } \right) [(p + x)^n]_{x = 1-p}&#39; \\
+       &amp;= n \mathbf{H}(p)
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h4 id="reference.">Reference.</h4>
+<p>[1] S. Har-Peled, “Chapter 26 Entropy, Randomness, and Information,” p. 6.<br />
+[2] M. Mitzenmacher and E. Upfal, Probability and Computing: Randomized Algorithms and Probabilistic Analysis. Cambridge: Cambridge University Press, 2005.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/30/Integer-Shortest-Path/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/30/Integer-Shortest-Path/" class="post-title-link" itemprop="url">Integer Shortest Path</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-30 11:15:49" itemprop="dateCreated datePublished" datetime="2020-05-30T11:15:49+10:00">2020-05-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-06-18 13:01:58" itemprop="dateModified" datetime="2020-06-18T13:01:58+10:00">2020-06-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Single source shortest path is one of most popular the topics taught in a introductory algorithm course. Given a graph <span class="math inline">\(G = \left&lt; V, E \right&gt;\)</span> with <span class="math inline">\(n\)</span> vertices and <span class="math inline">\(m\)</span> edges, the famous Dijkstra's algorithm has runtime <span class="math inline">\(O(m \log n)\)</span> by using a binary heap. When more advanced heap such such Fibonacci heap is deployed, the runtime can be improved to <span class="math inline">\(O(m + n \log n)\)</span>. Most introductory courses are satisfied with the above solutions without going further.</p>
+<p>Here we explore the topic by considering a special case where all edge weights are non-negative integers within the set <span class="math inline">\(\{0, 1, 2, ..., C\}\)</span>. We develop new heaps incrementally and we will finally see that Dijkstra algorithm can do substantially better than <span class="math inline">\(O(m + n \log n)\)</span>.</p>
+<h4 id="time-om-nc-space-onc.">Time: <span class="math inline">\(O(m + nC)\)</span>, Space: <span class="math inline">\(O(nC)\)</span>.</h4>
+<p>As a warm up, we demonstrate an algorithm with runtime <span class="math inline">\(O(m + nC)\)</span> and space overhead <span class="math inline">\(O(nC)\)</span>. Here we exclude the space <span class="math inline">\(O(m + n)\)</span> required for storing the graph to simplify the discussion and comparison between the algorithms.</p>
+<p>The idea is very simple. We know that the possible distance from any vertex to the source vertex (denoted as <span class="math inline">\(s\)</span>) is no less than <span class="math inline">\(nC\)</span>. It suffices to keep an array <span class="math inline">\(A_1\)</span> with length <span class="math inline">\(nC\)</span>, such that <span class="math inline">\(A_1[i]\)</span> maintains the set of vertices with temporary distance <span class="math inline">\(i\)</span>. In this context, we call <span class="math inline">\(A_1[i]\)</span> a bucket and the array <span class="math inline">\(A_1\)</span> itself the buckets.</p>
+<p>Initially all <span class="math inline">\(A_1[i]\)</span>'s are empty except that <span class="math inline">\(A_1[0]\)</span> contains the source vertex. The algorithm iterates over <span class="math inline">\(A_1\)</span> to find an unmarked vertex with the minimum distance, marked it, update its neighbors' distances and move them to the corresponding buckets.</p>
+<p>Each vertex is inserted into <span class="math inline">\(A_1\)</span> once. There are at most <span class="math inline">\(m\)</span> updates of vertices' distances. As the minimum distance of the unmarked vertices is monotonically increasing, we scan the array <span class="math inline">\(A_1\)</span> only once. Summing over the cost we get the <span class="math inline">\(O(m + nC)\)</span> time complexity bound.</p>
+<h4 id="time-om-nc-space-oc.">Time: <span class="math inline">\(O(m + nC)\)</span>, Space: <span class="math inline">\(O(C)\)</span>.</h4>
+<p>The space usage of the above algorithm can be improve to <span class="math inline">\(O(C)\)</span>. Relabel the vertices as <span class="math inline">\(s = v_0, v_1, v_2, ..., v_n\)</span> according to the order they are marked.</p>
+<p>Suppose that Dijkstra's algorithm uses an array <span class="math inline">\(d\)</span> to record the vertices' distances to <span class="math inline">\(s\)</span>. Initially, <span class="math inline">\(d(s) = 0\)</span> and <span class="math inline">\(d(v) = \infty\)</span> for <span class="math inline">\(\forall v \neq s\)</span>. Now, consider the moment that <span class="math inline">\(k\)</span> (<span class="math inline">\(0 \le k &lt; n\)</span>) vertices have been marked. For <span class="math inline">\(i &gt; k\)</span>, the value of <span class="math inline">\(d(v_i)\)</span> is either</p>
+<ol type="1">
+<li><p><span class="math inline">\(d(v_i) = \infty\)</span>, if <span class="math inline">\(v_i\)</span> is not adjacent to any vertex <span class="math inline">\(v_j\)</span> for <span class="math inline">\(j \le k\)</span>. In this case <span class="math inline">\(v_i\)</span> is not in the array <span class="math inline">\(A_1\)</span>.</p></li>
+<li><p><span class="math inline">\(d(v_i) = d(v_j) + w_{i,j}\)</span> for some <span class="math inline">\(j \le k\)</span>, where <span class="math inline">\(w_{i,j}\)</span> is the edge weight between <span class="math inline">\(v_i\)</span> and <span class="math inline">\(v_j\)</span>.</p></li>
+</ol>
+<p>By the property of Dijkstra's algorithm, at this moment it also holds that <span class="math display">\[
+0 = d(s) = d_(v_0) \le d(v_1) \le d(v_2) ... \le d(v_k)
+\]</span></p>
+<p>Therefore, for <span class="math inline">\(i &gt; k\)</span>, either <span class="math inline">\(v_i\)</span> is not in <span class="math inline">\(A_1\)</span> or <span class="math display">\[
+d(v_i) \le d(v_j) + w_{i,j} \le d(v_k) + C
+\]</span></p>
+<p>All un-marked vertices that are in <span class="math inline">\(A_1\)</span> must be in the range of <span class="math display">\[
+A_1[d(v_k) ... d(v_k) + C]
+\]</span></p>
+<p>In general, let <span class="math inline">\(\mu\)</span> be the distance of the least marked vertex. It suffices to maintain a window of <span class="math inline">\(A_1[\mu...\mu+C]\)</span>. We can implement this by initializing <span class="math inline">\(A_1\)</span> with size <span class="math inline">\(C+1\)</span> and use it in a wrap-around manner.</p>
+<h4 id="time-om-n-sqrt-c-space-oc.">Time: <span class="math inline">\(O(m + n \sqrt C)\)</span>, Space: <span class="math inline">\(O(C)\)</span>.</h4>
+<p>In previous section, we successfully reduce the size of <span class="math inline">\(A_1\)</span> to <span class="math inline">\(1 + C\)</span>. But the runtime remains <span class="math inline">\(O(m + nC)\)</span>. To motivate the algorithm discussed in this section, we first provide an alternative view of this complexity:</p>
+<ol type="1">
+<li><p>We update the vertices' distance and move the vertices between buckets, which has cost <span class="math inline">\(O(m)\)</span>;</p></li>
+<li><p>At each iteration of Dijkstra's algorithm, in the worst case, we need to scan the entire array of <span class="math inline">\(A_1\)</span> to find an unmarked vertex with minimum distance, which takes <span class="math inline">\(O(C)\)</span> times. This is repeated <span class="math inline">\(n\)</span> times.</p></li>
+</ol>
+<p>Where could we have wasted our time? Do we really have spend <span class="math inline">\(O(C)\)</span> time to find the unmarked vertex with minimum distance?</p>
+<p>We can improve this to <span class="math inline">\(O(\sqrt C)\)</span> by using two-level buckets. We break the buckets in <span class="math inline">\(A_1\)</span> into <span class="math inline">\(\sqrt { C + 1}\)</span> blocks, each of size <span class="math inline">\(\sqrt { C + 1}\)</span> (assume here <span class="math inline">\(\sqrt { C + 1}\)</span> is an integer for simplicity). For each block, we use one flag bit to indicate whether this block is empty. This results in <span class="math inline">\(\sqrt { C + 1}\)</span> flags bits, which are stored in bit array <span class="math inline">\(A_2\)</span>. From now on,</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/1.png" /></p>
+<p>Now, to find an unmarked vertex with minimum distance, we scan <span class="math inline">\(A_2\)</span> to find the first non-zero bit then the corresponding bucket in <span class="math inline">\(A_1\)</span>, which takes <span class="math inline">\(O(\sqrt C)\)</span> time. Totaling the runtime, we obtain a bound of <span class="math inline">\(O(m + n \sqrt C)\)</span>.</p>
+<p><strong><em>Question to ponder: calculate the size of <span class="math inline">\(\sqrt C\)</span> for some values of <span class="math inline">\(C\)</span> which you consider reasonable in real applications.</em></strong></p>
+<h4 id="time-o-m-log_-fracmn-c-space-oc.">Time: <span class="math inline">\(O( m \log_{ \frac{m}{n} } C)\)</span>, Space: <span class="math inline">\(O(C)\)</span>.</h4>
+<p>It is natural to extend the idea to <span class="math inline">\(3\)</span>-level buckets. Suppose the block size if <span class="math inline">\(\Delta\)</span>. Then the third level contains a single bit block of size <span class="math inline">\(\Delta\)</span>, the second level contains <span class="math inline">\(\Delta\)</span> bit blocks (with total size <span class="math inline">\(\Delta^3\)</span>), and the first level contains the buckets <span class="math inline">\(A_1\)</span> of size <span class="math inline">\(\Delta^3 = C + 1\)</span>. It follows that <span class="math inline">\(\Delta = (C + 1)^\frac{1}{3}\)</span> and the time complexity is <span class="math inline">\(O(m + n C^\frac{1}{3} )\)</span>.</p>
+<p>We may use four level buckets, in which <span class="math inline">\(\Delta = (C + 1)^\frac{1}{4}\)</span> and the time complexity is <span class="math inline">\(O(m + n C^\frac{1}{4})\)</span>.</p>
+<p><strong><em>Question to ponder: calculate the size of <span class="math inline">\(C^\frac{1}{3}\)</span> and <span class="math inline">\(C^\frac{1}{4}\)</span> for some values of <span class="math inline">\(C\)</span> which you consider reasonable in real applications.</em></strong></p>
+<p>Does the analysis carry for <span class="math inline">\(k\)</span>-level buckets for general value of <span class="math inline">\(k\)</span>? No. We can no longer consider the <span class="math inline">\(k\)</span> as a constant and have to take into consider the overhead of insertion, decrease-key and deletion explicitly.</p>
+<p>For a <span class="math inline">\(k\)</span>-level bucket structure with bucket size <span class="math inline">\(\Delta = (1 + C)^\frac{1}{k} \ge 2\)</span>,</p>
+<ol type="1">
+<li><p>insertion takes <span class="math inline">\(O(k)\)</span> time,</p></li>
+<li><p>decrease-key takes <span class="math inline">\(O(k)\)</span> time,</p></li>
+</ol>
+<p>as we need to maintain the indicators bits in <span class="math inline">\(2...k\)</span> levels. Finally,</p>
+<ol start="3" type="1">
+<li>delete-min takes <span class="math inline">\(O(k \Delta)\)</span> time,</li>
+</ol>
+<p>as we need to scan <span class="math inline">\(k\)</span> buckets, each of size <span class="math inline">\(\Delta\)</span>, to find the min element and delete it.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/2.png" /></p>
+<p>The time complexity now becomes <span class="math display">\[
+O(mk + n k \Delta) = O( mk + nkC^\frac{1}{k})
+\]</span></p>
+<p>Balancing the two terms, we get <span class="math inline">\(\frac{1}{k} = \frac{ \log \frac{m}{n} }{ \log C}\)</span>, i.e., <span class="math inline">\(k = \log_{\frac{m}{n} } C\)</span>. To summarize, the time is <span class="math display">\[
+O(m \log_{\frac{m}{n} } C)
+\]</span></p>
+<p>and the space overhead is <span class="math display">\[
+O\left( \sum_{i = 0}^{k - 1} C / \Delta^i \right) = O(C)
+\]</span></p>
+<p><strong><em>Question to ponder: calculate the size of <span class="math inline">\(\log_{\frac{m}{n} } C\)</span> for some values of <span class="math inline">\(C\)</span> which you consider reasonable in real applications.</em></strong></p>
+<h4 id="time-om-n-fraclog-clog-log-c-space-o-fraclog-clog-log-c-2-.">Time: <span class="math inline">\(O(m + n \frac{\log C}{\log \log C})\)</span>, Space: <span class="math inline">\(O( (\frac{\log C}{\log \log C} )^2 )\)</span>.</h4>
+<p>The core idea underlying the k-level bucket structure discussed in the previous section is that every integer <span class="math inline">\(w\)</span> in <span class="math inline">\([0, C]\)</span> can be written as a base-<span class="math inline">\(\Delta\)</span> number with length at most <span class="math inline">\(k\)</span>: <span class="math display">\[
+w = \sum_{i = 0}^{k - 1} w_i \cdot \Delta^i
+\]</span></p>
+<p>where <span class="math inline">\(w_i \in [0, \Delta)\)</span>. For convenience, we write it as <span class="math display">\[
+w = (w_{k - 1}, w_{k - 2}, ..., w_0)_\Delta
+\]</span></p>
+<p>Now the meaning of the <span class="math inline">\(k\)</span>-level buckets is clear. The <span class="math inline">\(k^{th}\)</span> level partitions the <span class="math inline">\(w\)</span>'s according to the value of <span class="math inline">\(w_{k - 1}\)</span>. The <span class="math inline">\((k - 1)^{th}\)</span> level further partitions the <span class="math inline">\(w\)</span>'s according to the value of <span class="math inline">\(w_{k - 2}\)</span>, and so on. The path from the top level to bottom level is uniquely determined by the sequence <span class="math inline">\((w_{k - 1}, w_{k - 2}, ..., w_0)_\Delta\)</span>. Indeed, this is a special case of <strong><em>trie</em></strong>, which has alphabet size <span class="math inline">\(\Delta\)</span> and contains only sequence of length <span class="math inline">\(k\)</span>.</p>
+<p>But we may still waste some work. Remember that our goal for designing the data structure is to find the min element. Therefore, it suffices to distinguish the min element from the rest. We should not waste our effort in determining the relative order between the non-min elements.</p>
+<p>In the following example, the min elements <span class="math inline">\(v_1, v_2\)</span> fall into the subtree of the first bucket on the <span class="math inline">\(k^{th}\)</span> level while <span class="math inline">\(v_{n - 1}, v_n\)</span> fall into the last one. As <span class="math inline">\(v_{n - 1}, v_n\)</span> are not min elements, it is unnecessary to maintain a subtree to separate them. Worse still, if later decrease-key is applied to either <span class="math inline">\(v_{n -1}\)</span> or <span class="math inline">\(v_n\)</span>, and if the new key has to be moved to a new bucket in the <span class="math inline">\(k^{th}\)</span> level, the effort we have spent in constructing the sub-tree is completely useless.</p>
+<p>Instead, we can create an auxiliary set to the last bucket on level <span class="math inline">\(k\)</span>, to pus <span class="math inline">\(v_{n - 1}, v_n\)</span> into the set directly. Similar idea apply to <span class="math inline">\(v_3\)</span> in the example.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/3.png" /></p>
+<p>The new structure we get is as follows:</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/4.png" /></p>
+<p>In general, we may not even has a <span class="math inline">\(k\)</span>-level trie. In the example below, we can already determine the min-element <span class="math inline">\(v_1\)</span> at some level <span class="math inline">\(i &gt; 1\)</span>. Why should we bother to expand the buckets further? Note that this idea is similar to that of trie compression used in <strong><em>Patricia trie</em></strong>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/5.png" /></p>
+<p>We can be even more lazy. We expand a bucket only when it is necessary. See the example below as an example. In this example, <span class="math inline">\(C = 15\)</span> and <span class="math inline">\(\Delta = 4\)</span>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example1-2.png" /></p>
+<p>Now, to delete-min, we need to determine the order of <span class="math inline">\(v_1, v_2\)</span>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example3.png" /></p>
+<p>Inserting a new element follows the current structure, until it finds a bucket to fall in.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example4.png" /></p>
+<p>Delete-min begin the search from the lowest level non-empty bucket block.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example5.png" /></p>
+<p>After delete-min, we may need to delete the empty bucket blocks recursively. For each bucket block, we maintain counter for the number of non-empty buckets. This allows us to delete empty bucket blocks in <span class="math inline">\(O(k)\)</span> time.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example6.png" /></p>
+<p>We decrease the key of <span class="math inline">\(v_4\)</span> to 9. Note that we do not need to compare <span class="math inline">\(v_4\)</span> and <span class="math inline">\(v_5\)</span> for the moment. Bucket block counter is maintained when <span class="math inline">\(v_4\)</span> is moved to another bucket.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example7.png" /></p>
+<p>Delete-min is invoked again. We need to expand the bucket containing <span class="math inline">\(v_5\)</span> and <span class="math inline">\(v_4\)</span> to distinguish them.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example8.png" /></p>
+<p>We continue to insert a new element <span class="math inline">\(v_6 = 12\)</span>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example9.png" /></p>
+<p>We decrease the key of <span class="math inline">\(v_6\)</span> to <span class="math inline">\(10\)</span>. It is pushed down by one level.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example10.png" /></p>
+<p>We are now prepared to analyze the amortized cost of these operations:</p>
+<ol type="1">
+<li><p>Insert: we pay an <span class="math inline">\(O(k)\)</span> amortized cost of insertion. Any subsequent pushed down operation on this element is charged to its insertion. Note that an element can be push-down by at most <span class="math inline">\(k\)</span> levels.</p></li>
+<li><p>Decrease-key: we pay an <span class="math inline">\(O(1)\)</span> amortized cost of decrease-key operation. The push-down operation is charged to its insertion.</p></li>
+<li><p>Delete-min: to find the min-element, we scan the bucket block in the lowest level to find the first non-empty bucket. This has time <span class="math inline">\(\Delta\)</span>. If the bucket found contains multiple elements, we perform an expansion and push the elements down, the cost of which is charged to insertion of these elements. Finally, we may need to delete empty bucket blocks recursively, which has cost <span class="math inline">\(O(k)\)</span>.</p></li>
+</ol>
+<p>Therefore, the Dijkstra's algorithm with this structure has runtime <span class="math inline">\(O(m + n(k + \Delta))\)</span>, which is minimized when <span class="math display">\[
+k = \Delta = (C + 1)^\frac{1}{k}
+\]</span></p>
+<p>Solving the equation gives <span class="math inline">\(k = O(\frac{\log C}{\log \log C} )\)</span>.</p>
+<h4 id="time-o-m-n-sqrtlog-c-space-osqrtlog-c-cdot-2sqrtlog-c-.">Time: <span class="math inline">\(O( m + n \sqrt{\log C} )\)</span>, Space: <span class="math inline">\(O(\sqrt{\log C} \cdot 2^{\sqrt{\log C} })\)</span>.</h4>
+<p>Beginning from the naïve approach, we have improved a lot on both time and space overhead. Amazingly, this is not the end of the story. To motivate what is possibly the inefficient part of <span class="math inline">\(O(m + n \frac{\log C}{\log \log C})\)</span> approach, look at the following example.</p>
+<p>Suppose that <span class="math inline">\(C\)</span> is a large number. Initially the structure is empty. We insert an element <span class="math inline">\(v_1\)</span> followed by <span class="math inline">\(v_2\)</span> and they fall into the same bucket in the <span class="math inline">\(k^{th}\)</span> level. Next, we perform a delete-min operation. To distinguish, we expand the buckets all the way down to <span class="math inline">\(1^{st}\)</span> level.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Drawback.png" /></p>
+<p>But since there are two elements, why don't we compare them directly and return the minimum one? In such case we avoid the unnecessary expansions.</p>
+<p>We can extend the idea further. If the number of elements in a bucket is too few, we refuse to expand it. Instead we make of copy of the elements and construct a comparison based priority queue (e.g., Fibonacci heap) on them. Further, note that we are only interested in the possible min-element. Therefore the heap is constructed for only one bucket that contains the min-element.</p>
+<p>We use a parameter <span class="math inline">\(t\)</span> (to be determined) to control this number. In particular, if the number is at most <span class="math inline">\(t\)</span>, we construct a comparison based priority queue. We perform expansion only if the number exceeds <span class="math inline">\(t\)</span>.</p>
+<ol type="1">
+<li><p>Insert: insert an element as before. If the element falls into the bucket that is associated with a priority, then also insert this element into the heap.</p></li>
+<li><p>Decrease-key: if the element is in the bucket that is associated with a priority queue, perform decrease-key in the queue. Otherwise, perform decrease-key as before. If the element falls into the bucket that is associated with a priority queue, then also insert this element into the heap.</p></li>
+<li><p>Delete-min:</p></li>
+</ol>
+<blockquote>
+<ol type="1">
+<li>Find the first non-empty bucket in the lowest level<br />
+</li>
+<li><strong><em>IF</em></strong> the bucket has more than <span class="math inline">\(t\)</span> elements <strong><em>THEN</em></strong><br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Expand the bucket<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <strong><em>GO TO STEP 1</em></strong></li>
+<li><strong><em>ELSE</em></strong></li>
+<li><span class="math inline">\(\qquad\)</span> <strong><em>IF</em></strong> <span class="math inline">\(\nexists\)</span> queue <strong><em>THEN</em></strong><br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\)</span> Construct a queue</li>
+<li><span class="math inline">\(\qquad\)</span> Perform delete-min in the queue</li>
+</ol>
+</blockquote>
+<p>Let <span class="math inline">\(I(t), D(t), X(t)\)</span> be the time needed to perform insert, decrease-key and delete-min operation in a comparison based priority queue respectively. Then it is obvious that the the structure we propose, the amortized time we need for insert and decrease-key is</p>
+<ol type="1">
+<li>Insert: <span class="math inline">\(O(k + I(t))\)</span>.</li>
+<li>Decrease-key: <span class="math inline">\(O(D(t) + I(t))\)</span>.</li>
+</ol>
+<p>To analyze the time needed for delete-min is more complicated. It relies on the implementation of the following:</p>
+<blockquote>
+<p>Find the first non-empty bucket in the lowest level.</p>
+</blockquote>
+<p>We record the previous deleted min element <span class="math inline">\(\mu\)</span> (initially set to 0). Denote the <span class="math inline">\(\Delta\)</span>-base representation of <span class="math inline">\(\mu\)</span> as <span class="math display">\[
+\mu = (\mu_{k - 1}, \mu_{k - 2}, ..., \mu_0)_\Delta
+\]</span> Observe that the non-empty bucket block in the lowest level must contain <span class="math inline">\(\mu\)</span>. Denote this level as <span class="math inline">\(i\)</span>. To find the first non-empty bucket, we start scan from <span class="math inline">\(\mu_{i - 1}^{th}\)</span> bucket in the <span class="math inline">\(i^{th}\)</span> level. Therefore, each bucket block is only scanned once. Further, the buck block in the <span class="math inline">\(i^{th}\)</span> level is created from the <span class="math inline">\((i + 1)^{th}\)</span> level because it contains more than <span class="math inline">\(t\)</span> elements. We can charge the scanned cost to these <span class="math inline">\(t\)</span> elements, each with <span class="math inline">\(\frac{\Delta}{t}\)</span>. As there are <span class="math inline">\(k\)</span> level, a element could be charge at most <span class="math inline">\(k\)</span> times. It follows that the amortized cost of delete-min is given by</p>
+<ol start="3" type="1">
+<li>Delete-min: <span class="math inline">\(O(X(t) + \frac{k \Delta}{t})\)</span></li>
+</ol>
+<p>For Fibonacci heap, <span class="math inline">\(I(t) = D(t) = 1\)</span> and <span class="math inline">\(X(t) = \log t\)</span>. Therefore, we have runtime <span class="math display">\[
+O \left( m + n \left[k + \log t + \frac{k \Delta}{t} \right] \right)
+\]</span></p>
+<p>To minimize it, we need to set <span class="math inline">\(k = \log t = \frac{k \Delta}{t}\)</span>. It holds that <span class="math inline">\(t = 2^k\)</span> and <span class="math inline">\(t = \Delta = C^\frac{1}{k}\)</span>, which implies that <span class="math inline">\(2^{k} = 2^{ \frac{\log C}{k} }\)</span> and <span class="math inline">\(k = \sqrt {\log C}\)</span>. The time is <span class="math display">\[
+O(m + n \sqrt{\log C})
+\]</span></p>
+<p>and the space overhead is <span class="math inline">\(O(k \Delta) = O(\sqrt{\log C} \cdot 2^{\sqrt{\log C} })\)</span>.</p>
+<h3 id="reference">Reference</h3>
+<p>[1]. David R. Karger, MIT Advanced Algorithm, 2013.<br />
+[2]. B. V. Cherkassky, A. V. Goldberg, and C. Silverstein, “Buckets, Heaps, Lists, and Monotone Priority Queues,” SIAM J. Comput., vol. 28, no. 4, pp. 1326–1346, Jan. 1999</p>
 
       
     </div>
@@ -831,7 +1040,7 @@ g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/25/">25</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/42/">42</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -935,7 +1144,7 @@ g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
   </span>
   <span class="author" itemprop="copyrightHolder">WOW</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
   </div>
 
         
