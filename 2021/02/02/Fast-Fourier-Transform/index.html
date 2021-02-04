@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="In the discrete Fourier transform, we want to project a vector \(v \in \mathbb{C}^n\) to the orthonormal basis \[ \begin{aligned}     &amp;e_0 &#x3D; \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot 0 \cd">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fast Fourier Transform">
+<meta property="og:url" content="http://example.com/2021/02/02/Fast-Fourier-Transform/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="In the discrete Fourier transform, we want to project a vector \(v \in \mathbb{C}^n\) to the orthonormal basis \[ \begin{aligned}     &amp;e_0 &#x3D; \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot 0 \cd">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/1.png?raw=true">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/2.png?raw=true">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/3.png?raw=true">
+<meta property="article:published_time" content="2021-02-01T23:31:22.000Z">
+<meta property="article:modified_time" content="2021-02-04T07:18:39.278Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true">
+
+<link rel="canonical" href="http://example.com/2021/02/02/Fast-Fourier-Transform/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Fast Fourier Transform | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/02/Fast-Fourier-Transform/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Fast Fourier Transform
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-02 10:31:22" itemprop="dateCreated datePublished" datetime="2021-02-02T10:31:22+11:00">2021-02-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-02-04 18:18:39" itemprop="dateModified" datetime="2021-02-04T18:18:39+11:00">2021-02-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <!-- ![](https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.npng?raw=true) -->
+<p>In the discrete Fourier transform, we want to project a vector <span class="math inline">\(v \in \mathbb{C}^n\)</span> to the orthonormal basis <span class="math display">\[
+\begin{aligned}
+    &amp;e_0 = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot 0 \cdot \pi i}{ n} }, e^{ 1 \frac{2 \cdot 0 \cdot \pi i}{ n} }, ..., e^{ (n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } ), \\
+    &amp;... \\
+    &amp;e_{k - 1} = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} }, ..., e^{ (n - 1) \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} } ), \\
+    &amp;... \\
+    &amp;e_{n - 1} = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} }, ..., e^{ (n - 1) \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} } ).
+\end{aligned}
+\]</span></p>
+<p>We use <span class="math inline">\(\mathcal{S}\)</span> to denote the linear span of <span class="math inline">\(e_1, e_2, ..., e_n\)</span>.</p>
+<h2 id="orthonormal-basis-verification">Orthonormal basis verification</h2>
+<p>It is easy to see that <span class="math inline">\(e_k\)</span> is a unit vector, <span class="math inline">\(\forall k \in [0, n)\)</span>. The vectors in the basis are also mutually orthogonal, as for <span class="math inline">\(k, l \in [0, n), k \neq l\)</span>, <span class="math display">\[
+    \left&lt; e_k, e_l \right&gt;_H = \sum_{j = 0 }^{n - 1} e^{ j \cdot \frac{ 2 (l - k) \pi i }{ n } } = \frac{ 1 - e^{ n \cdot \frac{ 2 (l - k) \pi i }{ n } } }{ 1 - e^{ \frac{ 2 (l - k) \pi i }{ n } } } = 0.
+\]</span></p>
+<h2 id="the-projection">The projection</h2>
+<p>The projection of <span class="math inline">\(v\)</span> to the basis, is defined as the vector in the linear span of the basis that is closest to <span class="math inline">\(v\)</span>. It is given by <span class="math display">\[
+    P(v) \doteq \sum_{k = 1}^n a_k e_k, 
+\]</span></p>
+<p>where <span class="math inline">\(a_k = \left&lt; e_k, v\right&gt;_H\)</span>.</p>
+<blockquote>
+<p>Lemma. For any vector <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span>, it holds that <span class="math display">\[
+\left&lt; u, v \right&gt;_H = \left&lt; u, P(v) \right&gt;_H.
+\]</span> Or, equivalently, <span class="math display">\[
+\left&lt; u , v - P(v) \right&gt;_H = \left&lt; v - P(v), u \right&gt;_H = 0.
+\]</span> <em>Proof:</em> Let <span class="math inline">\(u = \sum_{k \in [0, n) } c_k e_k : c_k \in \mathbb{C}, \forall k \in [0, n)\)</span> be a vector in <span class="math inline">\(\mathcal{S}\)</span>. As <span class="math inline">\(e_1, e_2, ..., e_n\)</span> are mutually orthogonal, <span class="math display">\[
+\left&lt; u, v \right&gt;_H = \sum_{k \in [0, n) } \bar c_k \cdot a_k =\left&lt; u, P(v) \right&gt;_H.
+\]</span></p>
+</blockquote>
+<p>Next, we verify that <span class="math inline">\(P(v)\)</span> minimizes the distance to <span class="math inline">\(v\)</span>.</p>
+<blockquote>
+<p>Theorem. <span class="math display">\[
+P(v) = \argmin_{w \in \mathcal{S} } ||u - w||^2.
+\]</span> <em>Proof:</em> Let <span class="math inline">\(w = \sum_{k \in [0, n) } d_k e_k : d_k \in \mathbb{C}, \forall k \in [0, n)\)</span> and define <span class="math inline">\(u = P(v) - w\)</span>. Observe that <span class="math inline">\(u \in \mathcal{S}\)</span>. By the previous lemma, <span class="math display">\[
+\begin{aligned}
+|| v - w ||^2 
+&amp;= || v - P(v) + P(v) - w ||^2 \\
+&amp;= || v - P(v) ||^2 + ||P(v) - w||^2 + \left&lt; v - P(v), u \right&gt;_H + \left&lt; u, v - P(v) \right&gt;_H \\
+&amp;= || v - P(v) ||^2 + ||P(v) - w||^2
+\end{aligned}
+\]</span> Hence, <span class="math inline">\(|| v - w ||^2\)</span> is minimized if and only if <span class="math inline">\(w = P(v)\)</span>.</p>
+</blockquote>
+<h2 id="matrix-form">Matrix Form</h2>
+<p>The coefficients of <span class="math inline">\(a_1, a_2, ..., a_n\)</span> can be given in matrix form: <span class="math display">\[
+\begin{bmatrix}
+    a_1 \\
+    a_2 \\
+    ... \\
+    a_n
+\end{bmatrix} 
+=
+\begin{bmatrix}
+    - \bar e_1 - \\
+    ...\\
+    - \bar e_k - \\
+    ... \\
+    - \bar e_n - \\
+\end{bmatrix} v 
+=
+\frac{1}{ \sqrt n }
+\begin{bmatrix}
+    e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2 \cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
+    ...\\
+    e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
+    ... \\
+    e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
+\end{bmatrix} v.
+\]</span></p>
+<p>Define the matrix <span class="math inline">\(M_n\)</span> as <span class="math display">\[
+    M_n \doteq 
+    \begin{bmatrix}
+        e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2 \cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
+        ...\\
+        e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
+        ... \\
+        e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
+    \end{bmatrix}.
+\]</span></p>
+<p>The key result of this section is the following theorem.</p>
+<blockquote>
+<p>Theorem. An <span class="math inline">\(n\)</span>-dimension discrete Fourier transform can be performed in <span class="math inline">\(O(n \log n)\)</span> time. Equivalently, given <span class="math inline">\(v \in \mathbb{C}^n\)</span>, <span class="math inline">\(M_n v\)</span> can be computed in <span class="math inline">\(O(n \log n)\)</span> time.</p>
+</blockquote>
+<p>The underlying idea of the theorem is divide-and-conquer. Let <span class="math inline">\(T(n)\)</span> be the time of performing an <span class="math inline">\(n\)</span>-dimension discrete Fourier transform. We will prove the following recursion</p>
+<blockquote>
+<p><span class="math inline">\(T(n) = 2 \cdot T(n / 2) + O(n)\)</span>.</p>
+</blockquote>
+<p>We begin by a special case where <span class="math inline">\(n = 8\)</span>. As each entry in <span class="math inline">\(M_8\)</span> is complex number with unit length, we can represent it by a unit length vector, as the figure below shows.</p>
+<p>There are some patterns in <span class="math inline">\(M_8\)</span> and it can be decomposed into 4 matrices related to <span class="math inline">\(M_4\)</span>.</p>
+<p><em>Remark: I get this visualization idea from [1].</em></p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true" width="400" height="400" /></p>
+</div>
+<p>First, look the the first half of the rows of <span class="math inline">\(M\)</span>, denoted as <span class="math inline">\(M_U\)</span>. The even columns constitute exactly the matrix <span class="math inline">\(M_4\)</span>. The odd columns forms a <span class="math inline">\(4 \times 4\)</span> matrix that can be obtained by proper rotations of <span class="math inline">\(M_4\)</span>.</p>
+<p>Let <span class="math inline">\(v_e\)</span>, <span class="math inline">\(v_o\)</span> be the even and odd dimensions of <span class="math inline">\(v\)</span>, respectively. Then <span class="math display">\[
+    M_U v = M_4 v_e + 
+        \begin{bmatrix} 
+           e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
+           e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} } \\
+           e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} } \\
+           e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} }
+        \end{bmatrix} \times M_4 v_0, 
+\]</span></p>
+<p>where <span class="math inline">\(\times\)</span> is element-wise multiplication between two vectors. This can also be replaced by matrix multiplication. <span class="math display">\[
+    M_U v = M_4 v_e + 
+        \text{diag} \left( 
+                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_4 v_0, 
+\]</span></p>
+<p>where <span class="math inline">\(\text{diag} \left( e^{ -\frac{2 \cdot 0 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 1 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 2 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 3 \cdot \pi i}{ n} } \right)\)</span> denotes a <span class="math inline">\(4 \times 4\)</span>-diagonal matrix.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/1.png?raw=true" width="400" height="400" /></p>
+</div>
+<p>First, look the the second half of the rows of <span class="math inline">\(M\)</span>, denoted as <span class="math inline">\(M_D\)</span>. The even columns constitute exactly the matrix <span class="math inline">\(M_4\)</span>, which is the same as the even columns of <span class="math inline">\(M_U\)</span>.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/2.png?raw=true" width="400" height="400" /></p>
+</div>
+<p>For the odd columns of <span class="math inline">\(M_D\)</span>, they are in the opposite directions of the odds columns of <span class="math inline">\(M_U\)</span>. This can also be verified algebraically. An entry <span class="math inline">\(M_{k, l}\)</span> in the odd columns <span class="math inline">\(M_U\)</span> (<span class="math inline">\(k \in [0, n / 2)\)</span> and <span class="math inline">\(l\)</span> is odd) equals to <span class="math display">\[
+    M_{k, l} = e^{ - l \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n} }.
+\]</span></p>
+<p>Its corresponding entry in <span class="math inline">\(M_D\)</span> is <span class="math display">\[
+    M_{k + n / 2, l} = e^{ - l \cdot (k + n / 2- 1) \cdot \frac{2 \cdot \pi \cdot i}{n} } = e^{ - l \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n} } \cdot e^{ - l \cdot \pi \cdot i } = M_{k, l} \cdot (-1).
+\]</span></p>
+<p>The last equality holds since <span class="math inline">\(l\)</span> is odd.</p>
+<p><em>Remark:</em> This also explains why <span class="math inline">\(M_{k + n / 2, l} = M_{k, l}\)</span> when <span class="math inline">\(l\)</span> is even.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/3.png?raw=true" width="400" height="400" /></p>
+</div>
+<p>In summary, we have <span class="math display">\[
+M v 
+    =   \begin{bmatrix}
+            M_U \\
+            M_D
+        \end{bmatrix} v
+    =   \begin{bmatrix}
+             M_{n / 2} v_e + 
+        \text{diag} \left( 
+                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n / 2} v_0  \\
+            M_{n / 2} v_e - 
+        \text{diag} \left( 
+                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
+                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n / 2} v_0
+        \end{bmatrix}.
+\]</span></p>
+<p>And the Fast Fourier Transform algorithm is shown as below.</p>
+<blockquote>
+<p><strong>Algorithm FFT (Fast Fourier Transform).</strong><br />
+<strong>Input.</strong> <span class="math inline">\(v \in \mathbb{C}^n\)</span>.<br />
+1. If <span class="math inline">\(n = 1\)</span>, return <span class="math inline">\(v\)</span>. 2. Compute <span class="math inline">\(r_e \leftarrow M_{n / 2} v_e\)</span> by <strong>FFT(<span class="math inline">\(v_e\)</span>)</strong>.<br />
+3. Compute <span class="math inline">\(r_o \leftarrow M_{n / 2} v_o\)</span> by <strong>FFT(<span class="math inline">\(v_o\)</span>)</strong>.<br />
+4. Return <span class="math display">\[
+r \leftarrow  
+\begin{bmatrix}
+r_e +   
+\text{diag} \left( 
+e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
+e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
+e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
+e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o \\
+r_e -   
+\text{diag} \left( 
+e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
+e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
+e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
+e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
+\end{bmatrix}.
+\]</span></p>
+</blockquote>
+<p>Both step 2 and 3 have time <span class="math inline">\(T(n / 2)\)</span>. Step 4 aggregates the results and has time <span class="math inline">\(O(n)\)</span>, which implies that <span class="math display">\[
+    T(n) = 2 \cdot T(n / 2) + O(n). 
+\]</span></p>
+<h3 id="reference">Reference</h3>
+<p>[1] T. Roughgarden and G. Valiant, “CS168: The Modern Algorithmic Toolbox Lecture #15 and #16: The Fourier Transform and Convolution,” p. 12.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/12/Fourier-Transformation/" rel="prev" title="Fourier Transformation">
+      <i class="fa fa-chevron-left"></i> Fourier Transformation
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#orthonormal-basis-verification"><span class="nav-number">1.</span> <span class="nav-text">Orthonormal basis verification</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-projection"><span class="nav-number">2.</span> <span class="nav-text">The projection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#matrix-form"><span class="nav-number">3.</span> <span class="nav-text">Matrix Form</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#reference"><span class="nav-number">3.1.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

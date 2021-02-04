@@ -146,6 +146,189 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/25/Releasing-Histogram-Privately/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/25/Releasing-Histogram-Privately/" class="post-title-link" itemprop="url">Releasing Histogram Privately</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-11-25 10:19:09 / Modified: 22:11:21" itemprop="dateCreated datePublished" datetime="2020-11-25T10:19:09+11:00">2020-11-25</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Given a set of <span class="math inline">\(n\)</span> elements <span class="math inline">\(S\)</span> that belongs to some finite domain <span class="math inline">\(\mathcal{X}= \{ x_1, x_2, ..., x_m \}\)</span>, we want to release the (normalized) histogram in a differentially private manner. Define <span class="math inline">\(\forall x_i \in \mathcal{X}\)</span>:</p>
+<ol type="1">
+<li><span class="math inline">\(F_S(x_i) \doteq\)</span> the number of times <span class="math inline">\(x_i\)</span> appears in <span class="math inline">\(S\)</span>;<br />
+</li>
+<li><span class="math inline">\(f_S(x_i) \doteq \frac{F_S(x_i) }{ |S| } = \frac{F_S(x_i) }{ n }\)</span>, the frequency of <span class="math inline">\(x_i\)</span> in <span class="math inline">\(S\)</span>.</li>
+</ol>
+<p>The (normalized) histogram of <span class="math inline">\(h_S\)</span> is a frequency vector: <span class="math display">\[
+h_S \doteq \left&lt; f_S(x_1), f_S(x_2), ..., f_S(x_m) \right&gt; \in \mathbb{R}^m
+\]</span></p>
+<p>Consider another set <span class="math inline">\(S&#39;\)</span> obtained by replacing an element <span class="math inline">\(x_k\)</span> in <span class="math inline">\(S\)</span> to another element <span class="math inline">\(x_l\)</span>, such that</p>
+<ol type="1">
+<li><span class="math inline">\(F_{S&#39;} (x_k) = F_{S} (x_k) - 1\)</span>;</li>
+<li><span class="math inline">\(F_{S&#39;} (x_l) = F_{S} (x_l) + 1\)</span>;</li>
+<li><span class="math inline">\(F_{S&#39;} (x_i) = F_{S} (x_i), \forall i \notin \{k, l\}\)</span>.</li>
+</ol>
+<p>Let <span class="math inline">\(h_{S&#39;}\)</span> be the histogram of <span class="math inline">\(S&#39;\)</span>. Our goal is to design some mechanism <span class="math inline">\(M\)</span> that adds noise to the normalized so that the output distribution of <span class="math inline">\(M(h_S)\)</span> and <span class="math inline">\(M(h_{S&#39;})\)</span> are indistinguishable.</p>
+<h3 id="naive-laplacian">Naive Laplacian</h3>
+<p>One way is to add Laplacian noise directly to each dimension of the histogram. For any vector <span class="math inline">\(v \in \mathbb{R}^m\)</span>, <span class="math inline">\(M\)</span> outputs a new perturbed vector: <span class="math display">\[
+M(v) \doteq v + L
+\]</span></p>
+<p>where <span class="math inline">\(L \doteq \left&lt; l_1, l_2, ..., l_m\right&gt;\)</span> and each <span class="math inline">\(l_i\)</span> is sampled independently from <span class="math inline">\(Lap( \frac{2 }{ n \epsilon } )\)</span>.</p>
+<h4 id="privacy">Privacy</h4>
+<p>We claim this mechanism is <span class="math inline">\((\epsilon, 0)\)</span>-differentially private. For <span class="math inline">\(u \in \mathbb{R}^n\)</span>, we have <span class="math display">\[
+\begin{aligned}
+    \frac{ p(M(h_S) = u) }{ p(M(h_{S&#39;}) = u) } 
+        &amp;= \frac{ \prod_{i \in [m] } p( f_S (x_i) + l_i = u_i) }{ \prod_{i \in [m] } p( f_{S&#39;} (x_i) + l_i = u_i) } \\
+        &amp;= \frac{ \prod_{i \in \{k, l\} } p( f_S (x_i) + l_i = u_i) }{ \prod_{i \in \{k, l\} } p( f_{S&#39;} (x_i) + l_i = u_i) } \\
+        &amp;\le \exp( - (|u_k - f_S(x_k)| - |u_k - f_{S&#39;} (x_k) |) \frac{n\epsilon}{2} ) \\
+        &amp;\quad \cdot \exp( - (|u_l - f_S(x_l)| - |u_l - f_{S&#39;} (x_l) |) \frac{n\epsilon}{2} ) \\
+        &amp;\le \exp( |f_S(x_k) - f_{S&#39;} (x_k) | \frac{n\epsilon}{2} ) \cdot \exp( |f_S(x_l) - f_{S&#39;} (x_l) | \frac{n\epsilon}{2} ) \\
+        &amp;= \exp( \frac{1}{n} \frac{ n \epsilon}{2} ) \cdot \exp( \frac{1}{n} \frac{n\epsilon}{2} ) \\
+        &amp;= \exp( \epsilon).
+\end{aligned}
+\]</span></p>
+<h4 id="accuracy">Accuracy</h4>
+<p>We prove that <span class="math inline">\(|M(h_S) - h_S |_\infty = O (\frac{1}{ n \epsilon } \log \frac{m}{\delta})\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
+<p>Let <span class="math inline">\(b = \frac{2 }{ n \epsilon }\)</span>. For a failure probability <span class="math inline">\(\delta\)</span>, <span class="math display">\[
+\Pr[ |f_S(x_i) + l_i - f_S(x_i) | \ge b \log \frac{m}{\delta} ] = \int_{ b \log \frac{m}{\delta} }^\infty \frac{1}{b} \exp( - x / b ) \ dx = \exp(- \log \frac{m}{\delta} ) = \frac{\delta}{m}
+\]</span></p>
+<p>By union bound, it holds that <span class="math display">\[
+\Pr[ |M(h_S) - h_S |_\infty \ge b \log \frac{m}{\delta} ] \le \delta. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="rounding-small-values">Rounding Small Values</h3>
+<p>When <span class="math inline">\(|\mathcal{X}| = m \gg n\)</span>, we could improve the release mechanism. As shown in the previous section, we would like to achieve error <span class="math inline">\(O(\frac{1}{n})\)</span>. This inspire to round the small frequencies (roughly <span class="math inline">\(O(\frac{1}{n})\)</span>) to zero. Of course, we should carry out this in a differentially private manner.</p>
+<blockquote>
+<p>Mechanism <span class="math inline">\(M\)</span><br />
+<span class="math inline">\(===============================\)</span><br />
+INPUT: a set <span class="math inline">\(S\)</span> of <span class="math inline">\(n\)</span> elements.<br />
+OUTPUT: a histogram of <span class="math inline">\(S\)</span> in differentially private manner.<br />
+<span class="math inline">\(------------------------\)</span><br />
+For <span class="math inline">\(i \in [m]\)</span> do<br />
+<span class="math inline">\(\qquad\)</span> If <span class="math inline">\(f_S(x_i) = 0\)</span>, then <span class="math inline">\(M(h_S)_i \leftarrow 0\)</span><br />
+<span class="math inline">\(\qquad\)</span> Else<br />
+<span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(M(h_S)_i \leftarrow f_S(x_i) + l_i\)</span>, where <span class="math inline">\(l_i \sim Lap(\frac{2}{n \epsilon} )\)</span>.<br />
+<span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> If <span class="math inline">\(M(h_S)_i &lt; \frac{1}{n} +\frac{2 \log 2 / \delta }{ \epsilon n}\)</span>, then <span class="math inline">\(M(h_S)_i \leftarrow 0\)</span>.<br />
+Release <span class="math inline">\(M(h_S) \doteq \left&lt; M(h_S)_1, M(h_S)_2, ... , M(h_S)_n \right&gt;\)</span><br />
+<span class="math inline">\(------------------------\)</span></p>
+</blockquote>
+<h4 id="privacy-1">Privacy</h4>
+<p>We claim this mechanism is <span class="math inline">\((\epsilon, \delta)\)</span>-differentially private.</p>
+<ul>
+<li><p>Case 1. If <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> have the same set of supports, i.e., <span class="math inline">\(f_S(x_i) &gt; 0 \leftrightarrow f_{S&#39;}(x_i) &gt; 0\)</span>, then <span class="math inline">\(M\)</span> is <span class="math inline">\((\epsilon, 0)\)</span> differentially private.</p></li>
+<li><p>Case 2.</p>
+<ol type="1">
+<li><span class="math inline">\(F_{S} (x_k) = 1\)</span>, then <span class="math inline">\(F_{S&#39;} (x_k) = F_{S} (x_k) - 1 = 0\)</span>. For <span class="math inline">\(S&#39;\)</span>, it is guaranteed that <span class="math inline">\(M(h_{S&#39;})_k = 0\)</span>. For <span class="math inline">\(S\)</span>, as <span class="math inline">\(f_S(x_k) = \frac{1}{n}\)</span>, <span class="math display">\[
+     \Pr[ M(h_S)_k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h_{S&#39;})_k ] = \frac{\delta}{2}
+ \]</span></li>
+<li><span class="math inline">\(F_{S} (x_l) = 0\)</span>, then <span class="math inline">\(F_{S&#39;} (x_l) = F_{S} (x_l) + 1 = 1\)</span>. For <span class="math inline">\(S\)</span>, it is guaranteed that <span class="math inline">\(M(h_S)_k = 0\)</span>. For <span class="math inline">\(S&#39;\)</span>, by similar argument, we have <span class="math inline">\(\Pr[ M(h_{S&#39;})_k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h_{S&#39;})_k ] = \frac{\delta}{2}\)</span>.</li>
+</ol>
+<p>There are three combinations such that either <span class="math inline">\(F_S(x_k) = 1\)</span> or <span class="math inline">\(F_{S} (x_l) = 0\)</span> holds, namely</p>
+<ol type="1">
+<li><span class="math inline">\(F_S(x_k) = 1, F_{S} (x_l) = 0\)</span>,</li>
+<li><span class="math inline">\(F_S(x_k) = 1, F_{S} (x_l) &gt; 0\)</span>,</li>
+<li><span class="math inline">\(F_S(x_k) &gt; 1, F_{S} (x_l) = 0\)</span>.</li>
+</ol>
+<p>We give a proof for the first case. The proofs for the other two are similar. Now, for <span class="math inline">\(\forall\)</span> measurable <span class="math inline">\(E \subset \mathbb{R}^n\)</span>, <span class="math display">\[
+  \begin{aligned}
+      \Pr[ M(h_S) \in E] 
+          &amp;= \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] \\
+          &amp;\ + \Pr[ M(h_S) \in E \mid M(h_S)_k \neq 0 \vee M(h_{S&#39;})_l \neq 0] \\
+          &amp;\le \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] \\
+          &amp;\ + \Pr[M(h_S)_k \neq 0 ] + \Pr[ M(h_{S&#39;})_l \neq 0] \\
+          &amp;= \Pr[ M(h_{S&#39;}) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] + \delta \\
+          &amp;\le \Pr[ M(h_{S&#39;}) \in E] + \delta
+  \end{aligned}
+  \]</span></p></li>
+</ul>
+<h4 id="accuracy-1">Accuracy</h4>
+<p>We prove that <span class="math inline">\(|M(h_S) - h_S |_\infty = O (\frac{1}{ n \epsilon } \log \frac{1}{\delta})\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>, if <span class="math inline">\(\delta \le \frac{1}{n}\)</span>.</p>
+<ol type="1">
+<li>If <span class="math inline">\(f_S(x_i) = 0\)</span>, then there is no error.<br />
+</li>
+<li>Otherwise, if <span class="math inline">\(M(h_S)_i\)</span> is not truncated, with probability at most <span class="math inline">\(\frac{\delta}{n}\)</span>, it <span class="math inline">\(|M(h_S)_i - f_S(x_i)|\le \frac{2\log 1 / \delta}{n\epsilon}\)</span>. If it is truncated, this will introduce an additional error of at most <span class="math inline">\(\frac{1}{n} +\frac{2 \log 2 / \delta }{ \epsilon n}\)</span>. The overall error is at most <span class="math inline">\(\frac{1}{n} +\frac{4 \log 2 / \delta }{ \epsilon n}\)</span>, which is <span class="math inline">\(O( \frac{ \log 1 / \delta }{ \epsilon n})\)</span> if <span class="math inline">\(\epsilon \le \log n\)</span>.</li>
+</ol>
+<!-- Let $b = \frac{2 }{ n \epsilon }$. For a failure probability $\delta$, 
+$$
+\Pr[ |f_S(x_i) + l_i - f_S(x_i) | \ge b \log \frac{m}{\delta} ] = \int_{ b \log \frac{m}{\delta} }^\infty \frac{1}{b} \exp( - x / b ) \ dx = \exp(- \log \frac{m}{\delta} ) = \frac{\delta}{m}
+$$
+
+By union bound, it holds that 
+$$
+\Pr[ |M(h_S) - h_S |_\infty \ge b \log \frac{m}{\delta} ] \le \delta. 
+$$ -->
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="reference">Reference</h3>
+<p>[1] S. Vadhan, “The Complexity of Differential Privacy,” in Tutorials on the Foundations of Cryptography, Y. Lindell, Ed. Cham: Springer International Publishing, 2017, pp. 347–450.</p>
+<!-- Now, for $\forall$ measurable $E \subset \mathbb{R}^n$, define  
+$$
+    E_1 \doteq \{ v \in E : v_k = 0, v_l = 0 \}
+$$
+be the set of points with the $k$-th and $l$-th dimensions equal to 0. Let $E_2 = E \setminus E_1$. 
+$$
+\begin{aligned}
+    \Pr[ M(h_S) \in E] &= \Pr[ M(h_S) \in E_1] + \Pr[ M(h_S) \in E_2] \\
+    &= \Pr[ M(h_S) \in E_1 \mid M(h_S)_k = 0] \cdot \Pr[M(h_S)_k = 0] + \Pr[ M(h_S) \in E_2] \\
+    &= \Pr[ M(h_S) \in E_1 \mid M(h_S)_k = 0] \cdot (1 - \frac{\delta}{2}) + \Pr[ M(h_S) \in E_2] \\
+    &\le \Pr[ M(h_S) \in E_1 \mid M(h_S)_k = 0] \cdot (1 - \frac{\delta}{2}) + \Pr[ M(h_S)_k = 0]  \\
+    &= \Pr[ M(h_S) \in E_1 \mid M(h_S)_k = 0] \cdot (1 - \frac{\delta}{2}) + \frac{\delta}{2}  \\
+    &= \Pr[ M(h_{S'}) \in E_1 \mid M(h_{S'})_l = 0] \cdot (1 - \frac{\delta}{2}) + \frac{\delta}{2}  \\
+    &\le \Pr[M(h_{S'}) \in E ] + \frac{\delta}{2}
+\end{aligned}
+$$
+
+The last inequality follows from $\Pr[ M(h_{S'}) \in E_1 \mid M(h_{S'})_l = 0] = \Pr[ M(h_S) \in E_1 \mid M(h_S)_k = 0]$.  -->
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/23/Propose-Test-Release/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -614,221 +797,6 @@ S&#39; = \{ (x_1&#39;, y_1&#39;), (x_2&#39;, y_2&#39;), ..., (x_n&#39;, y_n&#39;
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/13/Advanced-Composition/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/13/Advanced-Composition/" class="post-title-link" itemprop="url">Advanced Composition</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-13 22:26:07" itemprop="dateCreated datePublished" datetime="2020-11-13T22:26:07+11:00">2020-11-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-15 22:41:53" itemprop="dateModified" datetime="2020-11-15T22:41:53+11:00">2020-11-15</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Once we have designed some basic differentially private algorithms, it is a natural idea to combine them and analysis the privacy loss. We begin with an illustrative example that sets up the mathematical model step by step.</p>
-<p>Image yourself in front of the door of a safe vault protected by a password lock. To open the door, you need the correct password <span class="math inline">\(P\)</span>. If tried with the wrong password, the lock would destroy itself automatically.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/door.png?raw=true" width="400" height="340" /></p>
-</div>
-<p>Luckily, you know two candidate passwords <span class="math inline">\(P_1\)</span> and <span class="math inline">\(P_2\)</span>, with one of them being the correct one. Further, you notice that the designer of the lock left a collection of boxes near the door, which contain information on how they decide the correct passwords. Obtaining complete information of anyone of them gives you the correct password.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/box1.png?raw=true" width="400" height="340" /></p>
-</div>
-<p>But the boxes are also protected and you don't have legally access to them. However, you can hack into the boxes. Hacking into the box won't give you all its information, but a random message. In particular, each box <span class="math inline">\(B\)</span> is associated with a set <span class="math inline">\(\mathcal{R}_B\)</span>, which is a finite collection of messages (in English). When <span class="math inline">\(B\)</span> is hacked, it returns a message <span class="math inline">\(Y_B\)</span> generated randomly from <span class="math inline">\(\mathcal{R}_B\)</span>, whose distribution depends on the correct password <span class="math inline">\(P\)</span>.</p>
-<p>Let <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> be the distribution of <span class="math inline">\(Y_B\)</span> if the correct password is <span class="math inline">\(P_1\)</span>, and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> be the one if the correct password is <span class="math inline">\(P_2\)</span>. If there is a huge difference between <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span>, then you might be able to guess the correct password.</p>
-<p>E.g., suppose <span class="math inline">\(\mathcal{R}_B =\)</span> { "Dog bites.", "Cat scratches." } and the distributions are given as</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;"></th>
-<th style="text-align: center;"><span class="math inline">\(\mathcal{D}_{B, P_1}\)</span></th>
-<th style="text-align: center;"><span class="math inline">\(\mathcal{D}_{B, P_2}\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">"Dog bites."</td>
-<td style="text-align: center;">0.99</td>
-<td style="text-align: center;">0.01</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">"Cat scratches."</td>
-<td style="text-align: center;">0.01</td>
-<td style="text-align: center;">0.99</td>
-</tr>
-</tbody>
-</table>
-<p>Hence, when you get <span class="math inline">\(Y_B=\)</span> "Dog bites.", you prefer <span class="math inline">\(P_1\)</span> over <span class="math inline">\(P_2\)</span> and vice versa.</p>
-<p>Anticipating such potential information leakage, the designer of the lock equips the boxes with a defense mechanism, called <span class="math inline">\((\epsilon, 0)\)</span>-mechanism. It guarantees the distributions <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> are similar so that it is hard for you to infer the correct password from the message. In particular, <span class="math inline">\(\forall S \subset \mathcal{R}_B\)</span>, if <span class="math inline">\(S\)</span> is measurable, it holds that <span class="math display">\[
-\Pr[ Y_B \in S \ | \ P = P_1 ] \le e^\epsilon \cdot \Pr[ Y_B \in S \ | \ P = P_2 ] \\
-\Pr[ Y_B \in S \ | \ P = P_2 ] \le e^\epsilon \cdot \Pr[ Y_B \in S \ | \ P = P_1 ] \\
-\]</span></p>
-<p>When these inequalities are satisfied, we say that <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> are <span class="math inline">\((\epsilon, 0)\)</span> close. The inequalities require <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> to have the same support on <span class="math inline">\(\mathcal{R}_B\)</span>. Therefore, throughout our discussion below, we assume that both <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span> assign positive probability to each element in <span class="math inline">\(\mathcal{R}_B\)</span>. Otherwise, we can just replace <span class="math inline">\(\mathcal{R}_B\)</span> with the support of <span class="math inline">\(\mathcal{D}_{B, P_1}\)</span> (which is also the support of <span class="math inline">\(\mathcal{D}_{B, P_2}\)</span>).</p>
-<p>Now, hacking one box is unlikely to help you to guess the correct password. You want to hack more boxes, with the hope that the information combined will assist you. Due to resource limit, you can't hack all boxes but only a finite number of them. You choose the first box randomly. Then you choose every new box based on the information obtained from the hacked boxes. The figure below shows an example of hacking five boxes.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/AdvancedComposition/box2.png?raw=true" width="400" height="340" /></p>
-</div>
-<p>Suppose that your resource enables you to hack <span class="math inline">\(n\)</span> boxes and let <span class="math inline">\(\vec Y_n = (Y_1, Y_2, ..., Y_n)\)</span> be the output messages you obtained. Similar to the situation of hacking one box, if the distribution of <span class="math inline">\(\vec Y_n\)</span>, conditioned on <span class="math inline">\(P = P_1\)</span>, is utterly distant from that conditioned on <span class="math inline">\(P = P_2\)</span>, then there could be some cases when you can confidently infer the true password. Conversely, to prevent severe information leakage, the designer needs to ensure there isn't such case, i.e., the two distributions should be similar.</p>
-<p>What makes things even more complicated is that, the distribution of <span class="math inline">\(\vec Y_n\)</span> depends not only on the output distributions of the boxes, but also on your strategy of choosing the boxes to hack. Let's use symbol <span class="math inline">\(A\)</span> to denote your strategy. Whatever <span class="math inline">\(A\)</span> is, the designer need to guarantee that the distribution of <span class="math inline">\(\vec Y_n\)</span> conditioned <span class="math inline">\(P = P_1\)</span> should be similar to that conditioned on <span class="math inline">\(P = P_2\)</span>.</p>
-<p>Surprisingly, this is in some sense achievable, as long as for each box, its output distribution conditioned on <span class="math inline">\(P = P_1\)</span> is <span class="math inline">\((\epsilon, 0)\)</span> close to that conditioned on <span class="math inline">\(P = P_2\)</span>.</p>
-<p>Let <span class="math inline">\(\mathcal{R}\)</span> be the set of possible possible messages of all boxes.</p>
-<blockquote>
-<p><strong><em>Theorem.</em></strong> <span class="math inline">\(\forall A\)</span>, <span class="math inline">\(\forall S \subset \mathcal{R}^n\)</span>, it holds that <span class="math inline">\(\forall \delta&#39; \in (0, 1)\)</span>, <span class="math display">\[
-\Pr[ \vec Y_n \in S \ | \ P = P_1, A] \le e^{\epsilon&#39;} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_2, A] + \delta&#39; \\
-\Pr[ \vec Y_n \in S \ | \ P = P_2, A] \le e^{\epsilon&#39;} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_1, A] + \delta&#39;
-\]</span> where <span class="math inline">\(\epsilon&#39; = k\epsilon(e^\epsilon - 1) + \epsilon \sqrt{2 n \log \frac{1}{\delta&#39;} }\)</span>.</p>
-</blockquote>
-<p>If we view <span class="math inline">\(\epsilon\)</span> as the privacy loss of a single box, then the theorem states that the privacy loss grows to <span class="math inline">\(O(\sqrt {n} \epsilon )\)</span> is <span class="math inline">\(n\)</span> boxes are hacked.</p>
-<p>To prove the theorem, we need a rigorous model for the problem.</p>
-<p><strong><em>Definitions.</em></strong></p>
-<ol type="1">
-<li><p><span class="math inline">\(\mathcal{I}\)</span>: the index set.</p></li>
-<li><p><span class="math inline">\(\{ B_\alpha : \alpha \in \mathcal{I} \}\)</span>: the collection of boxes.</p></li>
-<li><p><span class="math inline">\(\{ \mathcal{R}_{\alpha} : \alpha \in \mathcal{I} \}\)</span>: the ranges of the outputs of the boxes.</p></li>
-<li><p><span class="math inline">\(\mathcal{R} \doteq \cup_{\alpha \in \mathcal{I} } R_\alpha\)</span>: the range of any possible output by any box.</p></li>
-<li><p><span class="math inline">\(\{ \mathcal{D}_{\alpha, P_1} : \alpha \in \mathcal{I} \}\)</span> (<span class="math inline">\(\{ \mathcal{D}_{\alpha, P_2} : \alpha \in \mathcal{I} \}\)</span>): the set of output distribution when the correct password is <span class="math inline">\(P_1\)</span> (<span class="math inline">\(P_2\)</span>). Without loss of generality, we assume that for a fixed <span class="math inline">\(\alpha \in \mathcal{I}\)</span>, the distribution <span class="math inline">\(\mathcal{D}_{\alpha, P_1}\)</span> (<span class="math inline">\(\mathcal{D}_{\alpha, P_2}\)</span>) assigns positive probability to each element in <span class="math inline">\(\mathcal{R}_\alpha\)</span>. Moreover, <span class="math inline">\(\mathcal{D}_{\alpha, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{\alpha, P_2}\)</span> are <span class="math inline">\((\epsilon, 0)\)</span> close.</p></li>
-<li><p><span class="math inline">\(n\)</span>: the number of boxes you can hack.</p></li>
-<li><p><span class="math inline">\(\vec i_k \doteq (i_1, i_2, ..., i_k)\)</span>: the index sequence of boxes you have chosen to hack up to time <span class="math inline">\(k\)</span>, where <span class="math inline">\(k \in [0, n]\)</span>. When <span class="math inline">\(k = 0\)</span>, <span class="math inline">\(\vec i_0\)</span> corresponds to a empty sequence.</p></li>
-<li><p><span class="math inline">\(\vec Y_k = (Y_1, Y_2, ..., Y_k):\)</span> the random variables that represent messages outputted by the chosen boxes up to time <span class="math inline">\(k \in [1, n]\)</span>, where <span class="math inline">\(Y_t \in \mathcal{R}_{i_t} \subset \mathcal{R}\)</span> for <span class="math inline">\(t \in [1, k]\)</span>. Therefore, <span class="math inline">\(\vec Y_k\)</span> can be view as random vector in <span class="math inline">\(\mathcal{R}^k\)</span>.</p></li>
-<li><p><span class="math inline">\(\vec x_k = (x_1, x_2, ..., x_k) \in \mathcal{R}^k:\)</span> a point in <span class="math inline">\(\mathcal{R}^k\)</span>, where <span class="math inline">\(k \in [0, n]\)</span>. When <span class="math inline">\(k = 0\)</span>, we define <span class="math inline">\(\vec x_0 = \emptyset\)</span>.</p></li>
-<li><p><span class="math inline">\(\vec h_k = \left&lt; \vec i_k, \vec x_k \right&gt; = \left&lt; (i_1, i_2, i_3, ..., i_k), (x_1, x_2, ..., x_k) \right&gt;:\)</span> the history up to <span class="math inline">\(k \in [0, n]\)</span>, which consists of the chosen indexes and observations up to time <span class="math inline">\(k\)</span>. We use <span class="math inline">\(\vec h_0\)</span> to denote the empty history.</p></li>
-<li><p><span class="math inline">\(A:\)</span> your strategy (policy) for choosing boxes. It works as follows: for any fixed history <span class="math inline">\(\vec h_k = \left&lt; \vec i_k, \vec x_k \right&gt;\)</span>, A is associated with a fixed distribution <span class="math inline">\(\mathcal{D}_{A, \vec h_k}\)</span> over <span class="math inline">\(\mathcal{I} \setminus \vec i_k\)</span>, the set of indexes of the unchosen boxes. When inputted with <span class="math inline">\(\vec h_k\)</span>, <span class="math inline">\(A\)</span> returns a random variable <span class="math inline">\(A(\vec h_k)\)</span> that follows the distribution <span class="math inline">\(\mathcal{D}_{A, \vec h_k}\)</span>.</p></li>
-</ol>
-<p>We will show that, no matter what strategy you use, it is unlikely that you distinguish via the output <span class="math inline">\(\vec Y_n\)</span> whether the correct password is <span class="math inline">\(P_1\)</span> or <span class="math inline">\(P_2\)</span>. This is because whether <span class="math inline">\(P = P_1\)</span> or not, the output distributions of <span class="math inline">\(\vec Y_n\)</span> are similar.</p>
-<p><strong><em>Proof of the theorem.</em></strong> We will just prove the first inequality, and the second one follows from symmetry. We consider a bad set in <span class="math inline">\(\mathcal{R}^n\)</span>: <span class="math display">\[
-\mathcal{W} \doteq \{ \vec x_n \in \mathcal{R}^n : \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] \ge e^{\epsilon&#39;} \cdot \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] \}
-\]</span></p>
-<p>and will use the following lemma.</p>
-<blockquote>
-<p><strong>Lemma.</strong> <span class="math inline">\(\Pr[ \vec Y_n \in \mathcal{W}\ | \ P = P_1, A] \le \delta&#39;\)</span>.</p>
-</blockquote>
-<p>Hence, <span class="math display">\[
-\begin{aligned}
-    \Pr[ \vec Y_n \in S \ | \ P = P_1, A] 
-        &amp;=  \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \Pr[ \vec Y_n \in S \cap \mathcal{W} \ | \ P = P_1, A] \\
-        &amp;\le  \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \Pr[ \vec Y_n \in \mathcal{W} \ | \ P = P_1, A] \\
-        &amp;\le \Pr[ \vec Y_n \in S \cap \bar{\mathcal{W} } \ | \ P = P_1, A] + \delta&#39; \\
-        &amp;= \sum_{ \vec x_n \in S \cap \bar{\mathcal{W} } } \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] + \delta&#39; \\
-        &amp;&lt; \sum_{ \vec x_n \in S \cap \bar{\mathcal{W} } } e^{\epsilon&#39;} \cdot  \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] + \delta&#39; \\
-        &amp;=  e^{\epsilon&#39;} \cdot \Pr[ \vec Y_n \in S \ | \ P = P_2, A] + \delta&#39; 
-\end{aligned}
-\]</span></p>
-<p>The first inequality follows from monotonicity of probability, the second one from the lemma, and the final one from the definition of <span class="math inline">\(\mathcal{W}\)</span>.</p>
-<p><em>Proof of the lemma.</em> To prove the lemma, we need only to consider those point <span class="math inline">\(\vec x_n\)</span> with <span class="math display">\[
-\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] &gt; 0. 
-\]</span> Otherwise, <span class="math inline">\(\vec x_n\)</span> contributes to 0 probability to the set <span class="math inline">\(\mathcal{W}\)</span> (whether it belongs to <span class="math inline">\(\mathcal{W}\)</span> or not).</p>
-<p>Now, we expand the probability <span class="math inline">\(\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A]\)</span>. To obtain the <span class="math inline">\(k\)</span>-th output, there are two steps</p>
-<ol type="1">
-<li><span class="math inline">\(A\)</span> generates a index <span class="math inline">\(i_k\)</span> of a box based on the known history <span class="math inline">\(\vec h_{k - 1}\)</span>.<br />
-</li>
-<li>The box <span class="math inline">\(B_{i_k}\)</span> is hacked, and output a random message <span class="math inline">\(x_k\)</span> sampled from its distribution <span class="math inline">\(D_{i_k, P_1}\)</span>.</li>
-</ol>
-<p>Let <span class="math inline">\(\vec H_k\)</span> be a random variable that represents the history up to <span class="math inline">\(k\)</span>. By chain rule, we have <span class="math display">\[
-\begin{aligned}
-    \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] 
-    &amp;= \prod_{k = 1}^n \Pr_{Y_k \sim \mathcal{D}_{i_k, P_1} } [ Y_k = x_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ] \\ 
-    &amp;\ \ \cdot \prod_{k = 1}^n \Pr_{ A(\vec h_{k - 1} ) \sim  \mathcal{D}_{A, \vec h_{k - 1} } } [ A(\vec h_{k - 1} ) = i_k \mid \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A  ]
-\end{aligned}
-\]</span></p>
-<p>By <span class="math inline">\(\Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] &gt; 0\)</span>, each term in the expansion are positive. Similarly, <span class="math display">\[
-\begin{aligned}
-    \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] 
-    &amp;= \prod_{k = 1}^n \Pr_{Y_k \sim \mathcal{D}_{i_k, P_2} } [ Y_k = x_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] \\ 
-    &amp;\ \ \cdot \prod_{k = 1}^n \Pr_{ A(\vec h_{k - 1} ) \sim  \mathcal{D}_{A, \vec h_{k - 1} } } [ A(\vec h_{k - 1} ) = i_k \mid \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A  ]
-\end{aligned}
-\]</span></p>
-<p>As both <span class="math inline">\(\mathcal{D}_{i_k, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{i_k, P_2}\)</span> assign positive probability to each point in <span class="math inline">\(\mathcal{R}_{i_k}\)</span>, we know <span class="math inline">\(\Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] &gt; 0\)</span>.</p>
-<p>We are ready to consider the ratio: <span class="math display">\[
-\begin{aligned}
-    \ln \frac{ \Pr[ \vec Y_n = \vec x_n \ | \ P = P_1, A] }{ \Pr[ \vec Y_n = \vec x_n \ | \ P = P_2, A] } 
-    = \sum_{k = 1}^n \ln \frac{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_1} } [ Y_k = x_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ]  }{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_2} } [ Y_k = x_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] }. 
-\end{aligned}
-\]</span></p>
-<p>If we replace <span class="math inline">\(x_k\)</span> by a random variable <span class="math inline">\(X_k \sim \mathcal{D}_{i_k, P_1}\)</span>, then <span class="math display">\[
-C_k \doteq \ln \frac{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_1} } [ Y_k = X_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_1, A ]  }{ \Pr_{Y_k \sim \mathcal{D}_{i_k, P_2} } [ Y_k = X_k \ | A(\vec h_{k - 1} ) = i_k, \vec H_{k - 1} = \vec h_{k - 1}, \ P = P_2, A ] }
-\]</span></p>
-<p>is a random variable. As <span class="math inline">\(\mathcal{D}_{i_k, P_1}\)</span> and <span class="math inline">\(\mathcal{D}_{i_k, P_2}\)</span> are <span class="math inline">\((\epsilon, 0)\)</span> close, we have <span class="math display">\[
-C_k \le \epsilon.
-\]</span></p>
-<p>Further, we have</p>
-<blockquote>
-<p><strong>Fact 1.</strong> For any <span class="math inline">\(\alpha \in \mathcal{I}\)</span>, it holds that <span class="math display">\[
-\begin{aligned}
-\mathbb{E}_{ X \sim \mathcal{D}_{\alpha, P_1} } \left[ \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = X]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = X]  }  \right] 
-&amp;= \sum_{x \in \mathcal{R}_\alpha } \underset{ X \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \\
-&amp;\le \sum_{x \in \mathcal{R}_\alpha } \underset{ X \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \\
-&amp;+ 
-\sum_{x \in \mathcal{R}_\alpha } \underset{ X \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ X = x]  \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } \\
-&amp;= \sum_{x \in \mathcal{R}_\alpha } \left[ \underset{ X \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ X = x]  - \underset{ X \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ X = x] \right] \cdot \ln \frac{ \underset{ Y \sim \mathcal{D}_{\alpha, P_1} }{ \Pr } [ Y = x]  } { \underset{ Y \sim \mathcal{D}_{\alpha, P_2} }{ \Pr } [ Y = x]  } \\
-&amp;\le (e^\epsilon - 1) \epsilon
-\end{aligned}
-\]</span></p>
-</blockquote>
-<p>Therefore, <span class="math inline">\(\mathbb{E} [C_k] \le (e^\epsilon - 1) \epsilon\)</span>.</p>
-<blockquote>
-<p><strong>Fact 2.</strong> (<strong>Azuma Inequality</strong>). Let <span class="math inline">\(C_1, ...., C_n\)</span> be random variables such that <span class="math inline">\(\forall k \in [n]\)</span>, <span class="math inline">\(\Pr[ |C_k| \le \epsilon ] = 1\)</span>, and for every <span class="math inline">\((c_1, ..., c_{k -1} ) \in \text{Supp} (C_1, ..., C_{k - 1} )\)</span>, we have <span class="math display">\[
-\mathbb{E}[ C_i \mid C_1 = c_1, ..., C_{k -1} = c_{k - 1} ] \le \beta,
-\]</span> Then for every <span class="math inline">\(z &gt; 0\)</span>, we have <span class="math display">\[
-\Pr[ \sum_{k = 1}^n C_i -  n \beta &gt;  z] \le \exp(- \frac{z^2}{ 2 n\epsilon^2 } )
-\]</span></p>
-</blockquote>
-<p>Finally, applying <em>Azuma Inequality</em> with <span class="math inline">\(z = \sqrt{ 2n \log \frac{1}{\delta&#39;} }\)</span> and <span class="math inline">\(\beta = (e^\epsilon - 1) \epsilon\)</span>, we get the desired result.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h3 id="reference.">Reference.</h3>
-<p>[1] C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,” Foundations and Trends® in Theoretical Computer Science, vol. 9, no. 3–4, pp. 211–407, 2013</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -898,7 +866,7 @@ C_k \le \epsilon.
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-count">126</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

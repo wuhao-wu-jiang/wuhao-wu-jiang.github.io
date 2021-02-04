@@ -146,6 +146,127 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/14/Sparse-Recovery-with-Count-Sketch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/01/14/Sparse-Recovery-with-Count-Sketch/" class="post-title-link" itemprop="url">Sparse Recovery with Count-Sketch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-01-14 22:51:28" itemprop="dateCreated datePublished" datetime="2020-01-14T22:51:28+11:00">2020-01-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-01-15 23:01:24" itemprop="dateModified" datetime="2020-01-15T23:01:24+11:00">2020-01-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose that a stream of items comes online <span class="math inline">\(S = \{ a_1, a_2, ..., a_m \}\)</span> where <span class="math inline">\(a_i \in [n]\)</span>. Denote the frequency of <span class="math inline">\(S\)</span> as <span class="math inline">\(f = &lt;f_1, f_2, ..., f_n&gt;\)</span>, where <span class="math inline">\(f_j = |\{ a_i \in S : a_i = j \}|\)</span>. By running the count-sketch algorithm, we can obtain an estimation <span class="math inline">\(\hat f\)</span> of <span class="math inline">\(f\)</span> with space <span class="math inline">\(O(\frac{1}{\epsilon^2} \log n)\)</span>, such that with high probability, for <span class="math inline">\(i \in [n]\)</span>, <span class="math display">\[
+|\hat f_i - f_i| \le \epsilon |f|_2
+\]</span> where <span class="math inline">\(|f|_2 = \sqrt {\sum_{i = 1}^n f_i^2 }\)</span>.</p>
+<p>In general, a sketch is a concise representation of <span class="math inline">\(f\)</span>. Suppose that we limit our space usage to <span class="math inline">\(k\)</span> words (i.e., <span class="math inline">\(|\hat f|_0 = k\)</span>), and assume that <span class="math inline">\(H\)</span> is the set of items of <span class="math inline">\(k\)</span> most frequent items, then the sketch <span class="math inline">\(\hat f\)</span> that minimize the <span class="math inline">\(l_2\)</span> error keeps all items in <span class="math inline">\(H\)</span> and the error between <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat f\)</span> is <span class="math display">\[
+|f - \hat f|_2 \doteq err_2^k (f) = \sqrt {\sum_{i \in H} f_i^2}
+\]</span></p>
+<p>In practice, however, <span class="math inline">\(S\)</span> is not given offline. As we don't know <span class="math inline">\(H\)</span>, we can only compute an <span class="math inline">\(\hat f\)</span> with <span class="math inline">\(k\)</span> words that is as good as possible. The question is, how far <span class="math inline">\(|f - \hat f|_2\)</span> can be from the minimum possible value, namely <span class="math inline">\(err_2^k(f)\)</span>?</p>
+<p>One possible solution, proposed by Cormode and Muthukrishnan [1], is to construct <span class="math inline">\(\hat f\)</span> vis Count-Sketch with <span class="math inline">\(d = O(\log n)\)</span> hash tables each of which has size <span class="math inline">\(w = \frac{3k}{\epsilon^2}\)</span>.</p>
+<p><em>Lemma 1.</em> For any <span class="math inline">\(i \in [n]\)</span>, we have <span class="math inline">\(|f_i - \hat f_i| \le \frac{\epsilon}{\sqrt k } err_2^k(f)\)</span> with high probability.</p>
+<p><em>Proof</em><br />
+Denote <span class="math inline">\(h_j(i)\)</span> the value of item <span class="math inline">\(i\)</span> in the <span class="math inline">\(j\)</span>-th hash table. Let <span class="math inline">\(A_i\)</span> be the event such that any of the <span class="math inline">\(k\)</span> items with largest frequency is hashed to position <span class="math inline">\(h_j(i)\)</span> in the <span class="math inline">\(j\)</span>-th table. Then by union bound, <span class="math display">\[
+\Pr[A_i] \le \frac{k}{w} = \frac{\epsilon^2}{3}
+\]</span></p>
+<p>Now,</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \Pr[|f_i - h_i(j)| \ge \frac{\epsilon}{\sqrt k } err_2^k(f)    ] 
+        &amp;= \Pr[|f_i - h_i(j) | \ge  \frac{\epsilon}{\sqrt k } err_2^k(f) \mid A_i ] + \Pr[|f_i - h_i(j) | \ge  \frac{\epsilon}{\sqrt k } err_2^k(f) \mid \bar A_i ] \\
+        &amp;\le \Pr[A_i] + \frac{ Var[ f_i - h_i(j)  \mid \bar A_i ] }{ (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
+        &amp;\le \frac{\epsilon^2}{3} + \frac{(err_2^k(f))^2}{ w (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
+        &amp;\le \frac{\epsilon^2}{3} + \frac{1}{3}
+\end{aligned}
+\]</span></p>
+<p>As long as <span class="math inline">\(\epsilon^2 / 3 &lt; 1 / 6\)</span>, this probability is smaller than <span class="math inline">\(1 / 2\)</span>. We can boost the failure probability to <span class="math inline">\(1/ n^2\)</span> by repeating the hash tables <span class="math inline">\(d = O(\log n)\)</span> times and taking the median as estimation.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>The next step is keep only set <span class="math inline">\(\hat H\)</span> of the <span class="math inline">\(k\)</span> largest items in <span class="math inline">\(\hat f\)</span>. Note that <span class="math inline">\(\hat H\)</span> might not equals to <span class="math inline">\(H\)</span>. To bound the value <span class="math inline">\(|f - \hat f|_2\)</span>, we divide <span class="math inline">\([n]\)</span> into three subsets: <span class="math inline">\(\hat H\)</span>, <span class="math inline">\(H \setminus \hat H\)</span>, and <span class="math inline">\([n]\)</span>(H H)$</p>
+<p><em>Lemma 2</em>. <span class="math inline">\(\sum_{i \in \hat H} (f_i - \hat f_i)^2 \le \epsilon^2 (err_2^k(f))^2\)</span>.</p>
+<p><em>Proof.</em> As <span class="math inline">\(|\hat H| = k\)</span>, this follow directly from lemma 1.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><em>Lemma 3</em>. <span class="math inline">\(\sum_{i \in H \setminus \hat H} f_i ^2 \le \sum_{j \in \hat H \setminus H} \hat f_j^2 + (2 \epsilon + \epsilon^2) ( err_2^k(f))^2\)</span></p>
+<p><em>Proof.</em> <span class="math inline">\(|H| = |\hat H|\)</span>, we have <span class="math inline">\(|H \setminus \hat H| = |\hat H \setminus H|\)</span>.</p>
+<p>If <span class="math inline">\(H \setminus \hat H = \emptyset\)</span>, the claim is trivial. Otherwise, we can construct a bijection between <span class="math inline">\(H \setminus \hat H\)</span> and <span class="math inline">\(\hat H \setminus H\)</span>. Then for <span class="math inline">\(i \in H \setminus \hat H\)</span>,</p>
+<p><span class="math display">\[
+f_i = f_i - \hat f_i + \hat f_i - \hat f_j + \hat f_j
+\]</span></p>
+<p>As <span class="math inline">\(\hat H\)</span> contains the largest <span class="math inline">\(k\)</span> items in <span class="math inline">\(\hat f\)</span>, it must be that <span class="math inline">\(\hat f_i - \hat f_j \le 0\)</span>. Therefore,</p>
+<p><span class="math display">\[
+f_i \le f_i - \hat f_i + \hat f_j
+\]</span></p>
+<p>By lemma 1, we have <span class="math inline">\(f_i - \hat f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f)\)</span>, we have</p>
+<p><span class="math display">\[
+f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j
+\]</span></p>
+<p>Summing over all possible <span class="math inline">\(i\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \sum_{i \in H \setminus \hat H} f_i ^2 
+    &amp;\le \sum_{j \in \hat H \setminus H} (\frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j)^2 \\
+    &amp;= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \left( \sum_{j \in \hat H \setminus H} \hat f_j \right) \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
+    &amp;\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 k \sqrt{ \sum_{j \in \hat H \setminus H} \frac{1}{k} \hat f_j^2} \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
+    &amp;= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \epsilon (err_2^k(f)) \sqrt{ \sum_{j \in \hat H \setminus H} \hat f_j^2} +  \epsilon^2 ( err_2^k(f))^2 \\
+    &amp;\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + (2 \epsilon +  \epsilon^2) ( err_2^k(f))^2 
+\end{aligned}
+\]</span></p>
+<h2 id="reference">Reference</h2>
+<p>[1] G. Cormode and S. Muthukrishnan. Combinatorial algorithms for Compressed Sensing.<br />
+[2] Moses Charikar, Lecture 9, CS 369G: Algorithmic Techniques for Big Data</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/12/Priority-Sampling/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -414,142 +535,6 @@ C \doteq \max |\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}|
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/01/Online-Matrix-Sketch/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/01/Online-Matrix-Sketch/" class="post-title-link" itemprop="url">Online Matrix Sketch</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-01-01 21:04:12" itemprop="dateCreated datePublished" datetime="2020-01-01T21:04:12+11:00">2020-01-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-25 17:36:33" itemprop="dateModified" datetime="2020-12-25T17:36:33+11:00">2020-12-25</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Given a matrix <span class="math inline">\(A \in \R^{m \times n}\)</span>, the goal of low approximation is to find a matrix <span class="math inline">\(B \in R^{k \times n}\)</span> with rank at most <span class="math inline">\(k\)</span> that approximates <span class="math inline">\(A\)</span> as well as possible. This can be measured by <span class="math inline">\(2\)</span>-norm, i.e., <span class="math display">\[
-||A - B|| = \max_{x \in R^n, ||x|| = 1} ||(A - B)x||
-\]</span></p>
-<p>If we know the entire matrix <span class="math inline">\(A\)</span>, its best approximation is given by the singular vector decomposition, <span class="math display">\[
- B \doteq \sum_{i = 1}^k \sigma_i u_i v_i^T
-\]</span> where <span class="math inline">\(\sigma_i\)</span>, <span class="math inline">\(u_i\)</span> and <span class="math inline">\(v_i\)</span> are the <span class="math inline">\(i\)</span>-th largest singular value, left singular vector and right singular vector of <span class="math inline">\(A\)</span>, respectively.</p>
-<p>When some elements of <span class="math inline">\(A\)</span> are missing, finding such a matrix <span class="math inline">\(B\)</span> to approximate <span class="math inline">\(A\)</span> as well as to predict the missing entries of <span class="math inline">\(A\)</span> is known as collaborative filtering, which is used in recommendation system.</p>
-<p>Another complicated scenario is to approximate <span class="math inline">\(A\)</span> in an online fashion, i.e., the rows of <span class="math inline">\(A\)</span> comes on by one (no missing values). Denote the <span class="math inline">\(i\)</span>-th row of <span class="math inline">\(A\)</span> as <span class="math inline">\(A_i\)</span>. We need to maintain a smaller matrix <span class="math inline">\(B \in \R^{k \times n}\)</span>, termed the matrix sketch of <span class="math inline">\(A\)</span>, that approximate <span class="math inline">\(A\)</span> well, in the sense that <span class="math display">\[
-|| A - B || \le \frac{2 ||A||_F^2}{ k },
-\]</span></p>
-<p>where <span class="math inline">\(|| A ||_F \doteq \sqrt{ \sum_{i \in [n], j \in [n] } A_{i,j}^2 }\)</span> is the Frobenius norm of <span class="math inline">\(A\)</span>.</p>
-<blockquote>
-<p>Algorithm [1]<br />
-1. <span class="math inline">\(B \leftarrow\)</span> <span class="math inline">\({k \times n}\)</span> all zero matrix. 2. For <span class="math inline">\(i \in [1:m]\)</span>: 3. <span class="math inline">\(\qquad\)</span> Insert <span class="math inline">\(A_i\)</span> into a zero row of <span class="math inline">\(B\)</span>. 4. <span class="math inline">\(\qquad\)</span> If <span class="math inline">\(B\)</span> has no zero row after insertion: 5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(U_i, \Sigma_{i-}, V_i \leftarrow SVD(B)\)</span>, such that <span class="math inline">\(B = U_i \Sigma_{i-} V_i^T\)</span>. 6. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\Sigma_{i} \leftarrow \sqrt{ \max \{ \Sigma_{i-}^2 - \sigma_{i, k / 2}^2 I, 0 \} }\)</span> 7. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(B \leftarrow \Sigma_{i} V_i^T\)</span>.</p>
-</blockquote>
-<p>Here <span class="math inline">\(\sigma_{i, k / 2}\)</span> is the <span class="math inline">\(k / 2\)</span>-th largest singular value of <span class="math inline">\(\Sigma_{i -}\)</span>. The line 6 is throw away all singular values that are less than <span class="math inline">\(\sigma_{i, k / 2}\)</span>, and then subtract the squares of all singular values that are greater by <span class="math inline">\(\sigma_{i, k / 2}^2\)</span>.</p>
-<h4 id="properties">Properties</h4>
-<h5 id="theorem-1-1.-bt-b-preccurlyeq-at-a-at-any-time.">Theorem 1 [1]. <span class="math inline">\(B^T B \preccurlyeq A^T A\)</span> at any time.</h5>
-<p><em>Proof:</em> To show <span class="math inline">\(A^T A - B^T B\)</span> is semi-positive definitive, we need to show that <span class="math inline">\(\forall x \in R^n\)</span>, we have <span class="math display">\[
-x^T A^T A x - x^T B^T B x \ge 0
-\equiv ||Ax||^2 \ge ||Bx||^2
-\]</span></p>
-<p>Denote <span class="math inline">\(B_i\)</span> the matrix of <span class="math inline">\(B\)</span> after the <span class="math inline">\(i\)</span>-th iteration of the algorithm. Note that <span class="math inline">\(B_0 = 0^{k \times n}\)</span>. Then it holds that <span class="math display">\[
-||B_i x||^2 + (A_i \ x)^2 \ge ||B_{i + 1} x||^2
-\]</span></p>
-<p>There are two possible cases. In the first case, after inserting <span class="math inline">\(A_i\)</span> into <span class="math inline">\(B_i\)</span>, <span class="math inline">\(B_i\)</span> still contains empty row, then the if-clause does not execute and the quality holds. Otherwise, if the if-clause is executed, then <span class="math display">\[
-||B_{i + 1} x||^2  = ||\Sigma_i V_i^T x||^2
-\]</span></p>
-<p>Moreover <span class="math display">\[
-||B_i x||^2 + (A_i \ x)^2 = ||U_i \Sigma_{i-} V_i^T x||^2 = ||\Sigma_{i-} V_i^T x||^2 
-\]</span> Since <span class="math inline">\(U_i\)</span> is an orthogonal matrix and corresponds to a left rotation</p>
-<p>By the transformation of the algorithm, we have <span class="math inline">\(\Sigma_{i-}^T \Sigma_{i-} \preccurlyeq \Sigma_{i}^T \Sigma_i\)</span>, therefore, <span class="math display">\[
- x V_i \Sigma_{i}^T \Sigma_{i} V_i^T x - x V_i \Sigma_{i-}^T \Sigma_{i-} V_i^T x \ge 0
-\]</span></p>
-<h5 id="theorem-2-1.-at-a---bt-b-le-2-a_f2-k">Theorem 2 [1]. <span class="math inline">\(||A^T A - B^T B|| \le 2 ||A||_F^2 / {k}\)</span></h5>
-<p><em>Proof:</em> We first show that for a semi-positive definite matrix <span class="math inline">\(S\)</span>, we have <span class="math display">\[
-||S|| = \max_{x \in R^n, ||x|| = 1} ||S x|| = \max_{x \in R^n, ||x|| = 1} \sqrt {x^T S^T S x} = \max_{x \in R^n, ||x|| = 1} \sqrt {x^T S^2 x} 
-\]</span></p>
-<p>But <span class="math inline">\(S^2\)</span> has the same eigenvectors as <span class="math inline">\(S\)</span>. Denote <span class="math inline">\(x\)</span> be <span class="math inline">\(S\)</span>'s largest unit eigenvector and <span class="math inline">\(x^T S x = x^T \lambda_1 x_1 = \lambda_1\)</span> its corresponding eigenvalues. Then <span class="math display">\[
-||S|| = \sqrt {x^T S^2 x} = \lambda_1 = x^T Sx 
-\]</span> and <span class="math inline">\(||S|| = \lambda_1\)</span>. Geometrically, as <span class="math inline">\(x\)</span> is eigenvector, it is colinear with <span class="math inline">\(Sx\)</span>. Further, since <span class="math inline">\(x\)</span> is a unit vector, the length of <span class="math inline">\(Sx\)</span> is given by <span class="math inline">\(x^T Sx\)</span>.</p>
-<p>Now, let <span class="math inline">\(x\)</span> the largest unit eigenvector of <span class="math inline">\(A^T A - B^T B\)</span>. As <span class="math inline">\(B^T B \ll A^T A\)</span>, <span class="math display">\[
-\begin{aligned}
-||A^T A - B^T B|| 
-    &amp;= x^TA^T A x- x^T B^T Bx \\
-    &amp;= ||Ax||^2 - ||Bx||^2 \\
-    &amp;= \sum_{i = 1}^n (A_i^T x)^2  + ||B_{i - 1} x||^2 - ||B_{i} x||^2 \\
-    &amp;= \sum_{i = 1}^n ||\Sigma_{i-} V_i^T x||^2 - ||\Sigma_i V_i^T x||^2 \\
-    &amp;\le \sum_{i = 1}^n ||V_i \Sigma_{i-}^T \Sigma_{i-} V_i^T - V_i \Sigma_i^T \Sigma_i V_i^T || \\
-    &amp;= \sum_{i = 1}^n ||\Sigma_{i-}^T \Sigma_{i-}  - \Sigma_i^T \Sigma_i || \\
-    &amp;= \sum_{i = 1}^n \sigma_{i, k /2 }^2
-\end{aligned}
-\]</span></p>
-<p>It is left to bound the size of <span class="math inline">\(\sum_{i = 1}^n \sigma_{i, k /2 }^2\)</span>: <span class="math display">\[
-\begin{aligned}
-||A||_F - ||B||_F
-    &amp;= \sum_{i = 1}^n ||A_i||^2  + ||B_{i - 1}||_F - ||B_{i}||_F \\
-    &amp;= \sum_{i = 1}^n ||U_i \Sigma_{i-} V_i^T||_F - ||\Sigma_i V_i^T||_F \\
-    &amp;= \sum_{i = 1}^n ||\Sigma_{i-} V_i^T||_F - ||\Sigma_i V_i^T||_F \\
-    &amp;= \sum_{i = 1}^n ||\Sigma_{i-}||_F - ||\Sigma_i||_F \\
-    &amp;\ge (k / 2) \sum_{i = 1}^n \sigma_{i, k /2 }^2
-\end{aligned}
-\]</span></p>
-<p>The equality holds since left or right multiplying a orthogonal matrix does not change Frobenius norm (the sum of square distance of the row vectors to the origin). The last inequality holds by the definition of <span class="math inline">\(\Sigma_{i - }\)</span> and <span class="math inline">\(\Sigma_i\)</span>.</p>
-<p>In conclusion, <span class="math display">\[
-\begin{aligned}
-    \frac{||A^T A - B^T B||}{||A||_F} \le \frac{||A^T A - B^T B||}{||A||_F - ||B||_F} \le \frac{2}{k}
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span>.</p>
-<h2 id="reference.">Reference.</h2>
-<p>[1]. Liberty, Edo. "Simple and deterministic matrix sketching." In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining, pp. 581-588. ACM, 2013.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -619,7 +604,7 @@ x^T A^T A x - x^T B^T B x \ge 0
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">125</span>
+          <span class="site-state-item-count">126</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
