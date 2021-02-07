@@ -146,6 +146,132 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/07/Morris-Counter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/07/Morris-Counter/" class="post-title-link" itemprop="url">Morris Counter</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-02-07 15:29:06 / Modified: 16:54:14" itemprop="dateCreated datePublished" datetime="2021-02-07T15:29:06+11:00">2021-02-07</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="problem">Problem</h3>
+<p>Given a stream <span class="math inline">\(S\)</span> of <span class="math inline">\(n\)</span> elements, a serve that observes the elements in <span class="math inline">\(S\)</span> on by one is required to estimate the cardinality <span class="math inline">\(n\)</span> with less than <span class="math inline">\(\log n\)</span> bits, with relative error <span class="math inline">\(\epsilon \in (0, 1)\)</span> and failure probability <span class="math inline">\(\delta\)</span>.</p>
+<p>Let <span class="math inline">\(w \in (1, 2)\)</span> be some parameter to be determined.</p>
+<blockquote>
+<p><strong>Algorithm</strong>. Morris Counter 1. <span class="math inline">\(k \leftarrow 0\)</span>.<br />
+2. For <span class="math inline">\(i \leftarrow 1\)</span> to <span class="math inline">\(n\)</span>:<br />
+3. <span class="math inline">\(\qquad\)</span> Increase <span class="math inline">\(k\)</span> by <span class="math inline">\(1\)</span>, with probability <span class="math inline">\(w^{ - k}\)</span>. 6. <span class="math inline">\(\qquad X_i \leftarrow \frac{w^k - 1}{ w - 1}\)</span>; 7. Output <span class="math inline">\(X_n\)</span>.</p>
+</blockquote>
+<p>Next we discuss the properties of the algorithm.</p>
+<blockquote>
+<p>Theorem 1. <span class="math inline">\(\forall t \in [n]\)</span>, <span class="math inline">\(\mathbb{E} [ X_t ] = t\)</span>.</p>
+</blockquote>
+<p><em>Proof:</em> Define <span class="math inline">\(X_0 = 0\)</span>. Hence, <span class="math inline">\(\mathbb{E} [ X_0 ] = 0\)</span>. For <span class="math inline">\(t \ge 1\)</span>, we prove the claim by induction.</p>
+<p>For <span class="math inline">\(k \ge 0\)</span>, denote <span class="math inline">\(v_k \doteq \frac{w^k - 1}{ w - 1}\)</span>. Conditioned on <span class="math inline">\(X_{t - 1} = v_k\)</span> for some <span class="math inline">\(k \ge 0\)</span>, it holds that <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ X_t | X_{t - 1} = v_k ] 
+            &amp;= w^{-k} \frac{w^{k + 1} - 1}{ w - 1} + (1 - w^{-k} ) \cdot v_k \\
+            &amp;= w^{-k} \frac{w^{k + 1} - w^k + w^k - 1}{ w - 1} + (1 - w^{-k} ) \cdot v_k \\
+             &amp;= w^{-k} \left( w^k + v_k  \right) + (1 - w^{-k} ) \cdot v_k \\
+            &amp;= v_k + 1 \\
+            &amp;= X_{t - 1} + 1,
+    \end{aligned}
+\]</span></p>
+<p>Assuming that <span class="math inline">\(\mathbb{E} [X_{t - 1} ] = t - 1\)</span>, we have <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ X_t ] =  \mathbb{E} [ \mathbb{E} [ X_t | X_{t - 1} ] ] = \mathbb{E} [X_{t - 1} ] + 1 = t.
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p>Theorem 2. <span class="math inline">\(\forall t \in [n]\)</span>, <span class="math inline">\(\mathbb{Var } [ X_t ] = (w - 1) \cdot \frac{ t^2 }{ 2 }\)</span>.</p>
+</blockquote>
+<p><em>Proof:</em></p>
+<p>Since <span class="math inline">\(w^k = (w - 1) \cdot v_k + 1\)</span>, we have</p>
+<p><span class="math display">\[
+\begin{aligned}
+     \mathbb{E} [ X_t^2 | X_{t - 1} = v_k ] 
+            &amp;= w^{-k} \left( \frac{w^{k + 1} - 1}{ w - 1} \right)^2 + (1 - w^{-k} ) \cdot ( v_k )^2 \\
+            &amp;= w^{-k} \left( w^k + v_k  \right)^2 + (1 - w^{-k} ) \cdot (v_k)^2 \\
+            &amp;= w^k + 2 \cdot v_k + v_k^2 \\
+            &amp;= (w + 1) \cdot v_k  + 1 + v_k^2
+\end{aligned}
+\]</span></p>
+<p>Therefore, since <span class="math inline">\(X_0 = 0\)</span>, <span class="math display">\[
+\begin{aligned}
+     \mathbb{E} [ X_t^2 ] 
+                &amp;= \mathbb{E} [ \mathbb{E} [ X_t^2 | X_{t - 1} = v_k ] ] \\
+                &amp;= (w + 1) \cdot \mathbb{E}  [ X_{t - 1} ] + 1 +  \mathbb{E}  [ X_{t - 1} ^2] \\
+                &amp;=  \mathbb{E}  [ X_{t - 1}^2 ] + (w + 1) \cdot (t - 1) + 1 \\
+                &amp;... \\
+                &amp;=  \mathbb{E}  [ X_0^2 ] + (w + 1) \cdot \sum_{i = 1}^{t - 1} i + (t -1)  \\
+                &amp;= (w + 1) \cdot \frac{ t (t - 1) }{ 2 } + (t - 1) \\
+                &amp;\le (w - 1) \cdot \frac{ t^2 }{ 2 } + t^2, 
+\end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+    \mathbb{Var } [ X_t ] = \mathbb{E} [ X_t^2 ]  - (\mathbb{E} [ X_t ])^2 \le (w - 1) \cdot \frac{ t^2 }{ 2 } . 
+\]</span></p>
+<blockquote>
+<p>Corollary 3. By Chebyshev's inequality, <span class="math display">\[
+\Pr[ | X_t - t | \ge \epsilon \cdot t ] \le (w - 1) \cdot \frac{ t^2 }{ 2 \epsilon^2 \cdot t^2} = \frac{w - 1}{ 2 \epsilon^2 }.
+\]</span></p>
+</blockquote>
+<blockquote>
+<p>Corollary 4. If we set <span class="math inline">\(w = 1 + 2 \epsilon^2 \delta\)</span>, then the failure probability is at most <span class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<h2 id="reference.">Reference.</h2>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/02/Fast-Fourier-Transform/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -177,7 +303,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-04 22:22:03" itemprop="dateModified" datetime="2021-02-04T22:22:03+11:00">2021-02-04</time>
+                <time title="Modified: 2021-02-04 22:50:26" itemprop="dateModified" datetime="2021-02-04T22:50:26+11:00">2021-02-04</time>
               </span>
 
           
@@ -422,7 +548,7 @@ e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-01-26 23:51:21" itemprop="dateModified" datetime="2021-01-26T23:51:21+11:00">2021-01-26</time>
+                <time title="Modified: 2021-02-04 22:45:51" itemprop="dateModified" datetime="2021-02-04T22:45:51+11:00">2021-02-04</time>
               </span>
 
           
@@ -578,7 +704,7 @@ S(v) \doteq \{ c \cdot v : c \in \mathbb{R} \}
     \arg\min_{ c \in \mathbb{C} } \left| \left|f - c \cdot g \right| \right|^2 = \frac{ \left&lt; g, f \right&gt;_H  }{ ||g||^2 } = 0.
 \]</span></p>
 <p>In both cases, <span class="math display">\[
-    \overline{ \left&lt; g, f \right&gt;_H } = \left&lt; f, g \right&gt; = 0.
+    \overline{ \left&lt; g, f \right&gt;_H } = \left&lt; f, g \right&gt;_H = 0.
 \]</span></p>
 <h2 id="properties-of-gamma"><strong>Properties of <span class="math inline">\(\Gamma\)</span></strong></h2>
 <p>We are now ready to discuss the properties of <span class="math inline">\(\Gamma = \{ 1, \exp(it), \exp(-it), \exp(i2t), \exp(-i2t), ... \}\)</span>. 1. For <span class="math inline">\(k \in \mathbb{Z}\)</span>, <span class="math display">\[
@@ -878,84 +1004,10 @@ w&#39;(x) = h(x) = 0, \quad a.e.
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/12/24/Gamma-Function/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/12/24/Gamma-Function/" class="post-title-link" itemprop="url">Gamma Function</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-12-24 21:32:57 / Modified: 21:47:33" itemprop="dateCreated datePublished" datetime="2020-12-24T21:32:57+11:00">2020-12-24</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Consider the integral <span class="math display">\[
-    \int_0^\infty e^{- st} \ dt = \frac{1}{s} e^{- st} \mid_0^\infty  = \frac{1}{s}.
-\]</span></p>
-<p>Taking derivative with respect to <span class="math inline">\(s\)</span> of both side, we get <span class="math display">\[
-    \int_0^\infty t e^{- t s} \ dt = \frac{1}{s^2}.
-\]</span></p>
-<p>Repeating this process one more step, <span class="math display">\[
-    \int_0^\infty t^2 e^{- st} \ dt = \frac{2}{s^3}.
-\]</span></p>
-<p>By induction on <span class="math inline">\(k \in \mathbb{N}^+\)</span>, we obtain <span class="math display">\[
-    \int_0^\infty t^k e^{- st} \ dt = \frac{k!}{s^{k + 1} }.
-\]</span></p>
-<p>Setting <span class="math inline">\(s = 1\)</span>, we have <span class="math display">\[
-    k! = \int_0^\infty t^k e^{ -t } \ dt.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/42/">42</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1021,7 +1073,7 @@ w&#39;(x) = h(x) = 0, \quad a.e.
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-count">127</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

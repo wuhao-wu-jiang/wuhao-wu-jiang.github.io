@@ -146,6 +146,266 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/01/Ball%20and%20Bins/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/01/Ball%20and%20Bins/" class="post-title-link" itemprop="url">Ball and Bins</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-01 10:24:00" itemprop="dateCreated datePublished" datetime="2020-04-01T10:24:00+11:00">2020-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-01 12:40:24" itemprop="dateModified" datetime="2021-01-01T12:40:24+11:00">2021-01-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose we would like to throw <span class="math inline">\(n\)</span> balls into <span class="math inline">\(n\)</span> bins uniformly at random. We claim that the bin with maximum load has <span class="math inline">\(\Theta( \frac{\ln n}{\ln \ln n})\)</span> ball with high probability.</p>
+<h3 id="upper-bound">Upper Bound</h3>
+<p>The probability that a particular bin gets <span class="math inline">\(k\)</span> balls is given by</p>
+<p><span class="math display">\[
+\binom{n}{k}\frac{1}{n^k} \left( 1 - \frac{1}{n} \right)^{n - k} \le \binom{n}{k}\frac{1}{n^k} \le \frac{1}{k!} \le \frac{  e^k }{ k^k}
+\]</span></p>
+<p>where the last inequality comes from <span class="math inline">\(\frac{k^k}{k!} \le e^{ k }\)</span> (by Tailor expansion of <span class="math inline">\(e^x\)</span> at the origin with <span class="math inline">\(x = k - 1\)</span> or <span class="math inline">\(x = k\)</span>).</p>
+<p>If we would like to use union bound over <span class="math inline">\(n\)</span> bins to show that no bin has more than <span class="math inline">\(k\)</span> ball with probability at least <span class="math inline">\(1 - \frac{1}{n}\)</span>, we need to find some <span class="math inline">\(k\)</span> that satisfies <span class="math display">\[
+\left( \frac{e}{ k} \right)^k = \frac{1}{n^2}.
+\]</span></p>
+<p>Taking <span class="math inline">\(\log\)</span> of both side, <span class="math display">\[
+k \ln k - k = 2 \ln n \implies k \ln k = \Theta( \ln n) \implies \ln k = \Theta( \ln \ln n). 
+\]</span></p>
+<p>Substituting <span class="math inline">\(k \ln k = \Theta( \ln n)\)</span> with <span class="math inline">\(\ln k = \Theta( \ln \ln n)\)</span>, we get <span class="math display">\[
+    k  = \Theta\left( \frac{\ln n}{\ln \ln n} \right).
+\]</span></p>
+<!-- We can trivially take $k = e \frac{ 2 }{ e - 1} \frac{ \ln n }{ \ln \ln n  } \le 3.2 \frac{ \ln n }{ \ln \ln n  }$. To verify this 
+
+1. For $x \ge 0$, we have $x - e \ln x \ge 0$. Hence $\frac{1}{ e } \ge \frac{\ln x }{x}$. Replacing $x$ with $\ln \ln n$ (Assuming that $n \ge e$ ), we get $\frac{1}{ e} \ge \frac{\ln \ln \ln n }{ \ln \ln n}$
+
+2. Therefore, 
+   $$
+        \begin{aligned}
+            e\left( \frac{k}{ e} \right)^k
+                &\ge \left( \frac{\ln n  }{ \ln \ln n} \right)^k \\ 
+                &= \exp \left( k (\ln \ln n - \ln \ln \ln n ) \right) \\
+                &= \exp \left( \frac{ 2 }{ e - 1} e  \ln n  - \frac{ 2 }{ e - 1} e \frac{\ln n \cdot \ln \ln \ln n }{ \ln \ln n}  \right) \\
+                &\ge \exp \left( \frac{ 2 }{ e - 1}[e \ln n  -  \ln n ] \right) \\
+                &= n^2
+        \end{aligned}
+    $$ -->
+<!-- As when $k = O( { \ln n \over \ln \ln n})$, we have $k^k = O(n)$. It suffices to take $k = O( \alpha e { \ln n \over \ln \ln n})$. To check this more careful, note that 
+
+
+$$
+1 + k \ln k - k \ln \alpha e \ge 2 \ln n
+$$ 
+
+If we set $k = l \frac{\ln n}{ \ln \ln n}$ for some $l$, then  
+
+$$
+k \ln k = k [\ln l + \ln \ln n - \ln \ln \ln n] = k \ln l + l \ln n - k \ln \ln \ln n 
+$$
+
+When $l = \frac{2}{e - 1} \alpha e$, we need to show that 
+
+$$
+ (\frac{2}{e - 1}  \alpha e - 2) \ln n -  \frac{2}{e - 1}  \alpha e \frac{\ln n \cdot \ln \ln \ln n }{ \ln \ln n} \ge 0
+$$
+
+For let $y = \ln \ln n$, $\frac{\ln y}{ y} \le \frac{1}{e}$ always holds for $y > 1$ (assuming that $n > e^e$), as 
+$$
+(y - e \ln y)' = 1 - e / y = 0 \rightarrow y = e
+$$
+
+and $\frac{\ln y}{y}$ increases as $y < e$ and decreases as $y > e$. 
+
+Now, 
+$$
+\begin{aligned}
+    &(\frac{2}{e - 1}  \alpha e - 2) \ln n -   \frac{2}{e - 1} \alpha e \frac{\ln n \cdot \ln \ln \ln n }{ \ln \ln n} \\
+    \ge&  ( \frac{2}{e - 1}  \alpha e - 2) \ln n -  \frac{2}{e - 1}  \alpha  \ln n \\
+    =& ( \frac{2}{e - 1}  \alpha (e - 1) - 2) \ln n  \\
+    =& 2(  \alpha - 1) \ln n  \\
+    \ge& 0
+\end{aligned}
+$$
+
+with the assumption that $\alpha \ge 1$.  -->
+<h3 id="lower-bound">Lower Bound</h3>
+<p>The lower bound is a little bit harder to prove. First note for <span class="math inline">\(x &gt; 1\)</span>, the function <span class="math display">\[
+y = (x - 1) \ln (1 - \frac{1}{x})
+\]</span></p>
+<p>is decreasing. As <span class="math display">\[
+\begin{array}{rrl}
+    &amp;y&#39;  &amp;= \ln (1 - \frac{1}{x} ) + (x - 1) \frac{ 1 }{\frac{x - 1}{x} } \frac{1}{ x^2 } \\
+        &amp;&amp;= \ln (1 - \frac{1}{x} ) + \frac{1}{ x } \\
+\end{array}
+\]</span> and for <span class="math inline">\(x &gt; 1\)</span>, <span class="math display">\[
+\begin{array}{rrl}
+    &amp;y&#39;&#39; &amp;= \frac{ 1 }{\frac{x - 1}{x} } \frac{1}{ x^2 } - \frac{1}{x^2} \\
+        &amp;&amp;= (\frac{x}{x - 1} - 1) \frac{1}{x^2} \\
+        &amp;&amp;\ge 0
+\end{array}
+\]</span></p>
+<p>Further, note that <span class="math inline">\(x \rightarrow \infty\)</span>, <span class="math inline">\(y&#39; \rightarrow 0\)</span>. It concludes that <span class="math inline">\(y&#39; \le 0\)</span>.</p>
+<p>Therefore, the probability that a bin gets <span class="math inline">\(k\)</span> balls is given by (for <span class="math inline">\(k \ge 1\)</span>)</p>
+<p><span class="math display">\[
+\begin{aligned}    
+    \binom{n}{k}\frac{1}{n^k} \left( 1 - \frac{1}{n} \right)^{n - k} 
+        &amp;\ge (\frac{n}{k} )^k \frac{1}{n^k} \left( 1 - \frac{1}{n} \right)^{n - 1} \\
+        &amp;\ge \frac{1}{k^k} \frac{1}{e}
+\end{aligned}
+\]</span></p>
+<p>If we set <span class="math inline">\(k = \frac{1}{3} \frac{ \ln n }{ \ln \ln n }\)</span>, then <span class="math display">\[
+k^k \le ( \ln n)^k = n^{1/3} 
+\]</span></p>
+<p>Hence, <span class="math display">\[
+\frac{1}{k^k} \frac{1}{e} \ge e^{ - 1} n^{-1 / 3}
+\]</span></p>
+<p>This probability is rather smaller. At this point it seems that a single bin is unlikely to success. But by linearity of expectation, the expected number of bins with <span class="math inline">\(k\)</span> balls is given by <span class="math inline">\(e^{ - 1} n^{ 2/ 3}\)</span>. In particular, define the indicator variables <span class="math inline">\(X_i\)</span> such that <span class="math inline">\(X_i = 1\)</span> if the <span class="math inline">\(i\)</span>-th bin receives <span class="math inline">\(k\)</span> balls and let <span class="math inline">\(X = \sum X_i\)</span> be the number of bins with <span class="math inline">\(k\)</span> balls. Then</p>
+<ol type="1">
+<li><span class="math inline">\(E[X_i] = \Pr[X_i = 1] \ge e^{-1} n^{ - 1 / 3}\)</span>.</li>
+<li><span class="math inline">\(E[X] = \sum E[X_i] \ge e^{ - 1} n^{ 2/ 3}\)</span>.</li>
+</ol>
+<p>As in expectation there are <span class="math inline">\(e^{-1} n^{2/ 3}\)</span> such bins, it seems that we are likely to find one. To formalize the intuition, we need to make sure that <span class="math inline">\(X\)</span> does not deviate from its expectation much. To see why this might cause a problem, consider the random variable <span class="math inline">\(Y\)</span> such that <span class="math display">\[
+\begin{aligned}
+    \Pr[Y = e^{-1} n^{ 5 / 3} ]  &amp;= \frac{1}{n} \\ 
+    \Pr[Y = 0 ]  &amp;= 1 - \frac{1}{n} \\ 
+\end{aligned}
+\]</span></p>
+<p>It has expectation <span class="math inline">\(E[Y] = e^{ - 1} n^{ 2 / 3}\)</span>. But it is very likely that <span class="math inline">\(Y = 0\)</span>.</p>
+<p>We investigate the variance of <span class="math inline">\(X\)</span>: <span class="math display">\[
+\begin{aligned}
+Var[X] 
+    &amp;= \sum_i Var[X_i] + \sum_{i \neq j} Cor(X_i, X_j) \\
+    &amp;\le    \sum_i Var[X_i] \\
+    &amp;\le    \sum_i E[X_i^2] \\
+    &amp;=      \sum_i E[X_i] \\
+    &amp;\le    n
+\end{aligned}
+\]</span></p>
+<p>The first inequality follows from</p>
+<blockquote>
+<p>Fact 1: For <span class="math inline">\(i \neq j\)</span>, <span class="math inline">\(Cor(X_i, X_j) &lt; 0\)</span></p>
+</blockquote>
+<p>Intuitively, that bin <span class="math inline">\(i\)</span> obtains ball makes it more difficult for bin <span class="math inline">\(j\)</span> to obtain ball.</p>
+<p><strong><em>Question to ponder: prove it rigorously.</em></strong></p>
+<p>Finally, by Chebyshev Inequality, we have <span class="math display">\[
+\Pr[ |X - E[X]| \ge E[X] ] \le \frac{ Var[X] }{ E[X]^2} \le \frac{n}{ e^{-2} n^{4  / 3}} = \frac{e^2}{n^ {1 / 3} }
+\]</span></p>
+<!-- > Proof of Fact 1. 
+
+Observe that $Cor(X_i, X_j) = E[X_iX_j] - E[X_i] E[X_j]$. Denote $C_i$ and $C_j$ the number of balls bin $i$ and bin $j$ get respectively. As $X_i$ and $X_j$ are indicator variables, $X_i X_j$ is an indicator variable that equals to $1$ only when $X_i = 1$ and $X_j = 1$. 
+
+$$
+\begin{aligned}    
+    E[X_i X_j] &= \sum_{C_i = c_i \ge k, C_j = c_j \ge k,  c_i + c_j \le n } \Pr[C_i = c_i \wedge C_j = c_j] \\
+    &= \sum_{c_i \ge k, c_j \ge k, c_i + c_j \le n} \binom{n}{c_i + c_j} \binom{c_i + c_j}{ c_i}  (\frac{1}{n} )^{ c_i } (\frac{1}{n})^{ c_j } (1 - \frac{2}{n} )^{ n - c_i - c_j} 
+\end{aligned}
+$$
+
+On the other hand, for fix $c_i, c_j$, we have 
+$$
+\Pr[C_i = c_i ] = \binom{n}{c_i} (\frac{1}{n})^{ c_i }  (1 - \frac{1}{n} )^{ n - c_i} \\
+\Pr[C_j = c_j ] = \binom{n}{c_j} (\frac{1}{n})^{ c_j }  (1 - \frac{1}{n} )^{ n - c_j}
+$$
+
+We claim that $\Pr[C_i = c_i \wedge C_j = c_j] \le \Pr[C_i = c_i ] \Pr[C_j = c_j ]$, as 
+
+1. $\binom{n}{c_i + c_j} \binom{c_i + c_j}{ c_i}   \le \binom{n}{c_i} \binom{n}{c_j}$
+2. Denote $z = n - c_i - c_j$, then 
+    $$
+    \begin{aligned}
+        &(1 - \frac{2}{n} )^z \le (1 - \frac{1}{n} )^{ z + n} \\
+        \Longleftrightarrow 
+        &(\frac{n - 2}{n - 1})^z \le (\frac{ n - 1}{ n })^n \\
+        \Longleftrightarrow 
+        &(1 - \frac{1}{n - 1})^z \le (1 - \frac{  1}{ n })^n
+    \end{aligned}
+    $$ -->
+<h4 id="appendix">Appendix</h4>
+<p>In the appendix we discuss a rough approximation of <span class="math inline">\(k^k\)</span> for some <span class="math inline">\(k \in \mathcal{Z}_+\)</span>. We claim that <span class="math display">\[
+e \cdot \frac{k^k}{e^k} \le k! \le e \sqrt k \cdot \frac{k^k}{e^k}
+\]</span></p>
+<h5 id="remark-1">Remark 1:</h5>
+<p>As (<span class="math inline">\(\ln\)</span> here is based on <span class="math inline">\(e\)</span>) <span class="math display">\[
+\int_{x = 1}^k \ln x \ dx = x \ln x |_{x = 1}^k - \int_{x = 1}^k x \ d \ln x = k \ln k - (k - 1)
+\]</span></p>
+<p>We get</p>
+<p><span class="math display">\[
+\ln k! = \sum_{i = 1}^k \ln i \ge \int_{x = 1}^k \ln x \ dx  = k \ln k - (k - 1)
+\]</span></p>
+<p>Similarly,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\ln k! 
+&amp;= \sum_{i = 1}^k \ln i \\
+&amp;= \frac{1}{2} \sum_{i = 1}^{k - 1} [\ln i + \ln (i + 1) ] + \frac{1}{2} \ln k \\
+&amp; \le  \int_{x = 1}^k \ln x \ dx + \frac{1}{2} \ln k \\
+&amp;= (k + \frac{1}{2}) \ln k - (k - 1)
+\end{aligned}
+\]</span></p>
+<!-- ##### Remark 2: 
+An easier way to prove the lower bound is 
+
+$$
+\frac{k^k}{k!} = \frac{k^{k - 1} }{ (k - 1)!} \le \sum_{i = 1}^\infty \frac{(k - 1)^i}{i !} = e^{k - 1} 
+$$
+
+We have $e \frac{k^k}{ e^k } \le k!$.  -->
+<h5 id="reference">Reference:</h5>
+<ol type="1">
+<li>Sanjeev Arora, Cos 521: Advanced Algorithm Design, Lecture 1: Course Intro and Hashing</li>
+<li>Sariel Har-Peled, Chapter 4, The Occupancy and Coupon Collector problems.</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/31/Sampling-With-Or-Without-Replacement/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -456,114 +716,10 @@ O\left( (4nd)^\rho \frac{\ln^2 n}{\ln \frac{1}{p_2} } \right)
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/23/Working-Set-BST/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/23/Working-Set-BST/" class="post-title-link" itemprop="url">Working Set BST</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-23 23:59:24" itemprop="dateCreated datePublished" datetime="2020-03-23T23:59:24+11:00">2020-03-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-29 22:14:08" itemprop="dateModified" datetime="2020-03-29T22:14:08+11:00">2020-03-29</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Various implementations of Balanced Binary Search Tree (BST) guaranteed membership queries in <span class="math inline">\(O(\log n)\)</span> time, where <span class="math inline">\(n\)</span> is the number of elements in some set <span class="math inline">\(S\)</span>. The working set property is a stronger requirement than <span class="math inline">\(O(\log n)\)</span> time complexity. Suppose that an item <span class="math inline">\(x \in S\)</span> is accessed <span class="math inline">\(t\)</span> queries before, then we want to perform <span class="math inline">\(\text{find} (x)\)</span> in <span class="math inline">\(O(\log t)\)</span> time.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/WorkingSetBSForest.jpg" /></p>
-<p>The idea is to maintain a sequence of Balanced BST's, denoted as <span class="math inline">\(T_0, T_1, T_2, ...\)</span>. Denote the size of <span class="math inline">\(T_i\)</span> for some <span class="math inline">\(i \ge 0\)</span> as <span class="math inline">\(n_i\)</span>. Then the <span class="math inline">\(i\)</span>-th tree maintains the latest <span class="math inline">\(n_i\)</span> accessed items. The sizes of <span class="math inline">\(n_i\)</span>'s satisfy</p>
-<p><span class="math display">\[
-\begin{aligned}
-    &amp;   n_0 = 1 \\
-    &amp;   n_1 = 2 \\
-    &amp;   n_2 = 4 \\
-    &amp;   n_3 = 16 \\
-    &amp;   ...     \\
-    &amp;   n_i = 2^{2^{i - 1} }  \\
-    &amp;   n_{i + 1} = n_i^2 = 2^{2^i } \\
-    &amp;   ... \\
-    &amp;   n_k = 2^{2^{k - 1} }  
-\end{aligned}
-\]</span></p>
-<p>The largest tree has an index that equals to the smallest <span class="math inline">\(k\)</span> with <span class="math inline">\(2^{k - 1} \ge \log n\)</span> (assuming that <span class="math inline">\(n \ge 1\)</span>). It implies that <span class="math inline">\(k = O (\log \log n)\)</span>. The complexities for searching an element on these trees are <span class="math display">\[
-\begin{aligned}
-    &amp;   c_0 = 1 + \log 1    \\
-    &amp;   c_1 = 1 + \log 2    \\
-    &amp;   c_2 = 1 + \log 4    \\
-    &amp;   c_3 = 1 + \log 16   \\
-    &amp;   ...     \\
-    &amp;   c_k = 1 + \log 2^{2^{k - 1}}\\
-\end{aligned}
-\]</span></p>
-<p>When a query <span class="math inline">\(\text{find} (x)\)</span> is invoked, we first search it on <span class="math inline">\(T_0\)</span>. If we find it successfully, we stop. Otherwise we search it on <span class="math inline">\(T_1\)</span> and so on. If <span class="math inline">\(x\)</span> is accessed <span class="math inline">\(t\)</span> queries before (and is not accessed in the latest <span class="math inline">\(t - 1\)</span> queries if <span class="math inline">\(t \ge 1\)</span>), then it is contained in the tree <span class="math inline">\(T_{i_x}\)</span>, where <span class="math display">\[
-i_x \doteq \text{ the smallest non-negative integer, } s.t. \ 2^{i_x - 1} \ge t
-\]</span></p>
-<p>As a sanity check, note that when <span class="math inline">\(t = 0\)</span> (<span class="math inline">\(x\)</span> is the latest accessed item), we have <span class="math inline">\(i_x = 0\)</span> as <span class="math inline">\(2^{-1} \ge 0\)</span>. By definition of definition of <span class="math inline">\(i_x\)</span>, <span class="math inline">\(x\)</span> is not contained in any <span class="math inline">\(T_i\)</span> with <span class="math inline">\(i &lt; i_x\)</span>. The time to search <span class="math inline">\(x\)</span> is <span class="math display">\[
-\begin{aligned}
-    &amp;(1 + \log 1) + (1 + \log 2) + (1 + \log 4) + (1 + \log 16) + ... + (1 + \log 2^{2^{i_x - 1} }) \\
-    &amp;=i_x + 1  + \sum_{i = 0}^{i_x - 1} 2^{i} \\
-    &amp;=i_x + 1  + 2^{i_x} - 1 \\
-    &amp;=O(\log \log t) + O(\log t) \\
-    &amp;=O(\log t)    
-\end{aligned}
-\]</span></p>
-<p>Finally, we need to update the trees <span class="math inline">\(T_0\)</span>, <span class="math inline">\(T_1\)</span>, ... <span class="math inline">\(T_{i_x}\)</span> to reflect the last access of <span class="math inline">\(x\)</span>. In particular, we 1) insert <span class="math inline">\(x\)</span> into <span class="math inline">\(T_0\)</span>, <span class="math inline">\(T_1\)</span>, ... <span class="math inline">\(T_{i_x - 1}\)</span>; 2) for each <span class="math inline">\(i &lt; i_x\)</span>, we delete the least recently accessed item; 3) update the access time of <span class="math inline">\(x\)</span> in <span class="math inline">\(T_{i_x}\)</span>.</p>
-<p>Step 1) takes <span class="math inline">\(O(\log t)\)</span> time. To implement steps 2) and 3) in <span class="math inline">\(O(\log t)\)</span> time, we create a min-heap <span class="math inline">\(H_i\)</span> for each tree <span class="math inline">\(T_i\)</span> that keeps the the access time of items in <span class="math inline">\(T_i\)</span>. Both fetching least recently accessed item and updating access time can be performed in <span class="math inline">\(O(\log n_i)\)</span> time. Therefore, steps 2) and 3) take <span class="math inline">\(O(\log t)\)</span> time in total.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/42/">42</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -629,7 +785,7 @@ i_x \doteq \text{ the smallest non-negative integer, } s.t. \ 2^{i_x - 1} \ge t
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">126</span>
+          <span class="site-state-item-count">127</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
