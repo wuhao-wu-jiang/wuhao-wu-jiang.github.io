@@ -146,6 +146,288 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/07/Approximate-Membership-Problem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/07/Approximate-Membership-Problem/" class="post-title-link" itemprop="url">Approximate Membership Problem</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-11-07 16:14:36" itemprop="dateCreated datePublished" datetime="2019-11-07T16:14:36+11:00">2019-11-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-06 21:33:25" itemprop="dateModified" datetime="2020-04-06T21:33:25+10:00">2020-04-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>In the approximate membership problem, we have subset <span class="math inline">\(S \subset U\)</span>, that supports two operations:</p>
+<ol type="1">
+<li><em>update(<span class="math inline">\(x\)</span>)</em>: <span class="math inline">\(S \leftarrow S \cup \{x\}\)</span></li>
+<li><em>query(<span class="math inline">\(x\)</span>)</em>: return True if <span class="math inline">\(x\in S\)</span> else False.</li>
+</ol>
+<p>where <span class="math inline">\(U\)</span> is the domain that elements <span class="math inline">\(x\)</span> belongs to. If <span class="math inline">\(U = 2^{32}\)</span>, then each representation of <span class="math inline">\(x\)</span> takes <span class="math inline">\(32\)</span> bits. If <span class="math inline">\(U = 2^{64}\)</span>, then each <span class="math inline">\(x\)</span> needs <span class="math inline">\(64\)</span> bits. If <span class="math inline">\(U\)</span> is the website address, the length of its elements might is unlimited. Suppose that the average length is about <span class="math inline">\(15\)</span> chars, and each char takes <span class="math inline">\(8\)</span> bits, then the representation could occupy most <span class="math inline">\(120\)</span> bits.</p>
+<p>We can solve the membership problem exactly by dictionaries, such as balanced-binary search tree and hash set. This requires space <span class="math inline">\(O(n \log U)\)</span> bits. If we allows false positive, we can break this bound.</p>
+<p>The idea is to have a bit array <span class="math inline">\(A\)</span> with length <span class="math inline">\(O(kn)\)</span> bits and a pairwise hash family <span class="math inline">\(H\)</span> that maps the elements in <span class="math inline">\(U\)</span> uniformly at random to each bit in the array. After picking a hash function uniformly at random from <span class="math inline">\(H\)</span>, the operation on <span class="math inline">\(S\)</span> is performed as follows:</p>
+<ol type="1">
+<li><em>update(<span class="math inline">\(x\)</span>)</em>: <span class="math inline">\(A[h(x)] \leftarrow 1\)</span></li>
+<li><em>query(<span class="math inline">\(x\)</span>)</em>: return True if <span class="math inline">\(A[h(x)] = 1\)</span> else False.</li>
+</ol>
+<p>We can only make a mistake if an element <span class="math inline">\(y \notin S\)</span> and <span class="math inline">\(A[h(y)] = 1\)</span>. However, the probability of such event is bounded by <span class="math display">\[
+\Pr[\exists x \in S, s.t., h(x) = h(y)] \le \sum_{x \in S} \Pr[h(x) = h(y)] = \frac{n}{m} = \frac{1}{k}
+\]</span></p>
+<p>Remark: the accurate probability is given by <span class="math display">\[
+1 - \Pr[\forall x \in S, s.t., h(x) \neq h(y)] = 1 - (1 - \frac{1}{m})^n \le \frac{n}{m}
+\]</span></p>
+<p>To amplify the failure probability to a specified threshold <span class="math inline">\(\delta\)</span>, we can set <span class="math inline">\(k = \frac{1}{\delta}\)</span>. A more efficient way is by repetition the array <span class="math inline">\(\ln \frac{1}{\delta} /\ln k\)</span> times. Then the overall space usage is <span class="math display">\[
+\frac{ n k \ln \frac{1}{\delta} }{ \ln k }
+\]</span></p>
+<p>Note that <span class="math inline">\(f(k) = \frac{k}{\ln k} \ge e\)</span>, since it holds that <a target="_blank" rel="noopener" href="https://www.google.com/search?q=y%3Dx-e*ln(x)"><span class="math inline">\(y = x - e\ln x\)</span></a> (click to see the plot) for <span class="math inline">\(x &gt; 0\)</span>: <span class="math display">\[
+y&#39; = 1 - e / x = 0 \longrightarrow x = e.
+\]</span></p>
+<p>When <span class="math inline">\(k = e\)</span> the space usage is <span class="math display">\[
+ne \ln \frac{1}{\delta}
+\]</span></p>
+<p>The compress ratio is given by <span class="math display">\[
+\frac{\log U}{e \ln \frac{1}{\delta} }
+\]</span></p>
+<p>If we require the failure probability <span class="math inline">\(\delta = 1 / 100\)</span>, then <span class="math inline">\(\ln 1 / \delta \approx 4.6\)</span>, and <span class="math inline">\(e \ln 1/\delta \approx 12.5 \le 13\)</span>. That is, we need on <span class="math inline">\(13\)</span> bits for each element in <span class="math inline">\(S\)</span>, and the average number of operations for updating <span class="math inline">\(S\)</span> is <span class="math inline">\(5\)</span>, which is about <span class="math inline">\(1/2\)</span> space when <span class="math inline">\(U = 2^{32}\)</span>, <span class="math inline">\(1/5\)</span> space when <span class="math inline">\(U = 2^{64}\)</span>, and much less when <span class="math inline">\(U\)</span> is the set of possible web addresses.</p>
+<h4 id="remark">Remark</h4>
+<p>There is another implementation that use a single bit array <span class="math inline">\(A\)</span> of size <span class="math inline">\(m\)</span> but <span class="math inline">\(k\)</span> hash functions <span class="math inline">\(h_1, h_2, ..., h_k\)</span>. We initialization by setting</p>
+<blockquote>
+<p>For <span class="math inline">\(x \in S\)</span>:<br />
+<span class="math inline">\(\qquad\)</span> set <span class="math inline">\(A[h_i(x)] = 1\)</span> for all <span class="math inline">\(i \in [k]\)</span>.</p>
+</blockquote>
+<p>As a result, at most <span class="math inline">\(kn\)</span> bits of <span class="math inline">\(A\)</span> are initialized to be 1.</p>
+<p>Now, for an element <span class="math inline">\(x&#39; \notin S\)</span>, we accidentally report it as a member <span class="math inline">\(\in S\)</span> if <span class="math inline">\(h_i(x&#39;) = 1\)</span> for all <span class="math inline">\(i \in [k]\)</span>. But the probability that <span class="math display">\[
+\Pr[h_i(x&#39;) = 1] \le \frac{kn}{m} 
+\]</span></p>
+<p>and <span class="math display">\[
+\Pr[h_i(x&#39;) = 1, \forall i \in [k]] \le (\frac{kn}{m} )^k
+\]</span></p>
+<p>If we use <span class="math inline">\(k = \ln \frac{1}{\delta}\)</span> hash functions and set the size <span class="math inline">\(m = ne \ln \frac{1}{\delta}\)</span>, we can also achieve failure probability <span class="math inline">\(\delta\)</span>.</p>
+<p>Question to ponder: what is <span class="math inline">\(S\)</span> is dynamic?</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/02/Frequency-Estimators/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/02/Frequency-Estimators/" class="post-title-link" itemprop="url">Frequency Estimators</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-11-02 20:47:52" itemprop="dateCreated datePublished" datetime="2019-11-02T20:47:52+11:00">2019-11-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-21 23:06:51" itemprop="dateModified" datetime="2021-01-21T23:06:51+11:00">2021-01-21</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>The task of frequency estimation is to count the number of times each element appears in the multi-set <span class="math inline">\(S\)</span>. There are <span class="math inline">\(n\)</span> elements in <span class="math inline">\(S\)</span> and each element belongs to a finite domain <span class="math inline">\(U = [1, , 2, ..., u]\)</span>. If we use a balanced binary search, this can be done in <span class="math inline">\(O(n \log \min\{n, u\})\)</span> time and <span class="math inline">\(\Theta(\min\{n, u\})\)</span> space. If we use a hash table, this can be done in <span class="math inline">\(\Theta(\min\{n, u\})\)</span> time and space.</p>
+<p>Here is the question: can we do it in sub-linear space?</p>
+<p>If we are allowed to make some errors, this is possible. Let <span class="math inline">\(a = \left&lt; a_1, a_2, ..., a_{u} \right&gt;\)</span> be the frequency of elements in <span class="math inline">\(U\)</span> and <span class="math inline">\(b = \left&lt; b_1, ..., b_{u} \right&gt;\)</span> be our estimation. Our goal is to minimize the maximum possible error <span class="math inline">\(\max_i |b_i - a_i|\)</span>.</p>
+<h1 id="count-min-sketch">Count-Min Sketch</h1>
+<p>If we use array <span class="math inline">\(A\)</span> with length <span class="math inline">\(m &lt; \min\{n, u\}\)</span> to count the frequency of the elements, then some elements must share the same slot in the array. Now we apply the following strategy:</p>
+<blockquote>
+<ol type="1">
+<li>Pick a perfect hash function <span class="math inline">\(h : U \rightarrow [m]\)</span> (this condition can be weaken, but for convenience of discussion, we assume perfectness here), that maps the elements uniformly to every bucket in the array.<br />
+</li>
+<li>For <span class="math inline">\(\forall s \in S\)</span>,<br />
+<span class="math inline">\(\qquad A[h(s)] \leftarrow A[h(s)] + 1\)</span> .</li>
+<li>Return <span class="math inline">\(b_i = A[h(i)]\)</span> as the estimation of <span class="math inline">\(a_i\)</span>.</li>
+</ol>
+</blockquote>
+<p>Intuitively, each slot obtains <span class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass <span class="math inline">\(\sum_i a_i = |a|\)</span> (where <span class="math inline">\(|\cdot |\)</span> denotes the <span class="math inline">\(l_1\)</span> norm). Conditioned on <span class="math inline">\(i\)</span>-th element is hashed to the <span class="math inline">\(h(i)\)</span> slots, <span class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass <span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is hashed to the <span class="math inline">\(h(i)\)</span>-th slot. Therefore, in expectation, <span class="math display">\[
+0 \le \mathbb{E}[b_i - a_i] \le \frac{|a|}{m}
+\]</span></p>
+<p>An interesting property is that, if some <span class="math inline">\(a_j\)</span> (<span class="math inline">\(j \neq i\)</span>) (or a small subset of <span class="math inline">\(a_j\)</span>'s) constitutes, say <span class="math inline">\(0.99\)</span> percent of the mass <span class="math inline">\(|a|\)</span>, as long as it is not hashed to <span class="math inline">\(h(i)\)</span>, then the expected error is less than <span class="math inline">\(0.01 \frac{|a|}{m}\)</span>.</p>
+<p>Formally, define the binary random variables <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \neq i\)</span> such that <span class="math display">\[
+X_j = \begin{cases}
+    a_j     &amp;\quad \text{if} \quad h(i) = h(j)\\
+    0       &amp;\quad \text{otherwise}
+\end{cases}
+\]</span> Then by perfectness of <span class="math inline">\(h\)</span>, <span class="math inline">\(\Pr[X_j = a_j] = \frac{1}{m}\)</span> and <span class="math inline">\(\mathbb{E}[X_j] = \frac{a_j}{m}\)</span>. (Indeed, pairwise independence of <span class="math inline">\(h\)</span> suffices to guarantee this condition).</p>
+<p>Then <span class="math display">\[
+    \mathbb{E} [b_i - a_i] = \mathbb{E} \left[ \sum_{j \neq i} X_j \right] = \sum_{j \neq i} \mathbb{E}[X_j] \le \frac{|a|}{m}
+\]</span></p>
+<p>As <span class="math inline">\(b_i - a_i\)</span> is non-negative, by Markov inequality, <span class="math display">\[
+\Pr \left[ b_i - a_i \ge \epsilon |a| \right] \le \frac{\mathbb{E}[b_i - a_i]}{\epsilon |a|}  \le \frac{1}{\epsilon m}
+\]</span> If we would like to achieve failure probability <span class="math inline">\(\delta\)</span>, we can set <span class="math inline">\(m = \epsilon^{-1} \delta^{-1}\)</span>.</p>
+<p>Question to ponder: can we improve this?</p>
+<p>Yes, by repetition. Instead of using just one array, we set <span class="math inline">\(d\)</span> arrays (to be set latter) and choose <span class="math inline">\(d\)</span> hash functions independently. Then the probability that all estimations deviate more than <span class="math inline">\(\epsilon |a|\)</span> is at most <span class="math display">\[
+\left( \frac{1}{\epsilon m} \right)^d
+\]</span></p>
+<p>When <span class="math inline">\(d = \ln{\delta} / \ln \frac{1}{\epsilon m} = \ln{ \frac{1}{\delta} } / \ln \epsilon m\)</span>, the failure probability decreases to <span class="math inline">\(\delta\)</span>. To minimize the space usage, we solve the following optimization problem: <span class="math display">\[
+\begin{aligned}
+    &amp;\min           &amp;\ln \frac{1} {\delta} \frac{m}{\ln m + \ln \epsilon} \\
+    &amp;\text{s.t. }   &amp;m \ge \frac{1}{\epsilon}
+\end{aligned}
+\]</span></p>
+<p>Solving the equation gives <span class="math inline">\(m = e \epsilon^{-1}\)</span>. The space consumption is <span class="math inline">\(\frac{e}{\epsilon} \ln \frac{1}{\delta}\)</span>.</p>
+<p>Note: suppose that <span class="math inline">\(|a| = 10000\)</span> and <span class="math inline">\(\epsilon = 0.1\)</span>, <span class="math inline">\(\delta = 0.01\)</span>, then with <span class="math inline">\(10 \cdot e \ln 100 \approx 125\)</span> words, we can estimate a particular <span class="math inline">\(a_i\)</span> with the absolute error less than <span class="math inline">\(1000\)</span>. If <span class="math inline">\(a_i = 9000\)</span>, the relative error is small. However, if <span class="math inline">\(a_i = 1\)</span>, basically our estimation if rather inaccurate.</p>
+<p>Question to ponder: what if we analyze this by Chernoff style inequality?</p>
+<p>If we make <span class="math inline">\(d\)</span> repetition, then the confidence interval of the mean estimation is given by (Hoeffding's inequality) <span class="math display">\[
+|a|\sqrt{\frac{\log \frac{2}{\delta} }{2 d} }
+\]</span> If we want this interval to be smaller than <span class="math inline">\(\epsilon |a|\)</span>, then we need <span class="math inline">\(d = \frac{ \log \frac{2}{\delta} }{2 \epsilon^2}\)</span>, which is a <span class="math inline">\(\frac{1}{\epsilon }\)</span> worse than the above analysis. Intuitively, we require stronger condition for concentration of mean value than that for existence of near-min value.</p>
+<h1 id="count-sketch">Count-Sketch</h1>
+<p>One drawback of Count-Min Sketch is that the estimator constructed is one-sided and not unbiased. This can be fixed by introducing an additional function <span class="math inline">\(g : U \rightarrow \{ - 1, 1 \}\)</span> that gives each elements in <span class="math inline">\(U\)</span> a sign ("+" or "-") independently and uniformly at random. Now,</p>
+<ol start="2" type="1">
+<li>For each element <span class="math inline">\(s \in S\)</span>, we increase the counter <span class="math inline">\(h(s)\)</span> in the array by 1 if <span class="math inline">\(g(s) &gt; 0\)</span> or <span class="math inline">\(-1\)</span> if <span class="math inline">\(g(s) &lt; 0\)</span>.</li>
+<li>Finally, we set <span class="math inline">\(b_i = A[h(i)] \cdot g(i)\)</span> as the estimation of <span class="math inline">\(a_i\)</span>.</li>
+</ol>
+<p>In expectation, each slot obtains <span class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass <span class="math inline">\(\sum_i a_i = |a|\)</span>. But as each element "flips" it sign randomly, the expected value obtained is 0. Now, conditioned on <span class="math inline">\(i\)</span>-th element is hashed to the <span class="math inline">\(h(i)\)</span> slots, <span class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass <span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is hashed to the <span class="math inline">\(h(i)\)</span>-th slot. With their signs flipped randomly, they contribute 0 to the <span class="math inline">\(h(i)\)</span>-th slot. Hence, <span class="math display">\[
+\mathbb{E}[b_i - a_i] = 0
+\]</span> Formally, define the binary random variables <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \neq i\)</span> such that <span class="math display">\[
+X_j = \begin{cases}
+    a_j     &amp;\text{if} \quad h(i) = h(j) \wedge g(j) = g(i) \\
+    - a_j   &amp;\text{if} \quad h(i) = h(j) \wedge g(j) \neq g(i) \\
+    0       &amp;\text{otherwise}
+\end{cases}
+\]</span> Then by perfectness and independence of <span class="math inline">\(h\)</span> and <span class="math inline">\(g\)</span>,</p>
+<p><span class="math display">\[
+    \Pr[X_j = a_j] = \frac{1}{2m} \\
+    \Pr[X_j = -a_j] = \frac{1}{2m} \\
+    \Pr[X_j = 0] = 1 - \frac{1}{m}
+\]</span></p>
+<p>and <span class="math display">\[
+\begin{aligned}
+    \mathbb{E}[X_j] 
+    &amp;= 0 \\
+    \mathbb{E}[b_i - a_i] 
+    &amp;= \mathbb{E}[\sum_{j \neq i} X_j] 
+    = \sum_{j \neq i} \mathbb{E}[X_j] 
+    = 0 \\
+    \mathbb{Var} \left[ X_j \right] 
+    &amp;= \mathbb{E} [X_j^2] - (\mathbb{E}[X_j])^2 
+    = \frac{a_j^2}{m} \\
+    \mathbb{Var} \left[ \sum_{j \neq i} X_j \right] 
+    &amp;= \sum_{j \neq i} \mathbb{Var} [X_j] 
+    = \sum_{j \neq i} \frac{a_j^2}{m} 
+    \le \frac{|a|_2^2}{m}
+    \end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(|a|_2^2\)</span> is the <span class="math inline">\(l_2\)</span> norm of <span class="math inline">\(a\)</span>. Note that the above analysis requires only pair independence. The random variable <span class="math inline">\(X_j\)</span> is two sided, therefore we can not use Markov Inequality for analysis.</p>
+<p>Question to ponder: is it possible to analyze this directly by Chernoff style inequality?</p>
+<p>The tool we resort to is Chebyshev's inequality: <span class="math display">\[
+\Pr \left[ |\sum_{j \neq i} X_j - 0| \ge \epsilon |a|_2 \right] \le \frac{\mathbb{Var} [\sum_{j \neq i} X_j]}{\epsilon^2 |a|_2^2 } \le \frac{1}{m\epsilon^2 }
+\]</span> we take <span class="math inline">\(m = k\epsilon^{-2}\)</span> for some integer <span class="math inline">\(k&gt; 2\)</span>.</p>
+<p>How do we amplify the successful probability? We repeat the experiment <span class="math inline">\(d\)</span> times, and take the median. The only way that the median makes a mistake is when more than half of the estimations deviate more <span class="math inline">\(\epsilon |a|_2\)</span>. Denote <span class="math inline">\(Y\)</span> the number of estimation such that the error is more than <span class="math inline">\(\epsilon |a|_2\)</span>. By Chernoff, <span class="math display">\[
+\begin{aligned}
+    \Pr \left[ Y - \frac{d}{k}\ge \frac{d}{2} - \frac{d}{k} \right] 
+    &amp;= \Pr \left[ Y - \frac{d}{k}\ge (\frac{1}{2} - \frac{1}{k})\cdot k \cdot \frac{d}{k} \right] \\
+    &amp;\le \exp \big( -\frac{d}{3 k} (\frac{k}{2} - 1)^2  \big) \\
+    &amp;= \delta 
+\end{aligned}
+\]</span></p>
+<p>which solves to <span class="math display">\[
+d= \frac{3k}{(k/2  -1)^2} \log \frac{1}{\delta}
+\]</span> The overall space usage is therefore <span class="math display">\[
+md = \frac{3k^2}{\epsilon^2 (k/2  -1)^2} \log \frac{1}{\delta} 
+= \frac{3}{\epsilon^2 (1/2  - \frac{1}{k} )^2} \log \frac{1}{\delta}
+\]</span> Question to ponder: the expression is wired, which implies that <span class="math inline">\(k \rightarrow \infty\)</span>, the space usage converges to <span class="math inline">\(\frac{12}{\epsilon^2} \log \frac{1}{\delta}\)</span>, which is worse than count-min hash than a <span class="math inline">\(\frac{1}{\epsilon}\)</span> factor.</p>
+<h4 id="relation-between-a_1-and-a_2.">Relation between <span class="math inline">\(|a|_1\)</span> and <span class="math inline">\(|a|_2\)</span>.</h4>
+<p>Their relation is given as follows (by concavity of the <span class="math inline">\(\sqrt \cdot\)</span> function) <span class="math display">\[
+|a|_2 \le |a|_1 \le \sqrt{ |u| } |a|_2
+\]</span> In particular, when <span class="math inline">\(|u| = 2\)</span>, the inequality becomes <span class="math display">\[
+|a_1 + a_2| \le \sqrt 2 \sqrt{a_1^2 + a_2^2 }
+\]</span> When the dimension is higher than <span class="math inline">\(2\)</span>, the factor in the RHS can not bounded to <span class="math inline">\(\sqrt 2\)</span>.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/02/AM-GM-Inequality/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -202,305 +484,6 @@ xy = (x^p)^\frac{1}{p} (y^q)^\frac{1}{q} \le \frac{x^p}{p} + \frac{y^q}{q}
 \]</span> The proof of AM-GM inequality is rather simple and follows immediately from the concavity of <span class="math inline">\(\log\)</span> function: <span class="math display">\[
 \sum_i \lambda_i \log x_i \le \log \sum_i \lambda_i x_i
 \]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/31/Polynomials/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/31/Polynomials/" class="post-title-link" itemprop="url">Polynomials</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-10-31 21:38:36" itemprop="dateCreated datePublished" datetime="2019-10-31T21:38:36+11:00">2019-10-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-28 10:47:03" itemprop="dateModified" datetime="2020-11-28T10:47:03+11:00">2020-11-28</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Polynomials constitute of a rich class of functions. A polynomial in a single variable defined on a field <span class="math inline">\(F\)</span> is a function of the form: <span class="math display">\[
-p(x) = a_d x^d + a_{d - 1} x^{d - 1} + ... + a_1 x + a_0
-\]</span> where the variable <span class="math inline">\(x\)</span> and coefficients <span class="math inline">\(a_i\)</span> belongs to <span class="math inline">\(F\)</span>. The integer <span class="math inline">\(d\)</span> is called the degree of <span class="math inline">\(p(x)\)</span>.</p>
-<p>Polynomials have two fundamental properties:</p>
-<ol type="1">
-<li>A non-zero polynomial of degree <span class="math inline">\(d\)</span> has at most <span class="math inline">\(d\)</span> distinct roots.</li>
-<li>Given <span class="math inline">\(d + 1\)</span> pairs <span class="math inline">\((x_i, y_i)\)</span> (<span class="math inline">\(1 \le i \le d + 1\)</span>), such that <span class="math inline">\(x_i \neq x_j\)</span> for <span class="math inline">\(i \neq j\)</span>, there is a unique polynomial <span class="math inline">\(p(x)\)</span> with degree at most <span class="math inline">\(d\)</span> that goes through all these points.</li>
-</ol>
-<p>Let's prove claim 2 first. If claim 1 holds, <em>existence</em> implies <em>uniqueness</em> for claim 2. Suppose for contradiction that there is another polynomial <span class="math inline">\(q(x)\)</span> such that <span class="math inline">\(p(x) = q(x)\)</span> for all <span class="math inline">\((x_i, y_i)\)</span> pairs. Now consider the polynomial <span class="math inline">\(r(x) = p(x) - q(x)\)</span>. If <span class="math inline">\(r(x) \equiv 0\)</span>, then the claim holds trivially. Otherwise, <span class="math inline">\(r(x)\)</span> is a non-zero polynomial with degree at most <span class="math inline">\(d\)</span>. Claim 1 asserts that <span class="math inline">\(r(x)\)</span> has at most <span class="math inline">\(d\)</span> distinct roots, contradicting that <span class="math inline">\(r(x_i) = 0\)</span> for <span class="math inline">\(1 \le i \le d + 1\)</span>.</p>
-<p>Question to ponder: does claim 2 implies claim 1?</p>
-<h3 id="property-2">Property 2</h3>
-<p>Now we return to the construction of a feasible for claim 2. The method is called Lagrange Interpolation.</p>
-<p>First, we would like to construct polynomial <span class="math inline">\(\delta_i(x)\)</span>, such that</p>
-<ol type="1">
-<li>It has degree <span class="math inline">\(d\)</span>.</li>
-<li><span class="math inline">\(\delta_i(x_j) = 0\)</span> for <span class="math inline">\(j \neq i\)</span>.</li>
-<li><span class="math inline">\(\delta_i(x_i) = 1\)</span></li>
-</ol>
-<p>As it takes zero on <span class="math inline">\(x_j, \forall j \neq i\)</span>, we can simply try a prototype <span class="math inline">\(\delta_i&#39;\)</span> as: <span class="math display">\[
-\delta_i&#39;(x) = \prod_{j \neq i} (x - x_j).
-\]</span></p>
-<p>Observe that it has degree <span class="math inline">\(d\)</span>. However, at point <span class="math inline">\(x_i\)</span>, <span class="math inline">\(\delta_i&#39;(x_i)\)</span> may not equal to 1. This issue is not hard to fix, we can just normalize it by <span class="math inline">\(\delta_i&#39;(x_i)\)</span>, and define</p>
-<p><span class="math display">\[
-\delta_i(x) = \frac{\delta_i&#39;(x)}{\delta_i&#39;(x_i)} = \frac{\prod_{j \neq i} (x - x_j) }{ \prod_{j \neq i} (x_i - x_j) } = \prod_{1 \le j \le d + 1, j \neq i} \frac{x - x_j}{x_i - x_j}. 
-\]</span></p>
-<p>With proper scaling and summation, <span class="math inline">\(p(x)\)</span> is given by <span class="math display">\[
-p(x) = \sum_{i = 1}^{d + 1} y_i \delta_i(x)
-\]</span></p>
-<p><em>Remark</em>: uniqueness can also be proved by showing the following equation has unique solution: <span class="math display">\[
-\left[\begin{matrix}
-x_1^d &amp; x_1^{d - 1} &amp; ... &amp;  x_1 &amp; 1\\
-x_2^d &amp; x_2^{d - 1} &amp; ... &amp;  x_2 &amp; 1\\
-...\\
-x_{d + 1}^d &amp; x_{d + 1}^{d - 1} &amp; ... &amp;  x_{d + 1} &amp; 1
-\end{matrix}\right] 
-\left[\begin{matrix}
-a_d\\
-a_{d - 1} \\
-...\\
-a_0
-\end{matrix}\right] =
-\left[\begin{matrix}
-y_1 \\
-y_{1} \\
-...\\
-y_{d + 1}
-\end{matrix}\right] \\
-\]</span> The left matrix is called Vandermonde Matrix, whose determinant is <span class="math display">\[
-\begin{aligned}
-&amp;\det 
-\left[\begin{matrix}
-x_1^d &amp; x_1^{d - 1} &amp; ... &amp;  x_1 &amp; 1\\
-x_2^d &amp; x_2^{d - 1} &amp; ... &amp;  x_2 &amp; 1\\
-...\\
-x_{d + 1}^d &amp; x_{d + 1}^{d - 1} &amp; ... &amp;  x_{d + 1} &amp; 1
-\end{matrix}\right]  \\
-=&amp;
-\det 
-\left[\begin{matrix}
-0&amp; 0 &amp; ... &amp;  0 &amp; 1\\
-x_2^d - x_1 x_2^{d - 1} &amp; x_2^{d - 1} - x_1 x_2^{d - 2}&amp; ... &amp;  x_2 - x_1 &amp; 1\\
-...\\
-x_{d + 1}^d - x_1 x_{d + 1}^{d - 1} &amp;  x_{d + 1}^{d - 1} - x_1 x_{d + 1}^{d - 2}&amp; ... &amp;  x_{d + 1} - x_ 1&amp; 1
-\end{matrix}\right]  \\
-=&amp;\prod_{i = 1}^{d + 1} (x_i - x_1) \det 
-\left[\begin{matrix}
-x_2^d &amp; x_2^{d - 1} &amp; ... &amp;  x_2 &amp; 1\\
-...\\
-x_{d + 1}^d &amp; x_{d + 1}^{d - 1} &amp; ... &amp;  x_{d + 1} &amp; 1
-\end{matrix}\right]  \\
- ...\\ 
-=&amp; \prod_{i &lt; j} (x_j - x_i)
-\end{aligned}
-\]</span> which is non-zero when <span class="math inline">\(x_i \neq x_j\)</span>.</p>
-<h3 id="property-1">Property 1</h3>
-<p>Finally, we prove claim 1: 1. A non-zero polynomial of degree <span class="math inline">\(d\)</span> has at most <span class="math inline">\(d\)</span> distinct roots.</p>
-<p>The prove is by induction.</p>
-<ol type="1">
-<li><p>The base case is <span class="math inline">\(d = 0\)</span>. As the polynomial is non-zero, it does not have any root.</p></li>
-<li><p>Suppose the claim holds for <span class="math inline">\(d\)</span>. Then the claim holds for <span class="math inline">\(d + 1\)</span>. If <span class="math inline">\(p(x)\)</span> has a root <span class="math inline">\(a_{d + 1}\)</span>, by polynomial division, we can rewrite <span class="math inline">\(p(x)\)</span> as <span class="math display">\[
- p(x) = (x - a_{d + 1}) q(x)
- \]</span> and <span class="math inline">\(q(x)\)</span> has degree <span class="math inline">\(d\)</span>. If for any <span class="math inline">\(a \neq a_{d + 1}\)</span>, <span class="math inline">\(p(a) = (a - a_{d +1}) q(a) = 0\)</span>, then <span class="math inline">\(q(a) = 0\)</span>, which implies that <span class="math inline">\(a\)</span> is a root of <span class="math inline">\(q(x)\)</span>. By applying the inductive hypothesis to <span class="math inline">\(q(x)\)</span>, we see that it has at most <span class="math inline">\(d\)</span> distinct roots.</p></li>
-</ol>
-<h3 id="application">Application</h3>
-<h4 id="pairwise-independent-hash-function.">Pairwise Independent Hash Function.</h4>
-<p>Consider a set of elements <span class="math inline">\(\{0, 1, ..., u - 1\}\)</span> and the family of functions <span class="math inline">\(\mathcal{H}\)</span> defined on <span class="math inline">\([u - 1]\)</span>. Given <span class="math inline">\(i \in [u - 1]\)</span>, if we take a function <span class="math inline">\(h\)</span> uniformly at random from <span class="math inline">\(\mathcal{H}\)</span>, the value <span class="math inline">\(Y_i = h(i)\)</span> is a random variable. The <span class="math inline">\(Y_i\)</span>'s are called pairwise independent, if for <span class="math inline">\(i, j \in [u - 1], i \neq j\)</span> and <span class="math inline">\(y_i, y_j \in \cup_{h \in \mathcal{H}} h([u - 1])\)</span>, <span class="math display">\[
-\Pr_{h \in \mathcal{H} } [Y_i = y_i, Y_j = y_j] = \Pr_{h \in \mathcal{H} } [Y_i = y_i] \Pr_{h \in \mathcal{H} } [Y_j = y_j]
-\]</span></p>
-<p>Similarly we can define <span class="math inline">\(k\)</span>-wise independence. For any <span class="math inline">\(0 \le i_1 &lt; i_2 &lt;... &lt; i_k &lt; u\)</span>, and <span class="math inline">\(y_{i_1} , y_{i_2}, ..., y_{i_k} \in \cup_{h \in \mathcal{H}} h([u - 1])\)</span>, we have <span class="math display">\[
-\Pr_{h \in \mathcal{H} } [ Y_{i_1} = y_{i_1}, ... Y_{i_k} = y_{i_k} ] = \prod_{j} \Pr_{h \in \mathcal{H} } [ Y_{i_j} = y_{i_j}]
-\]</span></p>
-<p>Now we restrict our discussion to the finite field <span class="math inline">\(F_p = [p - 1] = \{0, 1, ..., p - 1\}\)</span>, where <span class="math inline">\(p\)</span> is a prime larger than <span class="math inline">\(u\)</span>.</p>
-<p>Claim: The set of all possible functions from <span class="math inline">\([u - 1]\)</span> to <span class="math inline">\([p - 1]\)</span> is pairwise independent.</p>
-<p>Pf: <span class="math display">\[
-\begin{aligned}
-&amp;\Pr[Y_i = a, Y_j = b] \\
-= &amp;\frac{p^{u - 2}}{p^u} \\
-= &amp;\frac{1}{p^2} \\
-= &amp;\Pr[Y_i = a] \cdot \Pr[Y_j = b] 
-\end{aligned}
-\]</span></p>
-<p>However, each of the functions takes <span class="math inline">\(u \log p\)</span> bits to represent. To save to space of representing the functions, we restrict to a smaller subset all possible functions: <span class="math display">\[
-\mathcal{H_1} = \{ p(x) = a_1 x + a_0 \mid a_1, a_0 \in [p - 1] \}
-\]</span></p>
-<p>That is, all polynomials with degree at most 1 in the field <span class="math inline">\([p - 1]\)</span>. By claim 2, we conclude that for any pair <span class="math inline">\((x_1, y_1), (x_2, y_2)\)</span>, where <span class="math inline">\(x_1, x_2 \in [u - 1], x_1 \neq x_2\)</span> and <span class="math inline">\(y_1, y_2 \in [p - 1]\)</span>, there is a unique polynomial with degree at most 1 that goes through these two points. If we pick a polynomial uniformly at random from <span class="math inline">\(\mathcal{H}\)</span>, then the probability is <span class="math display">\[
-\frac{1}{p^2}
-\]</span></p>
-<p>This already implies pairwise independence, as <span class="math display">\[
-\Pr[h(x_1) = y_1 ] = \sum_{y_2 = 0}^{p - 1} \Pr[h(x_1) = y_1, h(x_2) = y_2] = \frac{1}{p}
-\]</span></p>
-<p>In a similar manner, we can extend the idea to <span class="math inline">\(k\)</span>-wise independent functions: <span class="math display">\[
-\mathcal{H_{k - 1}} = \{ p(x) = a_{k - 1} x^{k - 1} + a_{k - 2} x^{k - 2} + ... + a_1 x_1 + a_0 \mid a_i \in [p - 1] \}
-\]</span></p>
-<p><span class="math inline">\(|\mathcal{H}| = p^{k}\)</span> and there is a unique polynomial that goes through any pairs <span class="math inline">\((x_1, y_1), (x_2, y_2), ..., (x_k, y_k)\)</span> for <span class="math inline">\(x_1 \neq x_2 \neq ...\neq x_k\)</span>.</p>
-<p>Another application is key-sharing. Suppose that we have <span class="math inline">\(n\)</span>-candidates who knows some information about the key and we require that only when no less than <span class="math inline">\(k\)</span> of them aggragate their information can they figure the actual key. No group of less than <span class="math inline">\(k\)</span> candidates can achieve this. The way we do it is as follows:</p>
-<ol type="1">
-<li>Select a large prime number <span class="math inline">\(p\)</span><br />
-</li>
-<li>Select <span class="math inline">\(k+1\)</span> random numbers <span class="math inline">\(y_0, y_1, ..., y_k\)</span> from <span class="math inline">\([p-1]\)</span>.<br />
-</li>
-<li>Generate the unique polynomial <span class="math inline">\(p(x)\)</span> with degree <span class="math inline">\(k\)</span> that goes through <span class="math inline">\((0, y_0), (1, y_1), ..., (k, y_k)\)</span>.<br />
-</li>
-<li>Inform the value of <span class="math inline">\(p(1)\)</span> to the first person, <span class="math inline">\(p(2)\)</span> to the second one, ... and <span class="math inline">\(p(n)\)</span> to the <span class="math inline">\(n\)</span>-th person.</li>
-</ol>
-<p>If <span class="math inline">\(k - 1\)</span> people pool their keys together, then there are <span class="math inline">\(p\)</span> possible polynomials that goes through all their keys, each has different value at point 0. The probability of guessing the correct key is given by <span class="math inline">\(\frac{1}{p}\)</span>.</p>
-<h3 id="reference">Reference:</h3>
-<p>CS 70. Discrete Mathematics and Probability Theory.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/28/Minimax-Theorem/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/10/28/Minimax-Theorem/" class="post-title-link" itemprop="url">Minimax Theorem</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2019-10-28 18:54:52 / Modified: 20:00:38" itemprop="dateCreated datePublished" datetime="2019-10-28T18:54:52+11:00">2019-10-28</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>A zero-sum game is a game in which a player's payoff implies the loss of another player. It is specified by a matrix <span class="math inline">\(A \in R^{n \times m}\)</span>. The row player can choose from rows <span class="math inline">\(\{1, 2, ..., n\}\)</span> and the column player chooses from columns <span class="math inline">\(\{1, 2, ..., m\}\)</span>. The entry <span class="math inline">\(a_{ij}\)</span> of <span class="math inline">\(A\)</span> is the payoff when the row player chooses <span class="math inline">\(i\)</span> and the column player chooses <span class="math inline">\(j\)</span>. In such case the column player loses <span class="math inline">\(a_{ij}\)</span>.</p>
-<p>If one player makes a choice first and the other play follows, then the second player can always respond according the first player choice, to maximize its payoff or minimize its loss.</p>
-<p>To make the game more fair, we require the row player to act with strategy <span class="math inline">\(x \in R^n\)</span>, i.e., a distribution on the the rows, and the column player to act with strategy <span class="math inline">\(y \in R^m\)</span>. At each round, the row player and column player act independently. Then the expected payoff is <span class="math display">\[
-x^TAy
-\]</span></p>
-<p>But what is some player knows the other's strategy? In this scenario, the row player choose its strategy <span class="math inline">\(x\)</span> first and the column player responds by a strategy <span class="math inline">\(y\)</span>, or vise versa. Note that at each round they still act independently according to their strategies. The question is, whether the order of choosing a strategy implies a difference in the expected payoff.</p>
-<p>First we write down what the expected payoff is. If the row player commit to a strategy <span class="math inline">\(x\)</span> first, the column player will choose a distribution <span class="math inline">\(y\)</span> minimize it expected loss: <span class="math display">\[
-\min_y x^T A y
-\]</span> As <span class="math inline">\(x\)</span> is known, this is equivalent to choosing the column with minimum value: <span class="math display">\[
-\min_{j \in [m]} x^T A e_j
-\]</span></p>
-<p>Understanding the expected behavior of the column player, the row player should choose a strategy <span class="math inline">\(x\)</span>, such that in the worst case, its expected payoff is maximized: <span class="math display">\[
-\max_{x} (\min_y x^T A y) = \max_{x} (\min_{j \in [m]} x^T A e_j)
-\]</span></p>
-<p>Similarly, if the column player play first, the expected payoff is <span class="math display">\[
- \min_y (\max_{x} x^T A y) = \min_{y} (\max_{i \in [n]} e_i^T A y)
-\]</span></p>
-<p>The minimax-theorem states that <span class="math display">\[
-\begin{aligned}
-&amp;\max_{x} (\min_y x^T A y) 
-&amp;= \max_{x} (\min_{j \in [m]} x^T A e_j) \\
-= &amp;\min_y (\max_{x} x^T A y) 
-&amp;= \min_{y} (\max_{i \in [n]} e_i^T A y)
-\end{aligned}
-\]</span></p>
-<p>The proof is not difficult, by formulating the two optimizing problems as linear programming, and observing that they are dual to each other. If the row player goes first, <span class="math display">\[
-\begin{aligned}
-&amp;\max v \\
-&amp;v  -  \sum_{i = 1}^n a_{ij} x_i \le 0  &amp; \forall j \in [m] \\
-&amp;\sum_{i = 1}^n x_i = 1 \\
-&amp;x_i \ge 0 &amp; \forall i \in [n]
-\end{aligned}
-\]</span></p>
-<p>To upper bound <span class="math inline">\(v\)</span>, we introduce a variable <span class="math inline">\(u \in R\)</span>. By noticing <span class="math inline">\(\sum_{j = 1}^m y_j = 1\)</span> and <span class="math inline">\(y_j \ge 0\)</span>, we have</p>
-<p><span class="math display">\[
-\begin{aligned}
-u&amp;\ge \sum_{j = 1}^m y_j (v  -  \sum_{i = 1}^n a_{ij} x_i) + u(\sum_{i = 1}^n x_i) \\
-&amp;= v (\sum_{j = 1}^m y_j) + \sum_{i = 1}^n x_i( u - \sum_{j = 1}^m a_{ij} y_j) \\
-&amp;\ge v
-\end{aligned}
-\]</span></p>
-<p>which gives the dual program: <span class="math display">\[
-\begin{aligned}
-&amp;\min u \\
-&amp;u  -  \sum_{j = 1}^m a_{ij} y_j \ge 0  &amp; \forall i \in [n] \\
-&amp;\sum_{i = 1}^m y_j = 1 \\
-&amp;y_j \ge 0 &amp; \forall j \in [m]
-\end{aligned}
-\]</span></p>
-<p>Strong duality tells us that the optimal value of the two program equals.</p>
 
       
     </div>
@@ -585,7 +568,7 @@ u&amp;\ge \sum_{j = 1}^m y_j (v  -  \sum_{i = 1}^n a_{ij} x_i) + u(\sum_{i = 1}^
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">127</span>
+          <span class="site-state-item-count">129</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

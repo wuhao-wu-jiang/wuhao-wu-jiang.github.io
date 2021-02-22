@@ -28,7 +28,7 @@
 <meta property="og:description" content="Suppose there are a set of \(n\) items with nonnegative weights \(w_1, w_2, ..., w_n\). We want to maintain a subset of samples \(S \subset [n]\) in order to answer queries like given arbitrary \(I \s">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-01-12T03:32:57.000Z">
-<meta property="article:modified_time" content="2020-01-23T04:27:41.438Z">
+<meta property="article:modified_time" content="2021-02-21T00:16:19.017Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 
@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-23 15:27:41" itemprop="dateModified" datetime="2020-01-23T15:27:41+11:00">2020-01-23</time>
+                <time title="Modified: 2021-02-21 11:16:19" itemprop="dateModified" datetime="2021-02-21T11:16:19+11:00">2021-02-21</time>
               </span>
 
           
@@ -207,10 +207,10 @@ X_i =
 \end{aligned}
 \]</span></p>
 <p>Note that <span class="math display">\[
-E \left[ X_i \right] = w_i
+\mathbb{E} \left[ X_i \right] = w_i
 \]</span></p>
 <p>And therefore, <span class="math display">\[
-E \left[\sum_{i \in I} X_i \right] = \sum_{i \in I} E[X_i] = \sum_{i \in I} w_i
+\mathbb{E} \left[\sum_{i \in I} X_i \right] = \sum_{i \in I} \mathbb{E}[X_i] = \sum_{i \in I} w_i
 \]</span></p>
 <p>One possible materialization of this sampling scheme is called <em>threshold sampling</em>. First a threshold <span class="math inline">\(T\)</span> is selected. Then each <span class="math inline">\(i \in [n]\)</span> is kept with probability with <span class="math inline">\(p_i = \min \{ 1 , \frac{w_i}{T} \}\)</span>. In particular, for each <span class="math inline">\(i \in [n]\)</span>, we sample a uniform random variable <span class="math inline">\(u_i \in [0, 1]\)</span>, and set <span class="math display">\[
 \begin{aligned}
@@ -221,16 +221,12 @@ X_i =
     \end{cases}
 \end{aligned}
 \]</span></p>
-<p>Note that for <span class="math inline">\(i \in [n]\)</span> such that <span class="math inline">\(w_i &gt; T\)</span>, it always holds that <span class="math inline">\(u_i &lt; \frac{w_i}{T}\)</span> and the definition reduce to <span class="math inline">\(X_i = w_i\)</span>. For <span class="math inline">\(i \in [n]\)</span> such that <span class="math inline">\(w_i &lt; T\)</span>, <span class="math display">\[
+<p>If <span class="math inline">\(w_i &gt; T\)</span>, it always holds that <span class="math inline">\(X_i = w_i\)</span>. Otherwise, <span class="math display">\[
 \begin{aligned}
-X_i = 
-    \begin{cases}
-        T = \frac{w_i}{p_i} &amp; u_i &lt; \frac{w_i}{T} = p_i \\
-        0               &amp;   \text{ else }
-    \end{cases}
+    \mathbb{E} [ X_i ] = T \cdot \Pr \left[ u_i \le \frac{w_i}{T} \right] + 0 \cdot \Pr \left[ u_i \le \frac{w_i}{T} \right] = \frac{w_i}{T} \cdot T = w_i.
 \end{aligned}
 \]</span></p>
-<p>(Note that we take <span class="math inline">\(u_i &lt; \frac{w_i}{T}\)</span> instead of <span class="math inline">\(u_i \le \frac{w_i}{T}\)</span> here). Clearly, in this case we have <span class="math inline">\(E[X_i] = \frac{w_i}{T} T = w_i\)</span>.</p>
+<p>Therefore, it always holds that <span class="math inline">\(\mathbb{E}[X_i] = w_i\)</span>.</p>
 <p>We consider the space usage of <em>threshold sampling</em>. Denote <span class="math inline">\(S\)</span> the set of items with <span class="math inline">\(X_i \neq 0\)</span>. Then the expected size of <span class="math inline">\(S\)</span> is given by <span class="math display">\[
 \sum_{i = 1}^n p_i = \sum_{i = 1}^n \min \left\{ 1 , \frac{w_i}{T} \right\}
 \]</span></p>
@@ -265,19 +261,19 @@ X_i =
     \end{cases}
 \end{aligned}
 \]</span></p>
-<p>since now <span class="math inline">\(T\)</span> is its self a random variable.</p>
+<p>since now <span class="math inline">\(T\)</span> is itself a random variable.</p>
 <p>We claim that it still holds<br />
 <em>Theorem 1</em> <span class="math display">\[
-E[X_i] = w_i
+\mathbb{E}[X_i] = w_i
 \]</span></p>
-<p>The trick is to conditioned <span class="math inline">\(X_i\)</span> on the <span class="math inline">\(k\)</span>-th and <span class="math inline">\(k+1\)</span>-th largest priority of the rest items. Define the random variables <span class="math display">\[
+<p>The trick is to condition <span class="math inline">\(X_i\)</span> on the <span class="math inline">\(k\)</span>-th and <span class="math inline">\(k+1\)</span>-th largest priority of the rest items. Define the random variables <span class="math display">\[
 L = (k + 1) \text{-th largest } \{ q_j \}_{j \neq i} \\
 U = (k) \text{-th largest } \{ q_j \}_{j \neq i}
 \]</span></p>
 <p>Consider the case <span class="math inline">\(L = a\)</span> and <span class="math inline">\(U = b\)</span>, where <span class="math inline">\(a \le b\)</span>. There two possible cases</p>
 <ol type="1">
 <li><p>If <span class="math inline">\(w_i &gt; b\)</span>, then <span class="math inline">\(T = b\)</span> and surely <span class="math inline">\(\frac{w_i}{u_i} &gt; T\)</span> holds. In this case <span class="math inline">\(X_i = w_i\)</span> and <span class="math display">\[
-     E[X_i | U = b] = w_i
+     \mathbb{E}[X_i | U = b] = w_i
  \]</span></p></li>
 <li><p>If <span class="math inline">\(w_i &lt; b\)</span>, then there are four sub-cases:</p>
 <ul>
@@ -287,15 +283,15 @@ U = (k) \text{-th largest } \{ q_j \}_{j \neq i}
 <li><p><span class="math inline">\(\frac{w_i}{u_i} &gt; b\)</span>, then <span class="math inline">\(T = b\)</span> and <span class="math inline">\(i\)</span> is put into <span class="math inline">\(S\)</span>. As <span class="math inline">\(w_i &lt; T\)</span>, we have <span class="math inline">\(X_i = T = b\)</span>.</p></li>
 </ul>
 <p>Therefore, <span class="math display">\[
-     E[X_i | U = b] = b \cdot \Pr\left[ \frac{w_i}{u_i} &gt; b \mid w_i &lt; b \wedge U = b \right] = b \cdot \frac{w_i}{b} = w_i
+     \mathbb{E}[X_i | U = b] = b \cdot \Pr\left[ \frac{w_i}{u_i} &gt; b \mid w_i &lt; b \wedge U = b \right] = b \cdot \frac{w_i}{b} = w_i
  \]</span></p></li>
 </ol>
 <p>In conclusion, <span class="math display">\[
-E[X_i] = E[E[X_i | U]]  = w_i
+\mathbb{E}[X_i] = \mathbb{E}[\mathbb{E}[X_i | U]]  = w_i
 \]</span></p>
 <p><em>Theorem 2</em>. For <span class="math inline">\(I \subset [n]\)</span>, <span class="math display">\[
 \begin{aligned}
-    E\left[ \prod_{i \in I} X_i \right] =
+    \mathbb{E}\left[ \prod_{i \in I} X_i \right] =
     \begin{cases}
          \prod_{i \in I} w_i     &amp; \text{ if } |I| \le k \\
          0                      &amp; else 
@@ -306,7 +302,7 @@ E[X_i] = E[E[X_i | U]]  = w_i
 <p>If <span class="math inline">\(|I| \le k\)</span>, we show the claims holds by induction. The base case of <span class="math inline">\(|I| = 1\)</span> reduces to <em>Theorem 1</em>. Suppose that the claim hold for <span class="math inline">\(|I| \le t &lt; k\)</span>, we show it holds for <span class="math inline">\(|I| = t + 1\)</span>.</p>
 <p>Similarly to <em>Theorem 1</em>, define <span class="math inline">\(U\)</span> to be the <span class="math inline">\(k + 1 - |I|\)</span>-th largest priority in <span class="math inline">\([n] \setminus I\)</span>. Conditioning on <span class="math inline">\(U = b\)</span>, then we can divide <span class="math inline">\(I\)</span> into two sets: <span class="math inline">\(I_1 = \{ i \in I : w_i &gt; b\}\)</span> and <span class="math inline">\(I_2 = I \setminus I_1\)</span>. For <span class="math inline">\(i \in I_1\)</span>, we have <span class="math inline">\(X_i = w_i\)</span> by definition. Now consider <span class="math inline">\(I_2\)</span>. Let <span class="math inline">\(j = \arg \min_{i \in I_2} q_i\)</span>. If <span class="math inline">\(q_j \le b\)</span>, then it holds that <span class="math inline">\(b \ge T \ge q_j\)</span> and <span class="math inline">\(X_j = 0\)</span>. In this case it does not contribute to <span class="math inline">\(\prod_{i \in I} X_i\)</span>. Hence <span class="math display">\[
 \begin{aligned}
-E \left[ \prod_{i \in I} X_i \mid U = b \right] 
+\mathbb{E} \left[ \prod_{i \in I} X_i \mid U = b \right] 
     &amp;= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \Pr \left[ \frac{w_i}{u_i} &gt; b \right] ) \\
     &amp;= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \frac{w_i}{b} ) \\
     &amp;= \prod_{i \in I} w_i
@@ -411,7 +407,7 @@ E \left[ \prod_{i \in I} X_i \mid U = b \right]
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">127</span>
+          <span class="site-state-item-count">129</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

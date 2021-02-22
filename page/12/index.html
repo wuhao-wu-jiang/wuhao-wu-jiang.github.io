@@ -146,6 +146,240 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/05/Cycle-Core-Connection-Game/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/05/Cycle-Core-Connection-Game/" class="post-title-link" itemprop="url">Cycle-Core Connection Game</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-05 10:56:51" itemprop="dateCreated datePublished" datetime="2020-05-05T10:56:51+10:00">2020-05-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-30 14:33:36" itemprop="dateModified" datetime="2021-01-30T14:33:36+11:00">2021-01-30</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Eisenbrand et al [1] proposed an interesting technique called cycle connection game. In the setting, there is a set of <span class="math inline">\(n\)</span> core points connected by an undirected cycle. Each core point is associated with a client. There is a pair of opposite directed edges between each core point and its associated client. Each edge has a weight. We denote <span class="math inline">\(G\)</span> be the resulting graph.</p>
+<p>An example is shown as follows:</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/CycleCoreConnectionGame.png" /></p>
+<p>Given an instance, we would like to sample a set of clients randomly (we call the sampled clients the "marked" ones). Then each client sends a unit capacity flow to its nearest marked client (could be itself). The cost of each flow is the sum of edges weights it travels. We would like to bound the expected cost of sending the flows.</p>
+<p>The selection process requires a probability <span class="math inline">\(p\)</span> as input and consists of two steps:</p>
+<ol type="1">
+<li>Pick a client uniformly at random. This step ensures that at least one client is selected.</li>
+<li>For the rest clients, pick each of them independently with some probability <span class="math inline">\(p\)</span>.</li>
+</ol>
+<p>To analyze the expected cost, we divide the edges into three categories:</p>
+<ol type="1">
+<li>Directed edges from the clients to the core points, denoted as <span class="math inline">\(\mathcal{E}_{in}\)</span>;</li>
+<li>Directed edges from the core points to the clients, denoted as <span class="math inline">\(\mathcal{E}_{out}\)</span>;</li>
+<li>Edges on the cycle, denoted as <span class="math inline">\(\mathcal{C}\)</span>.</li>
+</ol>
+<p>The following theorem holds:</p>
+<blockquote>
+<p><em>Theorem.</em> The expected cost is bounded by <span class="math display">\[
+\sum_{e \in \mathcal{E}_{in} \cup \mathcal{E}_{out} } w_e + \frac{1}{2p} \sum_{e \in \mathcal{C} } w_e
+\]</span></p>
+</blockquote>
+<p><strong><em>Proof.</em></strong><br />
+For each edge <span class="math inline">\(e\)</span>, define a random variable <span class="math inline">\(X_e\)</span> to be the flow value of <span class="math inline">\(e\)</span>. For <span class="math inline">\(e \in \mathcal{E}_{in}\)</span>, it holds that <span class="math inline">\(X_e \in \{0, 1\}\)</span>. However, for <span class="math inline">\(e \in \mathcal{E}_{out} \cup \mathcal{C}\)</span>, it is possible that <span class="math inline">\(X_e &gt; 1\)</span>. By linearity of expectation, <span class="math display">\[
+    \mathbb{E} \left[ \sum_{e \in \mathcal{E}_{in} \cup \mathcal{E}_{out} } w_e \cdot X_e + \sum_{e \in \mathcal{C} } w_e \cdot X_e \right] = \sum_{e \in \mathcal{E}_{in} \cup \mathcal{E}_{out} } w_e \cdot \mathbb{E} \left[  X_e \right]  + \sum_{e \in \mathcal{C} } w_e \cdot \mathbb{E} \left[  \cdot X_e \right].
+\]</span></p>
+<ol type="1">
+<li><p>For <span class="math inline">\(e \in \mathcal{E}_{in}\)</span>, there is a unit flow on <span class="math inline">\(e\)</span> if only the associated client is not sampled. This happens with probability <span class="math inline">\((1 - \frac{1}{n})(1 - p)\)</span>, where <span class="math inline">\(n\)</span> is the number of clients. Therefore, <span class="math inline">\(\mathbb{E} [X_e \cdot w_e] = (1 - \frac{1}{n})(1 - p) \cdot w_e\)</span> and <span class="math display">\[
+     \mathbb{E} \left[ \sum_{e \in \mathcal{E}_{in} } X_e \cdot w_e \right] = (1 - \frac{1}{n})(1 - p) \cdot \sum_{ e \in \mathcal{E}_{in} } w_e.
+\]</span></p></li>
+<li><p>For <span class="math inline">\(e \in \mathcal{E}_{out}\)</span>, the analysis is a little tricky. For each particular sample instance, it holds that <span class="math inline">\(\sum_{e \in \mathcal{E}_{out}} X_e = \sum_{e \in \mathcal{E}_{in}} X_e\)</span>, by flow conservation. Therefore, <span class="math display">\[
+     \mathbb{E} \left[  \sum_{e \in \mathcal{E}_{out}} X_e \right] = \mathbb{E} \left[ \sum_{e \in \mathcal{E}_{in}} X_e \right] = (1 - \frac{1}{n})(1 - p) n.
+\]</span> By symmetry, <span class="math inline">\(\{ X_e \}_{ e \in \mathcal{E}_{out} }\)</span> are identical distributed random variables. Therefore <span class="math inline">\(\mathbb{E} [X_e] = (1 - \frac{1}{n})(1 - p)\)</span>. It concludes that <span class="math display">\[
+     \mathbb{E} \left[ \sum_{e \in \mathcal{E}_{out} } X_e \cdot w_e \right] = (1 - \frac{1}{n})(1 - p) \cdot \sum_{ e \in \mathcal{E}_{out} } w_e.
+\]</span></p></li>
+<li><p>For <span class="math inline">\(e \in \mathcal{C}\)</span>, the analysis of <span class="math inline">\(\mathbb{E} [X_e]\)</span> is the hardest part. We look at the suboptimal flow routing scheme such that each un-marked client sends a unit flow to a nearest marked client, with respect to unit cycle edge weight. Let <span class="math inline">\(Y_e\)</span> be the number of flows on edge <span class="math inline">\(e\)</span>. Clearly, <span class="math display">\[
+     \mathbb{E} \left[ \sum_{e \in \mathcal{C} } X_e \cdot w_e \right] \le \mathbb{E} \left[ \sum_{e \in \mathcal{C} } Y_e \cdot w_e \right]. 
+ \]</span></p>
+<p>Further, for each client <span class="math inline">\(j\)</span>, let the random variable <span class="math inline">\(Y_j\)</span> be the number of cycle edges travelled by its flow, then <span class="math display">\[
+     \sum_{e \in \mathcal{C} } Y_e = \sum_j Y_j.
+ \]</span></p>
+<p>For a fixed <span class="math inline">\(j\)</span> and some integer <span class="math inline">\(0 \le k \le \lfloor (n - 2) / 2 \rfloor\)</span>, the event <span class="math inline">\(Y_j &gt; k\)</span> happens if and only if <span class="math inline">\(j\)</span> is not marked and none of the first <span class="math inline">\(k\)</span> client neighbors to the left and right of <span class="math inline">\(j\)</span> is marked, the probability of which is given by <span class="math display">\[
+     \Pr[Y_j &gt; k] = \left( 1 - \frac{2k + 1}{n} \right) q^{2k + 1}. 
+ \]</span></p>
+<p>where <span class="math inline">\(q = (1 - p)\)</span>. Now the expectation of <span class="math inline">\(Y_j\)</span> is given by <span class="math display">\[
+ \begin{aligned}
+     \mathbb{E} [Y_j] 
+         &amp;= \sum_{k = 0}^{\lfloor (n - 2) / 2 \rfloor } \left( 1 - \frac{2k + 1}{n} \right) q^{2k + 1} \\
+         &amp;\le e^{ - \frac{ 1 }{n} } q \sum_{k = 0}^{\lfloor (n - 2) / 2 \rfloor } e^{ -  k \frac{ 2 }{n} } q^{k2} \\ 
+         &amp;\le e^{ - \frac{ 1 }{n} } q \sum_{k = 0}^{\lfloor (n - 2) / 2 \rfloor } (e^{ - \frac{ 2 }{n} } q^{2} )^k \\ 
+         &amp;= e^{ - \frac{ 1 }{n} } q \frac{ (1 - (e^{ - \frac{ 2 }{n} } q^{2} )^{\lfloor (n - 2) / 2 \rfloor } ) }{1 -  (e^{ - \frac{ 2 }{n} } q^{2} ) } \\
+         &amp;\le \frac{ e^{ - \frac{ 1 }{n} } q }{ 1 -  (e^{ - \frac{ 2 }{n} } q^{2} ) } \\
+         &amp;\le \frac{1}{ 2 (1 - e^{ - \frac{ 1 }{n} } q) }.
+ \end{aligned}
+ \]</span> The final inequality holds as <span class="math inline">\(2x - 2x^2 \le 1 - x^2\)</span>. Replacing <span class="math inline">\(q\)</span> with <span class="math inline">\(1 - p\)</span>, we have <span class="math display">\[
+     \mathbb{E} [Y_j] \le  \frac{1}{ 2 (1 - e^{ - \frac{ 1 }{n} } (1 - p)) } \le  \frac{1}{ 2 (1 - e^{ - \frac{ 1 }{n} }  + e^{ - \frac{ 1 }{n} } p) }  \le \frac{1}{2p}.
+ \]</span></p>
+<p>Remark: a more coarse calculation which leads to the same result would be <span class="math display">\[
+     \mathbb{E} [Y_j] \le \sum_{k = 0}^\infty (1 - p)^{2k + 1} \le \frac{1 - p}{1 - (1 - p)^2 } \le \frac{1}{2p}.
+ \]</span></p>
+<p>By symmetry, the <span class="math inline">\(Y_j\)</span>'s are identical distributed random variables. So are the variable <span class="math inline">\(Y_e\)</span>'s for <span class="math inline">\(e \in \mathcal{C}\)</span>. It follows <span class="math display">\[
+ \begin{aligned}
+     \mathbb{E} [Y_e] 
+         = \mathbb{E} [Y_j] 
+         &amp;\le \frac{1}{2p}. 
+ \end{aligned}
+ \]</span> and <span class="math display">\[
+ \begin{aligned}
+     \mathbb{E} \left[ \sum_{e \in \mathcal{C}} Y_e \cdot w_e \right]  
+         &amp;\le \frac{1}{2p} \sum_{e \in \mathcal{C}} w_e.
+ \end{aligned}
+ \]</span></p></li>
+</ol>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong>Reference:</strong></p>
+<ol type="1">
+<li><p>Eisenbrand, Friedrich, Fabrizio Grandoni, Thomas Rothvoß, and Guido Schäfer. "Approximating connected facility location problems via random facility sampling and core detouring." In Proceeding of Nineteenth annual ACM-SIAM Symposium (SODA'08), no. CONF, pp. 1174-1183. 2008.</p></li>
+<li><p>Eisenbrand, F., Grandoni, F., Rothvoß, T., Schäfer, G., 2010. Connected facility location via random facility sampling and core detouring. Journal of Computer and System Sciences 76, 709–726.</p></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/21/Linear-Transformation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/21/Linear-Transformation/" class="post-title-link" itemprop="url">Linear Transformation</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-21 22:13:49" itemprop="dateCreated datePublished" datetime="2020-04-21T22:13:49+10:00">2020-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-03 22:14:46" itemprop="dateModified" datetime="2020-05-03T22:14:46+10:00">2020-05-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>In linear algebra, we study vectors in some space <span class="math inline">\(\mathcal{R}^n\)</span>. Linear transformation is defined on <span class="math inline">\(\mathcal{R}^n\)</span>. For <span class="math inline">\(v, u \in \mathcal{R}^n\)</span>, and <span class="math inline">\(c \in \mathcal{R}\)</span>, a linear transformation <span class="math inline">\(T : \mathcal{R}^n \rightarrow \mathcal{R}^n\)</span> satisfies</p>
+<ol type="1">
+<li><span class="math inline">\(T(v + u) = T(v) + T(u)\)</span></li>
+<li><span class="math inline">\(T(cv) = c T(v)\)</span></li>
+</ol>
+<p>However, the "linear thing" is not limited to vectors. As an illustration, note that a vector <span class="math display">\[
+v = \begin{bmatrix}
+    v_1 \\ v_2 \\ . \\ . \\ . \\ v_n
+\end{bmatrix}
+\]</span></p>
+<p>can be viewed as the image of some function <span class="math inline">\(f : \{1, 2, ..., n \} \rightarrow \mathcal{R}\)</span>, such that <span class="math inline">\(f(i) = v_i\)</span>. It is natural to study the functions <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>, where <span class="math inline">\(\mathbb{I} \subset \mathcal{R}\)</span> is some open interval. For any <span class="math inline">\(x \in \mathbb{I}\)</span>, <span class="math inline">\(f(x)\)</span> gives the value of <span class="math inline">\(x\)</span>. The only difference with vectors is that, it not possible to enumerate all value of <span class="math inline">\(x \in \mathbb{I}\)</span>. Instead, we specify a rule of obtaining the value at <span class="math inline">\(x\)</span>.</p>
+<p>For any two functions <span class="math inline">\(f_1, f_2 : \mathbb{I} \rightarrow \mathcal{R}\)</span>, we can add them together and obtain a new function <span class="math inline">\(f_1 + f_2 : \mathbb{I} \rightarrow \mathcal{R}\)</span>. Addition is closed in the space <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>. Then for <span class="math inline">\(x \in \mathbb{I}\)</span>, <span class="math display">\[
+(f_1 + f_2) (x) = f_1(x) + f_2(x)
+\]</span></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/LinearTransformation/Addition.jpg" /></p>
+<p>which is similar to that adding up coordinates of two vector. We can also define multiplication: for <span class="math inline">\(c \in \mathcal{R}^n\)</span>, <span class="math inline">\(f : \mathbb{I} \rightarrow \mathcal{R}\)</span>, <span class="math inline">\(cf\)</span> is a function in <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span> such that <span class="math display">\[
+(cf)(x) = c f(x)
+\]</span></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/LinearTransformation/Scale.jpg" /></p>
+<p>Multiplication is closed in the space <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>.</p>
+<p><em>Example.</em> The derivative operation <span class="math inline">\(T: \{f: \mathbb{I} \rightarrow \mathcal{R} \wedge \text{differentiable} \} \rightarrow \{\mathbb{I} \rightarrow \mathcal{R} \}\)</span> is linear transformation. It is easy to verify for differentiable functions <span class="math inline">\(f_1, f_2 \in \mathbb{I} \rightarrow \mathcal{R}\)</span>, and <span class="math inline">\(c \in \mathcal{R}\)</span>, we have</p>
+<ol type="1">
+<li><span class="math inline">\((f_1 + f_2)&#39; = f_1&#39; + f_2&#39;\)</span></li>
+<li><span class="math inline">\((c f_1)&#39; = c f_1&#39;\)</span></li>
+</ol>
+<p>What is more, we can extend some other concepts in linear algebra. In linear algebra, "eigenvector" is a vector whose direction does not change under a linear transformation. For derivative operation, the function <span class="math inline">\(e^x\)</span> is un-changed after the transformation: <span class="math display">\[
+(e^x)&#39; = e^x
+\]</span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/14/Catalan-Number/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -250,270 +484,6 @@ s = (s&#39;[1:i], \ \ \overline{s&#39;[i + 1:n] } )
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/11/k-Core-Decomposition/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/11/k-Core-Decomposition/" class="post-title-link" itemprop="url">k-Core Decomposition</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-04-11 16:07:17 / Modified: 16:46:51" itemprop="dateCreated datePublished" datetime="2020-04-11T16:07:17+10:00">2020-04-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Given a graph <span class="math inline">\(G = \left&lt; V, E \right&gt;\)</span>, and a subset <span class="math inline">\(S \subset V\)</span>, the sub-graph <span class="math inline">\(G(S)\)</span> induced by <span class="math inline">\(S\)</span> is defined as <span class="math display">\[
-G(S) = \left&lt; S, E_S \right&gt;
-\]</span></p>
-<p>where <span class="math inline">\(E_S = \{ e : e = (u, v) \in E \wedge (u, v) \in S \times S\}\)</span>.</p>
-<p><span class="math inline">\(G(S)\)</span> is called a <span class="math inline">\(k\)</span>-core if it is the maximal sub-graph wuch that every vertex in <span class="math inline">\(S\)</span> has degree at least <span class="math inline">\(k\)</span> inside this sub-graph. Given the definition of <span class="math inline">\(k\)</span>-core, the core number of a vertex <span class="math inline">\(v \in V\)</span> is the maximum <span class="math inline">\(k\)</span> such tha t <span class="math inline">\(\exists S \subset V\)</span>, <span class="math inline">\(G(S)\)</span> is a <span class="math inline">\(k\)</span>-core and <span class="math inline">\(v \in S\)</span>.</p>
-<p>The key observation is that, given a <span class="math inline">\(k\)</span>-core <span class="math inline">\(G(S)\)</span>, if we remove every vertex <span class="math inline">\(v \in V\)</span> (as long as edges incident to <span class="math inline">\(v\)</span>) such that <span class="math inline">\(d(v) &lt; k\)</span>, then <span class="math inline">\(G(S)\)</span> remains a <span class="math inline">\(k\)</span>-core. Since</p>
-<ol type="1">
-<li>If <span class="math inline">\(d(v) &lt; k\)</span>, then <span class="math inline">\(v \notin S\)</span>.</li>
-<li>Removing edges incident to <span class="math inline">\(v\)</span> will not affect edges inside <span class="math inline">\(G(S)\)</span>. Then, the vertices' degree inside <span class="math inline">\(G(S)\)</span> remains unchanged.</li>
-</ol>
-<p>This gives an algorithm for computing the core number of each vertex.</p>
-<blockquote>
-<ol type="1">
-<li>for <span class="math inline">\(v \in V\)</span>:</li>
-<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(check[v] \leftarrow\)</span> false</li>
-<li>while not <span class="math inline">\(check[v] =\)</span> true <span class="math inline">\(\forall v \in V\)</span>:</li>
-<li><span class="math inline">\(\quad\)</span> Get an <span class="math inline">\(v\)</span> with smallest <span class="math inline">\(d(v)\)</span> and <span class="math inline">\(check[v] =\)</span> false</li>
-<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(check[v] \leftarrow\)</span> true</li>
-<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(core[v] \leftarrow d(v)\)</span></li>
-<li><span class="math inline">\(\quad\)</span> for <span class="math inline">\(u \in N(v)\)</span> such that <span class="math inline">\(d(u) &gt; k\)</span>:</li>
-<li><span class="math inline">\(\qquad\)</span> Delete <span class="math inline">\((v, u)\)</span></li>
-<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(d(u) \leftarrow d(u) - 1\)</span></li>
-</ol>
-</blockquote>
-<p>We can use an array <span class="math inline">\(D\)</span> such that <span class="math inline">\(D[i]\)</span> is a linked list and contains all vertices with degree <span class="math inline">\(i\)</span>. Therefore, line 4 can be executed in <span class="math inline">\(O(1)\)</span> time.</p>
-<h3 id="reference">Reference</h3>
-<p>[1] Batagelj, V. and Zaversnik, M., 2003. An O (m) algorithm for cores decomposition of networks. arXiv preprint cs/0310049.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/02/QuakeHeap/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/02/QuakeHeap/" class="post-title-link" itemprop="url">Quake Heap</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-04-02 19:23:49" itemprop="dateCreated datePublished" datetime="2020-04-02T19:23:49+11:00">2020-04-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-05 10:57:54" itemprop="dateModified" datetime="2020-05-05T10:57:54+10:00">2020-05-05</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Quake Heap [1] is a min heap (or max heap) that supports the following operations:</p>
-<table>
-<thead>
-<tr class="header">
-<th>Operation</th>
-<th>Amortized Time</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>insert(x)</td>
-<td><span class="math inline">\(O(1)\)</span></td>
-</tr>
-<tr class="even">
-<td>decrease-key(x,k)</td>
-<td><span class="math inline">\(O(1)\)</span></td>
-</tr>
-<tr class="odd">
-<td>delete-min()</td>
-<td><span class="math inline">\(O(\log n)\)</span></td>
-</tr>
-</tbody>
-</table>
-<p>with <span class="math inline">\(O(n)\)</span> space. For comparison based min heap, either <span class="math inline">\(insert(x)\)</span> or delete-min() takes <span class="math inline">\(O(\log n)\)</span> amortized time. Otherwise, we would have an <span class="math inline">\(o(n \log n)\)</span> comparison based sorting algorithm.</p>
-<p>In this blog we walk through its construction step by step and illustrate the philosophy behind. Some of the ideas also appear in other designs of min heaps.</p>
-<h3 id="insertion">Insertion</h3>
-<p>For insertion we are going to be lazy. Consider inserting the elements 1, 2, 3, 4, 5 into the heap. For each insertion, we just create a singleton node while maintaining a pointer (the "min-pointer") to the minimum node. The picture below shows the heap we obtain after five insertions. Each insertion has time complexity <span class="math inline">\(O(1)\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/Insertion.jpg" /></p>
-<h3 id="deletion-and-binomial-heap">Deletion and Binomial Heap</h3>
-<p>It would be easier to consider the case delete-min() without decrease-key(x) first. Now we try to delete the minimum element from heap. The first step, of course, is to remove the element <span class="math inline">\(1\)</span>, after which we get the following heap.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-1.jpg" /></p>
-<p>Here comes the problem. The "min-pointer" is removed along with the deletion. To maintain it, it seems that we need to loop over the entire list to update the min, which takes <span class="math inline">\(O(n)\)</span> time. If we do nothing else than merely scanning all elements, we need another <span class="math inline">\(O(n)\)</span>-scanning for the next deletion. We hope that the comparison performed for the current delete-min operation can reduce the ones we need to perform in the future.</p>
-<p>The idea is to merge the elements into trees. <!-- Initially, we view each element as a tree with a single node. Recursively, if the root of tree $A$ is compared with and is less than the root of tree $B$, we make $A$ as a subtree of $B$.  --> Intuitively, the trees "remember" the comparison performed before and save us from comparing the same pairs again.</p>
-<p>Various tree structure can be used to record the comparison and this may result in the design of different data structure. The one picked by Quake heap is the tournament tree. It only compares and merges (linking) two trees of the same height. A new node is created as the root of the two trees. The new node's value equals to the smaller one of the roots of the two trees.</p>
-<p>For example, in the following example, both the node 4 and 5 are viewed as trees with height one. We can compare and link the two trees. A new node with value 4 (the smaller value between 4 and 5) is created as the new root of the merged tree.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-2.jpg" /></p>
-<p>We can continue to link node 3 and 2.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-3.jpg" /></p>
-<p>The linking is performed recursively. Noting the the current two trees have the same height, we link them. We need to also update the "min-pointer" during the linking.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-4.jpg" /></p>
-<p>The construction takes <span class="math inline">\(O(n)\)</span> time. But we can charge the cost of these link operations into the creation of the trees' roots before. We have performed 3 link operations for the four nodes each being the root of a singleton tree. On average, we pay <span class="math inline">\(O(1)\)</span> per operation. To make the amortized argument more vivid, we can think that conceptually we an additional coin for each singleton tree creation. Therefore, before linking, we have four coins as follows:</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-1-Coin.jpg" /></p>
-<p>Merging node 5 and 4 has actual cost <span class="math inline">\(O(1)\)</span> and creates a new tree root. We use the coin of node 5 to pay the actual cost. Element 4 is the new root and it still has a coin. By using the coin idea, we charge (or averaging) the cost of this link operation to the cost of the creation of node 5.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-2-Coin.jpg" /></p>
-<p>Merging node 3 and 2 uses one coin. We use the coin reserved by node 3. After this, the elements 4 and 2 (the elements that are roots of some trees) still have a coin.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-3-Coin.jpg" /></p>
-<p>Merging the two trees left uses one coin. We use the coin reserved by node 4. After this, the element 2 is still a root and still has a coin.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-4-Coin.jpg" /></p>
-<p>In general, we may need to pay more than <span class="math inline">\(O(1)\)</span> for delete-min(). Consider we would like to perform the operation for the following.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-5-Coin.jpg" /></p>
-<p>We need to remove all nodes on a root-to-leaf path. In this example it is the path that contains element 2.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-6-Coin.jpg" /></p>
-<p>After the removal, some children of the nodes in this root-to-leaf path are now exposed as tree roots. In this example, node 4 and 3 are tree roots. We need to reserve two coins node 4 and 3. The coins are reserved for potential linking performed in the future.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin1-7-Coin.jpg" /></p>
-<p>Finally we need to compare and link any two trees of the same height, in a recursive manner. This part is paid by the coins reserved for the tree roots.</p>
-<p>To analyze the amortized running time of delete-min(), we define the height of the tree as <span class="math inline">\(H\)</span>. We need to remove <span class="math inline">\(H\)</span> nodes from the root-to-leaf path, expose <span class="math inline">\(\max \{H - 1, 0 \}\)</span> node as tree roots and reserve coins for them, followed by recursively linking two trees with the same height. The final step is "free" and covered by the coins reserved. Therefore the amortized cost is <span class="math inline">\(H + \max \{H - 1, 0\} = \max \{ 2H - 1, H \} \le 2H\)</span>.</p>
-<p><em>Key Observation:</em></p>
-<blockquote>
-<p><strong><em>To bound the time of delete-min() to <span class="math inline">\(O(\log n)\)</span>, it is critical to control the size of <span class="math inline">\(H\)</span>.</em></strong></p>
-</blockquote>
-<p>To analyze how large <span class="math inline">\(H\)</span> could be, we study how it grow. Initially, a tree with <span class="math inline">\(H = 1\)</span> contains only 1 key. When we link two trees with <span class="math inline">\(H = 1\)</span>, the new tree has height <span class="math inline">\(H = 2\)</span> and <span class="math inline">\(2\)</span> keys (although it has <span class="math inline">\(3\)</span> nodes). In general, a tree with height <span class="math inline">\(H = h\)</span> contains <span class="math inline">\(2^{h - 1}\)</span> keys and this can be easily proved by induction.</p>
-<blockquote>
-<p>If there is no decrease-key operation, the tree with height <span class="math inline">\(h\)</span> has <span class="math inline">\(2^{h - 1}\)</span> keys and <span class="math inline">\(2^h - 1\)</span> nodes. As there are at most <span class="math inline">\(n\)</span> keys, the maximum possible height, denoted as <span class="math inline">\(H\)</span>, is bounded by <span class="math inline">\(\log n\)</span>.</p>
-</blockquote>
-<p>The heap we have constructed so far has a special name called "Binomial Heap".</p>
-<h3 id="decrease-key">Decrease-Key</h3>
-<p>If there is only insert() and decrease-key() operation, min heap is easy to implemented. We can use a linked list / dynamic array, while maintaining the min pointer / min index.</p>
-<p>If we need to incorporate delete-min() operation, the decrease-key(x) itself is still easy, while the former requires significant modification. For decrease-key(x), we adopt a lazy strategy. If after decreasing, <span class="math inline">\(x\)</span>'s value is still smaller than its parent (or <span class="math inline">\(x\)</span> is the root of the tree and has no parent), then everything is fine. For example, if we decrease <span class="math inline">\(4\)</span> to <span class="math inline">\(3.5\)</span> (the node 4 has parent 2), then we do not need to modify the tree after the operation.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DecreaseKey-1.jpg" alt="drawing" width="330" /></p>
-<p>On the other hand, if we decrease 4 to 1, then its value is smaller than its parent 2.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DecreaseKey-2.jpg" /></p>
-<p>We need to detach the highest node containing value 4 from its parent node (in the meanwhile we maintain the "min-pointer").</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DecreaseKey-3.jpg" /></p>
-<p>The only concern with this operation is the height of a heap. In the previous, the tree on the right hand side has height <span class="math inline">\(3\)</span> but contains only two keys. For a tree with <span class="math inline">\(n\)</span> keys, it could happens that it height is <span class="math inline">\(\omega(\log n)\)</span>. Indeed, it could be as large as <span class="math inline">\(O(n)\)</span>. This will invalidate the strategy we propose in the last section, which requires the height to be <span class="math inline">\(O(\log n)\)</span>, to achieve the <span class="math inline">\(O(\log n)\)</span> amortized complexity for delete-min().</p>
-<p>There are various ways to fix this, the idea of which will give rise to Pairing heap [<em>Pairing heap achieve <span class="math inline">\(O(\log n)\)</span> amortized bound for deletion but requires <span class="math inline">\(O(\log n)\)</span> amortized time for both insertion and decrease-key(x). Its design philosophy is closely related to Splay tree.</em>], Fibonacci heap, etc. Here we discuss about the solution of Quake heap.</p>
-<p>First, Quake heap records the number of nodes at each height explicitly, denoted as <span class="math inline">\(n_1, n_2, ..., n_H\)</span>, where <span class="math inline">\(H\)</span> is the maximum possible height. Further, it specifies a parameter <span class="math inline">\(\alpha \in (0, 5, 1)\)</span> and maintains the invariant that <span class="math inline">\(n_{i + 1} \le \alpha \cdot n_i\)</span> for each <span class="math inline">\(i \ge 1\)</span>. This guarantees that <span class="math inline">\(H = O(\log n)\)</span>.</p>
-<p>In the following discussion, we take <span class="math inline">\(\alpha = 0.75\)</span>.</p>
-<p>Let's discuss how the maintain the invariant <span class="math inline">\(n_{i + 1} \le \alpha n_i\)</span> for all <span class="math inline">\(i \ge 1\)</span> for insert(x), decrease-key(x) and delete-min() operation.</p>
-<ol type="1">
-<li><p>For the operation insert(x), it create a singleton node at the bottom layer and increases <span class="math inline">\(n_1\)</span> by 1. If the invariant holds before insertion, it holds afterward.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/RecordingHeight.jpg" /></p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/RecordingHeightAndInsertion.jpg" /></p></li>
-<li><p>For decrease, it will not change the number of nodes at each height. The following example shows the case where the children whose key is decreased is detached from its parent. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DecreaseKey-2.jpg" /></p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DecreaseKey-3.jpg" /></p></li>
-<li><p>Delete-min is the most difficult part. To maintain the invariant, now delete-min() consists of four part:</p>
-<ul>
-<li>Delete the min key (and all nodes that contain the min key). As before, this step may expose some children of the deleted nodes as new tree roots.</li>
-<li>Recursively link all trees of the same height. After linking, scan all trees to maintain the min pointer.</li>
-<li>Quake: if there is a level <span class="math inline">\(i\)</span> such that <span class="math inline">\(n_{i + 1} &gt; \alpha n_i\)</span>, remove all nodes with level greater than <span class="math inline">\(i\)</span>.</li>
-</ul></li>
-</ol>
-<p>It is left to analyze the running time step by step. We use a potential function for analysis. By previous section, the potential should contain the number of trees. Further, by the last step of delete-min operation, it is suggested to includes the number of nodes in the potential function, to cover the cost of node removal. Inspired by this, our first design is given by <span class="math display">\[
-\Phi = \# \text{nodes} + 2 \cdot \# \text{trees}
-\]</span></p>
-<p>We analyze the time for each step of delete-min()</p>
-<ol type="1">
-<li><p>Before delete-min(), the invariant holds and therefore the maximum height <span class="math inline">\(H = O(\log n)\)</span>. Deleting the min-key and its associated nodes take actual time <span class="math inline">\(O(\log n)\)</span>. As for <span class="math inline">\(\Phi\)</span>, the number of nodes decreases (indeed, this decrease will cover the removal of the nodes containing the min key) and the number of trees increases by at most <span class="math inline">\(O(\log n)\)</span>. Therefore, the amortized cost for the first step is <span class="math inline">\(O(\log n)\)</span>.</p></li>
-<li><p>Linking two trees of the same height has actual cost <span class="math inline">\(1\)</span>. It creates a new node and decreases the number of trees by 1. Therefore, <span class="math inline">\(\Delta \Phi = -1\)</span>. Hence the amortized cost is 0. This also explains why we need an coefficient 2 associated with #trees in the potential function. It is left to analyze the cost of scanning all tree. After linking, all trees are of different height. It suffices to show that the maximum height is <span class="math inline">\(O(\log n)\)</span> to bound the scanning cost to <span class="math inline">\(O(\log n)\)</span>. Before linking <span class="math inline">\(H = O(\log n)\)</span>. As there are only <span class="math inline">\(n\)</span> keys, there are at most <span class="math inline">\(n\)</span> trees with height <span class="math inline">\(H\)</span> before and during the linking procedure. Linking <span class="math inline">\(n\)</span> trees of the same height results in a new tree with height <span class="math inline">\(\log n\)</span>. Therefore, after linking, <span class="math inline">\(H\)</span> increases by at most <span class="math inline">\(\log n\)</span> and <span class="math inline">\(H = O(\log n)\)</span> still holds. Therefore, the amortized cost for the second step is <span class="math inline">\(O(\log n)\)</span>.</p></li>
-<li><p>Suppose in this step we delete <span class="math inline">\(k\)</span> nodes. The actual cost is <span class="math inline">\(k\)</span>. However, the number of nodes decreases by <span class="math inline">\(k\)</span>. It seems that the amortized cost is 0 for this step. But it isn't. We have increased the number of tree. Denote <span class="math inline">\(d_{i + 1}\)</span> the number of nodes at level <span class="math inline">\(i + 1\)</span> with two children before removal and <span class="math inline">\(s_{i + 1}\)</span> the number of nodes with only one children. We have <span class="math inline">\(n_{i + 1} = d_{i + 1} + s_{i + 1}\)</span>. On the other hand, we know <span class="math inline">\(n_i \ge 2 d_{i + 1} + s_{i + 1}\)</span>. By the fact that <span class="math inline">\(n_{i + 1} &gt; \alpha n_i\)</span>, we know that <span class="math display">\[
- \begin{aligned}
- s_{i + 1} 
-     &amp;= 2(d_{i + 1} + s_{i + 1}) - (2 d_{i + 1} + s_{i + 1})\\
-     &amp;\ge 2 n_{i + 1} - n_i \\
-     &amp;\ge (2 \alpha - 1) n_i 
- \end{aligned}
- \]</span></p>
-<p>as we create at most <span class="math inline">\(n_i\)</span> new trees, we can charge the creation of new trees into <span class="math inline">\(s_{i + 1}\)</span> and modify the potential as <span class="math display">\[
- \Phi = \# \text{nodes} + 2 \cdot \# \text{trees} + \frac{2}{2\alpha - 1} \# \text{nodes with one child}
- \]</span></p>
-<p>Now step 3 has amortized cost 0. For other steps, this modification will increase the cost of decrease-key(x) by at most <span class="math inline">\(O(1)\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin2-1.jpg" /> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin2-2.jpg" /> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin2-3.jpg" /> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin2-4.jpg" /> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin2-5.jpg" /> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin2-6.jpg" /> <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/QuakeHeap/DeleteMin2-7.jpg" /></p></li>
-</ol>
-<p>Caveat: we can't swap the order of step 2 and step 3, since linking tree may create violation to the invariant and we need step 3 to fix this.</p>
-<h3 id="reference">Reference</h3>
-<p>[1] Chan, Timothy M. "Quake heaps: a simple alternative to Fibonacci heaps." In Space-Efficient Data Structures, Streams, and Algorithms, pp. 27-32. Springer, Berlin, Heidelberg, 2013.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -583,7 +553,7 @@ G(S) = \left&lt; S, E_S \right&gt;
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">127</span>
+          <span class="site-state-item-count">129</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
