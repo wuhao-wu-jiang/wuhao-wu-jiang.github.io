@@ -146,6 +146,166 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/12/PAC-learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/12/PAC-learning/" class="post-title-link" itemprop="url">PAC Learning Basic</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-12 16:06:55" itemprop="dateCreated datePublished" datetime="2020-11-12T16:06:55+11:00">2020-11-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-19 15:16:12" itemprop="dateModified" datetime="2020-11-19T15:16:12+11:00">2020-11-19</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>We discuss a toy model of probably approximately correct (PAC) learning [1]. The setting focuses on a <span class="math inline">\(d\)</span>-dimension Boolean hypercube <span class="math inline">\(\{0, 1\}^d\)</span> and a set of functions <span class="math inline">\(\mathcal{H} = \{ h : \{0, 1\}^d \rightarrow \{0, 1 \} \}\)</span>. A function <span class="math inline">\(h \in \mathcal{H}\)</span> is called a hypothesis or a concept, which assigns each vertex in the hypercube a label 0 or 1.</p>
+<p>The goal of PAC learning is to learn an unknown hypothesis, denoted as <span class="math inline">\(h^* \in \mathcal{H}\)</span>, from a dataset, which consists of <span class="math inline">\(n\)</span> points <span class="math inline">\(X_1, X_2, ..., X_n \in \{0, 1\}^n\)</span> sampled independently from an unknown distribution <span class="math inline">\(D\)</span> (over the hypercube), as well as their labels <span class="math inline">\(Y_1 = h^*(X_1), Y_2 = h^*(X_2), ..., Y_n = h^*(X_n)\)</span>.</p>
+<p>We can state the algorithm for PAC learning in just one sentence.</p>
+<blockquote>
+<p>Output any hypothesis <span class="math inline">\(h&#39; \in \mathcal{H}\)</span> that is consistent with the sampled dataset, i.e., <span class="math display">\[
+h&#39;(X_i) = Y_i, \qquad \forall i \in [n]
+\]</span></p>
+</blockquote>
+<p>Such an hypothesis always exists, as <span class="math inline">\(h^*\)</span> satisfies this constraint. We have the classic PAC learning theorem.</p>
+<blockquote>
+<p><strong><em>Theorem.</em></strong> Let <span class="math inline">\(X \in \{0, 1\}^n\)</span> be a random point sampled from the unknown distribution, then for a given <span class="math inline">\(\delta \in (0, 1)\)</span>, <span class="math display">\[
+\Pr[ h&#39;(X) \neq h^*(X)] \ge \sqrt{ \log |\mathcal{H}| + \log \frac{ 1 }{ \delta } \over 2n}
+\]</span> with probability at most <span class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<p>The PAC learning theorem states that the probability that <span class="math inline">\(h&#39;\)</span> mislabels a point is bounded by <span class="math inline">\(\sqrt{ \log |\mathcal{H}| + \log \frac{ 1 }{ \delta } \over 2n}\)</span>.</p>
+<p><em>Proof.</em> Consider some fixed <span class="math inline">\(h \in \mathcal{H}\)</span>. For convenience, we rewrite <span class="math display">\[
+\Pr[ h(X) \neq h^*(X)] = \mu_h. 
+\]</span></p>
+<p>Denote <span class="math inline">\(Z_i\)</span> the indicator variable of whether <span class="math inline">\(h\)</span> mislabels <span class="math inline">\(X_i\)</span>, i.e., <span class="math display">\[
+Z_i = \begin{cases}
+    0, \qquad \text{ if } h(X_i) = Y_i \\
+    1, \qquad \text{ if } h(X_i) \neq Y_i 
+\end{cases}
+\]</span></p>
+<p>By definition, <span class="math inline">\(\mathbb{E}[Z_i]\)</span> is an unbiased estimator of <span class="math inline">\(\mu_h\)</span>. Further, denote <span class="math inline">\(\hat \mu_h\)</span> the empirical mean of <span class="math inline">\(Z_i\)</span>'s <span class="math display">\[
+\hat \mu_h \doteq \frac{1}{n} \sum_{i \in [n] } Z_i
+\]</span></p>
+<p>Note that for the outputted <span class="math inline">\(h&#39;\)</span>, <span class="math inline">\(\hat \mu_{h&#39;} = 0\)</span>.</p>
+<p>By Hoeffding inequality, for any <span class="math inline">\(\delta&#39; &gt; 0\)</span>, <span class="math display">\[
+\Pr[ \hat \mu_h \le \mu_h - \sqrt{ \frac{ \log \frac{1}{\delta&#39;} }{2n} } ] \le \delta&#39;. 
+\]</span></p>
+<p>By union bound, the probability that <span class="math display">\[
+\exists h \in \mathcal{H}, \hat \mu_h \ge \mu_h - \sqrt{ \frac{ \log \frac{1}{\delta&#39;} }{2n} }
+\]</span></p>
+<p>is bounded by <span class="math inline">\(| \mathcal{H} | \delta&#39;\)</span>. By setting <span class="math inline">\(\delta&#39; = \frac{\delta}{ | \mathcal{H} | }\)</span>, it is guaranteed that <span class="math display">\[
+0 = \hat \mu_{h&#39; } \le \mu_{h&#39;} -  \sqrt{ \log |\mathcal{H}| + \log \frac{ 1 }{ \delta } \over 2n}
+\]</span></p>
+<p>with probability at most <span class="math inline">\(\delta\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>The previous theorem can be improved with the <span class="math inline">\(\sqrt{ \cdot }\)</span> removed. The key here is that the selected <span class="math inline">\(h&#39;\)</span> is error-free on the samples.</p>
+<blockquote>
+<p><strong><em>Theorem.</em></strong> Let <span class="math inline">\(X \in \{0, 1\}^n\)</span> be a random point sampled from the unknown distribution, then for a given <span class="math inline">\(\delta \in (0, 1)\)</span>, <span class="math display">\[
+\Pr[ h&#39;(X) \neq h^*(X)] \ge { \log |\mathcal{H}| + \log \frac{ 1 }{ \delta } \over n}
+\]</span> with probability at most <span class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<p><em>Proof.</em> Consider some fixed <span class="math inline">\(h \in \mathcal{H}\)</span>. For convenience, we rewrite <span class="math display">\[
+\Pr[ h(X) \neq h^*(X)] = \mu_h. 
+\]</span></p>
+<p>We will prove that if <span class="math inline">\(\mu_h \ge { \log |\mathcal{H}| + \log \frac{ 1 }{ \delta } \over n}\)</span>, then <span class="math inline">\(h\)</span>'s probability of being selected is very low.</p>
+<p>Denote <span class="math inline">\(Z_i\)</span> the indicator variable of whether <span class="math inline">\(h\)</span> mislabels <span class="math inline">\(X_i\)</span>, i.e., <span class="math display">\[
+Z_i = \begin{cases}
+    0, \qquad \text{ if } h(X_i) = Y_i \\
+    1, \qquad \text{ if } h(X_i) \neq Y_i 
+\end{cases}
+\]</span></p>
+<p>By definition, <span class="math inline">\(\Pr[Z_i = 1] = \mu_h\)</span>. Therefore, <span class="math display">\[
+    \begin{aligned}
+        \Pr[ Z_1 = 0 \wedge Z_2 = 0 \wedge ... \wedge Z_n = 0] = (1 - \mu_h)^n \le \exp(- \mu_h n) = \frac{\delta}{ |\mathcal{H} | }
+    \end{aligned}
+\]</span></p>
+<p>Taking union bound over all possible <span class="math inline">\(h\)</span> gives the desired result.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Caveat.</em></strong> <em>In both theorem, we see a <span class="math inline">\(\log \mathcal{H}\)</span> term in the failure probability, which is due to the use of union bound and can be roughly considered as the complexity of the hypothesis family. It is tempting to think that this could be avoid as follows.</em></p>
+<blockquote>
+<p>For the outputted <span class="math inline">\(h&#39;\)</span>, <span class="math inline">\(Z_1, ..., Z_n\)</span> are i.i.d samples. Therefore, the probability of all of them being <span class="math inline">\(0\)</span> is give by<br />
+<span class="math display">\[
+(1 - \mu_{h&#39;} )^n \le \exp( - \mu_{h&#39;} n). 
+  \]</span><br />
+Bounding this probability by <span class="math inline">\(\delta\)</span> gives <span class="math inline">\(\mu_{h&#39;} \le \frac{ \log \frac{1}{\delta} } {n}\)</span>.</p>
+</blockquote>
+<p><em>The argument is wrong. For the outputted <span class="math inline">\(h&#39;\)</span>, the <span class="math inline">\(Z_1, ..., Z_n\)</span> are not i.i.d samples, as <span class="math inline">\(h&#39;\)</span> is selected according to <span class="math inline">\(Z_1, ..., Z_n\)</span> and depends on them.</em></p>
+<p><em>To make it more concrete, suppose that there is an <span class="math inline">\(h\)</span>, such that <span class="math inline">\(\mu_h = \frac{ \log \frac{1}{\delta} } {n}\)</span>. Consider the following experiment</em></p>
+<blockquote>
+<ol type="1">
+<li>Sample <span class="math inline">\(n\)</span> points independently the distribution <span class="math inline">\(D\)</span>.<br />
+</li>
+<li>Pick an <span class="math inline">\(h&#39;\)</span> that makes no prediction error on the samples.</li>
+</ol>
+</blockquote>
+<p><em>If we repeat the experiment <span class="math inline">\(N\)</span> times for some positive integer <span class="math inline">\(N\)</span>, then the fixed <span class="math inline">\(h\)</span> makes no mistake in roughly <span class="math inline">\((1 - \delta) N\)</span> of the experiments and constitutes an candidate of <span class="math inline">\(h&#39;\)</span>. However, on the other roughly <span class="math inline">\(\delta N\)</span> experiments, where <span class="math inline">\(h\)</span> makes prediction error, it is no longer considered as the candidate of <span class="math inline">\(h&#39;\)</span>. The selection procedure of <span class="math inline">\(h&#39;\)</span> ignores bad event of <span class="math inline">\(h\)</span> automatically.</em></p>
+<p><em>We could also investigate the following example. Let <span class="math inline">\(h^* = h_0\)</span>. There are also other two hypothesis <span class="math inline">\(h_1\)</span> and <span class="math inline">\(h_2\)</span>. Let <span class="math inline">\(S\)</span> be the sample space. It holds that</em> <span class="math display">\[
+|h_1(x) - h^*(x) | = \begin{cases}
+    2 \epsilon, \forall x \in S \setminus S_{h_1} \\
+    0,\ \       \forall x \in S_{h_1}
+\end{cases}
+\]</span> <span class="math display">\[
+|h_2(x) - h^*(x) | = \begin{cases}
+    2 \epsilon, \forall x \in S \setminus S_{h_2} \\
+    0,\ \       \forall x \in S_{h_2}
+\end{cases}
+\]</span> <em>Moreover, <span class="math inline">\(\Pr[S_{h_1}] = \Pr[S_{h_2} ] = \delta\)</span>. How, if we get a sample in <span class="math inline">\(S_{h_1}\)</span>, then we can output <span class="math inline">\(h&#39;\)</span> as <span class="math inline">\(h_0\)</span> or <span class="math inline">\(h_1\)</span>, since both of them make no error when <span class="math inline">\(x \in S_{h_1}\)</span>. Similarly, if <span class="math inline">\(x \in S_{h_2}\)</span>, we can output either <span class="math inline">\(h_0\)</span> or <span class="math inline">\(h_2\)</span>. We call <span class="math inline">\(S_{h_1}\)</span> and <span class="math inline">\(S_{h_2}\)</span> the bad areas. When <span class="math inline">\(x\)</span> is in the bad area of any hypothesis, we can't distinguish this hypothesis from the true hypothesis. That is why we need to use union bound to bound the total probabilities of these bad areas.</em></p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/PAC-Learning.png?raw=true" width="400" height="340" /></p>
+</div>
+<h3 id="reference">Reference</h3>
+<p>[1] Leslie G. Valiant. A theory of the learnable. Communications of the ACM, 27(11):1134-1142, 1984. 6</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/06/Gaussian-Mechanism/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -655,114 +815,6 @@ g(x) = f(x) + Y
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/02/Randomized-Response/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/02/Randomized-Response/" class="post-title-link" itemprop="url">Randomized Response</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-02 10:41:39" itemprop="dateCreated datePublished" datetime="2020-11-02T10:41:39+11:00">2020-11-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-09 17:26:31" itemprop="dateModified" datetime="2020-11-09T17:26:31+11:00">2020-11-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>In the setting of randomized response, there is a coordinator and a set of <span class="math inline">\(n\)</span> players each having a secrete bit <span class="math inline">\(x_i \in \{0, 1\}\)</span>. Instead of sending <span class="math inline">\(x_i\)</span> to the coordinator directly, the player sends a randomly perturbed version <span class="math inline">\(X_i\)</span>, such that <span class="math display">\[
-X_i = 
-\begin{cases}
-    x_i, \qquad \text{with probability } 0.5 + \epsilon \\
-    \bar{ x}_i, \qquad \text{with probability } 0.5 - \epsilon \\
-\end{cases}
-\]</span></p>
-<p>where <span class="math inline">\(\epsilon \in [0, 0.5]\)</span> and <span class="math inline">\(\bar{x}_i = 1 - x_i\)</span>. If <span class="math inline">\(\epsilon = 0\)</span>, then the response from play <span class="math inline">\(i\)</span> is totally random. On the other hand, if <span class="math inline">\(\epsilon = 0.5\)</span>, there isn't noise in <span class="math inline">\(X_i\)</span>.</p>
-<p>The coordinator would like to estimate the ratio of <span class="math inline">\(1\)</span>'s among the <span class="math inline">\(x_i\)</span>'s. Let <span class="math display">\[
-\bar{X} = \frac{1}{n} \sum_{i \in [n] } X_i. 
-\]</span></p>
-<p>Denote <span class="math inline">\(\mu = \frac{1}{n} \sum_{i \in [n] } x_i\)</span> the true ratio. Now <span class="math display">\[
-\begin{aligned}
-    \mathbb{E} [ \bar{X} ] &amp;= \frac{1}{n} \sum_{i \in [n] } \mathbb{E}[ X_i ] \\
-                            &amp;= \frac{1}{n} \sum_{i \in [n] } [ (0.5 + \epsilon) x_i + (0.5 - \epsilon )\bar{x}_i ] \\
-                            &amp;= \frac{1}{n} \sum_{i \in [n] } [ 2 \epsilon x_i  + (0.5 - \epsilon) (x_i + \bar{x}_i) ] \\
-                            &amp;= \frac{1}{n} \sum_{i \in [n] } [ 2 \epsilon x_i  + (0.5 - \epsilon)  ] \\
-                            &amp;= \frac{1 - 2\epsilon }{2n}  + 2\epsilon \mu
-\end{aligned}
-\]</span></p>
-<p>and <span class="math display">\[
-\begin{aligned}
-    \mathbb{Var} [ \bar{X} ] = \frac{1}{n} \sum_{i \in [n] } \mathbb{Var}[ X_i ] 
-                            \le \frac{1}{4n} 
-\end{aligned}
-\]</span></p>
-<p>Hence, <span class="math display">\[
-\mu = \mathbb{E}[ \frac{1}{2\epsilon} (\bar X + \frac{2\epsilon - 1}{2n}) ]
-\]</span></p>
-<p>and <span class="math inline">\(\hat \mu \doteq \frac{1}{2\epsilon} (\bar X + \frac{2\epsilon - 1}{2n})\)</span> is an unbiased estimator of <span class="math inline">\(\mu\)</span>. As <span class="math display">\[
-\mathbb{Var}[ \hat \mu ] = \frac{1}{4 \epsilon^2 } \mathbb{Var}[\bar{X} ] \le \frac{1}{16 n \epsilon^2}
-\]</span></p>
-<p>By Chebyshev's inequality, <span class="math display">\[
-\Pr[ |\hat \mu - \mu | \ge \sqrt{2} \cdot \frac{1 }{4\epsilon \sqrt{n} } ] \le \frac{ \mathbb{Var}[ \hat \mu ] }{ ( \sqrt{2} \cdot \frac{1 }{4 \epsilon \sqrt{n} } )^2 } = \frac{1}{2}
-\]</span></p>
-<p>Or we can apply Hoeffding inequality to show that, with probability at least <span class="math inline">\(1 - \delta\)</span>, <span class="math display">\[
-|\bar{X} - \mathbb{E} [ \bar{X} ] | \le \sqrt{ \frac{\log \frac{2}{\delta} }{2n} }
-\]</span></p>
-<p>i.e., <span class="math display">\[
-|\hat \mu - \mu | = \frac{1}{2 \epsilon} |\bar{X} - \mathbb{E} [ \bar{X} ] | \le \frac{1}{ 2 \epsilon } \sqrt{ \frac{\log \frac{2}{\delta} }{2n} }
-\]</span></p>
-<p>which is much tighter than Chebyshev inequality.</p>
-<p>Finally, observe that to get a meaningful estimate <span class="math inline">\(\hat \mu\)</span>, we require that <span class="math inline">\(\frac{ 1 }{\epsilon \sqrt{n} } \le 1\)</span>, i.e., <span class="math inline">\(n \in \Omega(\frac{1}{\epsilon^2})\)</span> or <span class="math inline">\(\epsilon \in \Omega( \frac{1}{ \sqrt{n} } )\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -832,7 +884,7 @@ X_i =
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-count">131</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
