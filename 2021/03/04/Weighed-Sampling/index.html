@@ -28,7 +28,7 @@
 <meta property="og:description" content="Problem A stream of \(n\) elements indexed by \([n] \doteq \{ 1, 2, 3, ..., n \}\). Each element \(i\) is associated with a weight \(w_i\). The goal is to maintain a set \(S\) of \(m\) samples, such">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-03-03T22:44:36.000Z">
-<meta property="article:modified_time" content="2021-03-06T05:47:59.121Z">
+<meta property="article:modified_time" content="2021-03-10T04:59:15.214Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 
@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-06 16:47:59" itemprop="dateModified" datetime="2021-03-06T16:47:59+11:00">2021-03-06</time>
+                <time title="Modified: 2021-03-10 15:59:15" itemprop="dateModified" datetime="2021-03-10T15:59:15+11:00">2021-03-10</time>
               </span>
 
           
@@ -214,25 +214,24 @@
 <span class="math display">\[
 \begin{aligned}
 f(t, x) 
-\doteq \left| \{ i \in [t] \wedge w_i \ge x \} \right| + \sum_{ i \in [t] , w_i &lt; x } \frac{w_i}{ x } 
-= \left| L(t, x) \right| + \frac{1}{x} \cdot W(t, x). 
+&amp;\doteq \left| \{ i \in [t] \wedge w_i \ge x \} \right| + \sum_{ i \in [t] , w_i &lt; x } \frac{w_i}{ x } \\
+&amp;= \left| L(t, x) \right| + \frac{1}{x} \cdot W(t, x). 
 \end{aligned}
 \]</span></p>
 </blockquote>
 <p>For given <span class="math inline">\(t \in [n]\)</span>, <span class="math inline">\(z_t\)</span> is the solution to <span class="math inline">\(f(t, z_t) = m\)</span>.</p>
 <h1 id="algorithm">Algorithm</h1>
-<p>Initially, we can set <span class="math inline">\(z_t = 0\)</span> for <span class="math inline">\(t \in [m]\)</span>, so that <span class="math inline">\(\forall i \in [m], p_i = 1\)</span> and element <span class="math inline">\(i\)</span> is added to <span class="math inline">\(S\)</span>.</p>
-<p>Next, we discuss how to compute <span class="math inline">\(z_{t + 1}\)</span> based on <span class="math inline">\(z_t\)</span> and how to maintain <span class="math inline">\(S\)</span> when the <span class="math inline">\(t + 1\)</span>-th element arrives. Define the sets</p>
-<h2 id="step-1">Step 1</h2>
-<p>We want to find the solution <span class="math inline">\(z_{t + 1}\)</span> for the equation <span class="math inline">\(f(t + 1, x ) = m\)</span>.</p>
-<p>Observe that <span class="math display">\[
+<p>Initially, we can set <span class="math inline">\(z_t = 0\)</span> for <span class="math inline">\(t \in [m]\)</span>, so that <span class="math inline">\(p_t = 1\)</span> and element <span class="math inline">\(t\)</span> is added to <span class="math inline">\(S\)</span>.</p>
+<p>Next, we discuss how to compute <span class="math inline">\(z_{t + 1}\)</span> based on <span class="math inline">\(z_t\)</span> and how to maintain <span class="math inline">\(S\)</span> when the <span class="math inline">\(t + 1\)</span>-th element arrives.</p>
+<h2 id="computing-z_t-1">Computing <span class="math inline">\(z_{t + 1}\)</span></h2>
+<p>We want to find the solution <span class="math inline">\(z_{t + 1}\)</span> for the equation <span class="math inline">\(f(t + 1, x ) = m\)</span> (in which <span class="math inline">\(t + 1\)</span> is fixed and <span class="math inline">\(x\)</span> is the variable). First, observe <span class="math display">\[
     f(t + 1, z_t) = f(t, z_t ) + \min \left\{ \frac{w_{t + 1} }{ z_t}, 1 \right\} &gt; m.
 \]</span></p>
 <p>Hence, it holds that <span class="math inline">\(z_{t + 1} &gt; z_t\)</span>.</p>
 <p>W.L.O.G, assume that <span class="math inline">\(L(t + 1, z_t)\)</span> contains <span class="math inline">\(k\)</span> elements whose weights <span class="math inline">\(\{ x_1, x_2, .., x_k \}\)</span> are sorted in non-decreasing order: <span class="math display">\[
     z_t \doteq x_0 \le x_1 \le x_2 \le ... \le x_k &lt; x_{k + 1} \doteq \infty.
 \]</span></p>
-<p>If we fix <span class="math inline">\(t + 1\)</span>, then for <span class="math inline">\(x &gt; z_t\)</span>, <span class="math inline">\(f(t + 1, x)\)</span> is an decreasing and piece-wise linear function on intervals <span class="math display">\[
+<p>If we fix <span class="math inline">\(t + 1\)</span>, then for <span class="math inline">\(x &gt; z_t\)</span>, <span class="math inline">\(f(t + 1, x)\)</span> is a decreasing and piece-wise linear function on intervals <span class="math display">\[
     ( x_0 , x_1 ], ( x_1 , x_2  ], ...  ( x_{k - 1} , x_k  ] ,( x_k , x_{k + 1}  ).
 \]</span> Here if <span class="math inline">\(x_{j - 1} = x_j\)</span> for some <span class="math inline">\(j \in [ k ]\)</span>, then we consider the interval <span class="math inline">\((x_{j -1}, x_j ]\)</span> an empty set and ignore it. If <span class="math inline">\(z_{t + 1} \in (x_{j -1}, x_j ]\)</span>, it holds that <span class="math display">\[
     \begin{aligned}
@@ -261,27 +260,36 @@ f(t, x)
 5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(C \leftarrow C \cup \{ t + 1 \}\)</span>.<br />
 6. <strong>While</strong> <span class="math inline">\(|L| \neq \emptyset\)</span> and <span class="math inline">\(W / \min_{i \in L } w_i + | L | &gt; m:\)</span><br />
 7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(W \leftarrow W + \min_{i \in L} w_i\)</span>;<br />
-8. <span class="math inline">\(\qquad\)</span> move the element <span class="math inline">\(i \in L\)</span> with minimum <span class="math inline">\(w_i\)</span> from <span class="math inline">\(L\)</span> to <span class="math inline">\(C\)</span>. 7. <span class="math inline">\(z_{t + 1} \leftarrow W / (m - |L| )\)</span>.</p>
+8. <span class="math inline">\(\qquad\)</span> move the element <span class="math inline">\(i \in L\)</span> with minimum <span class="math inline">\(w_i\)</span> from <span class="math inline">\(L\)</span> to <span class="math inline">\(C\)</span>.<br />
+9. <span class="math inline">\(z_{t + 1} \leftarrow W / (m - |L| )\)</span>.</p>
 </blockquote>
-<h2 id="step-2">Step 2</h2>
+<h2 id="maintaining-s">Maintaining <span class="math inline">\(S\)</span></h2>
 <p>Denote <span class="math inline">\(S_t\)</span> the sampled set after <span class="math inline">\(t\)</span> elements are processed. Define <span class="math display">\[
     D = [t] \setminus L( t, z_t ), \\
     E = S_t \setminus L( t, z_t ).
 \]</span> By definition, it holds that <span class="math inline">\(|E| = s - |L(t, z_t) | = W(t, z_t ) / { z_t } = \sum_{i \in D} w_i / z_t\)</span>.</p>
-<p>When the element <span class="math inline">\(t + 1\)</span> comes, let <span class="math inline">\(S&#39; \doteq S_t \cup \{ t + 1 \}\)</span> elements. To obtain a set <span class="math inline">\(S_{t + 1}\)</span> of <span class="math inline">\(m\)</span> samples, we need to discard one element in <span class="math inline">\(S&#39;\)</span>. Suppose that we have computed <span class="math inline">\(z_{t + 1}\)</span>. The elements <span class="math inline">\(\in [t + 1]\)</span> can be partitioned into three sets: <span class="math display">\[
+<p>When the element <span class="math inline">\(t + 1\)</span> comes, let <span class="math inline">\(S&#39; \doteq S_t \cup \{ t + 1 \}\)</span> elements. To obtain a set <span class="math inline">\(S_{t + 1}\)</span>, we need to discard one element in <span class="math inline">\(S&#39;\)</span>. Suppose that we have computed <span class="math inline">\(z_{t + 1}\)</span>. The elements <span class="math inline">\(\in [t + 1]\)</span> can be partitioned into three sets: <span class="math display">\[
     [ t + 1 ] = L(t + 1, z_{t + 1} ) \cup C \cup D. 
 \]</span></p>
 <p>Similarly, the set <span class="math inline">\(S&#39;\)</span> can be decomposed into three parts: <span class="math display">\[
     S&#39; = L(t + 1, z_{t + 1} ) \cup C \cup E. 
 \]</span></p>
 <ol type="1">
-<li><p>If <span class="math inline">\(i \in L(t + 1, z_{t + 1} )\)</span>, it must stay in the sample set.</p></li>
-<li><p>If <span class="math inline">\(i \in C\)</span>, it should be removed with probability <span class="math inline">\(1 - w_i / z_{t + 1}\)</span>. Because if <span class="math inline">\(i \in C\)</span>, either <span class="math inline">\(i = t + 1\)</span> or <span class="math inline">\(i \in L(t , z_t)\)</span>. In both case, <span class="math inline">\(i\)</span> appears in <span class="math inline">\(S&#39;\)</span> with probability <span class="math inline">\(1\)</span>. On the other hand, we only keep it with probability <span class="math inline">\(w_i / z_{ t + 1} &lt; 1\)</span>.</p></li>
-<li><p>If <span class="math inline">\(i \in D\)</span>, it is appears in <span class="math inline">\(S&#39;\)</span> with probability <span class="math inline">\(w_i / z_t\)</span>. Let <span class="math inline">\(p\)</span> be the probability of discarding <span class="math inline">\(i\)</span>, if it appears in <span class="math inline">\(S&#39;\)</span>. As the target probability to keep <span class="math inline">\(i\)</span> should be <span class="math inline">\(w_i / z_{t + 1}\)</span>, it holds that <span class="math display">\[
+<li><p>If <span class="math inline">\(i \in L(t + 1, z_{t + 1} )\)</span>, it must be kept in <span class="math inline">\(S_{t + 1}\)</span>.</p></li>
+<li><p>If <span class="math inline">\(i \in C\)</span>, it should be removed with probability <span class="math inline">\(1 - w_i / z_{t + 1}\)</span>. Since <span class="math inline">\(i \in C\)</span>, either <span class="math inline">\(i = t + 1\)</span> or <span class="math inline">\(i \in L(t , z_t)\)</span>. In both case, <span class="math inline">\(i\)</span> appears in <span class="math inline">\(S&#39;\)</span> with probability <span class="math inline">\(1\)</span>. On the other hand, we only keep it with probability <span class="math inline">\(w_i / z_{ t + 1} &lt; 1\)</span>. Let <span class="math inline">\(p\)</span> be the probability of discarding <span class="math inline">\(i\)</span>. Then <span class="math display">\[  
+     1 \cdot (1 - p) = \frac{w_i}{ z_{t + 1} }. 
+ \]</span> It follows that <span class="math inline">\(p = 1 - w_i / z_{t + 1}\)</span>.</p></li>
+<li><p>If if <span class="math inline">\(i \in E\)</span>, then it should be removed with probability <span class="math inline">\(p = 1 - z_t / z_{t + 1}\)</span>. Since <span class="math inline">\(i \in E\)</span>, it comes from <span class="math inline">\(D\)</span> and appears in <span class="math inline">\(S&#39;\)</span> with probability <span class="math inline">\(w_i / z_t\)</span>. As the target probability to keep <span class="math inline">\(i\)</span> should be <span class="math inline">\(w_i / z_{t + 1}\)</span>, it holds that <span class="math display">\[
      \frac{w_i}{ z_t } \cdot (1 - p) = \frac{ w_i }{ z_{t + 1} }. 
- \]</span> Therefore, if <span class="math inline">\(i \in E\)</span>, it should be discarded with probability <span class="math inline">\(p = 1 - z_t / z_{t + 1}\)</span>.</p></li>
+ \]</span> Therefore, it should be discarded with probability <span class="math inline">\(p = 1 - z_t / z_{t + 1}\)</span>.</p></li>
 </ol>
-<p>Observe that <span class="math display">\[
+<p>Finally, we claim that the sum of probabilities to discard an element equals to 1:</p>
+<blockquote>
+<p><span class="math display">\[
+\sum_{i \in C} \left( 1 - \frac{w_i}{ z_{ t + 1} } \right) + |E| \cdot  \left( 1 - \frac{z_t}{ z_{t + 1} } \right) = 1. 
+\]</span></p>
+</blockquote>
+<p><em>Proof:</em> <span class="math display">\[
     \begin{aligned}
         |S&#39;| - m 
             &amp;= f(t, z_t ) + 1 - f(t + 1, z_{ t + 1} ) \\
@@ -291,7 +299,8 @@ f(t, x)
             &amp;= 1.
     \end{aligned}
 \]</span></p>
-<p>To decide which element from <span class="math inline">\(C \cup E\)</span> to discard, we can perform the follows:</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>To decide which element from <span class="math inline">\(C \cup E\)</span> to discard, we can run the following pseudo-code:</p>
 <blockquote>
 <ol type="1">
 <li>Sample a real number <span class="math inline">\(r \in [0, 1]\)</span> uniformly at random.<br />
@@ -388,7 +397,7 @@ f(t, x)
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#algorithm"><span class="nav-number">2.</span> <span class="nav-text">Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#step-1"><span class="nav-number">2.1.</span> <span class="nav-text">Step 1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#step-2"><span class="nav-number">2.2.</span> <span class="nav-text">Step 2</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#algorithm"><span class="nav-number">2.</span> <span class="nav-text">Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#computing-z_t-1"><span class="nav-number">2.1.</span> <span class="nav-text">Computing \(z_{t + 1}\)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#maintaining-s"><span class="nav-number">2.2.</span> <span class="nav-text">Maintaining \(S\)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
