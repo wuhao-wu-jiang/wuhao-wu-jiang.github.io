@@ -146,6 +146,228 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/15/Stochastic-Multi-Armed-Bandits/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/15/Stochastic-Multi-Armed-Bandits/" class="post-title-link" itemprop="url">Stochastic Multi-Armed Bandits</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-15 23:26:43" itemprop="dateCreated datePublished" datetime="2020-10-15T23:26:43+11:00">2020-10-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-10-21 15:15:01" itemprop="dateModified" datetime="2020-10-21T15:15:01+11:00">2020-10-21</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>The multi-arm bandit problem (MAB) models a casino with <span class="math inline">\(k\)</span> machines, where the reward of each machine is controlled by a fixed and unknown distribution. The player (agent) observes independent random rewards from generated from the distribution of a machine each time it pulls its arm. Because of limited budget, the player can only play the machines <span class="math inline">\(T\)</span> times. The goal of the player is to maximize its expected gain.</p>
+<p>There is an inherent exploration-exploitation nature of the problem. The player has to explore what is a good machine while simultaneously exploits what seems to be a good machine.</p>
+<div style="text-align:center">
+<img src="https://jmichaux.github.io/assets/week6/octopus-bandit.jpeg" />
+</div>
+<h3 id="formulation">Formulation</h3>
+<p>We study the restricted case where the reward distribution of each machine is bounded on <span class="math inline">\([0, 1]\)</span>. Define</p>
+<ol type="1">
+<li><span class="math inline">\(D_i:\)</span> the reward distribution on <span class="math inline">\([0, 1]\)</span> of the <span class="math inline">\(i\)</span>-th machine, where <span class="math inline">\(i \in [k]\)</span>,</li>
+<li><span class="math inline">\(\mu_i:\)</span> the expected reward of the <span class="math inline">\(i\)</span>-th machine, where <span class="math inline">\(i \in [k]\)</span>,</li>
+<li><span class="math inline">\(\mu^* = \max_{i \in [k]} \mu_i\)</span>,</li>
+<li><span class="math inline">\(i^*:\)</span> the index of the machine with highest expected reward,</li>
+<li><span class="math inline">\(\Delta_i = \mu^* - \mu_i\)</span>.</li>
+</ol>
+<p>Let <span class="math inline">\(\vec Y_i\)</span> be the random reward vector whose elements are i.i.d. random variables from <span class="math inline">\(D_i\)</span>:</p>
+<ol start="6" type="1">
+<li><span class="math inline">\(\vec Y_i = (Y_{i, 1}, Y_{i, 2}, ..., Y_{i, T})\)</span></li>
+</ol>
+<p>Denote <span class="math inline">\(Y\)</span> be the matrix of the random variables</p>
+<ol start="7" type="1">
+<li><span class="math display">\[
+ Y = \begin{bmatrix}
+     \vec Y_1 \\
+     \vec Y_2 \\
+     ... \\
+     \vec Y_k
+ \end{bmatrix}
+\]</span></li>
+</ol>
+<p>Each time the player pulls the arm, it observes one random variable from the matrix. Specially, let</p>
+<ol start="8" type="1">
+<li><span class="math inline">\(I_t:\)</span> the machine played at the <span class="math inline">\(t\)</span>-th trial,</li>
+<li><span class="math inline">\(N_i(t):\)</span> the number of times the machine <span class="math inline">\(i\)</span> is played up to trial <span class="math inline">\(t\)</span>.</li>
+</ol>
+<p>Before trial <span class="math inline">\(t\)</span>, the number of random variables observed in <span class="math inline">\(\vec Y_{I_t}\)</span> is <span class="math inline">\(N_{I_t} (t - 1)\)</span>. At trial <span class="math inline">\(t\)</span>, a new random variable in <span class="math inline">\(\vec Y_{I_t}\)</span> is observed, and <span class="math inline">\(N_{I_t} (t) = N_{I_t} (t - 1) + 1\)</span>. Hence, the newly observed random variable is <span class="math inline">\(Y_{I_t, N_{I_t} (t)}\)</span>. For convenience, we define</p>
+<ol start="11" type="1">
+<li><span class="math inline">\(X_{t} \doteq Y_{I_t, N_{I_t} (t)}:\)</span> the rewards obtained at the <span class="math inline">\(t\)</span>-th trial.</li>
+</ol>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StochasticMultiArmBandit.png" width="500" height="250" /></p>
+</div>
+<p>When the player chooses a machine <span class="math inline">\(I_t\)</span> on trial <span class="math inline">\(t\)</span>, it is based on the history of his play, which consists of his past decisions, and the corresponding observed rewards:</p>
+<ol type="1">
+<li><span class="math inline">\(H_t: \{ (I_1, X_1), (I_2, X_2), ..., (I_{t -1}, X_{t - 1}) \}\)</span> the history up to trial <span class="math inline">\(t\)</span>.</li>
+</ol>
+<p>The strategy the player uses at trial <span class="math inline">\(t\)</span> is considered as a functions from <span class="math inline">\(H_t\)</span> to <span class="math inline">\([k]\)</span>:</p>
+<ol start="11" type="1">
+<li><span class="math inline">\(\phi_t: H_t \rightarrow [k]\)</span> a function that chooses a machine based on the history at trial <span class="math inline">\(t\)</span></li>
+</ol>
+<p>We define the policy as the strategies the player uses over all trials:</p>
+<ol start="12" type="1">
+<li><span class="math inline">\(\phi = (\phi_1, \phi_2, ..., \phi_T):\)</span> policy, the strategy for the pulling arms by the player</li>
+</ol>
+<p>The goal is to find a policy that maximizes the expected rewards, or equivalently, the one that minimizes the expected regret <span class="math display">\[ \small
+\mathbb{R}(\phi) = T \cdot \mu^* - \mathbb{E}[\sum_{t = 1}^T X_t ]
+\]</span></p>
+<p>By definition of <span class="math inline">\(N_i(t)\)</span>'s, we have <span class="math inline">\(\sum_{i = 1}^k N_i(T) = T\)</span>. Then the regret can be written as <span class="math display">\[
+\mathbb{R}(\phi) = \mathbb{E}[\sum_{i = 1}^k N_i(T)] \cdot \mu^* - \sum_{i = 1}^k \mathbb{E}[N_i(T) ] \cdot \mu_i = \sum_{i : \Delta_i &gt; 0} \mathbb{E}[N_i(T) ] \cdot \Delta_i
+\]</span></p>
+<h3 id="the-upper-confidence-bound-ucb-algorithm">The Upper Confidence Bound (UCB) Algorithm</h3>
+<p>When making decision at trial <span class="math inline">\(t\)</span>, a good indicator of a machine's performance is its empirical reward: <span class="math display">\[ 
+\hat \mu_{i, N_i(t - 1)} \doteq  \sum_{\tau = 1}^{N_i(t - 1) } \frac{1}{ N_i(t - 1) } Y_{i, \tau}
+\]</span></p>
+<p>But this might not reflect the true value of its expectation <span class="math inline">\(\mu_i\)</span> because of sampling variation. The UCB algorithm takes the variation into consideration.</p>
+<p><strong><em>Fact.</em></strong> <em>Hoeffding Inequality.</em> <em>Let <span class="math inline">\(Z_1, Z_2, ..., Z_s\)</span> be i.i.d. copies of random variable <span class="math inline">\(Z\)</span> on <span class="math inline">\([a, b]\)</span>. Then</em> <span class="math display">\[
+\Pr[ \frac{1}{s} \sum_{\tau = 1}^s Z_\tau - E[Z] \ge r] \le \exp(- \frac{2 s r^2}{(b - a)^2 } )
+\]</span> <em>where r &gt; 0</em>.</p>
+<p>Now, consider a <strong>fixed</strong> <span class="math inline">\(s\)</span> (<span class="math inline">\(1 \le s \le T\)</span>) and a failure probability <span class="math inline">\(\delta &gt; 0\)</span>. Applying Hoeffding inequality with <span class="math inline">\(Z_1 = Y_{i, 1}, Z_2 = Y_{i, 2}, ..., Z_s = Y_{i, s}\)</span>, <span class="math inline">\(a = 0, b = 1\)</span> and <span class="math inline">\(r = \sqrt { \log \frac{1}{\delta} \over 2 s }\)</span>, we get <span class="math display">\[ \small
+\Pr \left[ \hat \mu_{i, s} - \mu_i \ge \sqrt { \log \frac{1}{\delta} \over 2  s } \right] \le \delta
+\]</span></p>
+<p>Similarly, by applying Hoeffding inequality with <span class="math inline">\(Z_1 = -Y_{i, 1}, Z_2 = -Y_{i, 2}, ..., Z_s = -Y_{i, s}\)</span>, <span class="math inline">\(a = -1, b = 0\)</span> and <span class="math inline">\(r = \sqrt { \log \frac{1}{\delta} \over 2 s }\)</span>, we have <span class="math display">\[ \small
+\Pr \left[ \mu_i - \hat \mu_{i, s} \ge \sqrt { \log \frac{1}{\delta} \over 2  s } \right] \le \delta
+\]</span></p>
+<p>Inspired by this, the UCB defines the upper and lower bounds for the expected reward of the <span class="math inline">\(i\)</span>-th machine as follows: <span class="math display">\[ \small
+UB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} + \sqrt { \log t^\alpha \over 2  N_i(t - 1) } \\
+LB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} - \sqrt { \log t^\alpha \over 2  N_i(t - 1) } \\
+\]</span> where <span class="math inline">\(\alpha &gt; 0\)</span> is a parameter to be set. By convention here that if <span class="math inline">\(N_i(t - 1) = 0\)</span>, <span class="math inline">\(\sqrt { \log t^\alpha \over 2 N_i(t - 1) } = \infty\)</span>.</p>
+<p>The UCB algorithms chooses just the machine with highest upper bound. The lower bound is needed for its analysis.</p>
+<blockquote>
+<p><strong><em>UCB algorithm</em></strong><br />
+1. For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span> do<br />
+2. <span class="math inline">\(\qquad\)</span> Choose <span class="math inline">\(I_t = \arg \max_{i \in [k] } UB_i ( t )\)</span><br />
+3. <span class="math inline">\(\qquad\)</span> Observe a reward <span class="math inline">\(X_t\)</span></p>
+</blockquote>
+<p>Intuitively, there are two cases when <span class="math inline">\(UB_i ( t )\)</span> is high:</p>
+<ol type="1">
+<li>The value <span class="math inline">\(\mu_i\)</span> is high;</li>
+<li>The <span class="math inline">\(i\)</span>-th machine is under-explored.</li>
+</ol>
+<p><strong><em>Caveat:</em> <em>The reader might start to think that at trial <span class="math inline">\(t\)</span>, it holds that <span class="math inline">\(\Pr[\mu_i \ge UB_i(t) ]\)</span> (or <span class="math inline">\(\Pr[\mu_i \le LB_i(t) ]\)</span>) is bounded by <span class="math inline">\(\frac{1}{t^\alpha}\)</span>, according to Hoeffding inequality. It is not. Hoeffding inequality requires the number of samples to be a fixed number. On the other hand, <span class="math inline">\(N_i(t - 1)\)</span> is a random variable that depends on the history of the game. We will discuss this later.</em></strong></p>
+<p>The following theorem states that the expected regret of UCB algorithm grows logarithmically with <span class="math inline">\(T\)</span>.</p>
+<p><strong><em>Theorem.</em></strong> <em>If <span class="math inline">\(\alpha &gt; 2\)</span>, the regret of the UCB algorithm is bounded by</em> <span class="math display">\[ \small
+\mathbb{R}(\phi) \le  \log T \cdot ( \sum_{i : \Delta_i &gt; 0 } \frac{2 \alpha }{\Delta_i } ) + \frac{\alpha}{ \alpha - 2 } \sum_{i : \Delta_i &gt; 0 } \Delta_i
+\]</span></p>
+<p><em>Proof:</em></p>
+<p>We will show that for <span class="math inline">\(i : \Delta_i &gt; 0\)</span>, <span class="math display">\[ \small
+\mathbb{E} [n_{i, T}] \le \frac{ \alpha \log T }{ \Delta_i^2} + \frac{\alpha}{\alpha - 2} 
+\]</span></p>
+<p>The key for the proof relies on a sufficient condition that the <span class="math inline">\(i\)</span>-th machine will not be chosen at trial <span class="math inline">\(t\)</span>:</p>
+<blockquote>
+<p>if the following events happen at trial <span class="math inline">\(t\)</span>, machine <span class="math inline">\(i\)</span> will not be chosen: 1. <span class="math inline">\(A_t: 2 \sqrt { \alpha \log t \over 2 N_i(t - 1) } \le \Delta_i\)</span><br />
+2. <span class="math inline">\(B_t: UB_{ i^* } ( t ) &gt; \mu^*\)</span><br />
+3. <span class="math inline">\(C_t: \mu_i &gt; LB_i ( t )\)</span></p>
+</blockquote>
+<p>This condition essentially prevents <span class="math inline">\(UB_i(t)\)</span> from exceeding <span class="math inline">\(\mu^*\)</span> while assures <span class="math inline">\(UB_{i^*}(t)\)</span> is higher than <span class="math inline">\(\mu^*\)</span>.</p>
+<p><span class="math display">\[ \small
+UB_i ( t ) = LB_i ( t ) + 2 \sqrt { \alpha \log t \over 2  N_i(t - 1) } &lt; \mu_i + \Delta_i = \mu^* &lt; UB_{ i^* } ( t )
+\]</span></p>
+<p>Let <span class="math inline">\(\beta = \lceil \frac{2 \alpha \log T}{\Delta_i^2} \rceil\)</span>. Note that <span class="math inline">\(A_t = \{ N_i(t - 1) \ge \frac{2 \alpha \log t}{\Delta_i^2} \} \subset \{ N_i(t - 1) \ge \beta \}\)</span>. Now, <span class="math display">\[
+\{I_t = i \} \subset \overline{ A_t \cap B_t \cap C_t } = \bar A_t \cup \bar B_t \cup \bar C_t
+\]</span></p>
+<p>and <span class="math display">\[
+\begin{array}{ll} 
+    \mathbb{E}[n_{i, T}]    &amp;=  \mathbb{E}[ \sum_{t = 1}^T \mathfrak{1} \{I_t = i\} ]  \\
+                            &amp;=  \mathbb{E} [ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, \bar A_t \}+ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, A_t \} ]  \\
+                            &amp;\le  \mathbb{E} [ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, \  N_i(t) &lt; \beta \} ] + \sum_{t = 1}^T \mathbb{E} [\mathfrak{1} \{I_t = i, A_t \} ]  \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T \Pr[ \{I_t = i\} \cap A_t ] \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T ( \Pr[ \bar B_t \cap A_t ] + \Pr[ \bar C_t \cap A_t ] ) \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T ( \Pr[ \bar B_t ] + \Pr[ \bar C_t ] ) \\
+\end{array}
+\]</span></p>
+<p>It is non-trivial to bound <span class="math inline">\(\Pr[\bar B_t]\)</span>. For a fixed <span class="math inline">\(1 \le s \le t - 1\)</span>, define the event <span class="math display">\[
+M_s : \frac{1}{s} \sum_{\tau = 1}^s Y_{i^*, \tau} + \sqrt{ \frac{\alpha \log t}{2 s} } \le \mu^*
+\]</span></p>
+<p>Since <span class="math inline">\(s\)</span> is fixed, by Hoeffding inequality, <span class="math inline">\(\Pr[M_s] \le \frac{1}{t^\alpha}\)</span>. Then <span class="math display">\[ \small
+\begin{aligned}
+    \bar B_t = \left\{ \mu_{ {i^*}, N_{i^*} (t - 1)} + \sqrt { \alpha \log t \over 2  N_{i^*} (t - 1) }  \le \mu^* \right\} \subset \cup_{s = 1}^{t - 1} M_s
+\end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+\Pr[ \bar B_t ] \le \Pr[ \cup_{s = 1}^{t - 1} M_s ] \le \sum_{s = 1}^{t - 1} \Pr[M_s] &lt; t^{\alpha - 1}
+\]</span></p>
+<p>and <span class="math display">\[
+\sum_{t = \beta + 1}^T \Pr[ \bar B_t ] &lt; \sum_{t = \beta + 1}^T t^{\alpha - 1} &lt; \int_{t = 1}^\infty \frac{1}{ x^{\alpha - 1} } dx  = \frac{1}{\alpha - 2} x^{-(\alpha - 2)} \mid_{t = 1}^\infty  = \frac{1}{\alpha - 2}
+\]</span></p>
+<p>Similarly, we have <span class="math display">\[ 
+\sum_{t = \beta + 1}^T \Pr[ \bar C_t ] &lt; \frac{1}{\alpha - 2}
+\]</span></p>
+<p>Finally, <span class="math display">\[
+\begin{aligned} \small
+    \mathbb{E} [n_{i, T}] 
+                &amp;\le \beta + \frac{2}{\alpha - 2} \\
+                &amp;\le \frac{2 \alpha \log T}{\Delta_i^2} + 1 + \frac{2}{\alpha - 2} \\
+                &amp;= \frac{2 \alpha \log T}{\Delta_i^2} + \frac{\alpha }{\alpha - 2} 
+\end{aligned}
+\]</span></p>
+<p><strong><em>Remark:</em></strong> <em>Can we bound <span class="math inline">\(\Pr[ \bar B_t ]\)</span> as follows:</em> <span class="math display">\[
+\begin{array}{ll} 
+    \Pr[\bar B_t] &amp;= \sum_{\tau = 1}^{t - 1} \Pr[UB_{ i^* } ( t ) &lt; \mu^* \mid n_{i^*, t} = \tau] \cdot \Pr[n_{i^*, t} = \tau]\\
+    &amp;= \sum_{\tau = 1}^{t - 1} \frac{1}{t^\alpha} \cdot \Pr[n_{i^*, t} = \tau] \\
+    &amp;= \frac{1}{t^\alpha} 
+\end{array}
+\]</span></p>
+<p>When we know <span class="math inline">\(n_{i^*, t} = \tau\)</span> for some <span class="math inline">\(\tau\)</span>, the <span class="math inline">\(n_{i^*, t}\)</span> rewards from machine <span class="math inline">\(i^*\)</span> can't be viewed as independent samples. E.g., if <span class="math inline">\(t\)</span> is large, the best machines has much larger expected reward than others, and <span class="math inline">\(n_{i^*, t}\)</span> is very small compared to <span class="math inline">\(t\)</span>. Then it is likely machine <span class="math inline">\(i^*\)</span> generates bad rewards in the history. The reward sequence of <span class="math inline">\(i^*\)</span> can't be viewed as a sequence of independent samples from distribution <span class="math inline">\(D_{i^*}\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h2 id="reference">Reference</h2>
+<p>[1] D. Katselis, B. Miranda, and H. Hu, “Lecture 8: Multi-Armed Bandits”, ECE586 MDPs and Reinforcement Learning, Spring 2019, University of Illinois at Urbana-Champaign.<br />
+[2] S. Bubeck and N. Cesa-Bianchi, “Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,” arXiv:1204.5721 [cs, stat], Nov. 2012, Accessed: Oct. 19, 2020.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/21/Median-of-Mean/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -476,324 +698,6 @@ S_i \doteq \{ r \in \{0, 1\}^n :  r \text{ is decoded correctly if } s_i \text{ 
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/07/Entropy-and-Compression/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/06/07/Entropy-and-Compression/" class="post-title-link" itemprop="url">Entropy and Compression</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-06-07 12:24:22" itemprop="dateCreated datePublished" datetime="2020-06-07T12:24:22+10:00">2020-06-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-13 23:57:00" itemprop="dateModified" datetime="2020-07-13T23:57:00+10:00">2020-07-13</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>One interpretation of entropy of a random variable is as a measure of how many unbiased, independent random bits in expectation we can extract from the random variable. Another one comes from compression of a sequence.</p>
-<p>Assume that the sequence studied (denoted as <span class="math inline">\(s\)</span>) is a binary one. It consists of a concatenation of the outcomes of <span class="math inline">\(n\)</span> independent Bernoulli random variables. Without lose of generality, we assume that each bit comes up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p \le { 1 / 2 }\)</span>. This is one of the simplest models of a sequence.</p>
-<p>The fact that sequence could be a biased one makes it possible to represent it by a new sequence with shorter length in expectation. For example, suppose that <span class="math inline">\(p = \frac{1}{4}\)</span>, then for a pair of consecutive bits, it have</p>
-<ol type="1">
-<li>probability <span class="math inline">\(\frac{1}{16}\)</span> of being <span class="math inline">\(11\)</span>,<br />
-</li>
-<li>probability <span class="math inline">\(\frac{3}{16}\)</span> of being <span class="math inline">\(01\)</span>,</li>
-<li>probability <span class="math inline">\(\frac{3}{16}\)</span> of being <span class="math inline">\(10\)</span>,</li>
-<li>probability <span class="math inline">\(\frac{9}{16}\)</span> of being <span class="math inline">\(00\)</span>.</li>
-</ol>
-<p>If we use <span class="math inline">\(111\)</span> to represent <span class="math inline">\(11\)</span>, <span class="math inline">\(110\)</span> to represent <span class="math inline">\(01\)</span>, <span class="math inline">\(10\)</span> to represent <span class="math inline">\(10\)</span>, and <span class="math inline">\(0\)</span> to represent <span class="math inline">\(00\)</span>, then the expected number of representation bits per pair is <span class="math display">\[
-\begin{array}{r}
-    3 \cdot \frac{1}{16} + 3 \cdot \frac{3}{16} + 2 \cdot  \frac{3}{16} + 1 \cdot  \frac{9}{16} 
-    = \frac{27}{16} 
-    &lt; 2
-\end{array}
-\]</span></p>
-<p>In general, compression is not limited to the way described above. We call the rule with which we compress a string <em>a compression function</em>.</p>
-<h3 id="compression-function"><strong><em>Compression Function</em></strong></h3>
-<p><em>Let <span class="math inline">\(S = \{0, 1\}^n\)</span> be the set of binary sequence of length <span class="math inline">\(n\)</span>, and <span class="math inline">\(T = \{ 0, 1\}^+\)</span> the set of binary sequence of any positive length. A compression function <span class="math inline">\(h: S \rightarrow T\)</span> is an injective (one-to-one) function from <span class="math inline">\(S\)</span> to <span class="math inline">\(T\)</span>.</em></p>
-<p>In other words, each <span class="math inline">\(s \in S\)</span> is assigned a unique non-empty sequence (of arbitrary length) by <span class="math inline">\(h\)</span>.</p>
-<p>Observe that the size of <span class="math inline">\(S\)</span> is <span class="math inline">\(2^n\)</span>. On the other hand, the number of sequences with length less than <span class="math inline">\(n\)</span> is <span class="math inline">\(\sum_{i = 1}^{n - 1} 2^{i} = 2^n - 1 &lt; 2^n\)</span>. For any <span class="math inline">\(h\)</span>, it is impossible for <span class="math inline">\(h\)</span> to map every <span class="math inline">\(s \in S\)</span> to a sequence with length less than <span class="math inline">\(n\)</span>. Under adversarial input, <span class="math inline">\(h\)</span> can not compress at all.</p>
-<p>The hope is that when there is a distribution <span class="math inline">\(\mathfrak{D}\)</span> on <span class="math inline">\(S\)</span>, the expected length of the compressed sequences would be small: <span class="math display">\[
-\mathbf{E} [ |h(s)| ] = \sum_{s \in S} p_s \cdot |h(s)|
-\]</span></p>
-<p>To illustrate the meaning of entropy, we study a simple case where <span class="math inline">\(\mathfrak{D}\)</span> is the joint distribution of <span class="math inline">\(n\)</span> <em>i.i.d.</em> Bernoulli random variables that come up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p \le { 1 / 2 }\)</span> (by symmetry, the claim holds for the case of <span class="math inline">\(p &gt; { 1 / 2 }\)</span>).</p>
-<p>The following theorem formalizes how good a compression function we can find.</p>
-<h3 id="entropy-as-lower-bound-and-upper-bound"><strong><em>Entropy as Lower Bound and Upper Bound</em></strong></h3>
-<p><em>Theorem.</em></p>
-<ol type="1">
-<li><span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> a compression <span class="math inline">\(h\)</span> and integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that <span class="math display">\[
-\mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)
-\]</span></li>
-<li><span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that for any compression <span class="math inline">\(h\)</span>, <span class="math display">\[
-     \mathbf{E}[ |h(s)| ] \ge (1 - \delta) n \mathbf{H}(p)
- \]</span></li>
-</ol>
-<p><em>Intuitively, the entropy <span class="math inline">\(\mathbf{H}(p)\)</span> is the measure of the average number of bits in expectation we need after compression to represent a Bernoulli random variable that comes up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p\)</span>.</em></p>
-<p><em>The high level idea of the proof is that, with high probability, the number of ones in a <span class="math inline">\(s \in S\)</span> is roughly <span class="math inline">\(np\)</span>. There are roughly <span class="math inline">\(2^{n\mathbf{H}(p)}\)</span> such sequences. Therefore, we can use <span class="math inline">\(n \mathbf{H}(p)\)</span> bits to represent each sequence.</em></p>
-<p><strong><em>Proof.</em></strong> The claim is trivially true if <span class="math inline">\(p = { 1 / 2 }\)</span>. Otherwise, <span class="math inline">\(p &lt; { 1 / 2 }\)</span>. We can pick some <span class="math inline">\(\epsilon &gt; 0\)</span>, such that <span class="math inline">\(p + \epsilon &lt; { 1 / 2 }\)</span>. Further, if <span class="math inline">\(n\)</span> is large enough, <span class="math inline">\(np + n\epsilon \le n / 2 - 1\)</span>. Hence, we may assume that <span class="math inline">\(\lceil np + n\epsilon \rceil \le n / 2\)</span> .</p>
-<p>Denote <span class="math inline">\(Z\)</span> be the number of ones in the string <span class="math inline">\(s\)</span>. By Hoeffding Inequality, it holds that <span class="math display">\[
-\Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)
-\]</span></p>
-<p>By the fact that <span class="math inline">\(Z\)</span> takes only integer values, we have <span class="math display">\[
-\Pr[Z \ge \lceil np + n\epsilon \rceil] \le \exp(-2 n \epsilon^2 )
-\]</span></p>
-<p>We use the first bit output of <span class="math inline">\(h\)</span> as a flag. For a string <span class="math inline">\(s\)</span> with <span class="math inline">\(Z \ge \lceil np + n\epsilon \rceil\)</span>, we set the first bit to <span class="math inline">\(0\)</span> and then output the same sequence, i.e., <span class="math inline">\(h(s) = 0s\)</span>. In such case we do not compress the string at all and use <span class="math inline">\(n + 1\)</span> bits to represent it.</p>
-<p>We set the first bit output to <span class="math inline">\(1\)</span> if <span class="math inline">\(Z &lt; \lceil np + n \epsilon \rceil \le n / 2\)</span>. The number of such sequences is bounded by <span class="math display">\[
-\sum_{k = 0}^{\lceil np + n\epsilon \rceil - 1} \binom{n}{k} \le  \frac{n}{2} \binom{n}{\lceil np + n\epsilon \rceil - 1 } \le \frac{n}{2} 2^{ n \cdot \mathbf{H} \left( \frac{ \lceil np + n\epsilon \rceil - 1 }{n} \right) } \le \frac{n}{2} 2^{ n \mathbf{H} \left( p + \epsilon  \right) }
-\]</span></p>
-<p>The first inequality holds because <span class="math inline">\(\binom{n}{k}\)</span> increases for <span class="math inline">\(k &lt; n / 2\)</span> and that the summation is over <span class="math inline">\(\lceil np + n \epsilon \rceil \le n / 2\)</span> terms. The last inequality holds since <span class="math inline">\((\lceil np + n\epsilon \rceil - 1) / n \le ( np + n\epsilon ) / n = p + \epsilon &lt; 1 / 2\)</span> and <span class="math inline">\(\mathbf{H}( \cdot )\)</span> is a increasing function in the range <span class="math inline">\([0, 1/2]\)</span>.</p>
-<p>We compress these sequences by representing each of them with a unique sequence of at most<br />
-<span class="math display">\[
-\begin{array}{rl}
-    \log \left[ (n / 2) \cdot  2^{ n \cdot\mathbf{H} \left( p + \epsilon  \right) } \right]
-    = n \cdot\mathbf{H} \left( p + \epsilon  \right)  + \log n -1
-\end{array}
-\]</span></p>
-<p>bits. Considering the leading flag bit 1 (to indicate the sequence is a compressed one), we output at most <span class="math inline">\(n \mathbf{H} \left( p + \epsilon \right) + \log n\)</span> bits for sequences with <span class="math inline">\(Z &lt; \lceil np + n \epsilon \rceil\)</span>. This can be written as <span class="math inline">\(\left[ \mathbf{H} \left( p + \epsilon \right) + (1 / n) \cdot (\log n - 1) \right] n\)</span> bits and is smaller than <span class="math display">\[
-(1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n
-\]</span></p>
-<p>is <span class="math inline">\(\epsilon\)</span> is smaller enough and <span class="math inline">\(n\)</span> is large enough.</p>
-<p>We are almost done with the proof. It is left to consider sequences with <span class="math inline">\(Z \ge \lceil np + n \epsilon \rceil\)</span>. For those sequence, we don't compress them and and set the leading flag bit to 0. The outputs for those sequences consist of at most <span class="math inline">\(1 + n\)</span> bits. However, by Hoeffding inequality, such sequences do not appear frequently and the expected output length can be made arbitrary small.</p>
-<p>Specifically, <span class="math inline">\(\forall \delta &gt; 0\)</span>, we can find large enough <span class="math inline">\(N\)</span>, such that <span class="math inline">\(\forall n &gt; N\)</span>, it holds</p>
-<p><span class="math display">\[
-(n + 1 ) \cdot \exp(-2 n \epsilon^2 ) \le n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)
-\]</span></p>
-<p>Then, in expectation, the bits outputted by <span class="math inline">\(h\)</span> is at most <span class="math display">\[
-\begin{aligned}
-    &amp;(n + 1) \cdot \exp(-2 n \epsilon^2 ) + [n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ] \cdot [ 1 - \exp(-2 n \epsilon^2 ) ] \\
-    \le&amp; n \cdot (\delta / 2)  \cdot  \mathbf{H}(p) + [ n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ]\\
-    \le&amp; n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)  +  (1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n\\
-    \le&amp; \left(  1 + \delta \right) \cdot \mathbf{H}(p) \cdot n
-\end{aligned}
-\]</span></p>
-<p>To prove the lower bound, first we need the following lemma.</p>
-<p><strong><em>Lemma.</em></strong> <em>for <span class="math inline">\(s_1, s_2 \in S\)</span>, if <span class="math inline">\(s_1\)</span> has more ones than <span class="math inline">\(s_2\)</span>, i.e., <span class="math inline">\(\Pr(s_1) \ge \Pr(s_2)\)</span>, then the <span class="math inline">\(h\)</span> that minimizes the expected output length <span class="math inline">\(\mathbf{E}[ |h(s)| ]\)</span> should assign <span class="math inline">\(s_1\)</span> a sequence at most as long as <span class="math inline">\(s_2\)</span>, i.e., <span class="math inline">\(|h(s_1)| \le |h(s_2)|\)</span>.</em></p>
-<p><em>Proof</em>. Otherwise, if we swap the output sequences of <span class="math inline">\(h(s_1)\)</span> and <span class="math inline">\(h(s_2)\)</span>, we lower value of <span class="math inline">\(\mathbf{E}[ |h(s)| ]\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>Further, consider the number of <span class="math inline">\(s \in S\)</span> with <span class="math inline">\(\lfloor np - n \epsilon \rfloor\)</span> ones, <span class="math display">\[
-\begin{aligned}
-\binom{n}{\lfloor np - n\epsilon \rfloor } 
-    &amp;\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H} \left( { \lfloor np - n\epsilon \rfloor } / { n} \right) } \\
-    &amp;\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H}( { (np - n\epsilon - 1) } / {n} )} \\
-    &amp;\ge 2^{ \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) -  \log (n + 1)  \rfloor }
-\end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(k = \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) - \log (n + 1) \rfloor\)</span>. For large enough <span class="math inline">\(n\)</span>, it holds that <span class="math display">\[
-k \ge (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)
-\]</span></p>
-<p>Further, since <span class="math display">\[
-\sum_{i = 1}^{  k - 1  } 2^i \le \sum_{i = 0}^{  k - 1  } 2^i = 2^{  k } - 1 &lt; 2^k,
-\]</span></p>
-<p>there are strictly less than <span class="math inline">\(2^k\)</span> distinct binary sequences with length at most <span class="math inline">\(k - 1\)</span>.</p>
-<p>Therefore, for the set of <span class="math inline">\(s \in S\)</span> with <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones, at least one of them has output length at least <span class="math inline">\(k\)</span>.</p>
-<p>By the previous lemma, all sequences with more than <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones has length at least <span class="math inline">\(k\)</span>.</p>
-<p>Denote <span class="math inline">\(Z\)</span> be the number of ones in the string <span class="math inline">\(s\)</span>. By Hoeffding Inequality, it holds that <span class="math display">\[
-\Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)
-\]</span></p>
-<p>By the fact that <span class="math inline">\(Z\)</span> takes only integer values, we have <span class="math display">\[
-\Pr[Z \le \lfloor np - n\epsilon \rfloor] \le \exp(-2 n \epsilon^2 )
-\]</span></p>
-<p>The expected output length of the sequences with more than <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones is at least <span class="math display">\[
-\begin{aligned}
-    &amp;[ 1 - \exp(-2n\epsilon^2) ] \cdot k \\
-    =&amp;[ 1 - \exp(-2n\epsilon^2) ] \cdot  (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)
-\end{aligned}
-\]</span></p>
-<p>This is at least <span class="math inline">\((1 - \delta) \cdot n \cdot \mathbf{H}(p)\)</span> when <span class="math inline">\(n\)</span> is large enough.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h3 id="huffman-code"><strong><em>Huffman Code</em></strong></h3>
-<p>In this section, we show that the upper bound can be achieved by Huffman code.</p>
-<blockquote>
-<p><em><span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> a compression <span class="math inline">\(h\)</span> and integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that</em> <span class="math display">\[
-\mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)
-\]</span></p>
-</blockquote>
-<p>We begin with an important property of Huffman Code. Suppose that we have an alphabet <span class="math inline">\(\mathbb{U}\)</span> such that probability associated with each element in <span class="math inline">\(\mathbb{U}\)</span> is <span class="math inline">\(2^{-l}\)</span> for some integer <span class="math inline">\(l\)</span>. Then <span class="math inline">\(\exists h\)</span>, such that <span class="math display">\[
-   \mathbf{E}_{X \in \mathbb{U} } [ |h(X)| ] =  n \mathbf{H}(X)
-\]</span></p>
-<p>For example, if <span class="math inline">\(\mathbb{U} = \{0, 1, 2, 3 \}\)</span> and the distribution <span class="math inline">\(p = \{ 0.5, 0.25, 0.125, 0.125 \}\)</span>, then we can have the following encoding</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Encoding.png" /></p>
-<p>The expected coding length is <span class="math display">\[
-0.5 \cdot 1 + 0.25 \cdot 2 + 2 \cdot 0.125 \cdot 3 = 1.75
-\]</span></p>
-<p>which is exactly the entropy of the random variable.</p>
-<p>In general, if we have a random variable <span class="math inline">\(X\)</span>, we can round down its probability to the nearest integer negative power of <span class="math inline">\(2\)</span>. The expected code length is given by <span class="math display">\[
-\sum_{i } p_i \left\lceil \log \frac{1}{p_i} \right\rceil \le \mathbf{H}(p) + 1
-\]</span></p>
-<p>Intuitively, the <span class="math inline">\(\left\lceil \log \frac{1}{p_i} \right\rceil\)</span> has enough slot to accommodate all elements with probabilities <span class="math inline">\(p_i\)</span>'s.</p>
-<p>In particular, we view <span class="math inline">\(\{0, 1\}^n\)</span> as a large alphabet <span class="math inline">\(\mathbf{\Sigma }\)</span>. The alphabet has entropy <span class="math inline">\(n \cdot \mathbf{H}(p)\)</span>. We can have a encoding such that the expected output length is at most <span class="math inline">\(n \cdot \mathbf{H}(p) + 1\)</span>. For large enough <span class="math inline">\(n\)</span>, this is at most <span class="math inline">\((1 + \delta) n \cdot \mathbf{H}(p)\)</span>.</p>
-<h3 id="relative-entropy-and-mutual-information"><strong><em>Relative Entropy and Mutual Information</em></strong></h3>
-<h4 id="relative-entropy">Relative Entropy</h4>
-<p>Given a distribution <span class="math inline">\(p\)</span>, we mistaken it as a distribution <span class="math inline">\(q\)</span>, the expected coding length is roughly <span class="math display">\[
-\sum_i p_i \log \frac{1}{q_i}
-\]</span></p>
-<p>The discrepancy between the optimal coding is given by <span class="math display">\[
-D(p || q) = \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i} = \sum_i p_i \log \frac{p_i}{q_i}
-\]</span></p>
-<p>By definition, we know that this gap is always non-negative. We can prove it rigorously algebraically. We show two different approaches here.</p>
-<ol type="1">
-<li>By that <span class="math inline">\(f(x) = x \log x\)</span> is convex for <span class="math inline">\(x \ge 0\)</span>, we have <span class="math display">\[
-\begin{aligned}
-    D(p || q) &amp;= \sum_i p_i \log \frac{p_i}{q_i} \\
-    &amp;= \sum_i q_i \cdot \frac{p_i}{q_i} \log \frac{p_i}{q_i} \\
-    &amp;\ge \left( \sum_i q_i \cdot \frac{p_i}{q_i} \right) \log \left( \sum_i q_i \cdot \frac{p_i}{q_i} \right) \\
-    &amp;= 0
-\end{aligned}
-\]</span></li>
-<li>By that <span class="math inline">\(f(x) = -\log x\)</span> is convex (for <span class="math inline">\(x \ge 0\)</span> ), we have <span class="math display">\[
-\begin{aligned}
-    D(p || q) &amp;= \sum_i - p_i \log \frac{q_i}{p_i} \\
-    &amp;\ge  -\log \left( \sum_i p_i \cdot \frac{q_i}{p_i} \right) \\
-    &amp;= 0
-\end{aligned}
-\]</span></li>
-</ol>
-<h4 id="mutual-information">Mutual Information</h4>
-<p>Given two random variable, the mutual information between them is defined as <span class="math display">\[
-I(X; Y) = I(Y; X) = \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(x, y)}{p(x) p(y) } \right]
-\]</span></p>
-<p>If we know <span class="math inline">\(p(x,y)\)</span> we use in expectation <span class="math inline">\(\mathbb{E}_{p(x, y) } \left[ \log \frac{1} { p(x, y)} \right]\)</span> to describe them. If we know only <span class="math inline">\(p(x)\)</span> and <span class="math inline">\(p(y)\)</span>, the mutual information measured the bits we waste.</p>
-<p><span class="math display">\[
-\begin{aligned}
-    &amp;\sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } \\
-    =&amp;  \sum p(x, y) \log \frac{ 1 }{p(x)} \\
-    &amp;+  \sum p(x, y) \log \frac{ 1 }{p(y)} \\
-    &amp;-  \sum p(x, y) \log \frac{ 1 }{p(x, y)} \\
-    =&amp; \mathbf{H} ( X ) + \mathbf{H} ( Y ) - \mathbf{H} ( X, Y ) \\
-    =&amp;\sum p(x, y) \log \frac{ p(x | y)}{p(x)  } \\
-    =&amp; \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y) \\
-    =&amp;\sum p(x, y) \log \frac{ p(x | y)}{ p(x) }  \\
-    =&amp; \mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y) \\
-\end{aligned}
-\]</span></p>
-<p><strong><em>Lemma.</em></strong> <span class="math display">\[
-\mathbf{I}(X; Y) \ge 0
-\]</span></p>
-<p><strong><em>Proof.</em></strong> <span class="math display">\[
-\mathbf{I}(X; Y) = D( p(x, y) \mid p(x) p(y) ) \ge 0
-\]</span></p>
-<p>Or <span class="math display">\[
-\begin{aligned}
-    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } 
-    &amp;= -\sum p(x, y) \log \frac{p(x) p(y) }{ p(x, y)} \\
-    &amp;\ge - \log \sum p(x, y) \frac{p(x) p(y) }{ p(x, y)} \\
-    &amp;=0   
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p><strong><em>Corollary</em></strong> <span class="math display">\[
-\mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y) = \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y) \ge 0
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p><strong><em>Definition</em></strong> Conditional Relative Entropy <span class="math display">\[
-\begin{aligned}
-    \mathbf{D}( p(y \mid x) || q(y \mid x) ) &amp;\doteq  \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(Y \mid X) }{ q(Y \mid X) }  \right]\\
-    &amp;=\sum_{x}  \sum_{ y } p(y \mid x) \log \frac{ p(y \mid x) }{ q(y \mid x) }
-\end{aligned}
-\]</span></p>
-<p><strong><em>Lemma.</em></strong> Relative entropy <span class="math inline">\(\mathbf{D}( p || q )\)</span> is convex in the pair <span class="math inline">\((p, q)\)</span>: if there are two distribution pairs <span class="math inline">\((p_1, q_1)\)</span> and <span class="math inline">\((p_2, q_2)\)</span>, then . <span class="math display">\[
-\mathbf{D}( \lambda p_1 + (1 - \lambda) p_2 || \lambda q_1 + (1 - \lambda_1) q_2 ) \le \lambda \mathbf{D}( p_1 ||  q_1 ) + (1 - \lambda) \mathbf{D}( p_2 ||  q_2 )
-\]</span></p>
-<p><strong><em>Proof.</em></strong> For any fix value <span class="math inline">\(x\)</span>, it holds that <span class="math display">\[
-\begin{aligned}
-    &amp;[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \frac{ \lambda p_1(x) + (1 - \lambda) p_2(x) }{ \lambda q_1(x) + (1 - \lambda) q_2(x) } \\
-    &amp;=-[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \frac { \lambda q_1(x) + (1 - \lambda) q_2(x) } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \\
-    &amp;= -[ \lambda p_1(x) + (1 - \lambda) p_2(x) ] \log \left( \frac { \lambda p_1(x)  } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \frac { \lambda q_1(x) } { \lambda p_1(x)  } + \frac { (1 - \lambda) p_2(x)  } { \lambda p_1(x) + (1 - \lambda) p_2(x) } \frac { (1 - \lambda) q_2(x) } { (1 - \lambda) p_2(x)  } \right) \\
-    &amp;\le -\lambda p_1(x) \log   \frac { \lambda q_1(x) } { \lambda p_1(x)  } - (1 - \lambda) p_2(x) \log \frac { (1 - \lambda) q_2(x) } { (1 - \lambda) p_2(x)  }
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h3 id="chain-rules"><strong><em>Chain Rules</em></strong></h3>
-<p>Let <span class="math inline">\(X_1, X_2, ..., X_n\)</span> be random variables whose density function is <span class="math inline">\(p(x_1, x_2, ..., x_n)\)</span>, then</p>
-<ol type="1">
-<li><p><span class="math inline">\(\mathbf{H}(X_1, X_2, ..., X_n) = \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1})\)</span><br />
-<strong><em>Proof.</em></strong><br />
-<span class="math display">\[
- \begin{aligned}
-     \mathbf{H}(X_1, X_2, ..., X_n) 
-         &amp;= \sum_{x_1, x_2, ..., x_n} p(x_1, x_2, ..., x_n)  \log \frac{1}{\prod_{i = 1}^n p(x_i \mid x_1, ..., x_{i - 1})  }  \\
-         &amp;= \sum_{x_1, x_2, ..., x_n} p(x_1, x_2, ..., x_n) \sum_{i = 1}^n \log \frac{1}{ p(x_i \mid x_1, ..., x_{i - 1})  }  \\
-         &amp;=\sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1}) \\
- \end{aligned}
- \]</span></p>
-<p><strong><em>Corollary</em></strong> <span class="math display">\[
- \mathbf{H} ( X_1, X_2, ..., X_n) = \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1}) \le \sum_{i = 1}^n \mathbf{H}(X_i)
- \]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><span class="math inline">\(\mathbf{I}(X_1, X_2, ..., X_n; Y) = \sum_{i = 1}^n \mathbf{I}(X_i ; Y\mid X_1, ..., X_{i - 1})\)</span><br />
-<strong><em>Proof.</em></strong><br />
-<span class="math display">\[
- \begin{aligned}
-     \mathbf{I}(X_1, X_2, ..., X_n; Y)
-     &amp;=  \mathbf{H}(X_1, X_2, ..., X_n) -  \mathbf{H}(X_1, X_2, ..., X_n \mid Y) \\
-     &amp;= \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1})  - \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, ..., X_{i - 1}, Y) \\
-     &amp;= \sum_{i = 1}^n \mathbf{I}(X_i ; Y\mid X_1, ..., X_{i - 1}) \\
- \end{aligned}
- \]</span><br />
-</p></li>
-<li><p><span class="math inline">\(\mathbf{D}( p(x, y) || q(x, y) ) = \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) )\)</span><br />
-<strong><em>Proof.</em></strong> <span class="math display">\[
- \begin{aligned}
-     \mathbf{D}( p(x, y) || q(x, y) ) 
-     &amp;= \sum_{x, y} p(x, y) \log \frac{ p(x) p(y \mid x) }{q(x) q (y \mid x) }
-     \\
-     &amp;= \sum_{x, y} p(x, y) \log \frac{ p(x)  }{q(x) } + \sum_{x, y} p(x, y) \log \frac{  p(y \mid x) }{  q (y \mid x) }
-     \\
-     &amp;= \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) )
- \end{aligned}
- \]</span></p></li>
-</ol>
-<h3 id="reference.">Reference.</h3>
-<p>[1]M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -863,7 +767,7 @@ I(X; Y) = I(Y; X) = \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(x, y)}{p(x) p(y) 
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">134</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

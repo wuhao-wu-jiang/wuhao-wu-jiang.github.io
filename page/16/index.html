@@ -146,6 +146,219 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/30/LSH/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/30/LSH/" class="post-title-link" itemprop="url">LSH</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-30 16:14:46" itemprop="dateCreated datePublished" datetime="2020-03-30T16:14:46+11:00">2020-03-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-03 22:17:23" itemprop="dateModified" datetime="2020-05-03T22:17:23+10:00">2020-05-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong><em>Given a set <span class="math inline">\(S \subset U\)</span> of <span class="math inline">\(n\)</span> points, a metric <span class="math inline">\(d\)</span> defined on <span class="math inline">\(U\)</span>, and a query point <span class="math inline">\(v\)</span>, the nearest neighbor search (NNS) problem finds <span class="math inline">\(v\)</span>'s nearest point in <span class="math inline">\(S\)</span>:</em></strong> <span class="math display">\[
+u = \arg\min_{s \in S} d(v, s)
+\]</span> Potential applications include web search and clustering.</p>
+<p>If <span class="math inline">\(U\)</span> is a Euclidean space <span class="math inline">\(\mathcal{R}^d\)</span> for some <span class="math inline">\(d\)</span>, the hardness of NNS depends largely on the value of <span class="math inline">\(d\)</span>. Suppose <span class="math inline">\(d = 1\)</span>, then we can pre-process the points by building a balanced binary search tree on <span class="math inline">\(S\)</span>. Finding the nearest point to <span class="math inline">\(v \notin S\)</span> reduces to searching for its predecessor and successor, which takes <span class="math inline">\(O(\log n)\)</span> time. For <span class="math inline">\(d = 2\)</span>, we can construct a Voronoi diagram.</p>
+<p>For higher dimensions <span class="math inline">\(d\)</span> it is not easy to extend the index structures. A naïve search loops over all points and takes <span class="math inline">\(O(nd)\)</span> time. It is natural to ask whether we can do better. If we are willing to sacrifice accuracy for efficiency, this is possible. Instead of finding the exact nearest neighbor, we relax our goal to finding an approximate nearest neighbor whose distance is within <span class="math inline">\(1 + \epsilon\)</span> of the minimum one.</p>
+<p>One possible solution is Johnson–Lindenstrauss decomposition. We can generate a matrix <span class="math inline">\(A \in R^{ O( \frac{ \log n }{ \epsilon^2 } )\times d}\)</span> and multiply it with every element in <span class="math inline">\(S\)</span>. The mapping <span class="math inline">\(u \rightarrow Au\)</span> preserves pair-wise distance up to a relative error of <span class="math inline">\(\epsilon\)</span>. The pre-processing takes <span class="math inline">\(O( \frac{n d \log n}{\epsilon^2} )\)</span> time. To answer an query, we map <span class="math inline">\(v\)</span> to <span class="math inline">\(Av\)</span>, which takes <span class="math inline">\(O(\frac{ d\log n }{ \epsilon^2 } )\)</span> time. Then we perform a loop over all elements of <span class="math inline">\(\{ Au : u \in S\}\)</span>, which takes <span class="math inline">\(O(\frac{ n \log n }{ \epsilon^2 } )\)</span> time. Therefore, the total time complexity is <span class="math inline">\(O(\frac{ (n + d) \log n }{ \epsilon^2 } )\)</span>.</p>
+<h3 id="hashing">Hashing</h3>
+<p>[1] solves the problem by hashing. We call the pair of points that are close to each other the <em>similar pair</em> and the pair that are far from each other the <em>dissimilar pair</em>. Intuitively, we want similar pairs to be hashed to the same bucket and that dissimilar pairs to be hashed to different buckets.</p>
+<p>Instead of finding the <span class="math inline">\((1 + \epsilon)\)</span> approximate nearest neighbor directly, [1] further reduces it to the <span class="math inline">\((c, r)\)</span>-approximate neighbor search (ANNS<span class="math inline">\((c, r)\)</span>) problem, which is defined as follows:</p>
+<p><strong><em>Given a query point <span class="math inline">\(v\)</span>, if <span class="math inline">\(\exists s \in S\)</span>, then return a point <span class="math inline">\(u\)</span>, such that</em></strong> <span class="math display">\[
+d(v, u) \le c \cdot r
+\]</span></p>
+<p>The reduction from <span class="math inline">\(1 + \epsilon\)</span> to ANNS(<span class="math inline">\(c, r\)</span>) is not easy. Here we show one that returns the <span class="math inline">\((1 + \epsilon)^2\)</span> approximate nearest neighbor. Let <span class="math inline">\(d_{\max} = \max_{s, s&#39;} d(s, s&#39;)\)</span> and <span class="math inline">\(d_{\min} = \min_{s, s&#39;} d(s, s&#39;)\)</span>. We build a set of structures that answers ANNS(<span class="math inline">\(1 + \epsilon\)</span>, r) queries for the values of <span class="math inline">\(r\)</span>: <span class="math display">\[
+d_{\min}, \ d_{\min} (1 + \epsilon ), \ d_{min} (1 + \epsilon)^2,\ ...,\ d_{\max}
+\]</span></p>
+<p>Then given the query point <span class="math inline">\(v\)</span>, we do a binary search to find the smallest <span class="math inline">\(r\)</span> that returns a point. This imposes an additional cost of <span class="math inline">\(\ln {\ln \frac{d_{\max} }{d_{\min} } \over \ln (1 + \epsilon) }\)</span>.</p>
+<table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\text{NNS} \longrightarrow (1+\epsilon) \text{NNS} \longrightarrow \text{ANNS}(c, r) \longrightarrow (r, cr, p_1, p_2)\text{-LSH} \longrightarrow \text{Boosting Probability}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">The Problem Reduction Chain</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-cr-p_1-p_2-locality-sensitive-hashing-family"><span class="math inline">\((r, cr, p_1, p_2)\)</span>-Locality Sensitive Hashing Family</h3>
+<p>Now we show how to solve the ANNS<span class="math inline">\((c, r)\)</span> problem with hashing. Designing a perfecting hashing that solves the problem directly is not easy. It is desirable to have some hashing which successes with some probability and then boost its probability systematically. To achieve this, we introduce the idea of <span class="math inline">\((r, cr, p_1, p_2)\)</span>-locality sensitive hashing family.</p>
+<p><strong><em>Given a set of point <span class="math inline">\(V\)</span>, a metric <span class="math inline">\(d(\cdot , \cdot)\)</span> defined on <span class="math inline">\(V\)</span>, a collection of hash function <span class="math inline">\(\mathcal{H} = \{ h: V \rightarrow Z\}\)</span> is called <span class="math inline">\((r, cr, p_1, p_2)\)</span> locality sensitive if for any <span class="math inline">\(v, u \in V\)</span> and an <span class="math inline">\(h\)</span> sampled uniformly from <span class="math inline">\(\mathcal{H}\)</span>, it holds that</em></strong></p>
+<ol type="1">
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge p_1\)</span>.</li>
+<li>If <span class="math inline">\(d(v, u) \ge cr\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le p_2\)</span></li>
+</ol>
+<p>where <span class="math inline">\(p_2 &lt; p_1 \le 1\)</span>. Intuitively, pairs near to each other should be more likely to collide. Hence <span class="math inline">\(p_1 = p_2^{\rho}\)</span> for some <span class="math inline">\(\rho = \log p_1 / \log p_2 &lt; 1\)</span>.</p>
+<p>Ideally, we have <span class="math inline">\(p_1 \approx 1\)</span> and <span class="math inline">\(p_2 \approx 0\)</span>. For other cases we can magnify the gap between <span class="math inline">\(p_1\)</span> and <span class="math inline">\(p_2\)</span> and boost <span class="math inline">\(p_1\)</span> to approximate <span class="math inline">\(1\)</span> and <span class="math inline">\(p_2\)</span> to approximate <span class="math inline">\(0\)</span>. The hardness of the boosting highly depends on the value of <span class="math inline">\(c\)</span>.</p>
+<h4 id="example">Example</h4>
+<p>Suppose that <span class="math inline">\(U = \{0, 1\}^d\)</span>, <span class="math inline">\(d(u, v) = u \oplus v = |u - v|_1\)</span> and <span class="math inline">\(\mathcal{H} = \{ h_i (u) = u_i \}_{i \in [d]}\)</span>, where <span class="math inline">\(h_i\)</span> selects the <span class="math inline">\(i\)</span>th bit of <span class="math inline">\(u\)</span>. Picking an <span class="math inline">\(h\)</span> uniformly from <span class="math inline">\(\mathcal{H}\)</span> and applying <span class="math inline">\(h\)</span> to <span class="math inline">\(u\)</span> is equivalent to selecting a bit uniformly from <span class="math inline">\(u\)</span>. Therefore,</p>
+<ol type="1">
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span> (<span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> has less then <span class="math inline">\(r\)</span> common bits), then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge \frac{d - r}{d} = 1 - \frac{r}{d} = p_1\)</span>.</li>
+<li>If <span class="math inline">\(d(v, u) \ge cr\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le \frac{d - cr}{d} = 1 - \frac{cr}{d} = p_2\)</span></li>
+</ol>
+<p>Now <span class="math inline">\(p_1 \approx \exp(- r / d)\)</span> and <span class="math inline">\(p_2 \approx \exp(- cr / d)\)</span>. Hence <span class="math inline">\(\rho \approx \frac{1}{c}\)</span>. Indeed it can be proven rigorously that <span class="math display">\[
+\rho = \frac{\ln (1 - \frac{r}{d}) }{ \ln (1 - \frac{cr}{d}) } \le \frac{1}{c}
+\]</span></p>
+<p>as <span class="math inline">\(( 1 - \frac{r}{d})^c \ge 1 - \frac{cr}{d}\)</span>. There are many ways to prove this. Since we are dealing with probability, we give a probabilistic interpretation of this inequality. Suppose that are <span class="math inline">\(c\)</span> independent events each happening with probability <span class="math inline">\(\frac{r}{d}\)</span>. Then the probability that at least one of them happens is given by <span class="math display">\[
+1 - \Pr[\textbf{none of them happens } ] = 1 - (1 - \frac{r}{d})^c
+\]</span></p>
+<p>On the other hand, by union bound, this is upper bounded by <span class="math inline">\(\frac{cr}{d}\)</span>.</p>
+<h3 id="boosting-the-probabilities">Boosting the Probabilities</h3>
+<p>We would like the boost the probability such that <span class="math inline">\(p_1 \approx 1\)</span> and <span class="math inline">\(p_2 \approx 0\)</span>. We follow a two-step approach. First we sample <span class="math inline">\(k\)</span> (to be determined) hash functions independently from <span class="math inline">\(\mathcal{H}\)</span> can concatenate them as a single hash function <span class="math inline">\(g\)</span>: <span class="math display">\[
+g(v) = [h_1(v),  h_2(v), ... ,h_k(v)]
+\]</span></p>
+<p>Here <span class="math inline">\(g\)</span> hash a point <span class="math inline">\(v\)</span> to a <span class="math inline">\(k\)</span> dimensional vector. After this, <span class="math inline">\(g(v) = g(u)\)</span> happens only if <span class="math inline">\(h_i(v) = h_i(u)\)</span> for all <span class="math inline">\(i \in [k]\)</span>. By independence of <span class="math inline">\(h_i\)</span>'s,</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(d(v, u) \ge cr\)</span>, the collision probability of <span class="math inline">\(u\)</span> with <span class="math inline">\(v\)</span> drops to <span class="math inline">\(p_2^k\)</span>: <span class="math display">\[
+ \Pr [ g(v) = g(u) ] \le p_2^k
+ \]</span></p></li>
+<li><p>On the other hand, if <span class="math inline">\(d(v, u) &lt; r\)</span>, the collision probability also drops to <span class="math inline">\(p_1^k = (p_2^k)^\rho\)</span> <span class="math display">\[
+ \Pr [ g(v) = g(u) ] \ge  p_1^k = p_2^{\rho k} = (p_2^{k})^\rho
+ \]</span> which is relatively small and not desirable.</p></li>
+</ol>
+<p>We need a second level of boosting to increase the collision probability of similar pairs. Instead of using only one function <span class="math inline">\(g\)</span>, we use a collection of independent copies: <span class="math display">\[
+g_1, g_2, ..., g_l
+\]</span></p>
+<p>where <span class="math inline">\(l\)</span> is the number to be determined. Now,</p>
+<ul>
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span>, the probability that at least one of the <span class="math inline">\(g_i(u)\)</span> equals to <span class="math inline">\(g_i(v)\)</span> is given by <span class="math display">\[
+  \begin{aligned}
+      \Pr \left[ \exists i \in [l], \ s.t., \ g_i(u) = g_i(v) \right] 
+          &amp;= 1 - (1 - p_1^k)^l  \\
+          &amp;= 1 - (1 - (p_2^k)^\rho)^l \\
+          &amp;\ge 1 - \exp( - (p_2^k)^\rho l )
+  \end{aligned}
+  \]</span></li>
+</ul>
+<p>We can take</p>
+<ol type="1">
+<li><p><span class="math inline">\(p_2^k = \frac{1}{n}\)</span>, i.e., <span class="math inline">\(k = \frac{\log n }{ \log 1 / p_2 }\)</span>.</p></li>
+<li><p><span class="math inline">\(\exp( - (p_2^k)^\rho l ) = \frac{1}{n}\)</span>, i.e., <span class="math inline">\(l = \frac{1}{(p_2^k)^\rho } \ln n = n^\rho \ln n\)</span>.</p></li>
+</ol>
+<p>For a fixed query point <span class="math inline">\(q\)</span> and for any fixed <span class="math inline">\(i \in [l]\)</span>, by linearity of expectation, the expected number of dissimilar collision is given by</p>
+<p><span class="math display">\[
+\begin{aligned}
+    E \left[ |\{ u \in S: d(q, u) \ge cr \wedge g_i(q) = g_i(u)  \}| \right] 
+        &amp;= \sum_{ u \in S : \  d(q, u) \ge cr } \Pr[g_i(v)= g_i(u)] \\
+        &amp;\le n \cdot \frac{1}{n} = 1
+\end{aligned}
+\]</span></p>
+<p>Therefore, there are <span class="math inline">\(l\)</span> of dissimilar collisions over all <span class="math inline">\(i \in [l]\)</span>. This implies an expected overhead of <span class="math inline">\(l\)</span> examinations of dissimilar points. However, by Markov inequality, the number of such points is less than <span class="math inline">\(2l\)</span> with probability at least <span class="math inline">\(1 / 2\)</span>. The time for examination of dissimilar point is <span class="math inline">\(O(ld) = O(d n^\rho \ln n)\)</span>.</p>
+<h3 id="time-and-space">Time and Space</h3>
+<p>Now, given a query point <span class="math inline">\(q\)</span>, computing <span class="math inline">\(g_i(q)\)</span> for a fixed <span class="math inline">\(i\)</span> takes <span class="math inline">\(O(k)\)</span> time. Computing <span class="math inline">\(l\)</span> of them takes <span class="math inline">\(O(kl)\)</span> time. In expectation, there are <span class="math inline">\(l\)</span> dissimilar collision points with <span class="math inline">\(q\)</span>. Checking one collision point takes <span class="math inline">\(O(d)\)</span> time. Therefore, the expected query time is given by (note that we stop upon finding the first ANN of <span class="math inline">\(q\)</span>):</p>
+<p><span class="math display">\[
+\begin{aligned}
+    O(kl + dl) 
+    &amp;= O(\frac{\ln n}{\ln \frac{1}{p_2}} n^\rho \ln n + d n^\rho \ln n) \\
+    &amp;= O(n^{ \rho} \ln^2 n / \ln \frac{1}{p_2} + d n^\rho \ln n) \\
+    &amp;= \tilde{O}( n^\rho )
+\end{aligned}
+\]</span></p>
+<p>As for the space usage, for each point <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span>, we need to compute <span class="math inline">\(g_i(u)\)</span> and store this value (we need to store this, because <span class="math inline">\(g_i(u)\)</span> is self could be a large number and when putting <span class="math inline">\(\{ g_i(u) : u \in S\}\)</span> into a hash table, we need to treat <span class="math inline">\(g_i(u)\)</span> as the key and store it for later collision comparison. But is it possible that when there is a collision, we re-compute this value again to avoid storing it ?). We need to repeat this for <span class="math inline">\(l\)</span> hash functions. Therefore, the space usage is given by <span class="math display">\[
+O(nkl) = O(n^{1 + \rho} \ln^2 n / \ln \frac{1}{p_2})
+\]</span></p>
+<h3 id="another-boosting-scheme">Another Boosting Scheme</h3>
+<p>In last section, we have a scheme that checks <span class="math inline">\(O(n^\rho \ln n)\)</span> dissimilar points in expectation. In this section we achieve it with high probability.</p>
+<ol type="1">
+<li>First, to reduce the collision probability of dis-similar pairs, we concatenate <span class="math inline">\(k\)</span> functions from <span class="math inline">\(\mathcal{H}\)</span>. This gives a <span class="math display">\[
+     (r, cr, p_1^k, p_2^k)
+\]</span> locative sensitive hash function. We determine the value of <span class="math inline">\(k\)</span> later. <!-- We pick $k = \frac{\ln n}{\ln \frac{1}{p_2} }$, such that $p_2^k = 1 / n$. In expectation, at most $1$ dis-similar collision occurs.  --></li>
+<li>Second, to boost the collision probability of similar pairs, we use <span class="math inline">\(l\)</span> concatenated hash functions independently. The probability at least one collision occurs is given by <span class="math display">\[
+     1 - (1 - p_1^k)^l \ge 1 - e^{-p_1^k \cdot l} 
+\]</span> We require this to happen with constant probability <span class="math inline">\(1 - \frac{1}{e}\)</span>, hence we need to set <span class="math inline">\(l = \frac{1}{p_1^k} = (\frac{1}{p_2^k})^\rho\)</span>. <!-- where $l = n^\rho$. The final equality holds since $p_1^k \cdot l = p_2^{k \cdot \rho} \cdot l = n^{-\rho} \cdot l = 1$ --></li>
+<li>Now consider a query point <span class="math inline">\(q\)</span>. We compute <span class="math inline">\(g_1(q), g_2(q), ..., g_l(q)\)</span> and check the points <span class="math inline">\(u\)</span>'s such that <span class="math inline">\(g_i(u) = g_i(q)\)</span> for some <span class="math inline">\(i \in [l]\)</span>. Note that we check at most the first <span class="math inline">\(4 n p_2^k l + 1\)</span> points we found. Why <span class="math inline">\(4 n p_2^k l + 1\)</span>? In expectation, there are <span class="math inline">\(n p_2^k l\)</span> dissimilar collisions. By Markov inequality, the probability of dissimilar collisions is no more than <span class="math inline">\(4l\)</span> is at most <span class="math inline">\(1 / 4\)</span>. By union bound, <span class="math display">\[
+ \begin{aligned}
+     &amp;\Pr[\exists \text{ more than } 4l \text{ bad collision } \vee \nexists \text{ good collision }] \\
+     &amp;\le \frac{1}{e} + \frac{1}{4} \\
+     &amp;\le \frac{1}{2.5} + \frac{1}{4} \\
+     &amp;= \frac{5}{16}
+ \end{aligned}
+ \]</span></li>
+</ol>
+<p>Therefore, the boosting strategy successes with constant probability. Now consider the running time of such boosting strategy. When a query point <span class="math inline">\(q\)</span> comes, we need to compute <span class="math inline">\(g_1(q), g_2(q), ..., g_l(q)\)</span>, which takes time <span class="math inline">\(kl\)</span>. Further, the strategy checks at most <span class="math inline">\(4 n p_2^k l + 1\)</span> points and checking each point takes <span class="math inline">\(O(d)\)</span> time. The overall time used is <span class="math display">\[
+O(kl + (4 n p_2^k l + 1)d)
+\]</span></p>
+<p>To minimize the running time, we need to choose proper value of <span class="math inline">\(k\)</span>, such that <span class="math display">\[
+k = 4np_2^k d \rightarrow \ln k + k \ln \frac{1}{p_2} = \ln (4nd) 
+\]</span></p>
+<p>It suffice to take <span class="math inline">\(k = \frac{\ln 4nd}{ \ln \frac{1}{p_2} }\)</span>. It follows that <span class="math display">\[
+p_2^k = \frac{1}{4nd} \\
+l = \left( \frac{1}{p_2^k} \right)^\rho = (4nd)^\rho 
+\]</span></p>
+<p>and the running time is given by <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln (4nd)}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<p>As <span class="math inline">\(n \succ d\)</span>, this is equivalent to <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln n}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<p>We can repeat the above steps by <span class="math inline">\(\ln n / \ln \frac{16}{5}\)</span> times, to boost the success probability to <span class="math inline">\(1 - \frac{1}{n}\)</span>. The overall running time is given by <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln^2 n}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<h3 id="reference">Reference</h3>
+<ol type="1">
+<li>Indyk, P. and Motwani, R., 1998, May. Approximate nearest neighbors: towards removing the curse of dimensionality. In Proceedings of the thirtieth annual ACM symposium on Theory of computing (pp. 604-613).</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/23/Working-Set-BST/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -354,90 +567,6 @@ i_x \doteq \text{ the smallest non-negative integer, } s.t. \ 2^{i_x - 1} \ge t
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/08/Norm-with-PSD-Matrix/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/08/Norm-with-PSD-Matrix/" class="post-title-link" itemprop="url">Norm with PSD Matrix</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-08 11:42:32" itemprop="dateCreated datePublished" datetime="2020-03-08T11:42:32+11:00">2020-03-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 15:28:01" itemprop="dateModified" datetime="2020-03-09T15:28:01+11:00">2020-03-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(A \in \mathbb{ R } ^{n \times n}\)</span> be positive semi-definite matrix. Then <span class="math inline">\(f (x) \doteq \sqrt {x^T A x}: \mathbb{ R } ^{n \times n} \rightarrow \mathbb{ R }\)</span> is a norm.</p>
-<p><em>Proof.</em> We only check that it satisfies triangle inequality, i.e., <span class="math inline">\(\forall x, y \in \mathbb{R}^n\)</span> <span class="math display">\[
-\begin{aligned}
-    f(x + y) 
-        &amp;\le f(x) + f(y)
-        \\
-    &amp;\longleftrightarrow
-        \\
-    \sqrt{ (x + y)^T A (x + y)^T } 
-        &amp;\le \sqrt{ x^T A x} + \sqrt{y^T A y} 
-        \\
-    &amp;\longleftrightarrow
-        \\
-    y^T A x
-        &amp;\le \sqrt{ x^T A x}  \sqrt{y^T A y} 
-\end{aligned}
-\]</span> Since <span class="math inline">\(A\)</span> is PSD, then <span class="math inline">\(\exists B \in \mathbb{ R } ^{n \times n}\)</span>, s.t., <span class="math inline">\(A = B^T B\)</span>. Define <span class="math inline">\(\bar y = B y\)</span> and <span class="math inline">\(\bar x = B x\)</span>, we need to prove <span class="math display">\[
-\bar y^T \bar x \le \| \bar x\| \cdot \| \bar y \|
-\]</span> But this is just Cauchy-Schwarz inequality.</p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -507,7 +636,7 @@ i_x \doteq \text{ the smallest non-negative integer, } s.t. \ 2^{i_x - 1} \ge t
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">134</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

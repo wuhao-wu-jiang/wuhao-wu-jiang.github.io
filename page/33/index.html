@@ -146,6 +146,115 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/21/RSA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/11/21/RSA/" class="post-title-link" itemprop="url">RSA</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-11-21 21:52:18" itemprop="dateCreated datePublished" datetime="2018-11-21T21:52:18+11:00">2018-11-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-04 20:52:46" itemprop="dateModified" datetime="2019-12-04T20:52:46+11:00">2019-12-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence <span class="math inline">\(x\)</span>, the encrypt message is <span class="math inline">\(y\)</span>.</p>
+<p>One solution is to perform XOR operation. Suppose there is a key <span class="math inline">\((k)_2\)</span> that is known both to the sender the receiver. Then the sender encrypt the message by <span class="math display">\[
+(y)_2 = (x)_2 \oplus k
+\]</span> The receiver can decrypt the message by <span class="math display">\[
+(x)_2 = (y)_2 \oplus k
+\]</span> Given <span class="math inline">\(x\)</span> with length <span class="math inline">\(n\)</span>, if <span class="math inline">\(k\)</span> is chosen uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, then <span class="math inline">\((y)_2\)</span> is a sequence uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>. If the message is sent only one time, the eavesdropper can't get more information about <span class="math inline">\(x\)</span> after seeing <span class="math inline">\(y\)</span>.</p>
+<p>Two drawbacks exists. First, how can the sender exchange the key <span class="math inline">\(k\)</span> with the receiver without meeting each other. Second, if the many messages are sent, there are frequency pattern associated with <span class="math inline">\(y\)</span>, making it breakable.</p>
+<p>RSA encryption algorithm overcomes the first issue by generating two keys for the receiver: the secrete key and the public key. The public key is distributed across the internet. The sender encrypts the message <span class="math inline">\(x\)</span> with the public key. Only the receiver who has the secret key can decrypt the message. The mathematics behind is explained as follows.</p>
+<p>Question to ponder: can we attack RSA by the frequency pattern?</p>
+<p>First generate two prime number <span class="math inline">\(p, q\)</span> and let <span class="math inline">\(N = pq\)</span>. Further, we find a integer <span class="math inline">\(e\)</span>, such that</p>
+<ol type="1">
+<li><span class="math inline">\(e\)</span> is coprime to <span class="math inline">\((p - 1)(q - 1)\)</span>, i.e., <span class="math inline">\(\exists d\)</span>, such that <span class="math inline">\(ed \equiv 1 \mod (p - 1)(q - 1)\)</span>.</li>
+<li><span class="math inline">\(e \neq p\)</span>, <span class="math inline">\(e \neq q\)</span>.</li>
+</ol>
+<p>Question to ponder: does such <span class="math inline">\(e\)</span> exists?</p>
+<p>Answer: YES. There are <span class="math inline">\(O(\frac{(p - 1)(q - 1) }{ \log (p - 1)(q - 1) } - \frac{ \sqrt{ (p - 1)(q - 1) } }{ \log \sqrt { (p - 1)(q - 1) } } )\)</span> prime numbers in <span class="math inline">\((\sqrt{(p - 1)(q - 1)}, (p - 1)(q - 1))\)</span>, which can not be prime factors of <span class="math inline">\((q - 1)(p - 1)\)</span>.</p>
+<p>Then we give out the pair as <em>public key</em>: <span class="math display">\[
+(n, e)
+\]</span></p>
+<p>And keep in secrete the triple as <em>private key</em>: <span class="math display">\[
+(p, q, d)
+\]</span></p>
+<p>The algorithm for encryption and decryption is as follows:</p>
+<p>Encryption: <span class="math display">\[
+y = f(x) = x^e \pmod N
+\]</span></p>
+<p>Decryption: <span class="math display">\[
+g(y) = y^d \pmod N
+\]</span></p>
+<p>The key theorem states:</p>
+<p><em>Theorem</em>: <span class="math display">\[
+g(y) = x
+\]</span></p>
+<p><em>Proof 1:</em> the first proof relies on a result derived from the Chinese Reminder Theorem, which i that for any integer <span class="math inline">\(a &lt; b\)</span>, we have <span class="math display">\[
+a \equiv b \mod p \vee a \equiv b \mod q
+\]</span> Then, <span class="math inline">\(p | (b - a)\)</span> and <span class="math inline">\(q | (b - a)\)</span>. If follows that <span class="math inline">\(N | (b - a)\)</span>, since <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> are primes and <span class="math inline">\(N\)</span> is their least common multiple.</p>
+<p>Now define <span class="math inline">\(m = x^{ed} = x^{k(p - 1)(q - 1) + 1}\)</span>. By Fermat's Little Theorem, <span class="math display">\[
+m \equiv x  \mod p \wedge m \equiv x \mod q
+\]</span></p>
+<p>Hence <span class="math inline">\(N | (m - x)\)</span> and <span class="math inline">\(m \equiv x \mod N\)</span>.</p>
+<p><em>Proof 2:</em> <span class="math display">\[
+y^d = x^{ed} = x^{k(p - 1)(q - 1) + 1} \pmod N
+\]</span></p>
+<p>Case 1: this is the easy case in which <span class="math inline">\(x\)</span> is coprime to <span class="math inline">\(N\)</span>. Then by Fermat-Euler theorem, <span class="math inline">\(x^{\varphi(N)} = 1 \pmod N\)</span>. It follows immediately that <span class="math inline">\(x^{ed} = x \pmod N\)</span>.</p>
+<p>Case 2: otherwise, <span class="math inline">\(x = lp\)</span> for some <span class="math inline">\(1 \le l \le q\)</span> or <span class="math inline">\(x = lq\)</span> for some <span class="math inline">\(1\le l \le p\)</span>. WLOG, we just consider the former case. Now <span class="math inline">\(y^d = (lp)^{k(p - 1)(q - 1) + 1} \pmod N\)</span>. On the other hand, as <span class="math inline">\((lp)^{k(p - 1)}\)</span> is relative prime to <span class="math inline">\(q\)</span>, we conclude that <span class="math inline">\(((lp)^{k(p-1)})^{q- 1} = mq + 1\)</span> for some integer <span class="math inline">\(m\)</span>, by Fermat's little theorem. Therefore, <span class="math inline">\(y^d = (mq + 1) x = (mq + 1) (lp) = mlpq + lp = lp = x \pmod N\)</span> , which finishes our proof.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/20/Fermat-s-Little-Theorem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -177,7 +286,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 00:03:22" itemprop="dateModified" datetime="2021-03-18T00:03:22+11:00">2021-03-18</time>
+                <time title="Modified: 2021-03-18 17:02:27" itemprop="dateModified" datetime="2021-03-18T17:02:27+11:00">2021-03-18</time>
               </span>
 
           
@@ -192,13 +301,13 @@
 
       
           <h1 id="fermats-little-theorem">Fermat's Little Theorem</h1>
-<p>It is a fundamental result in number theory. It states that given a prime number <span class="math inline">\(p\)</span>, for every positive integer <span class="math inline">\(a \in \mathbb{N}^+\)</span>, we have <span class="math display">\[
+<p>It is a fundamental result in number theory. It states that given a prime number <span class="math inline">\(p\)</span>, for every positive integer <span class="math inline">\(a \in \mathbb{N}^+\)</span>, if <span class="math inline">\(a \neq 0 \pmod p\)</span>, we have <span class="math display">\[
 a^{p - 1} = 1 \quad \pmod p
 \]</span></p>
 <p>It suffices to prove the theorem for numbers in <span class="math inline">\(\mathbb{F}_p^+ \doteq \{ 1, 2, ..., p - 1\}\)</span>.</p>
 <h1 id="proof-one">Proof One</h1>
 <p>Define the function <span class="math inline">\(f : \mathbb{F}_p^+ \rightarrow \mathbb{F}_p^+\)</span> to be <span class="math display">\[
-    f(x) = ax \mod p. 
+    f(x) = ax \pmod p. 
 \]</span></p>
 <p>For every <span class="math inline">\(x \neq x&#39; \in \mathbb{F}_p^+\)</span>, <span class="math inline">\(ax \neq ax&#39; \mod p\)</span>, otherwise <span class="math inline">\((x - x&#39;) \mid p\)</span>. Hence <span class="math inline">\(f\)</span> is a bijection and <span class="math display">\[
 \{f(1), f(2), ..., f(p - 1)\} = \mathbb{F}_p^+.
@@ -226,15 +335,52 @@ a^{\varphi(p)} = 1 \pmod p,
 <h1 id="proof-two">Proof Two</h1>
 <p>This proof uses the binomial expansion as follows: <span class="math display">\[
 \begin{aligned}
-(a + 1)^p 
-&amp;= a^p + \binom{p}{1} a^{p - 1} + ... + \binom{p}{p - 1} a + 1  &amp;\pmod p \\
-&amp;= a^{p} + 1 &amp;\pmod p \\
-&amp;= (a - 1)^{p} + 1 + 1 &amp;\pmod p \\
-&amp;= ... \\
-&amp;= \begin{matrix} \underbrace{1 + 1 + ... + 1} \\ a + 1 \end{matrix} &amp;\pmod p  \\
-&amp;= a + 1 &amp;\pmod p
+    (a + 1)^p 
+    &amp;= a^p + \binom{p}{1} a^{p - 1} + ... + \binom{p}{p - 1} a + 1  &amp;\pmod p \\
+    &amp;= a^{p} + 1 &amp;\pmod p \\
+    &amp;= (a - 1)^{p} + 1 + 1 &amp;\pmod p \\
+    &amp;= ... \\
+    &amp;= \begin{matrix} \underbrace{1 + 1 + ... + 1} \\ a + 1 \end{matrix} &amp;\pmod p  \\
+    &amp;= a + 1 &amp;\pmod p
 \end{aligned}
 \]</span> The second equality holds since for <span class="math inline">\(1 \le i \le p - 1\)</span>, the coefficient <span class="math inline">\(\binom{p}{i} = \frac{p (p - 1) ... (p - i + 1)}{i !}\)</span> divides <span class="math inline">\(p\)</span>, as <span class="math inline">\(p\)</span> is relative prime to all integers <span class="math inline">\(1, 2, ..., i\)</span>. The third equality follows from respectively applying the previous expansion. Finally, we get Fermat's Little Theorem by multiplying both sides of <span class="math inline">\((a + 1)^p = (a + 1) \pmod p\)</span> by the inverse of <span class="math inline">\(a + 1\)</span> module <span class="math inline">\(p\)</span>.</p>
+<h1 id="proof-three">Proof Three</h1>
+<p>Let <span class="math inline">\(a \in \mathbb{F}_p^+\)</span>. Consider the following numbers in <span class="math inline">\(\mathbb{F}_p^+\)</span>: <span class="math display">\[
+    a, a^2, a^3, a^4, a^5, ...
+\]</span></p>
+<p>As there are only <span class="math inline">\(p - 1\)</span> distinct numbers in <span class="math inline">\(\mathbb{F}_p^+\)</span>, it holds that there exits a smallest <span class="math inline">\(h \in \mathbb{N}_+\)</span>, such that <span class="math display">\[
+    a^h = 1 \pmod p. 
+\]</span></p>
+<p>Now consider the following procedure:</p>
+<blockquote>
+<ol type="1">
+<li><span class="math inline">\(\mathcal{U} \leftarrow \mathbb{F}_p^+;\)</span><br />
+</li>
+<li><span class="math inline">\(\mathcal{C} \leftarrow \{ \}, i \leftarrow 0\)</span>;<br />
+</li>
+<li>while <span class="math inline">\(\mathcal{U} \neq \emptyset\)</span> do:<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(i \leftarrow i + 1\)</span>;<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> let <span class="math inline">\(b\)</span> be an element in <span class="math inline">\(\mathcal{U}\)</span>;<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> let <span class="math inline">\(S_i \leftarrow \{ b, ab, a^2b, ..., a^{h - 1} b\}\)</span>;<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\mathcal{U} \leftarrow \mathcal{U} \setminus S_i\)</span>;<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\mathcal{C} \leftarrow \mathcal{C} \cup \{ S_i \}\)</span>;</li>
+</ol>
+</blockquote>
+<p>Suppose that <span class="math inline">\(\mathcal{C} = \{ S_1, ..., S_m \}\)</span>. We claim that</p>
+<ul>
+<li><p>The elements in <span class="math inline">\(S_i\)</span> are distinct. Otherwise, <span class="math display">\[
+      a^k b = a^\ell b \pmod p \Longrightarrow a^{k - \ell} b= 0 \pmod p, 
+  \]</span> a contradiction. If follows that <span class="math inline">\(|S_i| = h\)</span>.</p></li>
+<li><p>For <span class="math inline">\(i \neq j\)</span>, <span class="math inline">\(S_i \cap S_j = \emptyset\)</span>. Otherwise, let <span class="math inline">\(b \in S_i \cap S_j\)</span>. Then every element in <span class="math inline">\(S_i \cup S_j\)</span> can be expressed as <span class="math inline">\(a^k b\)</span> for some integer <span class="math inline">\(k\)</span>.</p></li>
+</ul>
+<p>It follows that <span class="math inline">\(\mathcal{C}\)</span> is a partition of <span class="math inline">\(\mathbb{F}_p^+\)</span>. As each set in <span class="math inline">\(\mathcal{C}\)</span> has the same size, we have <span class="math inline">\(h \mid (p - 1)\)</span> and <span class="math display">\[
+    a^{p - 1} = 1 \pmod p. 
+\]</span></p>
 
       
     </div>
@@ -254,7 +400,7 @@ a^{\varphi(p)} = 1 \pmod p,
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/08/Some-elementary-results-of-number-theory/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/08/Euclidean-Algorithm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -268,7 +414,7 @@ a^{\varphi(p)} = 1 \pmod p,
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/11/08/Some-elementary-results-of-number-theory/" class="post-title-link" itemprop="url">Some elementary results of number theory</a>
+            <a href="/2018/11/08/Euclidean-Algorithm/" class="post-title-link" itemprop="url">Euclidean Algorithm</a>
         </h2>
 
         <div class="post-meta">
@@ -285,7 +431,7 @@ a^{\varphi(p)} = 1 \pmod p,
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-11-11 02:11:57" itemprop="dateModified" datetime="2018-11-11T02:11:57+11:00">2018-11-11</time>
+                <time title="Modified: 2021-03-18 15:54:31" itemprop="dateModified" datetime="2021-03-18T15:54:31+11:00">2021-03-18</time>
               </span>
 
           
@@ -299,127 +445,85 @@ a^{\varphi(p)} = 1 \pmod p,
     <div class="post-body" itemprop="articleBody">
 
       
-          <h4 id="multiplicative-inverse">Multiplicative Inverse</h4>
-<p>Given positive integers <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, <span class="math inline">\(z\)</span> is called the multiplicative inverse of <span class="math inline">\(x\)</span> module <span class="math inline">\(y\)</span> if <span class="math inline">\(xz \equiv 1 \mod y\)</span>.</p>
-<p><strong>Theorem</strong>.<br />
-<span class="math inline">\(x\)</span> has a multiplicative inverse module <span class="math inline">\(y\)</span> iff <span class="math inline">\(gcd(x, y) = 1\)</span>.<br />
-<em>Proof.</em><br />
-Consider the set <span class="math inline">\(S = \{ ax + by \mid a, b \in Z\}\)</span>. Let <span class="math inline">\(s^* = a^* x + b^* y\)</span> be the smallest positive integer in <span class="math inline">\(S\)</span>. Our proof relies on the following lemma.</p>
-<p><em>Lemma</em>: <span class="math inline">\(gcd(x,y) = s^*\)</span>.<br />
-First notice that every element is <span class="math inline">\(S\)</span> is a linear combination of both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, therefore a multiple of <span class="math inline">\(gcd(x, y)\)</span>. We have <span class="math inline">\(gcd(x, y) | s^*\)</span> and <span class="math inline">\(gcd(x, y) \le s^*\)</span>. Now we claim that <span class="math inline">\(s^* | x\)</span> and <span class="math inline">\(s^* | y\)</span>.</p>
-<p>To verify the above claim, suppose <span class="math inline">\(s^* \nmid x\)</span>. Then <span class="math inline">\(x\)</span> can be decomposed into <span class="math inline">\(x = k s^* + l\)</span> for some positive integers <span class="math inline">\(k\)</span> and <span class="math inline">\(l \in [1, s^*)\)</span>. It follows that <span class="math inline">\(l = x - k s^* = (1 - a^*) x + (-b^*) y \in S\)</span>, contradicting <span class="math inline">\(s^*\)</span> being the smallest positive element in <span class="math inline">\(S\)</span>. Similarly argument holds for <span class="math inline">\(s^* | y\)</span>.</p>
-<p>Therefore, <span class="math inline">\(s^*\)</span> is a common divisor of both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> and <span class="math inline">\(s^* \le gcd(x, y)\)</span>.</p>
-<p>It concludes that <span class="math inline">\(s^*\)</span> equals to <span class="math inline">\(gcd(x, y)\)</span>.</p>
+          <p>We discuss the Euclidean algorithm and use it to compute the multiplicative inverse.</p>
+<blockquote>
+<p><strong>Multiplicative Inverse.</strong> Given <span class="math inline">\(x, y \in \mathbb{N}^+\)</span>, <span class="math inline">\(z\)</span> is called the multiplicative inverse of <span class="math inline">\(x\)</span> (module <span class="math inline">\(y\)</span>) if <span class="math display">\[
+xz \equiv 1 \pmod y. 
+\]</span></p>
+</blockquote>
+<h1 id="theorem-1">Theorem 1</h1>
+<blockquote>
+<p><span class="math inline">\(x\)</span> has a multiplicative inverse module <span class="math inline">\(y \iff \gcd(x, y) = 1\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong><br />
+Define the set <span class="math inline">\(S = \{ ax + by \mid a, b \in Z\}\)</span>. Let <span class="math inline">\(d = a^* x + b^* y\)</span> be the smallest positive integer in <span class="math inline">\(S\)</span>. Our proof relies on the following lemma.</p>
+<blockquote>
+<p><strong>Lemma</strong>: <span class="math inline">\(\gcd(x,y) = d\)</span>.</p>
+<p>First, as <span class="math inline">\(d\)</span> is a linear combination of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, <span class="math inline">\(\gcd(x, y) | d\)</span> and <span class="math inline">\(\gcd(x, y) \le d\)</span>.</p>
+</blockquote>
+<p>Second, we claim that <span class="math inline">\(d | x\)</span> and <span class="math inline">\(d | y\)</span>. By symmetry, we prove only the former. If not, suppose that <span class="math inline">\(d \nmid x\)</span>. Then <span class="math inline">\(\exists k \in \mathbb{Z}, \ell \in [1, d - 1]\)</span>, s.t.,<br />
+<span class="math display">\[
+    x = k d + \ell. 
+\]</span></p>
+<p>Since <span class="math inline">\(\ell = x - k d\)</span> is a linear combination of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, it holds that <span class="math inline">\(\ell \in S\)</span>, contradicting <span class="math inline">\(d\)</span> being the smallest positive element in <span class="math inline">\(S\)</span>.</p>
+<p>It concludes that <span class="math inline">\(d\)</span> equals to <span class="math inline">\(\gcd(x, y)\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
 <p>The proof of the above theorem immediately follows from the lemma.</p>
 <ol type="1">
-<li><p><span class="math inline">\(gcd(x, y) = 1 \rightarrow x\)</span> has a multiplicative inverse.<br />
-In this case, <span class="math inline">\(s^* = a^* x + b^* y = 1\)</span>. <span class="math inline">\(a^*\)</span> is th multiplicative inverse of <span class="math inline">\(x\)</span> module <span class="math inline">\(y\)</span>.</p></li>
-<li><p><span class="math inline">\(x\)</span> has a multiplicative inverse <span class="math inline">\(\rightarrow gcd(x, y) = 1\)</span>.<br />
+<li><p><span class="math inline">\(\gcd(x, y) = 1 \rightarrow x\)</span> has a multiplicative inverse.<br />
+In this case, <span class="math inline">\(d = a^* x + b^* y = 1\)</span>. <span class="math inline">\(a^*\)</span> is th multiplicative inverse of <span class="math inline">\(x\)</span> module <span class="math inline">\(y\)</span>.</p></li>
+<li><p><span class="math inline">\(x\)</span> has a multiplicative inverse <span class="math inline">\(\rightarrow \gcd(x, y) = 1\)</span>.<br />
 If <span class="math inline">\(x\)</span> has a multiplicative inverse, there exists some <span class="math inline">\(z\)</span> and <span class="math inline">\(l\)</span>, such that <span class="math inline">\(zx = ly + 1\)</span>.</p></li>
 </ol>
-<p><strong>Theorem</strong>.<br />
-If <span class="math inline">\(x\)</span> has a multiplicative inverse module <span class="math inline">\(y\)</span>, it must be unique (module <span class="math inline">\(y\)</span>).<br />
-<em>Proof.</em><br />
-Let <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> both be the multiplicative inverse of <span class="math inline">\(x\)</span> module <span class="math inline">\(y\)</span>, i.e., <span class="math inline">\(a x \equiv 1 \mod y\)</span> and <span class="math inline">\(bx \equiv 1 \mod y\)</span>. It turns out that <span class="math inline">\(a \equiv a \cdot 1 \equiv a (xb) \equiv (ax) b \equiv b \mod y\)</span>.</p>
-<h4 id="euclids-algorithm">Euclid's Algorithm</h4>
-<p>Euclid's algorithm computes <span class="math inline">\(gcd(x, y)\)</span> as follows:</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int gcd(int x, int y) &#123;</span><br><span class="line">    if(y &#x3D;&#x3D; 0) return x;</span><br><span class="line">    return gcd(y, x mod y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> When <span class="math inline">\(y == 0\)</span>, clearly <span class="math inline">\(gcd(x, y) = x\)</span>. If <span class="math inline">\(x &lt; y\)</span>, <span class="math inline">\(x mod y = x\)</span>. The algorithm exchanges the value of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> after the first recursion. It suffices to consider only the case where <span class="math inline">\(x \ge y &gt; 0\)</span>.</p>
-<p><em>Lemma</em>: if <span class="math inline">\(x \ge y &gt; 0\)</span>, then <span class="math inline">\(gcd(x, y) = gcd(y, x \mod y)\)</span>.<br />
-We show that any common divisor <span class="math inline">\(d\)</span> of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> is a common divisor of <span class="math inline">\(y\)</span> and <span class="math inline">\(x \mod y\)</span>. Suppose <span class="math inline">\(x = k d\)</span> and <span class="math inline">\(y = l d\)</span>, then <span class="math inline">\(x - y = (k - l) d\)</span>. It follows from induction <span class="math inline">\(d\)</span> divides <span class="math inline">\(x \mod y\)</span>, since <span class="math inline">\(x \mod y = x - y - ... - y\)</span>. The other direction follows in a similar manner.</p>
-<p>We can modify the Euclid's algorithm to return explicitly values of <span class="math inline">\(a^*, b^*\)</span> s.t. <span class="math inline">\(gcd(x, y) = s^* = a^* x + b^* y\)</span>.</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[] gcd(int x, int y) &#123;</span><br><span class="line">    if(y &#x3D;&#x3D; 0) return (x, 1, 0);</span><br><span class="line">    (s, a&#39;, b&#39;) &#x3D; gcd(y, x mod y);</span><br><span class="line">    return (s, b&#39;, a&#39; - b&#39;(x &#x2F; y));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> To verify the correctness of the algorithm, suppose <span class="math inline">\(s = a&#39; y + b&#39; (x \mod y)\)</span>. Then <span class="math inline">\(s = a&#39; y + b&#39;(x - \lfloor x / y \rfloor y) =b&#39; x + (a&#39; - b&#39; \lfloor x / y \rfloor) y\)</span>. This is why the algorithm work.</p>
-<p><em>Example:</em><br />
-<span class="math display">\[
-\begin{aligned}
-&amp; gcd(9, 6) = (3, 1, -1)  \quad [-1 = 0 - 1 * 9 / 6] \\
-&amp; \rightarrow gcd(6, 3) = (3, 0, 1) \quad [1 = 1 - 0 * 6 / 3]\\
-&amp; \quad \rightarrow gcd(3, 0) = (3, 1, 0) \\
-\end{aligned}
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h1 id="theorem-2">Theorem 2</h1>
+<blockquote>
+<p>If <span class="math inline">\(x\)</span> has a multiplicative inverse module <span class="math inline">\(y\)</span>, it is unique.</p>
+</blockquote>
+<p><strong>Proof.</strong><br />
+Let <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> both be the multiplicative inverse of <span class="math inline">\(x\)</span> module <span class="math inline">\(y\)</span>, then <span class="math display">\[
+    a \equiv a (xb) \equiv (ax) b \equiv b \pmod y
 \]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/10/26/Bellman-Ford/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/10/26/Bellman-Ford/" class="post-title-link" itemprop="url">Bellman Ford</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-10-26 22:13:41" itemprop="dateCreated datePublished" datetime="2018-10-26T22:13:41+11:00">2018-10-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-10-27 02:06:16" itemprop="dateModified" datetime="2018-10-27T02:06:16+11:00">2018-10-27</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Here we discuss the Bellman Ford algorithm for computing shortest path or negative cycle in an undirected weighted graph <span class="math inline">\(G = (V, E, W)\)</span> that contains negative edges.</p>
-<p>Recall the Dijkstra algorithm bases on the induction of the number of vertices. The Bellman Ford algorithm, on the other hand, bases on the induction of the number of edges of the shortest path.</p>
-<p>Let <span class="math inline">\(P_k = (s, v_1, v_2, .., v_k, t)\)</span> be the shortest path between <span class="math inline">\(s\)</span> and <span class="math inline">\(t\)</span>. If we finds the shortest <span class="math inline">\(P_{k - 1} = (s, v_1, v_2, ..., v_{k - 1})\)</span>, then we can easily find the path <span class="math inline">\(P_k\)</span>. To this end, we define dist[v] the distance from source node <span class="math inline">\(s\)</span> to vertex <span class="math inline">\(v\)</span>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">std::vector&lt;int&gt; dist(n, INT_MAX); </span><br><span class="line">std::vector&lt;int&gt; pred(n, 0);</span><br><span class="line">dist[s] &#x3D; 0;</span><br><span class="line">for(int i &#x3D; 0; i &lt; n - 1; ++i) &#123;</span><br><span class="line">    for each edge (u, v) &#123;</span><br><span class="line">        if(dist[u] + w(u, v) &lt; dist[v]) &#123;</span><br><span class="line">            dist[v] &#x3D; dist[u] + w(u, v);</span><br><span class="line">            pred[v] &#x3D; u;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>If the graph does not contain a negative cycle, the above code compute the shortest path correctly. On the other hand, to check the existence of a negative, we could execute an additional iteration after the above code</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">bool check_negative_cycle() &#123;</span><br><span class="line">     for each edge (u, v) &#123;</span><br><span class="line">        if(dist[u] + w(u, v) &lt; dist[v]) &#123;</span><br><span class="line">            dist[v] &#x3D; dist[u] + w(u, v);</span><br><span class="line">            pred[v] &#x3D; u;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;    </span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>The correctness can be verified as follows: if the graph does not contain negative cycle, the any shortest path contains at most <span class="math inline">\((n - 1)\)</span>-th edges. The value of <span class="math inline">\(dist[v]\)</span> should not change in this <span class="math inline">\(n\)</span>-th iteration.</p>
-<p>To return a negative cycle, when we find an edge <span class="math inline">\((u, v)\)</span> such that <span class="math inline">\(dist[u] + w(u, v) &lt; dist[v]\)</span> (in this <span class="math inline">\(n\)</span>-th iteration), we can trace the predecessor of <span class="math inline">\(v\)</span> until we encounter a cycle. Notice that this cycle may not necessarily contains <span class="math inline">\(v\)</span>. But we claim that this cycle must be negative.</p>
-<h4 id="theorem">Theorem</h4>
-<p>Let <span class="math inline">\(C = (v_1, v_2, ..., v_j)\)</span> be the cycle we found, such that <span class="math inline">\(pred[v_i] = pred[v_{i - 1}], \forall 2 \le i \le j\)</span> and <span class="math inline">\(pred[v_1] = v_j\)</span>. WLOG, let <span class="math inline">\(v_1\)</span> be the vertex whose value <span class="math inline">\(pred[v_1]\)</span> is updated latest among <span class="math inline">\(pred[v_1], pred[v_2], ..., pred[v_j]\)</span>. It holds that</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h1 id="basic-euclidean-algorithm">Basic Euclidean Algorithm</h1>
+<p>Euclidean algorithm computes <span class="math inline">\(\gcd(x, y)\)</span> as follows:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="title">gcd</span><span class="params">(<span class="keyword">unsigned</span> x, <span class="keyword">unsigned</span> y)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(y == <span class="number">0</span>) <span class="keyword">return</span> x;</span><br><span class="line">    <span class="keyword">return</span> gcd(y, x % y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="correctness">Correctness</h2>
+<p>If <span class="math inline">\(y =0\)</span>, whether <span class="math inline">\(x = 0\)</span> or not, we have <span class="math inline">\(\gcd(x, y) = x\)</span>.</p>
+<p>If <span class="math inline">\(x &lt; y\)</span>, <span class="math inline">\(x \mod y = x\)</span>. The algorithm exchanges <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> at the first recursion. It suffices to consider only <span class="math inline">\(x \ge y &gt; 0\)</span>.</p>
+<p>If <span class="math inline">\(x \ge y &gt; 0\)</span>, then <span class="math inline">\(\gcd(x, y) = \gcd(y, x \mod y)\)</span>. Let <span class="math inline">\(d = \gcd(x, y)\)</span>. Clearly <span class="math inline">\(d | x\)</span> and <span class="math inline">\(d | y\)</span>. We claim that <span class="math display">\[
+    d | (x \mod y)
+\]</span><br />
+Suppose <span class="math inline">\(x = k d\)</span> and <span class="math inline">\(y = \ell d\)</span>, then <span class="math inline">\(x \mod y = d \cdot (k \mod \ell)\)</span>, which finishes proof.</p>
+<h2 id="time">Time</h2>
+<blockquote>
+<p>Let <span class="math inline">\(n\)</span> be the the total number of bits to represent <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>. Then the algorithm stops after <span class="math inline">\(O(n)\)</span> recursions.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>We can assume <span class="math inline">\(x \ge y\)</span>. Otherwise, they are swapped by a recursive call.</p>
+<p>The key observation is that, after every two recursive calls, the first argument <span class="math inline">\(x\)</span> shrinks at least by a factor of two.</p>
+<ol type="1">
+<li>If <span class="math inline">\(y \le x / 2\)</span>, the observation holds after the first call.<br />
+</li>
+<li>If <span class="math inline">\(y &gt; x / 2\)</span>, then after two recursive call, the first argument becomes <span class="math inline">\(x \mod y\)</span>, which is smaller than <span class="math inline">\(x / 2\)</span>.</li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="extended-euclidean-algorithm">Extended Euclidean Algorithm</h1>
+<p>We extend the basic version to return a pair <span class="math inline">\(a^*, b^* \in \mathbb{N}\)</span> s.t. <span class="math inline">\(\gcd(x, y) = d = a^* x + b^* y\)</span>.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">std::pair&lt;unsigned, unsigned&gt; gcd(unsigned x, unsigned y) &#123;</span><br><span class="line">    <span class="keyword">if</span>(y == <span class="number">0</span>) <span class="keyword">return</span> &#123;<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">auto</span> (a<span class="number">&#x27;</span>, b<span class="number">&#x27;</span>) = gcd(y, x mod y);</span><br><span class="line">    <span class="keyword">return</span> (b<span class="number">&#x27;</span>, a<span class="number">&#x27;</span> - b<span class="number">&#x27;</span> * (x / y));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="correctness-1">Correctness</h2>
+<p>Suppose <span class="math inline">\(s = a&#39; y + b&#39; \cdot (x \mod y)\)</span>. Then <span class="math display">\[
+    s = a&#39; y + b&#39;(x - \lfloor x / y \rfloor \cdot y) =b&#39; x + (a&#39; - b&#39; \cdot \lfloor x / y \rfloor) \cdot y
+\]</span> This is why the algorithm work.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="example">Example</h2>
 <p><span class="math display">\[
 \begin{aligned}
-dist[v_2] &gt; dist[v_1] + w(v_1, v_2) \\
-\text{this holds with strict inequality since we update } pred[v_1] \text{ lastly }\\
-dist[v_3] \ge dist[v_2] + w(v_1, v_2) \\
-... \\
-dist[v_1] = dist[v_j] + w(v_1, v_2) \\
+&amp; \gcd(9, 6) = (3, 1, -1)  \quad [-1 = 0 - 1 * 9 / 6] \\
+&amp; \rightarrow \gcd(6, 3) = (3, 0, 1) \quad [1 = 1 - 0 * 6 / 3]\\
+&amp; \quad \rightarrow \gcd(3, 0) = (3, 1, 0) \\
 \end{aligned}
 \]</span></p>
-<p>It follows that <span class="math inline">\(\sum_{i = 1}^j dist[v_i] &gt; \sum_{i = 1}^j dist[v_i] dist[v_i] + \sum_{i = 2}^j w(v_{i - 1}, v_i) + w(v_j, v_1)\)</span>, which implies that <span class="math inline">\(\sum_{i = 2}^j w(v_{i - 1}, v_i) + w(v_j, v_1) &lt; 0\)</span>.</p>
 
       
     </div>
@@ -504,7 +608,7 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">134</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

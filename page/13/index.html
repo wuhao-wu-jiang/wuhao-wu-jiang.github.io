@@ -146,6 +146,289 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/26/Splay-Tree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/26/Splay-Tree/" class="post-title-link" itemprop="url">Splay Tree</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-26 16:19:41" itemprop="dateCreated datePublished" datetime="2020-05-26T16:19:41+10:00">2020-05-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-06-05 16:12:56" itemprop="dateModified" datetime="2020-06-05T16:12:56+10:00">2020-06-05</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Splay Tree [1] is a self-binary search tree that achieves <span class="math inline">\(O(\log n)\)</span> amortized time complexity for each operation. Unlike other balanced binary search trees, it does not require to maintain additional information to keep balance. Further, it has good property that more recently accessed nodes are more easily retrieved and achieves certain optimality even for an unknown sequence of operations.</p>
+<h2 id="basic-operations">Basic Operations</h2>
+<p>The philosophy of splay tree is very simple: just bring the last accessed node <span class="math inline">\(x\)</span> to the root of the tree, via a sequence of <em>rotations</em>. This brings the most recently visited nodes close to the root.</p>
+<p>[Remark: For insertion, the last accessed node is the node inserted. For a successful search operation, the last accessed node is the node found. For an unsuccessful search/deletion, it is the predecessor or successor of the search node / deleted node. ]</p>
+<p>The rotations that bring a node <span class="math inline">\(x\)</span> to the root is not unique. For example, the simplest one rotates <span class="math inline">\(x\)</span> with its parent until it becomes the root. However, we can easily find counter examples for this naïve approach. The rotations need to be carefully designed and are called <em>splays</em>. At each step the node being splayed is brought up at most 2 levels. It can be divided into three categories. Call <span class="math inline">\(x\)</span> the node being splayed, <span class="math inline">\(y\)</span> its parent and <span class="math inline">\(z\)</span> its grandparent (if they exist).</p>
+<ol type="1">
+<li>Root case: <span class="math inline">\(x\)</span> is the root. Do nothing.</li>
+<li>The <em>Zig</em> case: <span class="math inline">\(y\)</span> is the root. We just perform <span class="math inline">\(rotate(x, y)\)</span>.
+<ul>
+<li>See the following figure. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/Zig.png" /></li>
+</ul></li>
+<li>Otherwise, <span class="math inline">\(x\)</span> has a grandparent <span class="math inline">\(z\)</span>. It is further divided into two categories:
+<ol type="1">
+<li><em>Zig-Zig</em> case: both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are left children or right children. We first perform <span class="math inline">\(rotate(y, z)\)</span> then <span class="math inline">\(rotate(x, y)\)</span>.<br />
+<img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/ZigZig.png" /></li>
+<li><em>Zig-Zag</em> case: <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are different children of their parents, i.e., <span class="math inline">\(x\)</span> is the left child and <span class="math inline">\(y\)</span> is the right child, or vice versa. We first perform <span class="math inline">\(rotate(x, y)\)</span> then <span class="math inline">\(rotate(y, z)\)</span>.<br />
+<img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/ZigZag.png" /></li>
+</ol></li>
+</ol>
+<p>The splay is performed repeatedly on <span class="math inline">\(x\)</span> until it reaches the root. It is also possible to perform equivalent operations in an top-down approach [1].</p>
+<h2 id="time-analysis">Time Analysis</h2>
+<p>There is no explicit control over the height of the tree. It is possible that the accessed node has depth <span class="math inline">\(\Omega(\log n)\)</span>. The intuition is that, however, the imbalanced situation is not easy to create and must accumulate from previous operations. The number such operations can not be too to create the imbalance. We can charge the cost of accessing the node with long depth to these operations. Intuitively, each previous operation is required to reserve some additional "energy" for the amount of imbalanced it creates, which is used later to fix the imbalance. When a long path is encountered, there should be enough "energy" to cover the search on the path and the splay of the access node.</p>
+<p>It is left to give a quantitative scheme for keeping the "energy" and "using" the "energy". We need a few more definitions for a node <span class="math inline">\(x\)</span>.</p>
+<ol type="1">
+<li><span class="math inline">\(T(x):\)</span> the subtree rooted at <span class="math inline">\(x\)</span>.</li>
+<li><span class="math inline">\(w(x):\)</span> the weight associated with node <span class="math inline">\(x\)</span>. This weight is only used for analysis and is not kept explicitly by splay tree.</li>
+<li><span class="math inline">\(s(x)=\sum_{y \in T(x)} w_y:\)</span> the sum of weights of nodes in <span class="math inline">\(T(x)\)</span>, which is referred to as the size of <span class="math inline">\(x\)</span>.</li>
+<li><span class="math inline">\(r(x) \doteq \log r(x)\)</span>, the rank of <span class="math inline">\(x\)</span>.</li>
+</ol>
+<p>Let <span class="math inline">\(T\)</span> be the splay tree. The potential function is defined as <span class="math display">\[
+\Phi = \sum_{x \in T} r(x)
+\]</span> which records the amount of "energy" in <span class="math inline">\(T\)</span>.</p>
+<p>The amortized cost of an operation is defined as <span class="math display">\[
+\text{amortized cost} = \text{actual cost} + \Delta \Phi
+\]</span> where <span class="math inline">\(\Delta \Phi\)</span> is the change of the potential function.</p>
+<p>Now, let <span class="math inline">\(r(x)\)</span> be the rank of <span class="math inline">\(x\)</span> before we performed a single splay operation on <span class="math inline">\(x\)</span> and <span class="math inline">\(r&#39;(x)\)</span> the one after. The <em>Access Lemma</em> states the <span class="math inline">\(\Phi\)</span> changes as follows:</p>
+<blockquote>
+<p><strong><em>Access Lemma</em></strong> For a single splay operation, the potential change is bounded by <span class="math display">\[ 3(r&#39;(x) - r(x)) - 2 \]</span> for <em>zig-zig</em> and <em>zig-zag</em> case and <span class="math display">\[ r&#39;(x) - r(x) \]</span> for the <em>zig</em> case.</p>
+</blockquote>
+<p>Before we prove this key lemma, we use it for the following theorem.</p>
+<p><strong><em>Theorem.</em></strong> The amortized cost of the splaying a node <span class="math inline">\(x\)</span> to the root is <span class="math inline">\(O(1 + \log \frac{s(root) }{s(x) })\)</span>.</p>
+<p><em>Proof.</em> To splay a node <span class="math inline">\(x\)</span> to the root, suppose that we have performed <span class="math inline">\(k\)</span> splays. Further, let <span class="math inline">\(r_i(x)\)</span> be the rank of <span class="math inline">\(x\)</span> after we performed the <span class="math inline">\(i^{th}\)</span> splay on <span class="math inline">\(x\)</span>. We have <span class="math inline">\(r_0(x) = \log s(x)\)</span> and <span class="math inline">\(r_k(x) = \log s(root)\)</span>. Observe that the actual cost of splay operation is <span class="math inline">\(2\)</span> for <em>zig-zig</em> and <em>zig-zag</em> case and 1 for the <em>zig</em> case. Hence, the amortized cost is <span class="math display">\[
+\begin{aligned}
+\text{amortized cost} 
+&amp;\le \sum_{i = 1}^k 3(r_i(x) - r_{i - 1}(x)) +1 \\
+&amp;= 3(r_k(x) - r_0(x)) + 1
+\end{aligned}
+\]</span> The added 1 results from the final possible <em>zig</em> operation.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>If we set <span class="math inline">\(w(x) = 1\)</span> for all nodes, then <span class="math inline">\(r_k(x) = \log n\)</span> and <span class="math inline">\(r_1(x) \ge \log 1 = 0\)</span>. Therefore, the amortized cost of splaying <span class="math inline">\(x\)</span> is bounded by <span class="math inline">\(O(\log n)\)</span>.</p>
+<h3 id="proof-of-the-access-lemma.">Proof of The Access Lemma.</h3>
+<h4 id="zig-zig"><strong><em>Zig-Zig</em></strong></h4>
+<ul>
+<li><p>Example.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/ZigZig.png" /></p></li>
+</ul>
+<p>First, note that <span class="math display">\[
+\begin{aligned}
+        &amp;   \frac{1}{2} r&#39;(z) + \frac{1}{2} r(x)    \\
+    =   &amp;   \frac{1}{2} \log s&#39;(z) + \frac{1}{2} \log s(x)   \\
+    \le &amp;   \log \left[ \frac{s&#39;(z)}{2}  + \frac{ s(x) }{2} \right] \\
+    &lt;   &amp;   \log \left[ \frac{s(z)}{2}  \right] \\
+\end{aligned}
+\]</span></p>
+<p>The first inequality follows from that the function <span class="math inline">\(\log (\cdot )\)</span> is concave and the second one follows from <span class="math inline">\(s&#39;(z) + s(x) = s(z) - 1 &lt; s(z)\)</span>.</p>
+<p>Therefore, <span class="math display">\[
+r&#39;(z) + r(x) \le 2 \left[ r(z) - 1 \right]
+\]</span></p>
+<p>Now consider the potential change of the zig-zig operation: <span class="math display">\[
+\begin{array}{rll}
+        &amp;   r&#39;(x) + r&#39;(y) + r&#39;(z) - r(x) - r(y) - r(z) \\
+    =   &amp;   r&#39;(y) + r&#39;(z) - r(x) - r(y) \\
+    \le &amp;   r&#39;(x) + r&#39;(z) - r(x) - r(x) \\
+    =   &amp;   [r&#39;(x) - r(x)]  +[r&#39;(z) + r(x)] - 2 r(x) \\
+    \le &amp;   [r&#39;(x) - r(x)] +2[r(z) - 1] - 2 r(x) \\
+    =   &amp;   3[r&#39;(x) - r(x)] - 2
+\end{array}
+\]</span></p>
+<p>The first equality follows from <span class="math inline">\(r&#39;(x) = r(z)\)</span>, as <span class="math inline">\(s&#39;(x) = s(z)\)</span>. The first inequality holds since <span class="math inline">\(r(x) \le r(y)\)</span>.</p>
+<h4 id="zig-zag"><strong><em>Zig-Zag</em></strong></h4>
+<ul>
+<li><p>Example.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/ZigZag.png" /></p></li>
+</ul>
+<p>First, note that <span class="math display">\[
+\begin{aligned}
+        &amp;   \frac{1}{2} r&#39;(y) + \frac{1}{2} r&#39;(z)    \\
+    =   &amp;   \frac{1}{2} \log s&#39;(y) + \frac{1}{2} \log s&#39;(z)   \\
+    \le &amp;   \log \left[ \frac{s&#39;(y)}{2}  + \frac{ s&#39;(z) }{2} \right] \\
+    &lt;   &amp;   \log \left[ \frac{s&#39;(x)}{2}  \right] \\
+\end{aligned}
+\]</span></p>
+<p>The first inequality follows from that the function <span class="math inline">\(\log (\cdot )\)</span> is concave and the second one follows from <span class="math inline">\(s&#39;(y) + s&#39;(z) = s&#39;(x) - 1 &lt; s&#39;(x)\)</span>.</p>
+<p>Therefore, <span class="math display">\[
+r&#39;(y) + r&#39;(z) \le 2 \left[ r&#39;(x) - 1 \right]
+\]</span></p>
+<p>Now consider the potential change of the zig-zag operation: <span class="math display">\[
+\begin{array}{rll}
+        &amp;   r&#39;(x) + r&#39;(y) + r&#39;(z) - r(x) - r(y) - r(z) \\
+    =   &amp;   r&#39;(y) + r&#39;(z) - r(x) - r(y) \\
+    \le &amp;   r&#39;(y) + r&#39;(z) - r(x) - r(x) \\
+    \le &amp;   2 \left[ r&#39;(x) - 1 \right] - 2 r(x) \\
+    =   &amp;   2[r&#39;(x) - r(x)] - 2
+\end{array}
+\]</span></p>
+<p>The first equality follows from <span class="math inline">\(r&#39;(x) = r(z)\)</span>, as <span class="math inline">\(s&#39;(x) = s(z)\)</span>. The first inequality holds since <span class="math inline">\(r(x) \le r(y)\)</span>.</p>
+<h4 id="zig"><strong><em>Zig</em></strong></h4>
+<ul>
+<li><p>Example.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/Zig.png" /></p></li>
+</ul>
+<p>Now consider the potential change of the zig-zag operation: <span class="math display">\[
+\begin{array}{rll}
+        &amp;   r&#39;(x) + r&#39;(y)  - r(x) - r(y)  \\
+    =   &amp;   r&#39;(y)  - r(x)  \\
+    \le &amp;   r&#39;(x)  - r(x) 
+\end{array}
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>We now show the implementation of basic BST operations and their amortized cost. Throughout the analysis we assume that <span class="math inline">\(w(x) = 1\)</span>.</p>
+<h3 id="cost-of-insertion">Cost of Insertion</h3>
+<p>Inserting a node <span class="math inline">\(x\)</span> is the same as that in a BST. Then we splay node <span class="math inline">\(x\)</span> to the root. We charge the cost of going down the tree by the cost of splaying <span class="math inline">\(x\)</span>, which has amortized cost <span class="math inline">\(O(\log n)\)</span>. It is left to analyze the change of <span class="math inline">\(\Phi\)</span>. Let <span class="math inline">\(root = x_1, x_2, ..., x_k, x_{k + 1} = x\)</span> be the root to <span class="math inline">\(x\)</span> path right after inserting <span class="math inline">\(x\)</span>. The insertion of <span class="math inline">\(x\)</span> increases <span class="math inline">\(s(x_1), s(x_2), ..., s(x_{k })\)</span> by 1, therefore, <span class="math display">\[
+\begin{array}{llr}
+\Delta \Phi &amp;= \sum_{i = 1}^k \log \frac{s(x_i) + 1 }{s(x_i)} \\
+            &amp;= \log \prod_{i = 1}^k \frac{s(x_i) + 1 }{s(x_i)} \\
+            &amp;\le \log \frac{s(x_1) + 1}{ s(x_k ) }
+\end{array}
+\]</span> The last inequality follows from that <span class="math inline">\(s(x_i) \ge s(x_{i + 1}) + 1\)</span> for <span class="math inline">\(i \in [k]\)</span>. Therefore, <span class="math inline">\(\Delta \Phi = O(\log n)\)</span> and the overall amortized cost of insertion is <span class="math inline">\(O(\log n)\)</span>.</p>
+<p>Remark: <span class="math inline">\(key(x_{k})\)</span> is either the predecessor or successor of <span class="math inline">\(key(x)\)</span>.</p>
+<h3 id="cost-of-search">Cost of Search</h3>
+<p>Whether the search is successful or not, we splay the last accessed node to the root and charge the cost of going down the tree to the splay-operations. Therefore, the amortized cost is <span class="math inline">\(O(\log n)\)</span>.</p>
+<p>Remark: in case of unsuccessful search, we find either the predecessor or successor of the search key.</p>
+<h3 id="cost-of-deletion">Cost of Deletion</h3>
+<p>As in a BST, deletion is a little bit tricky. Let <span class="math inline">\(x\)</span> be the node to delete and <span class="math inline">\(y\)</span> be its parent (if exists). There are 3 cases</p>
+<ul>
+<li><p>If <span class="math inline">\(x\)</span> is a leaf node, then we just delete it and splay <span class="math inline">\(y\)</span> to the root.</p></li>
+<li><p>If <span class="math inline">\(x\)</span> has only one child, we replace <span class="math inline">\(x\)</span> with its child as the child of <span class="math inline">\(y\)</span>. Then we delete <span class="math inline">\(x\)</span> and splay <span class="math inline">\(y\)</span> to the root.</p></li>
+</ul>
+<p>The final case uses the first two cases as a sub-routine. We first discuss the amortized cost of the first two cases. The cost of going down to <span class="math inline">\(x\)</span> can be charged to the cost of splaying <span class="math inline">\(y\)</span> to the root, which has amortized cost <span class="math inline">\(O(\log n)\)</span>. Deleting the node decreases the potential function, which will only lower the overall amortized cost. Therefore, the amortized cost of deletion is bounded by <span class="math inline">\(O(\log n)\)</span>.</p>
+<ul>
+<li>If <span class="math inline">\(x\)</span> has two children, we find the predecessor node <span class="math inline">\(pred(x)\)</span> of <span class="math inline">\(x\)</span>, which is the node with largest key in <span class="math inline">\(x\)</span>'s left sub-tree. Note that <span class="math inline">\(pred(x)\)</span> has at most one child. Then we delete the node <span class="math inline">\(pred(x)\)</span>. This reduces to case 1 or case 2. Finally we replace the <span class="math inline">\(key(x)\)</span> with <span class="math inline">\(key(pred(x))\)</span>.</li>
+</ul>
+<p>In the following sections we analyze the properties of the splay tree on a sequence <span class="math inline">\(S\)</span> of <span class="math inline">\(m\)</span> operations.</p>
+<h2 id="static-optimality">Static Optimality</h2>
+<p>Suppose that <span class="math inline">\(S\)</span> consists of only successful search operations. Let $p_i &gt; 0 $ be the frequency that the <span class="math inline">\(i^{th}\)</span> element is accessed. Define a static binary search tree to be the one whose structure is fixed. In particular, it can not perform rotations.</p>
+<p><strong><em>Theorem.</em></strong> (Static Optimality) The total cost of <span class="math inline">\(S\)</span> performed on the splay tree is at most a constant times the minimum possible cost of <span class="math inline">\(S\)</span> performed a static binary search tree, plus <span class="math inline">\(O(m )\)</span>.</p>
+<p><em>Proof.</em> Let <span class="math inline">\(T^*\)</span> be the static binary search tree that minimizes the cost of <span class="math inline">\(S\)</span>. For the <span class="math inline">\(i^{th}\)</span> element, let <span class="math inline">\(l_i\)</span> be the depth of <span class="math inline">\(i\)</span> in <span class="math inline">\(T^*\)</span>, i.e. the number of nodes on the path from <span class="math inline">\(i\)</span> to the root, so <span class="math inline">\(l(root) = 1\)</span>. The total cost in <span class="math inline">\(T^*\)</span> is given by <span class="math inline">\(\sum_{i = 1}^n p_i \cdot m \cdot l_i\)</span>. We are going to prove that the cost for splay tree is <span class="math display">\[
+O(m + \sum_{i = 1}^n p_i \cdot m \cdot l_i)
+\]</span> Suppose that <span class="math inline">\(T^*\)</span> has maximum depth <span class="math inline">\(d_{max}(T^*)\)</span>. We claim that for any <span class="math inline">\(k &lt; d_{max}(T^*)\)</span>, <span class="math inline">\(T^*\)</span> must contain exactly <span class="math inline">\(2^k\)</span> nodes with depth <span class="math inline">\(k\)</span>. Otherwise, we can cut some leaf node from its parent and pad it into the <span class="math inline">\(i^{th}\)</span> level. This will only decrease the access cost, contradicting <span class="math inline">\(T^*\)</span> being the optimal static binary tree. Then, <span class="math inline">\(d_{max}(T^*) \le \lfloor \log_2 n \rfloor + 1\)</span> and <span class="math display">\[
+\sum_{i = 1}^n 3^{-l_i} \le \frac{1}{2} \sum_{k = 1}^{ \lfloor \log_2 n \rfloor + 1 } (\frac{2}{3})^k \le 1
+\]</span> To investigate the time for splay tree, we choose a different weight than earlier and just set <span class="math inline">\(w_i = 3^{-l_i}\)</span>. Now the amortized cost of accessing <span class="math inline">\(i^{th}\)</span> element is given by <span class="math display">\[
+O(1 + \log_2 \frac{s(root)}{s(i)}) = O(1 + \log_2 \frac{1}{3^{-l_i}}) = O(1 + l_i)
+\]</span> Let <span class="math inline">\(c_k\)</span> be the actual cost of the <span class="math inline">\(k^{th}\)</span> operation in <span class="math inline">\(S\)</span> and <span class="math inline">\(a_k\)</span> be the amortized cost. Further, let <span class="math inline">\(\Phi_k\)</span> be the potential of the splay tree after the <span class="math inline">\(k^{th}\)</span> operation. Then <span class="math display">\[
+\sum_{k = 1}^m a_k = \sum_{k = 1}^m (c_k + \Phi_k - \Phi_0) = \sum_{k = 1}^m c_k + \Phi_m - \Phi_0
+\]</span> Hence, the actual cost on this sequence is bounded by <span class="math display">\[
+\begin{aligned}
+\sum_{k = 1}^m c_k &amp;= \Phi_0 - \Phi_m + \sum_{k = 1}^m a_k \\
+&amp;=  \Phi_0 - \Phi_m + \sum_{i = 1}^m p_i \cdot m \cdot \log 3^{l_i} \\
+&amp;=  \Phi_0 - \Phi_m + \sum_{i = 1}^m p_i \cdot m \cdot (l_i \log 3 + 1)  \\
+&amp;= m + \Phi_0 - \Phi_m + \sum_{i = 1}^m p_i \cdot m \cdot l_i \cdot \log 3 
+\end{aligned}
+\]</span> It is left to bound <span class="math inline">\(\Phi_0 - \Phi_m\)</span>. Let <span class="math inline">\(r^0(i)\)</span> be the rank of <span class="math inline">\(i^{th}\)</span> before and <span class="math inline">\(r^m(i)\)</span> be the rank after the operations. It holds that <span class="math inline">\(r^0(i) \le \log_2 1 = 0\)</span> and <span class="math inline">\(r^m(i) \ge \log_2 w(i)\)</span>. Now, <span class="math display">\[
+\begin{aligned}
+\Phi_0 - \Phi_m &amp;= \sum_{i = 1}^n \left( r^0(i) - r^m(i) \right) \\
+&amp;\le \sum_{i  = 1}^n \log 3^{l_i} \\
+&amp;=  \sum_{i =1}^n l_i \log 3 \\
+\end{aligned}
+\]</span> Under the assumption that each item is accessed at least once, we know <span class="math inline">\(p_i \cdot m \ge 1\)</span> and <span class="math inline">\(\Phi_0 - \Phi_m \in O(\sum_{i = 1}^m p_i \cdot m \cdot l_i \cdot \log 3 )\)</span>.</p>
+<p><strong><em>Remark</em></strong>. Of course, we could bound <span class="math display">\[
+\sum_{i =1}^n l_i \log 3 \le (1 + 2 \cdot 2 + 3 \cdot 2^2 + 4 \cdot 2^3 + ... + (\lfloor \log_2 n \rfloor + 1) \cdot 2^{ \lfloor \log_2 n \rfloor }) \log 3
+\]</span> Let <span class="math inline">\(\Sigma=1 + 2 \cdot 2 + 3 \cdot 2^2 + 4 \cdot 2^3 + ... + (\lfloor \log_2 n \rfloor + 1) \cdot 2^{ \lfloor \log_2 n \rfloor }\)</span>, then <span class="math display">\[
+2 \cdot \Sigma - \Sigma = (\lfloor \log_2 n \rfloor + 1) \cdot 2^{ \lfloor \log_2 n \rfloor + 1} - \sum_{i = 0}^{\lfloor \log_2 n \rfloor - 1} 2^i \in O(n \log n)
+\]</span></p>
+<p>Note that <span class="math inline">\(n \log n\)</span> is a lower bound of the access cost of the optimal static binary search tree, under the assumption that each item is accessed at least once.</p>
+<p><strong><em>Remark</em></strong>:</p>
+<p>In general, <span class="math display">\[
+\sum_{i = 0}^k x^i = \frac{x^{k + 1} - 1}{x - 1}
+\]</span> Applying <span class="math inline">\(x \cdot \frac{\partial}{\partial x}\)</span> to both sides, <span class="math display">\[
+\begin{aligned}
+\sum_{i = 1}^k i x^{i} 
+&amp;= x \cdot \frac{(k + 1) x^k (x - 1) - (x^{k + 1} - 1)}{(x - 1)^2} \\
+&amp;= x \cdot \frac{(k + 1) (x^{k +1} - x^k) - (x^{k + 1} - 1)}{(x - 1)^2} \\
+&amp;= x \cdot \frac{ k x^{k +1} - (k + 1) x^k  + 1}{(x - 1)^2} \\
+&amp;= x \cdot \left( \frac{k x^k }{x - 1} - \frac{ x^k  - 1}{(x - 1)^2} \right)\\
+\end{aligned}
+\]</span></p>
+<h2 id="working-set-property">Working Set Property</h2>
+<p>Suppose that <span class="math inline">\(S = \{x_1, x_2, ..., x_m\}\)</span> and let <span class="math inline">\(t(k)\)</span> be the number of different nodes accessed before <span class="math inline">\(x_k\)</span> since the last access of node <span class="math inline">\(x_k\)</span>, or since the beginning of the sequence if <span class="math inline">\(x_k\)</span> is the first access.</p>
+<p><strong><em>Theorem</em>.</strong> The overall cost of <span class="math inline">\(S\)</span> on the splay tree is bounded by <span class="math display">\[
+O(m + n \log n + \sum_{k = 1}^n \log t(k) )
+\]</span> <strong><em>Proof.</em></strong> We maintain <span class="math inline">\(w(x) = \frac{1}{(j + 1)^2}\)</span>, if the sequence accesses <span class="math inline">\(j\)</span> different nodes since the last accessed of node <span class="math inline">\(x\)</span>, or <span class="math inline">\(w(x) = \frac{1}{n^2}\)</span> if it is never accessed before. By definition of <span class="math inline">\(t(k)\)</span>, we have <span class="math inline">\(w(x_k) = \frac{1}{(t(x_k) + 1)^2}\)</span>. Now <span class="math display">\[
+W \doteq \sum_{x \in T}^n w(x) \in O(1)
+\]</span> For a node <span class="math inline">\(x_k\)</span> , if it is accessed for the first time, the amortized cost is <span class="math display">\[
+O(1 + \log \frac{W}{w(x_k)} ) = O(\log n) = O(\log t(k))
+\]</span> Summing over all nodes <span class="math inline">\(x\)</span> in the splay tree <span class="math inline">\(T\)</span>, we get <span class="math inline">\(O(n \log n)\)</span>.</p>
+<p>Otherwise, if an item <span class="math inline">\(x_k\)</span> is accessed before, the amortized cost of accessing <span class="math inline">\(x_k\)</span> is <span class="math display">\[
+O\left( 1 + \log \frac{W}{w(x_k) } \right) = O \left( 1 + \log t(k) \right)
+\]</span> After each access of a node <span class="math inline">\(x_k\)</span> and splaying it to the root, we modify the weights of the nodes as follows: for all node <span class="math inline">\(x\)</span> with <span class="math inline">\(t(x) &lt; t(x_k)\)</span> (the nodes accessed after the last access of <span class="math inline">\(x_k\)</span>), we set <span class="math display">\[
+w(x) = \frac{1}{(t(x) + 1)^2}
+\]</span> This guarantees that <span class="math inline">\(w(x_k) = {1} / {(1 + t(k))^2}\)</span> for <span class="math inline">\(k \in [m]\)</span>.</p>
+<p>The weight of the root does not change but the weight of other nodes may decrease after the reassignment. Therefore, the overall potential decreases. The amortized cost of the this access only decreases and is still bounded by <span class="math inline">\(O(1 + \log t(k))\)</span>.</p>
+<p>Hence <span class="math display">\[
+\sum_{k = 1}^m a_k \in O(n \log n + m + \sum_{k = 1}^m \log t(k) )
+\]</span> Finally, it is easy to see that <span class="math inline">\(\Phi_0 - \Phi_m \in O(n \log n)\)</span>. Therefore, <span class="math display">\[
+\sum_{k = 1}^m c_k \in O(n \log n + m + \sum_{k = 1}^m \log t(k) )
+\]</span> <span class="math inline">\(\blacksquare\)</span></p>
+<h2 id="static-finger-property">Static Finger Property</h2>
+<p>The static finger property states that splay tree achieves some kind of locality. Suppose we order the nodes in the tree in increasing order according to their keys and labels them as <span class="math inline">\(1, 2, ..., n\)</span>. For a node <span class="math inline">\(x\)</span>, we use <span class="math inline">\(\pi(x)\)</span> to denote its order.</p>
+<p><strong><em>Theorem.</em></strong> For any fixed <span class="math inline">\(i \in [n]\)</span>, the total cost of <span class="math inline">\(S\)</span> on the splay tree is bounded by <span class="math display">\[
+O(n \log n + m + \sum_{k = 1}^m \log (|\pi(x_k) - i| + 1) )
+\]</span> <strong><em>Proof.</em></strong> For <span class="math inline">\(x \in T\)</span>, we set <span class="math inline">\(w(x) = \frac{1}{(|pi(x) - i| + 1)^2}\)</span>. Then <span class="math display">\[
+W \doteq \sum_{x \in T} \in O(1)
+\]</span> and the amortized cost of accessing <span class="math inline">\(x_k\)</span> is <span class="math display">\[
+O(1 + \log \frac{W}{w(x_k)}) = O(1 + \log (|\pi(x_k) - i| + 1))
+\]</span> The theorem then follows from <span class="math inline">\(\Phi_0 - \Phi_m = O(n \log n)\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span>.</p>
+<h2 id="reference">Reference</h2>
+<p>[1]. Sleator, D.D. and Tarjan, R.E., 1983. A data structure for dynamic trees. Journal of computer and system sciences, 26(3), pp.362-391.</p>
+<p>[2]. Jelani Nelson, Lecture 7, CS 224: Advanced Algorithms.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/23/Total-Law-of-Variance/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -361,98 +644,6 @@ For each edge <span class="math inline">\(e\)</span>, define a random variable <
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/21/Linear-Transformation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/04/21/Linear-Transformation/" class="post-title-link" itemprop="url">Linear Transformation</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-04-21 22:13:49" itemprop="dateCreated datePublished" datetime="2020-04-21T22:13:49+10:00">2020-04-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-03 22:14:46" itemprop="dateModified" datetime="2020-05-03T22:14:46+10:00">2020-05-03</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>In linear algebra, we study vectors in some space <span class="math inline">\(\mathcal{R}^n\)</span>. Linear transformation is defined on <span class="math inline">\(\mathcal{R}^n\)</span>. For <span class="math inline">\(v, u \in \mathcal{R}^n\)</span>, and <span class="math inline">\(c \in \mathcal{R}\)</span>, a linear transformation <span class="math inline">\(T : \mathcal{R}^n \rightarrow \mathcal{R}^n\)</span> satisfies</p>
-<ol type="1">
-<li><span class="math inline">\(T(v + u) = T(v) + T(u)\)</span></li>
-<li><span class="math inline">\(T(cv) = c T(v)\)</span></li>
-</ol>
-<p>However, the "linear thing" is not limited to vectors. As an illustration, note that a vector <span class="math display">\[
-v = \begin{bmatrix}
-    v_1 \\ v_2 \\ . \\ . \\ . \\ v_n
-\end{bmatrix}
-\]</span></p>
-<p>can be viewed as the image of some function <span class="math inline">\(f : \{1, 2, ..., n \} \rightarrow \mathcal{R}\)</span>, such that <span class="math inline">\(f(i) = v_i\)</span>. It is natural to study the functions <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>, where <span class="math inline">\(\mathbb{I} \subset \mathcal{R}\)</span> is some open interval. For any <span class="math inline">\(x \in \mathbb{I}\)</span>, <span class="math inline">\(f(x)\)</span> gives the value of <span class="math inline">\(x\)</span>. The only difference with vectors is that, it not possible to enumerate all value of <span class="math inline">\(x \in \mathbb{I}\)</span>. Instead, we specify a rule of obtaining the value at <span class="math inline">\(x\)</span>.</p>
-<p>For any two functions <span class="math inline">\(f_1, f_2 : \mathbb{I} \rightarrow \mathcal{R}\)</span>, we can add them together and obtain a new function <span class="math inline">\(f_1 + f_2 : \mathbb{I} \rightarrow \mathcal{R}\)</span>. Addition is closed in the space <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>. Then for <span class="math inline">\(x \in \mathbb{I}\)</span>, <span class="math display">\[
-(f_1 + f_2) (x) = f_1(x) + f_2(x)
-\]</span></p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/LinearTransformation/Addition.jpg" /></p>
-<p>which is similar to that adding up coordinates of two vector. We can also define multiplication: for <span class="math inline">\(c \in \mathcal{R}^n\)</span>, <span class="math inline">\(f : \mathbb{I} \rightarrow \mathcal{R}\)</span>, <span class="math inline">\(cf\)</span> is a function in <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span> such that <span class="math display">\[
-(cf)(x) = c f(x)
-\]</span></p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/LinearTransformation/Scale.jpg" /></p>
-<p>Multiplication is closed in the space <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>.</p>
-<p><em>Example.</em> The derivative operation <span class="math inline">\(T: \{f: \mathbb{I} \rightarrow \mathcal{R} \wedge \text{differentiable} \} \rightarrow \{\mathbb{I} \rightarrow \mathcal{R} \}\)</span> is linear transformation. It is easy to verify for differentiable functions <span class="math inline">\(f_1, f_2 \in \mathbb{I} \rightarrow \mathcal{R}\)</span>, and <span class="math inline">\(c \in \mathcal{R}\)</span>, we have</p>
-<ol type="1">
-<li><span class="math inline">\((f_1 + f_2)&#39; = f_1&#39; + f_2&#39;\)</span></li>
-<li><span class="math inline">\((c f_1)&#39; = c f_1&#39;\)</span></li>
-</ol>
-<p>What is more, we can extend some other concepts in linear algebra. In linear algebra, "eigenvector" is a vector whose direction does not change under a linear transformation. For derivative operation, the function <span class="math inline">\(e^x\)</span> is un-changed after the transformation: <span class="math display">\[
-(e^x)&#39; = e^x
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -522,7 +713,7 @@ v = \begin{bmatrix}
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">134</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
