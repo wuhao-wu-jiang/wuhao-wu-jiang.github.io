@@ -146,6 +146,361 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/27/Twin-Drive-or-Not/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/27/Twin-Drive-or-Not/" class="post-title-link" itemprop="url">Twin Drive or Not?</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-27 16:15:03" itemprop="dateCreated datePublished" datetime="2020-10-27T16:15:03+11:00">2020-10-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-06 11:08:17" itemprop="dateModified" datetime="2020-11-06T11:08:17+11:00">2020-11-06</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>In this article, we introduce differential privacy. We start with a story of information leakage.</p>
+<h3 id="twin-drive-or-not">Twin Drive or Not</h3>
+<p>Celestial Being is a private military organization with superior technology. It has four advanced machines. The most powerful one is the Gundam 00.</p>
+<p>The Gundam 00 is about to engage the enemy.</p>
+<div style="text-align:center">
+<p><img src="https://lh5.googleusercontent.com/-9AOc-O5bdRk/S_mZxjf1DWI/AAAAAAAACvs/uXI0SvAMqWc/s640/5.jpg" width="500" height="250" /></p>
+</div>
+<p>Due to maintenance, Gundam 00 is not always equipped with two engines (known as <strong><em>twin drive system</em></strong>). With probability <strong><em>0.5</em></strong>, it uses one drive. We use <span class="math inline">\(T = (1, 1)\)</span> to denote the status of equipping with the twin drive system, and <span class="math inline">\(S = (1, 0)\)</span> (or <span class="math inline">\((0, 1)\)</span>) for status of single drive. Let <span class="math inline">\(X\)</span> be a random variable that indicates drive status. Therefore, <span class="math display">\[
+\Pr[ X = T ] = 0.5, \\
+\Pr[ X = S ] = 0.5.  
+\]</span></p>
+<div style="text-align:center">
+<p><img src="https://knolly.files.wordpress.com/2009/03/00gundamdrive1.jpg" width="500" height="250" /></p>
+</div>
+<p>Raiser sword is one of Gundam 00 most powerful weapon. The energy level of the Raiser sword, denote as <span class="math inline">\(Y\)</span>, is a random variable in <span class="math inline">\([0, 100]\)</span>, whose distribution, denoted as <span class="math inline">\(\Pr[\cdot \mid X]\)</span>, depends on the drive status. Thus, <span class="math inline">\(\Pr[Y = y \mid X = T]\)</span> (or <span class="math inline">\(\Pr[Y = y \mid X = S]\)</span>) is the probability that <span class="math inline">\(Y\)</span> equals to <span class="math inline">\(y\)</span> conditioned on <span class="math inline">\(X = T\)</span> (<span class="math inline">\(X = S\)</span>). Specifically, <span class="math display">\[
+\Pr[\cdot \mid T] \sim B(100, 0.81) \\
+\Pr[\cdot \mid S] \sim B(100, 0.09)
+\]</span></p>
+<p>where <span class="math inline">\(B(n, p)\)</span> denotes a binomial distribution. The expected energy level is <span class="math inline">\(81\)</span> with <em>twin drive system</em>, compared to only <span class="math inline">\(9\)</span> with single drive. This is called "<strong><em>squaring</em></strong>" phenomenon of <em>twin drive</em>.</p>
+<div style="text-align:center">
+<p><img src="https://vignette.wikia.nocookie.net/gundam/images/8/84/Raiser_sword.png/revision/latest?cb=20101124151429" width="500" height="250" /></p>
+</div>
+<p>Now suppose that you're the enemy pilot of a mobile suit with just average performance. Before you start dog fighting with Gundam 00, you will be attacked by the 00's long-range raiser sword (you have not seen 00 yet). Luckily, you survive the raiser sword attack. Now you need to make a decision. If 00 is equipped with twin drive, there is zero chance that you can win the dog fight. The best choice is to leave the battle. Otherwise, you can outperform 00 and you would like to engage it.</p>
+<div style="text-align:center">
+<p><img src="https://blogimg.goo.ne.jp/user_image/79/da/c198b8cf829b5f7f7dd507d40bb39ba5.jpg" width="500" height="250" /></p>
+</div>
+<p>Since you have just been attacked by the raiser sword, you have an observation of its energy level <span class="math inline">\(y\)</span>. By Bayes' theorem, <span class="math display">\[
+\begin{aligned}
+\Pr[ X = T \mid Y = y] = \frac{ \Pr[Y = y \mid X = T] \cdot \Pr[X = T] }{ \Pr[Y = y \mid X = T] \cdot \Pr[X = T] + \Pr[Y = y \mid X = S] \cdot \Pr[X = S] } 
+\\
+\\
+\Pr[ X = S \mid Y = y] = \frac{ \Pr[Y = y \mid X = S] \cdot \Pr[X = S] }{ \Pr[Y = y \mid X = T] \cdot \Pr[X = T] + \Pr[Y = y \mid X = S] \cdot \Pr[X = S] }
+\end{aligned}
+\]</span></p>
+<p>Substituting with <span class="math inline">\(\Pr[X = S] = \Pr[X = T] = 0.5\)</span>, we get <span class="math display">\[
+\begin{aligned}
+\Pr[ X = T \mid Y = y] = \frac{ \Pr[Y = y \mid X = T]  }{ \Pr[Y = y \mid X = T]  + \Pr[Y = y \mid X = S] } 
+\\
+\\
+\Pr[ X = S \mid Y = y] = \frac{ \Pr[Y = y \mid X = S]  }{ \Pr[Y = y \mid X = T]  + \Pr[Y = y \mid X = S] }
+\end{aligned}
+\]</span></p>
+<p>The distributions <span class="math inline">\(B(100, 0.09)\)</span> and <span class="math inline">\(B(100, 0.81)\)</span> are plotted together below.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/B-100-0.09-vs-B-100-0.81.png?raw=true" /></p>
+<p>Immediately, you can draw some conclusions based on single value of <span class="math inline">\(y\)</span>, such as</p>
+<ol type="1">
+<li>If <span class="math inline">\(y = 10\)</span>, it is likely 00 has only one drive.<br />
+</li>
+<li>If <span class="math inline">\(y = 75\)</span>, it is likely 00 has twin drive.</li>
+</ol>
+<p>Or you can conclude based on the range of <span class="math inline">\(y\)</span>, such as</p>
+<ol type="1">
+<li>If <span class="math inline">\(y \in [0, 20]\)</span>, it is likely 00 has single drive.</li>
+<li>If <span class="math inline">\(y \in [70, 90]\)</span>, it is likely 00 has twin drive.</li>
+</ol>
+<p>Before the observation of <span class="math inline">\(y\)</span>, as <span class="math inline">\(\Pr[X = S] = \Pr[X = T] = 0.5\)</span>, you have only random guess over the engine status of 00. After the observation, you might be much more confident about your guess, even though the energy level of the raiser sword is a random variable.</p>
+<p>Why does this happen? Because the two distributions are well-separated. They are far from each other. Further, the prior probabilities <span class="math inline">\(\Pr[X = S]\)</span> and <span class="math inline">\(\Pr[X = T]\)</span> play important roles. If you know <span class="math inline">\(\Pr[X = S] = 10^{-10}\)</span>, even if you observe an energy level of <span class="math inline">\(y = 10\)</span>, you had better not engage Gundam 00. You know it could be just a trap!</p>
+<h3 id="formal-definition">Formal Definition</h3>
+<p>Database managers face similar scenarios in privacy protection. We know define the setting for differential privacy. We view a dataset <span class="math inline">\(D\)</span> as a table of <span class="math inline">\(n\)</span> rows, each of which comes from a domain <span class="math inline">\(\mathcal{X}\)</span>. Hence <span class="math inline">\(D \in \mathcal{X}^n\)</span>. Instead of releasing the dataset directly, the manager runs a randomized algorithm <span class="math inline">\(A: \mathcal{X}^n \rightarrow \mathcal{Y}\)</span> on <span class="math inline">\(D\)</span>, and outputs <span class="math inline">\(Y = A(D) \in \mathcal{Y}\)</span>. Here <span class="math inline">\(\mathcal{Y}\)</span> is called the co-domain of <span class="math inline">\(A\)</span> and does not necessarily equal to <span class="math inline">\(\mathcal{X}^n\)</span>. Note that the output distribution of <span class="math inline">\(A\)</span> may depend on the input <span class="math inline">\(D\)</span>. Further, for simplicity of discussion, we believe a uniform prior distribution over datasets in <span class="math inline">\(\mathcal{X}^n\)</span>.</p>
+<p>In the Gundam 00's story, <span class="math inline">\(\mathcal{X} = \{0, 1\}^2\)</span>, and <span class="math inline">\(\mathcal{Y} = [0, 100]\)</span>.</p>
+<p>Suppose there is another dataset <span class="math inline">\(D&#39;\)</span> that differs only one row from <span class="math inline">\(D\)</span>. The algorithm <span class="math inline">\(A\)</span> is said to be differentially private if a malicious user is unlikely to distinguish the input to <span class="math inline">\(A\)</span> between <span class="math inline">\(D\)</span> and <span class="math inline">\(D&#39;\)</span>, by merely observing <span class="math inline">\(A\)</span>'s output. Simply put, the conditional distributions of <span class="math inline">\(\Pr[\cdot \mid X = D]\)</span> and <span class="math inline">\(\Pr[\cdot \mid X = D&#39;]\)</span> should be similar, where <span class="math inline">\(X\)</span> is a variable that denotes the input dataset.</p>
+<p>We observe in the previous section that, if the distributions are well separated, then we can infer the underlying input with high confidence when the output value takes specific values or lies in certain ranges.</p>
+<p>There are many ways to characterize the closeness of two distributions. We introduce the one proposed in [1].</p>
+<blockquote>
+<p>Algorithm <span class="math inline">\(A\)</span> is called <span class="math inline">\((\epsilon, \delta)\)</span> differentially private, if for any pair of neighboring datasets <span class="math inline">\(D\)</span> and <span class="math inline">\(D&#39;\)</span> (the ones that differ in only one row), and for any (measurable) subset <span class="math inline">\(\mathcal{R} \subset \mathcal{Y}\)</span>, it holds that <span class="math display">\[
+\Pr[Y \in \mathcal{R} \mid X = D ] \le \exp(\epsilon) \cdot \Pr[Y \in \mathcal{R} \mid X = D&#39; ]+ \delta
+\]</span></p>
+</blockquote>
+<p>In other words, we can't find a subset <span class="math inline">\(\mathcal{R}\)</span>, with which we can distinguish <span class="math inline">\(D\)</span> and <span class="math inline">\(D&#39;\)</span> with high confidence. In the previous example, such <span class="math inline">\(\mathcal{R}\)</span> exists. E.g., <span class="math inline">\(R = [70, 90]\)</span>. If <span class="math inline">\(Y\)</span> lies in <span class="math inline">\(\mathcal{R}\)</span>, we can infer that Gundam 00 is likely to have twin drive.</p>
+<h3 id="hypothesis-testing">Hypothesis Testing</h3>
+<p>There is alternative view of <span class="math inline">\((\epsilon, 0)\)</span> differential privacy as hypothesis testing. Suppose that we know the underlying dataset is either <span class="math inline">\(D\)</span> or <span class="math inline">\(D&#39;\)</span> with equal probability. After observing the output of <span class="math inline">\(A\)</span>, we need to decide which hypothesis of the following holds: <span class="math display">\[
+H_0: \text{ the dataset if } D \\
+H_1: \text{ the dataset if } D&#39;
+\]</span></p>
+<p>Assume that we adopt a fixed strategy:</p>
+<ol type="1">
+<li>First we choose a fixed subset <span class="math inline">\(\mathcal{R} \subset \mathcal{Y}\)</span>,</li>
+<li>If <span class="math inline">\(Y \in \mathcal{R}\)</span>, we choose to accept <span class="math inline">\(H_0\)</span>,</li>
+<li>Otherwise, we accept <span class="math inline">\(H_1\)</span>.</li>
+</ol>
+<p>There are two kinds of errors we can make. The type I error is the one when the true hypothesis is <span class="math inline">\(H_0\)</span> and we accept <span class="math inline">\(H_1\)</span>. Conversely, type II error is the one when the true hypothesis is <span class="math inline">\(H_1\)</span> and we accept <span class="math inline">\(H_0\)</span>. Let <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> be the probabilities we make type I and II errors respectively. The following theorem holds</p>
+<blockquote>
+<p>Algorithm A is <span class="math inline">\((\epsilon, 0)\)</span> differentially private then</p>
+<ol type="1">
+<li><span class="math inline">\(\frac{1}{1 + \exp(\epsilon) } \le q \le \frac{1}{1 + \exp(-\epsilon) }\)</span><br />
+</li>
+<li><span class="math inline">\(\frac{1}{1 + \exp(\epsilon) } \le p \le \frac{1}{1 + \exp(-\epsilon) }\)</span></li>
+</ol>
+</blockquote>
+<p><em>Proof.</em> By definition, <span class="math display">\[
+\begin{aligned}
+    q   &amp;= \Pr[ X = D \mid  Y \in \bar{\mathcal{R}} ] \\
+        &amp;= \frac{ \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ] \Pr[X = D ] }{ \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ] \Pr[X = D ] + \Pr[  Y \in \bar{\mathcal{R}} \mid X = D&#39; ] \Pr[X = D&#39; ] } \\
+        &amp;= \frac{ \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ]  }{ \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ]  + \Pr[  Y \in \bar{\mathcal{R}} \mid X = D&#39; ]  } 
+\end{aligned}
+\]</span></p>
+<p>As <span class="math inline">\(A\)</span> is <span class="math inline">\((\epsilon, 0)\)</span> differentially private, it holds that <span class="math display">\[
+\Pr[  Y \in \bar{\mathcal{R}} \mid X = D&#39; ] \le \exp(\epsilon) \cdot \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ]
+\]</span> and <span class="math display">\[
+\Pr[  Y \in \bar{\mathcal{R}} \mid X = D ] \le \exp(\epsilon) \cdot \Pr[  Y \in \bar{\mathcal{R}} \mid X = D&#39; ]
+\]</span></p>
+<p>therefore, <span class="math display">\[
+\frac{1}{1 + \exp(\epsilon) } \le q \le \frac{1}{1 + \exp(-\epsilon) }
+\]</span></p>
+<p>By symmetry, we also have <span class="math display">\[
+\frac{1}{1 + \exp(\epsilon) } \le p \le \frac{1}{1 + \exp(-\epsilon) }
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h3 id="reference">Reference</h3>
+<p>[1] C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,” Foundations and Trends in Theoretical Computer Science, vol. 9, no. 3–4, pp. 211–407, 2013<br />
+[2] L. Wasserman and S. Zhou, “A statistical framework for differential privacy,” arXiv:0811.2501 [math, stat], Oct. 2009, Accessed: Oct. 27, 2020.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/26/Norm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/26/Norm/" class="post-title-link" itemprop="url">Norm</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-26 22:17:18" itemprop="dateCreated datePublished" datetime="2020-10-26T22:17:18+11:00">2020-10-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-01 00:49:31" itemprop="dateModified" datetime="2020-11-01T00:49:31+11:00">2020-11-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>A norm <span class="math inline">\(| \cdot |:\mathbb{R}^n \rightarrow \mathbb{R}\)</span> is a function that satisfies the following properties:</p>
+<ol type="1">
+<li>Positive definite: <span class="math inline">\(|x| = 0 \rightarrow x = \vec 0\)</span>,</li>
+<li>Nonnegative:<span class="math inline">\(|x| \ge 0\)</span> for any <span class="math inline">\(x \in \mathbb{R}^n\)</span>,</li>
+<li>Absolutely homogeneous: <span class="math inline">\(|k x| = |k| |x|\)</span>, for any <span class="math inline">\(x \in \mathbb{R}^n, k \in \mathbb{R}\)</span>,</li>
+<li>Subadditive (triangle inequality): <span class="math inline">\(|x + y| \le |x| + |y|\)</span>, for any <span class="math inline">\(x \in \mathbb{R}^n, y \in \mathbb{R}^n\)</span>.</li>
+</ol>
+<p>Given properties 1-3, we claim that property 4 is equivalent to</p>
+<ol start="5" type="1">
+<li>The region <span class="math inline">\(\{ x \in \mathbb{R}^n: |x| \le 1\}\)</span> is convex.</li>
+</ol>
+<p><em>Proof:</em> The proof is straightforward.</p>
+<p><span class="math inline">\(5 \rightarrow 4:\)</span> If <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(\vec y = 0\)</span>, then 4 holds trivially. Otherwise, suppose that <span class="math inline">\(x, y \neq \vec 0\)</span>. Then <span class="math display">\[
+\begin{aligned}
+    &amp;|x + y| \le |x| + |y| \\
+    \leftrightarrow 
+    &amp;| \frac{ |x| }{ |x| + |y| } \frac{ x }{ |x| } + \frac{ |x| }{ |x| + |y| } \frac{ y }{ |y| } | \le 1
+\end{aligned}
+\]</span></p>
+<p>As <span class="math inline">\(|\frac{ x }{ |x| } | =1\)</span>, <span class="math inline">\(|\frac{ y }{ |y| }| = 1\)</span> and <span class="math inline">\(\frac{ |x| }{ |x| + |y| } + \frac{ |y| }{ |x| + |y| } = 1\)</span>, the second inequality follows exactly from condition 5.</p>
+<p><span class="math inline">\(4 \rightarrow 5:\)</span> Let <span class="math inline">\(x, y \in \mathbb{R}^n, |x| \le 1, |y| \le 1\)</span> and <span class="math inline">\(a, b \ge 0\)</span>, <span class="math inline">\(a + b = 1\)</span>. Then <span class="math display">\[
+|ax + by| \le |ax| + |by| = a|x| + b|y| = 1
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h3 id="induced-norm"><strong>Induced Norm</strong></h3>
+<p>To illustrate a deeper connection between property 4 and 5, we first show how a norm can be induced by a convex and symmetric region centered at the origin <span class="math inline">\(O\)</span>. Let the boundary of the region as <span class="math inline">\(E\)</span>. We are going to induce a norm by <span class="math inline">\(E\)</span>, denoted as <span class="math inline">\(|\cdot |_E\)</span>.</p>
+<p>First, we define</p>
+<ol type="1">
+<li><span class="math inline">\(| x |_E = 1, \forall x \in E\)</span>.</li>
+</ol>
+<p>For any other vector <span class="math inline">\(x \notin E\)</span>, consider the ray initiated from the origin and with the same direction as <span class="math inline">\(x\)</span>. Denote its intersection point with <span class="math inline">\(E\)</span> as <span class="math inline">\(x_E\)</span>. Suppose that <span class="math inline">\(x = a \cdot x_E\)</span> for some <span class="math inline">\(a \in \mathbb{R}_+\)</span>. Then we define</p>
+<ol start="2" type="1">
+<li><span class="math inline">\(| x |_E = a |x_E|_E = a\)</span>.</li>
+</ol>
+<p>Indeed, if we write the <span class="math inline">\(|\cdot|_2\)</span> as the <span class="math inline">\(\ell_2\)</span> norm, then the value of <span class="math inline">\(a\)</span> is given by <span class="math inline">\(\frac{ |x|_2 } { |x_E|_2 }\)</span>. Clearly, by definition, <span class="math inline">\(|\cdot|_2\)</span> is positive definite and non-negative. To prove that it is absolutely homogeneous, <span class="math inline">\(\forall k \in \mathbb{R}\)</span>, <span class="math display">\[
+|k x|_E = |k ax_E|_E
+\]</span></p>
+<p>If <span class="math inline">\(k \ge 0\)</span>, we have <span class="math inline">\(|k ax_E|_E = ka |x_E|_E = ka\)</span>. Otherwise, if <span class="math inline">\(k &lt; 0\)</span>, <span class="math display">\[
+|k x|_E = |k ax_E|_E = |-k a (-x_E)|_E = -k a |(-x_E)|_E
+\]</span></p>
+<p>By symmetry of <span class="math inline">\(E\)</span> (with respect to the origin <span class="math inline">\(O\)</span>), <span class="math inline">\(|(-x_E)|_E = |x_E|_E = 1\)</span>. Therefore, <span class="math display">\[
+|k x|_E = |k|a 
+\]</span></p>
+<p>Finally, we have a graphical verification of triangle inequality. Let <span class="math inline">\(v, u \in \mathbb{R}^n\)</span>, which intersect with <span class="math inline">\(E\)</span> at <span class="math inline">\(v_E\)</span> and <span class="math inline">\(u_E\)</span> respectively. If <span class="math inline">\(|v|_E &lt; 1\)</span> (<span class="math inline">\(|u|_E &lt; 1\)</span>), then we can extend it along its direction to get its intersection with <span class="math inline">\(E\)</span>. Let <span class="math inline">\(c = |v|_E\)</span> and <span class="math inline">\(d = |u|_E\)</span>, then</p>
+<ol type="1">
+<li><span class="math inline">\(v = c \cdot v_E\)</span>,</li>
+<li><span class="math inline">\(u = d \cdot u_E\)</span>.</li>
+</ol>
+<p>Let <span class="math inline">\(w = v + u = c \cdot v_E + d \cdot u_E\)</span>. Let <span class="math inline">\(p\)</span> be the intersection between <span class="math inline">\(w\)</span> and the line segment between <span class="math inline">\(v\)</span> and <span class="math inline">\(u\)</span>. It is easy to verify that <span class="math display">\[
+p = \frac{c}{c + d} v_E + \frac{d}{ c + d} u_E
+\]</span></p>
+<p>By convexity of the region bounded by <span class="math inline">\(E\)</span>, <span class="math display">\[
+|p|_E \le 1
+\]</span></p>
+<p>It concludes that <span class="math inline">\(|w|_E = |c v_E + d u_E |_E \le c + d = |v|_E + |u|_E\)</span>.</p>
+<!-- <img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Induced-Norm.png?raw=true" style="zoom: 67%;" /> -->
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Induced-Norm.png?raw=true" /></p>
+<h3 id="application"><strong>Application</strong></h3>
+<p>The idea discussed above significantly simplifies the proof of Minkowski inequality.</p>
+<p>The <span class="math inline">\(p\)</span>-norm (<span class="math inline">\(p \ge 1\)</span>) on <span class="math inline">\(\mathbb{R}^n\)</span> is given as <span class="math display">\[
+| x |_p = \big( \sum_{i = 1}^n |x_i|^p \big)^\frac{1}{p}
+\]</span></p>
+<p>Clearly, <span class="math inline">\(p\)</span>-norm is positive definite, nonnegative, absolutely homogeneous. It is left to verify triangle inequality, which is known as Minkowski inequality for the case of <span class="math inline">\(p\)</span>-norm. This is equivalent to show that <span class="math display">\[
+\{ x \in \mathbb{R}^n : |x |_p \le 1 \}
+\]</span></p>
+<p>is convex. The trick here is that <span class="math inline">\(|x|_p \le 1\)</span> is equivalent to <span class="math inline">\((|x|_p)^p \le 1\)</span>. Hence, <span class="math display">\[
+\{ x \in \mathbb{R}^n : |x |_p \le 1 \} = \{ x \in \mathbb{R}^n : \sum_{i = 1}^n |x_i|^p  \le 1 \}
+\]</span></p>
+<p>The convexity of this set follows directly from the point-wise convexity of the function <span class="math inline">\(|\cdot |^p\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong><em>Remark:</em></strong> To appreciate how concise the above proof is, we also give one traditional proof here, which consists of three steps.</p>
+<h4 id="youngs-inequality">Young's Inequality</h4>
+<p>For <span class="math inline">\(a, b &gt; 0\)</span>, <span class="math inline">\(p, q &gt; 0\)</span>, s.t., <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>, it holds that <span class="math display">\[
+ab \le \frac{a^p}{p} + \frac{b^q}{q}
+\]</span></p>
+<p><em>Proof:</em> The inequality is nothing more than convexity of the function <span class="math inline">\(x \rightarrow e^x\)</span>: <span class="math display">\[
+ab = \exp(\frac{ p \ln a }{p} + \frac{ q \ln b }{q}) \le \frac{ \exp( \ln a^p ) }{p} + \frac{ \exp( \ln b^q ) }{q} = \frac{a^p}{p} + \frac{b^q}{q} 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h4 id="holders-inequality">Holder's Inequality</h4>
+<p>For <span class="math inline">\(x, y \in \mathbb{R}^n\)</span>, <span class="math inline">\(p, q &gt; 0\)</span>, s.t., <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>, it holds that <span class="math display">\[
+\sum_{i = 1}^n |x_i| |y_i| \le |x|_p |y|_q
+\]</span></p>
+<p><em>Proof:</em> The inequality is trivial if <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(y = \vec 0\)</span>. Otherwise, let <span class="math inline">\(u = \frac{x}{ |x|_p }\)</span> and <span class="math inline">\(v = \frac{ y }{ |y|_q }\)</span>. It remains to prove that <span class="math display">\[
+\sum_{i = 1}^n |u_i| |v_i| \le 1
+\]</span></p>
+<p>for <span class="math inline">\(|u|_p = 1\)</span> and <span class="math inline">\(|v|_q = 1\)</span>. WLOG, we assume <span class="math inline">\(u &gt; 0\)</span> and <span class="math inline">\(v &gt; 0\)</span>. Applying Young's Inequality, we have <span class="math display">\[
+u_i v_i \le \frac{ u_i^p }{p}  + \frac{v_i^q}{q}.
+\]</span> Hence, <span class="math display">\[
+u \cdot v = \sum_{i = 1}^n \big( \frac{ u_i^p }{p}  + \frac{v_i^q}{q} \big) = \frac{1}{p} + \frac{1}{q} = 1 .
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h4 id="minkowski-inequality">Minkowski Inequality</h4>
+<p>For <span class="math inline">\(x, y \in \mathbb{R}^n\)</span>, <span class="math inline">\(p \ge 1\)</span>, it holds that <span class="math display">\[
+|x + y|_p \le |x|_p + |y|_p
+\]</span></p>
+<p><em>Proof:</em> The inequality is trivial if <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(y = \vec 0\)</span>. Otherwise, assume that <span class="math inline">\(x &gt; 0\)</span> and <span class="math inline">\(y &gt; 0\)</span>. Now</p>
+<p><span class="math display">\[
+|x + y|_p^p = \sum_{i = 1}^n |x_i + y_i|^p = \sum_{i = 1}^n [ x_i (x_i + y_i)^{p - 1} + y_i (x_i + y_i)^{p - 1} ]
+\]</span></p>
+<p>Let <span class="math inline">\(q = \frac{p}{p - 1}\)</span>. Then <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>. By Holder's inequality, <span class="math display">\[
+\begin{aligned}
+    \sum_{i = 1}^n x_i (x_i + y_i)^{p - 1} 
+    &amp;\le |x|_p ( \sum_{i = 1}^n (x_i + y_i)^{(p - 1)q} )^{ \frac{1}{q} } \\
+    &amp;= |x|_p ( \sum_{i = 1}^n (x_i + y_i)^{ p } )^{ \frac{p - 1}{ p } } \\
+    &amp;= |x|_p (|x + y|_p)^{p - 1}
+\end{aligned}
+\]</span></p>
+<p>Similarly, we have <span class="math display">\[
+\sum_{i = 1}^n y_i (x_i + y_i)^{p - 1} \le |y|_p (|x + y|_p)^{p - 1}
+\]</span></p>
+<p>Putting the inequalities together, <span class="math display">\[
+|x + y|_p^p \le |x|_p (|x + y|_p)^{p - 1} + |y|_p (|x + y|_p)^{p - 1}
+\]</span></p>
+<p>We finish the proof by dividing both side with <span class="math inline">\((|x + y|_p)^{p - 1}\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/Bit-Guessing-Game/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -348,255 +703,10 @@ $$ -->
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/24/Littlewood%E2%80%93Offord-Problem/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/24/Littlewood%E2%80%93Offord-Problem/" class="post-title-link" itemprop="url">Littlewood–Offord Problem</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-24 23:25:49" itemprop="dateCreated datePublished" datetime="2020-10-24T23:25:49+11:00">2020-10-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-31 23:07:05" itemprop="dateModified" datetime="2020-10-31T23:07:05+11:00">2020-10-31</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(a = (a_1, a_2, ..., a_n) \in \mathbb{R}^n\)</span> with <span class="math inline">\(|a_i| \ge 1\)</span>. Let <span class="math inline">\(p(a)\)</span> be the number of vectors <span class="math inline">\(c = (c_1, c_2, ..., c_n) \in \mathbb{R}^n\)</span> where <span class="math inline">\(c_i = \pm 1, \forall i \in [n]\)</span>, such that <span class="math display">\[
--1 \le \left&lt; a , c \right&gt; = \sum_{i = 1}^n c_i a_i &lt; 1
-\]</span></p>
-<ol type="1">
-<li><p>Prove that <span class="math inline">\(p(a) \le \binom{n}{\lfloor n / 2 \rfloor }\)</span>.</p></li>
-<li><p>Find an <span class="math inline">\(a \in \mathbb{R}^n\)</span> with <span class="math inline">\(p(a) = \binom{n}{\lfloor n / 2 \rfloor }\)</span>.</p></li>
-</ol>
-<p><em>Proof.</em> By symmetry, we can assume that <span class="math inline">\(a &gt; 0\)</span> without lose of generality. Define <span class="math display">\[
-C = \{ c = (c_1, c_2, ..., c_n) \in \mathbb{R}^n \mid c_i = \pm 1, i \in [n] \}. 
-\]</span></p>
-<p>Let <span class="math inline">\([n]\)</span> be the set of integers from <span class="math inline">\(1\)</span> to <span class="math inline">\(n\)</span>, and <span class="math inline">\(\mathscr{P}([n])\)</span> be the power set of <span class="math inline">\([n]\)</span>, i.e., the set of all subsets of <span class="math inline">\([n]\)</span>. For any subset <span class="math inline">\(s \subset [n]\)</span>, we can associate to <span class="math inline">\(s\)</span> a vector in <span class="math inline">\(C\)</span>, which is denoted as <span class="math display">\[
-c(s) \doteq (c(s)_1, c(s)_2, ..., c(s)_n), 
-\]</span></p>
-<p>where <span class="math display">\[
-\begin{cases}
-    c(s)_i = 1, &amp; \forall i \in s \\
-    c(s)_i = -1,&amp; \forall i \notin s
-\end{cases}
-\]</span></p>
-<p>It remains to show the set <span class="math display">\[
-S(a) \doteq \{ s \subset [n] : -1 &lt; \left&lt; a, c(s) \right&gt; &lt; 1 \}
-\]</span></p>
-<p>has size at most <span class="math inline">\(\binom{n}{\lfloor n / 2 \rfloor }\)</span>. The key observation is that <span class="math display">\[
-\forall s, s&#39; \in S(a) \Rightarrow s \nsubseteq s&#39;. 
-\]</span></p>
-<p>We call <span class="math inline">\(S(a)\)</span> an antichain. To show this, suppose thta <span class="math inline">\(s&#39;\)</span> contains at least one element that is not in <span class="math inline">\(s\)</span>. Denote this element as <span class="math inline">\(j\)</span>. It follows that <span class="math inline">\(c(s&#39;)_j = 1\)</span> and <span class="math inline">\(c(s&#39;)_j = -1\)</span> and that <span class="math display">\[
-\left&lt; a, c(s&#39;) \right&gt; - \left&lt; a, c(s) \right&gt; \ge c(s&#39;)_j a_j - c(s)_j a_j = 2 a_j \ge 2
-\]</span></p>
-<p>We conclude that <span class="math inline">\(\left&lt; a, c(s&#39;) \right&gt; \ge \left&lt; a, c(s) \right&gt; + 2 \ge 1\)</span>, a contradiction.</p>
-<p>Now, consider an increasing sequence of <span class="math inline">\(n\)</span> subsets of <span class="math inline">\([n]\)</span> of the form: <span class="math display">\[
-\emptyset \subset \{ x_1 \} \subset \{ x_1, x_2 \} \subset \{ x_1, x_2, x_3 \} \subset ... \subset \{ x_1, x_2, ..., x_n \}
-\]</span></p>
-<p>where <span class="math inline">\(x_1, ..., x_n\)</span> are different integers in <span class="math inline">\([n]\)</span>. Each such sequence induces a permutation of integers in <span class="math inline">\([n]\)</span>. As a result, the total number of such sequence equals <span class="math inline">\(n!\)</span>. The relation between <span class="math inline">\(S(a)\)</span> and such sequence is established as follows:</p>
-<ol type="1">
-<li><p>For each such sequence, there can be at most one set in <span class="math inline">\(S(a)\)</span>, because <span class="math inline">\(S(a)\)</span> is a antichain.</p></li>
-<li><p>For each <span class="math inline">\(s = \{x_1, x_2, ..., x_k \} \in S(a)\)</span>, where <span class="math inline">\(k = |s| \ge 1\)</span> is the size of <span class="math inline">\(s\)</span>, the number of sequences it appears in is given by</p>
-<p><span class="math display">\[
- |s| ! (n - |s|)! \ge \lfloor n / 2 \rfloor ! (n - \lfloor n / 2 \rfloor)!
- \]</span></p></li>
-</ol>
-<p>We obtain <span class="math display">\[
-|S(a) | \cdot \lfloor n / 2 \rfloor ! (n - \lfloor n / 2 \rfloor)! \le\sum_{s \in S(a) } |s| ! (n - |s|) ! \le n!
-\]</span></p>
-<p>and <span class="math display">\[
-p(a) = |S(a) | = \frac{n!}{ \lfloor n / 2 \rfloor ! (n - \lfloor n / 2 \rfloor)! } = \binom{n}{\lfloor n / 2 \rfloor }
-\]</span></p>
-<p>This finishes the proof for problem 1.</p>
-<p>Finally, <span class="math inline">\(a_i = 1, \forall i \in [n]\)</span> gives a tight example to problem 2.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h3 id="reference">Reference</h3>
-<p>[1] J. Matoušek and J. Nešetřil, Invitation to discrete mathematics, 2nd ed. Oxford ; New York: Oxford University Press, 2009.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/20/Peeling/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/20/Peeling/" class="post-title-link" itemprop="url">Peeling</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-20 21:41:54" itemprop="dateCreated datePublished" datetime="2020-10-20T21:41:54+11:00">2020-10-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-23 11:24:43" itemprop="dateModified" datetime="2020-10-23T11:24:43+11:00">2020-10-23</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(Z_1, Z_2, ..., Z_n\)</span> be i.i.d. copies of random variable <span class="math inline">\(Z\)</span> on <span class="math inline">\([0, 1]\)</span>. Let</p>
-<ol type="1">
-<li><p><span class="math inline">\(\mu_k \doteq \frac{1}{k} \sum_{i = 1}^k Z_i\)</span> for <span class="math inline">\(1 \le k \le n\)</span>,</p></li>
-<li><p><span class="math inline">\(\mu = \mathbb{E}[Z]\)</span>,</p></li>
-<li><p><span class="math inline">\(M_k\)</span> be the event such that <span class="math display">\[
-     M_k \doteq \left\{ \mu_k + \sqrt{ \frac{ \log \frac{1}{\delta} }{2 k} } \le \mu \right\},
- \]</span> where <span class="math inline">\(0 &lt; \delta &lt; 1\)</span>.</p></li>
-</ol>
-<p>We are interested in bounding the probability of <span class="math display">\[
-\Pr[ \cup_{k = 1}^n M_k ].
-\]</span></p>
-<h3 id="hoeffding-inequality">Hoeffding Inequality</h3>
-<p>We first prove a bound of <span class="math display">\[
-\Pr[ \cup_{k = 1}^n M_k ] \le n \delta
-\]</span> by Hoeffding inequality.</p>
-<p><strong><em>Hoeffding Inequality.</em></strong> <em>For a fixed integer <span class="math inline">\(s\)</span>, let <span class="math inline">\(Z_1, Z_2, ..., Z_s\)</span> be i.i.d. copies of a random variable <span class="math inline">\(Z\)</span> on <span class="math inline">\([0, 1]\)</span>. For any <span class="math inline">\(r &gt; 0\)</span></em> <span class="math display">\[
-\Pr[ \mu - \mu_s  \ge r] \le \exp(- 2 s r^2 ). \\
-\ 
-\]</span></p>
-<p>Applying Hoeffding inequality with <span class="math inline">\(s = k\)</span>, <span class="math inline">\(r = \sqrt{ \frac{ \log \frac{1}{\delta} }{2 k} }\)</span>, we get <span class="math display">\[
-\Pr[ M_k ] \le \delta.
-\]</span></p>
-<p>By sub-additivity of probability, <span class="math display">\[
-\Pr[ \cup_{k = 1}^n M_k ] \le \sum_{k = 1}^n \Pr[M_k] = n \delta.
-\]</span></p>
-<p>To make the bound meaningful, we require that <span class="math inline">\(\delta \le \frac{1}{n}\)</span>.</p>
-<h3 id="beyond-the-naive-union-bound">Beyond The Naive Union Bound</h3>
-<p>In this section, we avoid using union bound over <span class="math inline">\(n\)</span> events and improve the <span class="math inline">\(\Pr[ \cup_{k = 1}^n M_k ]\)</span> to <span class="math display">\[
-\Pr[ \cup_{k = 1}^n M_k ] \le ( \log_\frac{1}{\alpha} n  + 1 ) \cdot \delta^\alpha,
-\]</span></p>
-<p>where <span class="math inline">\(\alpha\)</span> is any real number that satisfies <span class="math inline">\(0 &lt; \alpha &lt; 1\)</span>.</p>
-<p>As a sanity check, suppose <span class="math inline">\(\delta = \frac{1}{n}\)</span> and <span class="math inline">\(\alpha = \frac{1}{2}\)</span>. The two bounds we have are</p>
-<ol type="1">
-<li><p><span class="math display">\[
- \Pr[ \cup_{k = 1}^n M_k ] \le n \delta = 1, 
- \]</span> which is trivial.</p></li>
-<li><p><span class="math display">\[
- \begin{aligned}
-     ( \log_\frac{1}{\alpha} n  + 1 ) \cdot \delta^\alpha 
-     &amp;= (\log_2 n + 1) \cdot {1 \over \sqrt n} 
- \end{aligned}
- \]</span></p></li>
-</ol>
-<p>The proof relies on a strengthened version of <em>Hoeffding inequality.</em></p>
-<p><strong><em>Fact [1].</em></strong> <em>For a fixed integer <span class="math inline">\(s\)</span>, let <span class="math inline">\(Z_1, Z_2, ..., Z_s\)</span> be i.i.d. copies of a random variable <span class="math inline">\(Z\)</span> on <span class="math inline">\([0, 1]\)</span>. For any <span class="math inline">\(r &gt; 0\)</span></em> <span class="math display">\[
-\Pr[ \exists t \le s : \quad t \cdot \mu - t \cdot \mu_t  \ge r] \le \exp(- \frac{2 r^2}{s} ). \\  
-\ 
-\]</span></p>
-<p><em>Proof.</em> We divide the <span class="math inline">\(M_k\)</span>'s into <span class="math inline">\(\lfloor \log_\frac{1}{\alpha} n \rfloor + 1\)</span> groups. For integer <span class="math inline">\(0 \le j \le \lfloor \log_\frac{1}{\alpha} n \rfloor\)</span>, define <span class="math display">\[
-\begin{aligned}
-    B_j &amp;\doteq \cup_{n \cdot \alpha^{j + 1} &lt; k \le  n \cdot \alpha^j } M_k \\
-        &amp;= \left\{ \exists \quad n \cdot \alpha^{j + 1} &lt; k \le  n \cdot \alpha^j, \mu_k + \sqrt{ \frac{ \log \frac{1}{\delta} }{2 k} } \le \mu \right\} \\
-        &amp;= \left\{ \exists \quad n \cdot \alpha^{j + 1} &lt; k \le  n \cdot \alpha^j, k \cdot \mu_k + \sqrt{ \frac{  k \log \frac{1}{\delta} }{2} } \le k \cdot \mu \right\} \\
-        &amp;\subset \left\{ \exists \quad n \cdot \alpha^{j + 1} &lt; k \le  n \cdot \alpha^j, k \cdot \mu_k + \sqrt{ \frac{  n \cdot \alpha^{j + 1} \log \frac{1}{\delta} }{2} } \le k \cdot \mu \right\} \\
-\end{aligned}
-\]</span></p>
-<p>Applying Fact [1] with <span class="math inline">\(s = \lfloor n \cdot \alpha^j \rfloor &lt; n \cdot \alpha^j\)</span>, <span class="math inline">\(r = \sqrt{ \frac{ n \cdot \alpha^{j + 1} \log \frac{1}{\delta} }{2 } }\)</span>, and by monotonicity of probability, we get <span class="math display">\[
-\Pr[B_j] \le \exp( - \frac{  n \cdot \alpha^{j + 1} \log \frac{1}{\delta} }{2} \frac{ 2 }{ n \cdot \alpha^j } ) = \delta^{ \alpha }.
-\]</span></p>
-<p>Summing over all possible values of <span class="math inline">\(j\)</span>, we get <span class="math display">\[
-\Pr[ \cup_{j = 0}^{ \lfloor \log_\frac{1}{\alpha} n \rfloor } B_j] \le  \sum_{j = 0}^{ \lfloor \log_\frac{1}{\alpha} n \rfloor } \Pr[B_j] \le( \log_\frac{1}{\alpha} n  + 1 ) \cdot \delta^\alpha.
-\]</span></p>
-<p><em>Remark:</em> The first inequality still follows from union bound. However the number of events is now bounded by <span class="math inline">\(\log_\frac{1}{\alpha} n + 1\)</span> instead of <span class="math inline">\(n\)</span>. This comes with a cost of increasing <span class="math inline">\(\delta\)</span> to <span class="math inline">\(\delta^\alpha\)</span>.</p>
-<h3 id="reference">Reference</h3>
-<p>[1] S. Lattimore, “Bandit Algorithms,”<br />
-[2] S. Bubeck, “Bandits Games and Clustering Foundations,”</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/45/">45</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/9/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><a class="extend next" rel="next" href="/page/11/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -662,7 +772,7 @@ p(a) = |S(a) | = \frac{n!}{ \lfloor n / 2 \rfloor ! (n - \lfloor n / 2 \rfloor)!
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">134</span>
+          <span class="site-state-item-count">136</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
