@@ -146,6 +146,257 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/18/Entropy-and-Message-Transmission/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/18/Entropy-and-Message-Transmission/" class="post-title-link" itemprop="url">Entropy and Message Transmission</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-18 20:26:03" itemprop="dateCreated datePublished" datetime="2020-06-18T20:26:03+10:00">2020-06-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-01 11:06:27" itemprop="dateModified" datetime="2020-07-01T11:06:27+10:00">2020-07-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>We discuss another application that sheds light on meaning of entropy, the message transmission problem. In this model, a sender transmits a message to the receiver through a channel. In real world, the channel could be an optical fiber, a wireless channel, a hard disk etc. In the final application, the computer that writes and reads information from the hard disk is both the sender and the receiver.</p>
+<p>In real world the channel is not perfect and the message transmitted is distorted by noise. It is natural to ask whether the message can be transmitted accurately under the noise, i.e., whether the receiver can recover the noisy message.</p>
+<p>To study the problem, we need a mathematical model for both the channel and the noise. We focus on the simplest binary channel with bits of 0 and 1. The noise causes the bits to flip and is modelled by the distribution on the bit-flips. We study the simplest one that flips each bit independently with some identical probability <span class="math inline">\(p &lt; 0.5\)</span>. For a message with length <span class="math inline">\(n\)</span>, the number of bit flips follows a Binomial distribution <span class="math inline">\(B(n, p)\)</span>. We call such channel a <em>binary symmetric channel</em>.</p>
+<p>To protect the message against noise, a naïve way is to send the each bit multiple times. For example, if the sender wants to send a bit 1, it sends <span class="math inline">\(10\)</span> copies of <span class="math inline">\(1\)</span> as <span class="math inline">\(1111111111\)</span>. The receiver decides that the bit sent is 1, if the majority of the <span class="math inline">\(10\)</span> bits it receives is 1.</p>
+<p>Could it be improved? Repeating each bit may not be the mot efficient way against the noise. In general, if the sender wants to send a message of <span class="math inline">\(k\)</span> bits, it can convert it into a new message of <span class="math inline">\(n\)</span> bits and sends the new one. The receiver considers the <span class="math inline">\(n\)</span> bits received as a whole, and try to recover the <span class="math inline">\(k\)</span>-bit message the sender wants to send.</p>
+<p>We call the method used by the sender to convert the original message the <em>encoding function</em>, and the one used by the receiver to recover the message the <em>decoding function.</em></p>
+<p><strong><em>Definition.</em></strong> A <span class="math inline">\((k, n)\)</span> encoding function <span class="math inline">\(\text{Enc}: \{0, 1\}^k \rightarrow \{0, 1\}^n\)</span> and a <span class="math inline">\((k, n)\)</span> decoding function <span class="math inline">\(\text{Dec}: \{0, 1\}^n \rightarrow \{0, 1\}^k\)</span>, where <span class="math inline">\(n \ge k\)</span>.</p>
+<p>Since the noise flips the bits randomly, it is impossible to have an encoding function and a decoding function without error (unless <span class="math inline">\(p = 0\)</span>). Instead, we aim to control the probability of error within some specified threshold <span class="math inline">\(\delta\)</span>. To achieve this, we add redundancy to the message and encode a <span class="math inline">\(k\)</span>-bit one into an <span class="math inline">\(n\)</span>-bit one. Now, <span class="math inline">\(n - k\)</span> is the amount of redundancy introduced. We would like to make <span class="math inline">\(n - k\)</span> as small as possible. On the other hand, the value of <span class="math inline">\(n-k\)</span> should positively related to <span class="math inline">\(p\)</span>. The larger <span class="math inline">\(p\)</span> is, the noisier the channel is and the larger <span class="math inline">\(n - k\)</span> should be.</p>
+<p>For fixed <span class="math inline">\(\delta\)</span> and <span class="math inline">\(p\)</span>, the <em>Shannon's Theorem</em> says that the smallest possible value of <span class="math inline">\(n - k\)</span> we can achieve is roughly <span class="math inline">\(n\mathbf{H}(p)\)</span>. Intuitively, <span class="math inline">\(\mathbf{H}(p)\)</span> is the amount of randomness the noise exerts on each bit. Therefore <span class="math inline">\(1 - \mathbf{H}(p)\)</span> is the maximum amount of information we can transmit by one bit.</p>
+<p>Before we proceed, we prove the following lemma.</p>
+<p><strong><em>Lemma 1</em></strong><br />
+For <span class="math inline">\(q \in \mathbb{R}, q \le 1 / 2\)</span> and <span class="math inline">\(n \in \mathbb{N}\)</span>, it hold that <span class="math display">\[
+\begin{aligned}
+    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i} 
+    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }
+\end{aligned}
+\]</span></p>
+<p><strong><em>Proof.</em></strong><br />
+<span class="math display">\[
+\begin{aligned}
+    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i} 
+    &amp;\le \frac{n + 1}{2} \binom{n }{\lfloor q n \rfloor }  \\
+    &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} \left( { \lfloor q n \rfloor } / { n } \right) } \\
+    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }
+\end{aligned}
+\]</span></p>
+<p>The first inequality follows from that <span class="math inline">\(\binom{n}{i}\)</span> is increasing for <span class="math inline">\(i \le n / 2\)</span> and that the summation is over at most <span class="math inline">\((n + 1) /2\)</span> terms. The last one follows from that <span class="math inline">\(\mathbf{H}(x)\)</span> is increasing for <span class="math inline">\(x \le 1 / 2\)</span> and that <span class="math inline">\({ \lfloor q n \rfloor } / { n } \le { q n } / { n } = q &lt; 1/2\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Shannon's Theorem</em></strong><br />
+Given a binary symmetric channel with flip probability <span class="math inline">\(p &lt; 1 / 2\)</span> and for any any <span class="math inline">\(\epsilon, \delta &gt; 0\)</span>, when <span class="math inline">\(n\)</span> is large enough,</p>
+<ol type="1">
+<li>if <span class="math inline">\(k \le n (1 - \mathbf{H}(p) - \epsilon)\)</span>, there exist <span class="math inline">\((k, n)\)</span> encoding and decoding functions such that the receiver fails to obtain the correct message with probability at most <span class="math inline">\(2\delta\)</span>.<br />
+</li>
+<li><span class="math inline">\(\nexists (k, n)\)</span> encoding and decoding functions with <span class="math inline">\(k \ge n (1 - \mathbf{H}(p) + \epsilon)\)</span> such that the decoding is correctly is at most <span class="math inline">\(\delta\)</span> for a <span class="math inline">\(k\)</span>-bit input message chosen uniformly at random.</li>
+</ol>
+<p><strong><em>Proof of 1.</em></strong></p>
+<p><strong>Intuition.</strong> When an <span class="math inline">\(n\)</span>-bit message <span class="math inline">\(s\)</span> is transmitted through the channel, the number of flipped bits is roughly <span class="math inline">\(np\)</span>. As <span class="math inline">\(p &lt; {1} / {2}\)</span>, we can find a <span class="math inline">\(\lambda &gt; 0\)</span> such that <span class="math inline">\(p + \lambda &lt; {1} / {2}\)</span>. Let <span class="math inline">\(R\)</span> be the received <span class="math inline">\(n\)</span>-bit message and define <span class="math inline">\(d(s, R)\)</span> the number of different bits between <span class="math inline">\(s\)</span> and <span class="math inline">\(R\)</span>, i.e., the Hamming distance between <span class="math inline">\(s\)</span> and <span class="math inline">\(R\)</span>. Given <span class="math inline">\(s\)</span> and <span class="math inline">\(p\)</span>, let <span class="math inline">\(\mathfrak{D}(s, p)\)</span> be the distribution of <span class="math inline">\(R\)</span> on <span class="math inline">\(\{0, 1\}^n\)</span>.</p>
+<p>By Hoeffding's inequality, it holds that <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s, p) } [ |d(s, R) - pn | \ge \lambda n] \le \exp(- 2 \lambda^2 n).
+\]</span></p>
+<p>Define the <span class="math inline">\((p + \lambda)n\)</span> ball centered <span class="math inline">\(s\)</span> as <span class="math display">\[
+B_{s, (p + \lambda)n} \doteq \{ r \in \{0, 1\}^n : d(s, r) &lt; (p + \lambda)n \}.
+\]</span></p>
+<p>The the Hoeffding's inequality implies that for large enough <span class="math inline">\(n\)</span>, we have <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s, p) } [ R \notin B_{s, (p + \lambda)n}] \le \delta.
+\]</span></p>
+<p>That is, with probability at most <span class="math inline">\(\delta\)</span>, the received message fall outside the ball <span class="math inline">\(B_{s, (p + \lambda)n}\)</span>. This motivates to decode each message in <span class="math inline">\(B_{s, (p + \lambda)n}\)</span> as the original message the sender wants to send.</p>
+<p>Further, by Lemma 1, the size of <span class="math inline">\(B_{s, (p + \lambda) n}\)</span> is bounded by <span class="math display">\[
+\begin{aligned}
+    \sum_{i = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{i} 
+    &amp;\le 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }
+\end{aligned}
+\]</span></p>
+<p>Therefore, the maximum number of non-overlapped balls we can pack into the message space <span class="math inline">\(\{0, 1\}^n\)</span> is<br />
+<span class="math display">\[
+\frac{2^n}{ 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }  } = 2^{ n (1 - \mathbf{H} ( p + \lambda) - \frac{1}{n} \log \frac{n + 1}{2})   }
+\]</span></p>
+<p>When <span class="math inline">\(n\)</span> is large enough, this is at least <span class="math inline">\(2^{ n (1 - \mathbf{H} ( p ) - \epsilon) }\)</span>.</p>
+<p><em>Remark: Hoeffding's inequality is an overkill. Chebyshev's inequality suffices for this proof.</em></p>
+<p><strong>Designing Encoding and Decoding Functions.</strong></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Balls.png" /></p>
+<p>This motivates one to design of encoding and decoding function as follows: find a set of messages <span class="math inline">\(s_1, s_2, ..., s_{2^k} \in \{0, 1\}^n\)</span>, such that <span class="math display">\[
+B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, ..., B_{s_{2^k} , (p + \lambda)n}
+\]</span></p>
+<p>are disjoint balls, and assign the messages in <span class="math inline">\(\{0, 1\}^k\)</span> to the ones in <span class="math inline">\(\{ s_i \}&#39;s\)</span> one by one. If the sending want to send <span class="math inline">\(i\)</span>, it sends <span class="math inline">\(s_i\)</span>. On receiving a message <span class="math inline">\(r\)</span>, the receiver determines which ball <span class="math inline">\(r\)</span> belongs to. The probability of decoding error is at most <span class="math inline">\(\delta\)</span>.</p>
+<p><em>Question to ponder: can we find such a set efficiently, such that</em><br />
+<span class="math display">\[
+B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, ..., B_{s_{2^k} , (p + \lambda)n}
+\]</span> <em>are disjoint?</em></p>
+<p><strong>Finding the Codewords.</strong></p>
+<p>It is left to find a set of satisfactory <span class="math inline">\(s_1, s_2, ..., s_{2^k} \in \{0, 1\}^n\)</span>. The method we show here does not find a set of non-overlapped balls. Instead it aims to find a set such that</p>
+<blockquote>
+<p>if <span class="math inline">\(s_i\)</span> is transmitted, then the probability received message <span class="math inline">\(r\)</span> falls into the another ball, i.e., <span class="math inline">\(r \in B_{s_{j} , (p + \lambda)n}\)</span> (<span class="math inline">\(j \neq i\)</span>), is less than <span class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<p>The property implies that the overlap between <span class="math inline">\(B_{s_{i} , (p + \lambda)n}\)</span> and <span class="math inline">\(\cup_{j \neq i} B_{s_{j} , (p + \lambda)n}\)</span> is less than <span class="math inline">\(\delta\)</span> (measured by probability). To formalize the statement, define the random variable <span class="math inline">\(S\)</span> to be the message sent and <span class="math inline">\(R\)</span> to be the one received. Given that <span class="math inline">\(S = s_i\)</span> is sent, the conditional probability of receiving <span class="math inline">\(R = r\)</span> is <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] = p^{d(s_i,r)} (1 - p)^{1 - d(s_i, r)}
+\]</span></p>
+<p>To goal is to prove that it holds for all <span class="math inline">\(i\)</span>, <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] = \sum_{r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n} } p_r \le \delta
+\]</span></p>
+<p>Then , by union bound, it holds that <span class="math display">\[
+\begin{aligned} 
+\Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \text{ is not recovered correctly} \mid S = s_i] 
+    &amp;= \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p + \lambda)n}  \vee  R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid S = s_i] \\
+    &amp;\le \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p + \lambda)n}   \mid S = s_i]  + \Pr[ R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid S = s_i] \\
+    &amp;\le 2 \delta
+\end{aligned}
+\]</span> That is, <span class="math inline">\(s_i\)</span> is transmitted and decoded correctly with probability at least <span class="math inline">\(1 - 2 \delta\)</span>.</p>
+<p>In what follows, we will prove the following claim:</p>
+<p><strong>Claim 1</strong>. <em>If we generate <span class="math inline">\(2^{k + 1}\)</span> codewords uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, then in expectation</em> <span class="math display">\[
+\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \le  2^k \delta
+\]</span></p>
+<p>Claim 1 implies that there exits a set of codewords <span class="math inline">\(s_1, s_2, ..., s_{2^{k + 1} }\)</span> with <span class="math display">\[
+\sum_{i = 1}^{2^{k + 1} } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]    \le 2^k \delta
+\]</span></p>
+<p>If we send each <span class="math inline">\(s_i\)</span> with probability <span class="math inline">\(1 / 2^k\)</span>, then the expected error probability is already <span class="math inline">\(\delta\)</span>. But we can have a stronger result: we can find a set of <span class="math inline">\(2^k\)</span> codewords, such that for each <span class="math inline">\(i\)</span>, <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \le 2 \delta
+\]</span></p>
+<p>W.L.O.G., suppose that <span class="math inline">\(s_1, s_2, ..., s_{2^k}\)</span> are the ones with the smallest <span class="math inline">\(\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]\)</span> 's, it must be that <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]  \le \frac{2^k \delta }{2^k } = \delta
+\]</span></p>
+<p><strong><em>Proof of Claim 1</em></strong>. By Lemma 1, for a fixed <span class="math inline">\(r\)</span>, the number of strings <span class="math inline">\(s \in \{0, 1\}^n\)</span> such that <span class="math inline">\(d(s, r) &lt; (p + \lambda) n\)</span> is bounded by <span class="math display">\[
+\begin{aligned}
+    \sum_{k = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{k} 
+        &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} ( p + \lambda) }
+\end{aligned}
+\]</span></p>
+<p>If a message <span class="math inline">\(s\)</span> is picked uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, the probability such that <span class="math display">\[
+\Pr_{s \sim \mathbf{U}(\{0, 1\}^n) } [d(s, r) &lt; (p + \lambda) n ] \le \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H} \left(  p + \lambda \right) }
+\]</span></p>
+<p>By union bound,<br />
+<span class="math display">\[
+\begin{aligned}
+    \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] 
+    &amp;&lt; 2^k \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H}( p + \lambda) }  \\
+    &amp;= 2^{ k + \log (n + 1) +  n \mathbf{H} ( p + \lambda) - n - 1 } 
+\end{aligned}
+\]</span></p>
+<p>As <span class="math inline">\(k \le n(1 - \mathbf{H}(p) - \epsilon)\)</span>, when <span class="math inline">\(n\)</span> is sufficient large, it follows<br />
+<span class="math display">\[
+\begin{aligned}
+     \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] 
+        &lt; 2^{ \log \frac{n + 1}{2} +  n ( \mathbf{H} ( p + \lambda) - \mathbf{H} ( p) - \delta) } 
+        \le \frac{\delta}{2}
+\end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+\begin{aligned}
+    &amp;\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} } \left[ \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \\
+    &amp;= \sum_{r \in \{0, 1\}^n }     \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] \cdot  \Pr_{R \sim \mathfrak{D}(s_i, p) } [ R = r \mid S = s_i] \\
+    &amp;\le \frac{\delta}{2}
+\end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \le 2^{k + 1} \frac{\delta}{2} = 2^k \delta
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Proof of 2.</em></strong></p>
+<p>The difficulty here is to prove that the claim holds for arbitrary <span class="math inline">\((k, n)\)</span> encoding and decoding functions. The proof relies on an important property:</p>
+<blockquote>
+<p>the decoding function <span class="math inline">\(\text{Dec}\)</span> is a function on <span class="math inline">\(\{0, 1\}^n\)</span></p>
+</blockquote>
+<p>For any <span class="math inline">\(r \in \{0, 1\}^n\)</span>, there is a unique output <span class="math inline">\(\text{Dec}(r) \in \{0, 1\}^k\)</span>. The decoding function needs to decide the unique message <span class="math inline">\(\{0, 1\}^n\)</span> the sender want to send.</p>
+<p>Now, define <span class="math display">\[
+S_i \doteq \{ r \in \{0, 1\}^n :  r \text{ is decoded correctly if } s_i \text{ is sent}   \}
+\]</span></p>
+<p>The <span class="math inline">\(S_i\)</span>'s are non-overlapped and we have, <span class="math display">\[
+\cup_{i = 1}^{2^k} S_i \subset \{0, 1 \}^n
+\]</span></p>
+<p>If <span class="math inline">\(s_i\)</span> is sent, then by Hoeffding inequality, with probability at least <span class="math inline">\(1 - \exp(- 2\lambda^2 n)\)</span>, the received message <span class="math inline">\(R\)</span> is likely to fall into a ring centered at <span class="math inline">\(s_i\)</span>: <span class="math display">\[
+\text{ring} (s_i) \doteq \{ r \in \{0, 1\}^n : |d(r, s_i) - pn |&lt; \lambda n \}
+\]</span></p>
+<p>Finally, if the messages <span class="math inline">\(s_1, s_2, ..., s_{2^k}\)</span> are sent uniformly at random, i.e., <span class="math inline">\(i \sim \mathbf{U}[1, 2^k]\)</span>, then <span class="math display">\[
+\begin{aligned}
+    \Pr[ R \text{ is decoded correctly}]   &amp;=  \sum_{i = 1}^{2^k} \sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \Pr_{i \sim \mathbf{U}[1, 2^k]} [ S = s_i] \\ 
+        &amp;=  \frac{1}{2^k} \sum_{i = 1}^{2^k} \sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] 
+\end{aligned}
+\]</span></p>
+<p>Observed that <span class="math inline">\(S_i \subset \text{ring} (s_i) \cup (S_i \cap \text{ring} (s_i) )\)</span>, we get</p>
+<p><span class="math display">\[
+\begin{aligned}
+ &amp;\Pr[ R \text{ is decoded correctly}] \\
+        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \sum_{r \notin \text{ring} (s_i)  } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i]  +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right) \\ 
+        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \exp( -2\lambda^2n) +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right) 
+\end{aligned}
+\]</span></p>
+<p>Note that for <span class="math inline">\(r \in S_i \cap \text{ring} (s_i)\)</span>, as <span class="math inline">\(p &lt; 1 / 2\)</span>, it holds that <span class="math display">\[
+\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \le p^{ \lceil(p - \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil }
+\]</span></p>
+<p>We obtain</p>
+<p><span class="math display">\[
+\begin{aligned}
+        &amp;\Pr[ R \text{ is decoded correctly}] \\
+        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ \lceil(p - \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil } \\
+        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ (p - \lambda) n } (1 - p)^{ n - (p - \lambda) n  } \\
+        &amp;= \exp( -2\lambda^2n) +  p^{ (p - \lambda) n } (1 - p)^{ n - (p - \lambda) n  }  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } \frac{1}{2^k}  \\
+        &amp;= \exp( -2\lambda^2n) +   p^{ pn } (1 - p)^{ n - pn } \left(\frac{ 1 - p}{ p} \right)^{\lambda n} 2^{n - k}\\
+        &amp;= \exp( -2\lambda^2n) +  2^{n - k - n \mathbf{H}(p)}  \left(\frac{ 1 - p}{ p} \right)^{\lambda n}
+\end{aligned}
+\]</span></p>
+<p>Conditioning on that <span class="math inline">\(k \ge n (1 - \mathbf{H}(p) + \delta)\)</span>, <span class="math display">\[
+\Pr[ R \text{ is decoded correctly}] \le \exp( -2\lambda^2n) +  2^{- n (\delta + \lambda \log \frac{ 1 - p}{ p} ) }  
+\]</span></p>
+<p>By choosing sufficient small <span class="math inline">\(\lambda\)</span> and large enough <span class="math inline">\(n\)</span>, <span class="math inline">\(\Pr[ R \text{ is decoded correctly}]\)</span> can be arbitrary small.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h2 id="reference">Reference</h2>
+<p>[1] M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/07/Entropy-and-Compression/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -815,228 +1066,6 @@ LB \le UB \le n - LB \\
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/30/Integer-Shortest-Path/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/30/Integer-Shortest-Path/" class="post-title-link" itemprop="url">Integer Shortest Path</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-05-30 11:15:49" itemprop="dateCreated datePublished" datetime="2020-05-30T11:15:49+10:00">2020-05-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-06-18 13:01:58" itemprop="dateModified" datetime="2020-06-18T13:01:58+10:00">2020-06-18</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Single source shortest path is one of most popular the topics taught in a introductory algorithm course. Given a graph <span class="math inline">\(G = \left&lt; V, E \right&gt;\)</span> with <span class="math inline">\(n\)</span> vertices and <span class="math inline">\(m\)</span> edges, the famous Dijkstra's algorithm has runtime <span class="math inline">\(O(m \log n)\)</span> by using a binary heap. When more advanced heap such such Fibonacci heap is deployed, the runtime can be improved to <span class="math inline">\(O(m + n \log n)\)</span>. Most introductory courses are satisfied with the above solutions without going further.</p>
-<p>Here we explore the topic by considering a special case where all edge weights are non-negative integers within the set <span class="math inline">\(\{0, 1, 2, ..., C\}\)</span>. We develop new heaps incrementally and we will finally see that Dijkstra algorithm can do substantially better than <span class="math inline">\(O(m + n \log n)\)</span>.</p>
-<h4 id="time-om-nc-space-onc.">Time: <span class="math inline">\(O(m + nC)\)</span>, Space: <span class="math inline">\(O(nC)\)</span>.</h4>
-<p>As a warm up, we demonstrate an algorithm with runtime <span class="math inline">\(O(m + nC)\)</span> and space overhead <span class="math inline">\(O(nC)\)</span>. Here we exclude the space <span class="math inline">\(O(m + n)\)</span> required for storing the graph to simplify the discussion and comparison between the algorithms.</p>
-<p>The idea is very simple. We know that the possible distance from any vertex to the source vertex (denoted as <span class="math inline">\(s\)</span>) is no less than <span class="math inline">\(nC\)</span>. It suffices to keep an array <span class="math inline">\(A_1\)</span> with length <span class="math inline">\(nC\)</span>, such that <span class="math inline">\(A_1[i]\)</span> maintains the set of vertices with temporary distance <span class="math inline">\(i\)</span>. In this context, we call <span class="math inline">\(A_1[i]\)</span> a bucket and the array <span class="math inline">\(A_1\)</span> itself the buckets.</p>
-<p>Initially all <span class="math inline">\(A_1[i]\)</span>'s are empty except that <span class="math inline">\(A_1[0]\)</span> contains the source vertex. The algorithm iterates over <span class="math inline">\(A_1\)</span> to find an unmarked vertex with the minimum distance, marked it, update its neighbors' distances and move them to the corresponding buckets.</p>
-<p>Each vertex is inserted into <span class="math inline">\(A_1\)</span> once. There are at most <span class="math inline">\(m\)</span> updates of vertices' distances. As the minimum distance of the unmarked vertices is monotonically increasing, we scan the array <span class="math inline">\(A_1\)</span> only once. Summing over the cost we get the <span class="math inline">\(O(m + nC)\)</span> time complexity bound.</p>
-<h4 id="time-om-nc-space-oc.">Time: <span class="math inline">\(O(m + nC)\)</span>, Space: <span class="math inline">\(O(C)\)</span>.</h4>
-<p>The space usage of the above algorithm can be improve to <span class="math inline">\(O(C)\)</span>. Relabel the vertices as <span class="math inline">\(s = v_0, v_1, v_2, ..., v_n\)</span> according to the order they are marked.</p>
-<p>Suppose that Dijkstra's algorithm uses an array <span class="math inline">\(d\)</span> to record the vertices' distances to <span class="math inline">\(s\)</span>. Initially, <span class="math inline">\(d(s) = 0\)</span> and <span class="math inline">\(d(v) = \infty\)</span> for <span class="math inline">\(\forall v \neq s\)</span>. Now, consider the moment that <span class="math inline">\(k\)</span> (<span class="math inline">\(0 \le k &lt; n\)</span>) vertices have been marked. For <span class="math inline">\(i &gt; k\)</span>, the value of <span class="math inline">\(d(v_i)\)</span> is either</p>
-<ol type="1">
-<li><p><span class="math inline">\(d(v_i) = \infty\)</span>, if <span class="math inline">\(v_i\)</span> is not adjacent to any vertex <span class="math inline">\(v_j\)</span> for <span class="math inline">\(j \le k\)</span>. In this case <span class="math inline">\(v_i\)</span> is not in the array <span class="math inline">\(A_1\)</span>.</p></li>
-<li><p><span class="math inline">\(d(v_i) = d(v_j) + w_{i,j}\)</span> for some <span class="math inline">\(j \le k\)</span>, where <span class="math inline">\(w_{i,j}\)</span> is the edge weight between <span class="math inline">\(v_i\)</span> and <span class="math inline">\(v_j\)</span>.</p></li>
-</ol>
-<p>By the property of Dijkstra's algorithm, at this moment it also holds that <span class="math display">\[
-0 = d(s) = d_(v_0) \le d(v_1) \le d(v_2) ... \le d(v_k)
-\]</span></p>
-<p>Therefore, for <span class="math inline">\(i &gt; k\)</span>, either <span class="math inline">\(v_i\)</span> is not in <span class="math inline">\(A_1\)</span> or <span class="math display">\[
-d(v_i) \le d(v_j) + w_{i,j} \le d(v_k) + C
-\]</span></p>
-<p>All un-marked vertices that are in <span class="math inline">\(A_1\)</span> must be in the range of <span class="math display">\[
-A_1[d(v_k) ... d(v_k) + C]
-\]</span></p>
-<p>In general, let <span class="math inline">\(\mu\)</span> be the distance of the least marked vertex. It suffices to maintain a window of <span class="math inline">\(A_1[\mu...\mu+C]\)</span>. We can implement this by initializing <span class="math inline">\(A_1\)</span> with size <span class="math inline">\(C+1\)</span> and use it in a wrap-around manner.</p>
-<h4 id="time-om-n-sqrt-c-space-oc.">Time: <span class="math inline">\(O(m + n \sqrt C)\)</span>, Space: <span class="math inline">\(O(C)\)</span>.</h4>
-<p>In previous section, we successfully reduce the size of <span class="math inline">\(A_1\)</span> to <span class="math inline">\(1 + C\)</span>. But the runtime remains <span class="math inline">\(O(m + nC)\)</span>. To motivate the algorithm discussed in this section, we first provide an alternative view of this complexity:</p>
-<ol type="1">
-<li><p>We update the vertices' distance and move the vertices between buckets, which has cost <span class="math inline">\(O(m)\)</span>;</p></li>
-<li><p>At each iteration of Dijkstra's algorithm, in the worst case, we need to scan the entire array of <span class="math inline">\(A_1\)</span> to find an unmarked vertex with minimum distance, which takes <span class="math inline">\(O(C)\)</span> times. This is repeated <span class="math inline">\(n\)</span> times.</p></li>
-</ol>
-<p>Where could we have wasted our time? Do we really have spend <span class="math inline">\(O(C)\)</span> time to find the unmarked vertex with minimum distance?</p>
-<p>We can improve this to <span class="math inline">\(O(\sqrt C)\)</span> by using two-level buckets. We break the buckets in <span class="math inline">\(A_1\)</span> into <span class="math inline">\(\sqrt { C + 1}\)</span> blocks, each of size <span class="math inline">\(\sqrt { C + 1}\)</span> (assume here <span class="math inline">\(\sqrt { C + 1}\)</span> is an integer for simplicity). For each block, we use one flag bit to indicate whether this block is empty. This results in <span class="math inline">\(\sqrt { C + 1}\)</span> flags bits, which are stored in bit array <span class="math inline">\(A_2\)</span>. From now on,</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/1.png" /></p>
-<p>Now, to find an unmarked vertex with minimum distance, we scan <span class="math inline">\(A_2\)</span> to find the first non-zero bit then the corresponding bucket in <span class="math inline">\(A_1\)</span>, which takes <span class="math inline">\(O(\sqrt C)\)</span> time. Totaling the runtime, we obtain a bound of <span class="math inline">\(O(m + n \sqrt C)\)</span>.</p>
-<p><strong><em>Question to ponder: calculate the size of <span class="math inline">\(\sqrt C\)</span> for some values of <span class="math inline">\(C\)</span> which you consider reasonable in real applications.</em></strong></p>
-<h4 id="time-o-m-log_-fracmn-c-space-oc.">Time: <span class="math inline">\(O( m \log_{ \frac{m}{n} } C)\)</span>, Space: <span class="math inline">\(O(C)\)</span>.</h4>
-<p>It is natural to extend the idea to <span class="math inline">\(3\)</span>-level buckets. Suppose the block size if <span class="math inline">\(\Delta\)</span>. Then the third level contains a single bit block of size <span class="math inline">\(\Delta\)</span>, the second level contains <span class="math inline">\(\Delta\)</span> bit blocks (with total size <span class="math inline">\(\Delta^3\)</span>), and the first level contains the buckets <span class="math inline">\(A_1\)</span> of size <span class="math inline">\(\Delta^3 = C + 1\)</span>. It follows that <span class="math inline">\(\Delta = (C + 1)^\frac{1}{3}\)</span> and the time complexity is <span class="math inline">\(O(m + n C^\frac{1}{3} )\)</span>.</p>
-<p>We may use four level buckets, in which <span class="math inline">\(\Delta = (C + 1)^\frac{1}{4}\)</span> and the time complexity is <span class="math inline">\(O(m + n C^\frac{1}{4})\)</span>.</p>
-<p><strong><em>Question to ponder: calculate the size of <span class="math inline">\(C^\frac{1}{3}\)</span> and <span class="math inline">\(C^\frac{1}{4}\)</span> for some values of <span class="math inline">\(C\)</span> which you consider reasonable in real applications.</em></strong></p>
-<p>Does the analysis carry for <span class="math inline">\(k\)</span>-level buckets for general value of <span class="math inline">\(k\)</span>? No. We can no longer consider the <span class="math inline">\(k\)</span> as a constant and have to take into consider the overhead of insertion, decrease-key and deletion explicitly.</p>
-<p>For a <span class="math inline">\(k\)</span>-level bucket structure with bucket size <span class="math inline">\(\Delta = (1 + C)^\frac{1}{k} \ge 2\)</span>,</p>
-<ol type="1">
-<li><p>insertion takes <span class="math inline">\(O(k)\)</span> time,</p></li>
-<li><p>decrease-key takes <span class="math inline">\(O(k)\)</span> time,</p></li>
-</ol>
-<p>as we need to maintain the indicators bits in <span class="math inline">\(2...k\)</span> levels. Finally,</p>
-<ol start="3" type="1">
-<li>delete-min takes <span class="math inline">\(O(k \Delta)\)</span> time,</li>
-</ol>
-<p>as we need to scan <span class="math inline">\(k\)</span> buckets, each of size <span class="math inline">\(\Delta\)</span>, to find the min element and delete it.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/2.png" /></p>
-<p>The time complexity now becomes <span class="math display">\[
-O(mk + n k \Delta) = O( mk + nkC^\frac{1}{k})
-\]</span></p>
-<p>Balancing the two terms, we get <span class="math inline">\(\frac{1}{k} = \frac{ \log \frac{m}{n} }{ \log C}\)</span>, i.e., <span class="math inline">\(k = \log_{\frac{m}{n} } C\)</span>. To summarize, the time is <span class="math display">\[
-O(m \log_{\frac{m}{n} } C)
-\]</span></p>
-<p>and the space overhead is <span class="math display">\[
-O\left( \sum_{i = 0}^{k - 1} C / \Delta^i \right) = O(C)
-\]</span></p>
-<p><strong><em>Question to ponder: calculate the size of <span class="math inline">\(\log_{\frac{m}{n} } C\)</span> for some values of <span class="math inline">\(C\)</span> which you consider reasonable in real applications.</em></strong></p>
-<h4 id="time-om-n-fraclog-clog-log-c-space-o-fraclog-clog-log-c-2-.">Time: <span class="math inline">\(O(m + n \frac{\log C}{\log \log C})\)</span>, Space: <span class="math inline">\(O( (\frac{\log C}{\log \log C} )^2 )\)</span>.</h4>
-<p>The core idea underlying the k-level bucket structure discussed in the previous section is that every integer <span class="math inline">\(w\)</span> in <span class="math inline">\([0, C]\)</span> can be written as a base-<span class="math inline">\(\Delta\)</span> number with length at most <span class="math inline">\(k\)</span>: <span class="math display">\[
-w = \sum_{i = 0}^{k - 1} w_i \cdot \Delta^i
-\]</span></p>
-<p>where <span class="math inline">\(w_i \in [0, \Delta)\)</span>. For convenience, we write it as <span class="math display">\[
-w = (w_{k - 1}, w_{k - 2}, ..., w_0)_\Delta
-\]</span></p>
-<p>Now the meaning of the <span class="math inline">\(k\)</span>-level buckets is clear. The <span class="math inline">\(k^{th}\)</span> level partitions the <span class="math inline">\(w\)</span>'s according to the value of <span class="math inline">\(w_{k - 1}\)</span>. The <span class="math inline">\((k - 1)^{th}\)</span> level further partitions the <span class="math inline">\(w\)</span>'s according to the value of <span class="math inline">\(w_{k - 2}\)</span>, and so on. The path from the top level to bottom level is uniquely determined by the sequence <span class="math inline">\((w_{k - 1}, w_{k - 2}, ..., w_0)_\Delta\)</span>. Indeed, this is a special case of <strong><em>trie</em></strong>, which has alphabet size <span class="math inline">\(\Delta\)</span> and contains only sequence of length <span class="math inline">\(k\)</span>.</p>
-<p>But we may still waste some work. Remember that our goal for designing the data structure is to find the min element. Therefore, it suffices to distinguish the min element from the rest. We should not waste our effort in determining the relative order between the non-min elements.</p>
-<p>In the following example, the min elements <span class="math inline">\(v_1, v_2\)</span> fall into the subtree of the first bucket on the <span class="math inline">\(k^{th}\)</span> level while <span class="math inline">\(v_{n - 1}, v_n\)</span> fall into the last one. As <span class="math inline">\(v_{n - 1}, v_n\)</span> are not min elements, it is unnecessary to maintain a subtree to separate them. Worse still, if later decrease-key is applied to either <span class="math inline">\(v_{n -1}\)</span> or <span class="math inline">\(v_n\)</span>, and if the new key has to be moved to a new bucket in the <span class="math inline">\(k^{th}\)</span> level, the effort we have spent in constructing the sub-tree is completely useless.</p>
-<p>Instead, we can create an auxiliary set to the last bucket on level <span class="math inline">\(k\)</span>, to pus <span class="math inline">\(v_{n - 1}, v_n\)</span> into the set directly. Similar idea apply to <span class="math inline">\(v_3\)</span> in the example.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/3.png" /></p>
-<p>The new structure we get is as follows:</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/4.png" /></p>
-<p>In general, we may not even has a <span class="math inline">\(k\)</span>-level trie. In the example below, we can already determine the min-element <span class="math inline">\(v_1\)</span> at some level <span class="math inline">\(i &gt; 1\)</span>. Why should we bother to expand the buckets further? Note that this idea is similar to that of trie compression used in <strong><em>Patricia trie</em></strong>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/5.png" /></p>
-<p>We can be even more lazy. We expand a bucket only when it is necessary. See the example below as an example. In this example, <span class="math inline">\(C = 15\)</span> and <span class="math inline">\(\Delta = 4\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example1-2.png" /></p>
-<p>Now, to delete-min, we need to determine the order of <span class="math inline">\(v_1, v_2\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example3.png" /></p>
-<p>Inserting a new element follows the current structure, until it finds a bucket to fall in.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example4.png" /></p>
-<p>Delete-min begin the search from the lowest level non-empty bucket block.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example5.png" /></p>
-<p>After delete-min, we may need to delete the empty bucket blocks recursively. For each bucket block, we maintain counter for the number of non-empty buckets. This allows us to delete empty bucket blocks in <span class="math inline">\(O(k)\)</span> time.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example6.png" /></p>
-<p>We decrease the key of <span class="math inline">\(v_4\)</span> to 9. Note that we do not need to compare <span class="math inline">\(v_4\)</span> and <span class="math inline">\(v_5\)</span> for the moment. Bucket block counter is maintained when <span class="math inline">\(v_4\)</span> is moved to another bucket.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example7.png" /></p>
-<p>Delete-min is invoked again. We need to expand the bucket containing <span class="math inline">\(v_5\)</span> and <span class="math inline">\(v_4\)</span> to distinguish them.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example8.png" /></p>
-<p>We continue to insert a new element <span class="math inline">\(v_6 = 12\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example9.png" /></p>
-<p>We decrease the key of <span class="math inline">\(v_6\)</span> to <span class="math inline">\(10\)</span>. It is pushed down by one level.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Example10.png" /></p>
-<p>We are now prepared to analyze the amortized cost of these operations:</p>
-<ol type="1">
-<li><p>Insert: we pay an <span class="math inline">\(O(k)\)</span> amortized cost of insertion. Any subsequent pushed down operation on this element is charged to its insertion. Note that an element can be push-down by at most <span class="math inline">\(k\)</span> levels.</p></li>
-<li><p>Decrease-key: we pay an <span class="math inline">\(O(1)\)</span> amortized cost of decrease-key operation. The push-down operation is charged to its insertion.</p></li>
-<li><p>Delete-min: to find the min-element, we scan the bucket block in the lowest level to find the first non-empty bucket. This has time <span class="math inline">\(\Delta\)</span>. If the bucket found contains multiple elements, we perform an expansion and push the elements down, the cost of which is charged to insertion of these elements. Finally, we may need to delete empty bucket blocks recursively, which has cost <span class="math inline">\(O(k)\)</span>.</p></li>
-</ol>
-<p>Therefore, the Dijkstra's algorithm with this structure has runtime <span class="math inline">\(O(m + n(k + \Delta))\)</span>, which is minimized when <span class="math display">\[
-k = \Delta = (C + 1)^\frac{1}{k}
-\]</span></p>
-<p>Solving the equation gives <span class="math inline">\(k = O(\frac{\log C}{\log \log C} )\)</span>.</p>
-<h4 id="time-o-m-n-sqrtlog-c-space-osqrtlog-c-cdot-2sqrtlog-c-.">Time: <span class="math inline">\(O( m + n \sqrt{\log C} )\)</span>, Space: <span class="math inline">\(O(\sqrt{\log C} \cdot 2^{\sqrt{\log C} })\)</span>.</h4>
-<p>Beginning from the naïve approach, we have improved a lot on both time and space overhead. Amazingly, this is not the end of the story. To motivate what is possibly the inefficient part of <span class="math inline">\(O(m + n \frac{\log C}{\log \log C})\)</span> approach, look at the following example.</p>
-<p>Suppose that <span class="math inline">\(C\)</span> is a large number. Initially the structure is empty. We insert an element <span class="math inline">\(v_1\)</span> followed by <span class="math inline">\(v_2\)</span> and they fall into the same bucket in the <span class="math inline">\(k^{th}\)</span> level. Next, we perform a delete-min operation. To distinguish, we expand the buckets all the way down to <span class="math inline">\(1^{st}\)</span> level.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/IntegerShortestPath/Drawback.png" /></p>
-<p>But since there are two elements, why don't we compare them directly and return the minimum one? In such case we avoid the unnecessary expansions.</p>
-<p>We can extend the idea further. If the number of elements in a bucket is too few, we refuse to expand it. Instead we make of copy of the elements and construct a comparison based priority queue (e.g., Fibonacci heap) on them. Further, note that we are only interested in the possible min-element. Therefore the heap is constructed for only one bucket that contains the min-element.</p>
-<p>We use a parameter <span class="math inline">\(t\)</span> (to be determined) to control this number. In particular, if the number is at most <span class="math inline">\(t\)</span>, we construct a comparison based priority queue. We perform expansion only if the number exceeds <span class="math inline">\(t\)</span>.</p>
-<ol type="1">
-<li><p>Insert: insert an element as before. If the element falls into the bucket that is associated with a priority, then also insert this element into the heap.</p></li>
-<li><p>Decrease-key: if the element is in the bucket that is associated with a priority queue, perform decrease-key in the queue. Otherwise, perform decrease-key as before. If the element falls into the bucket that is associated with a priority queue, then also insert this element into the heap.</p></li>
-<li><p>Delete-min:</p></li>
-</ol>
-<blockquote>
-<ol type="1">
-<li>Find the first non-empty bucket in the lowest level<br />
-</li>
-<li><strong><em>IF</em></strong> the bucket has more than <span class="math inline">\(t\)</span> elements <strong><em>THEN</em></strong><br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Expand the bucket<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> <strong><em>GO TO STEP 1</em></strong></li>
-<li><strong><em>ELSE</em></strong></li>
-<li><span class="math inline">\(\qquad\)</span> <strong><em>IF</em></strong> <span class="math inline">\(\nexists\)</span> queue <strong><em>THEN</em></strong><br />
-</li>
-<li><span class="math inline">\(\qquad\qquad\)</span> Construct a queue</li>
-<li><span class="math inline">\(\qquad\)</span> Perform delete-min in the queue</li>
-</ol>
-</blockquote>
-<p>Let <span class="math inline">\(I(t), D(t), X(t)\)</span> be the time needed to perform insert, decrease-key and delete-min operation in a comparison based priority queue respectively. Then it is obvious that the the structure we propose, the amortized time we need for insert and decrease-key is</p>
-<ol type="1">
-<li>Insert: <span class="math inline">\(O(k + I(t))\)</span>.</li>
-<li>Decrease-key: <span class="math inline">\(O(D(t) + I(t))\)</span>.</li>
-</ol>
-<p>To analyze the time needed for delete-min is more complicated. It relies on the implementation of the following:</p>
-<blockquote>
-<p>Find the first non-empty bucket in the lowest level.</p>
-</blockquote>
-<p>We record the previous deleted min element <span class="math inline">\(\mu\)</span> (initially set to 0). Denote the <span class="math inline">\(\Delta\)</span>-base representation of <span class="math inline">\(\mu\)</span> as <span class="math display">\[
-\mu = (\mu_{k - 1}, \mu_{k - 2}, ..., \mu_0)_\Delta
-\]</span> Observe that the non-empty bucket block in the lowest level must contain <span class="math inline">\(\mu\)</span>. Denote this level as <span class="math inline">\(i\)</span>. To find the first non-empty bucket, we start scan from <span class="math inline">\(\mu_{i - 1}^{th}\)</span> bucket in the <span class="math inline">\(i^{th}\)</span> level. Therefore, each bucket block is only scanned once. Further, the buck block in the <span class="math inline">\(i^{th}\)</span> level is created from the <span class="math inline">\((i + 1)^{th}\)</span> level because it contains more than <span class="math inline">\(t\)</span> elements. We can charge the scanned cost to these <span class="math inline">\(t\)</span> elements, each with <span class="math inline">\(\frac{\Delta}{t}\)</span>. As there are <span class="math inline">\(k\)</span> level, a element could be charge at most <span class="math inline">\(k\)</span> times. It follows that the amortized cost of delete-min is given by</p>
-<ol start="3" type="1">
-<li>Delete-min: <span class="math inline">\(O(X(t) + \frac{k \Delta}{t})\)</span></li>
-</ol>
-<p>For Fibonacci heap, <span class="math inline">\(I(t) = D(t) = 1\)</span> and <span class="math inline">\(X(t) = \log t\)</span>. Therefore, we have runtime <span class="math display">\[
-O \left( m + n \left[k + \log t + \frac{k \Delta}{t} \right] \right)
-\]</span></p>
-<p>To minimize it, we need to set <span class="math inline">\(k = \log t = \frac{k \Delta}{t}\)</span>. It holds that <span class="math inline">\(t = 2^k\)</span> and <span class="math inline">\(t = \Delta = C^\frac{1}{k}\)</span>, which implies that <span class="math inline">\(2^{k} = 2^{ \frac{\log C}{k} }\)</span> and <span class="math inline">\(k = \sqrt {\log C}\)</span>. The time is <span class="math display">\[
-O(m + n \sqrt{\log C})
-\]</span></p>
-<p>and the space overhead is <span class="math inline">\(O(k \Delta) = O(\sqrt{\log C} \cdot 2^{\sqrt{\log C} })\)</span>.</p>
-<h3 id="reference">Reference</h3>
-<p>[1]. David R. Karger, MIT Advanced Algorithm, 2013.<br />
-[2]. B. V. Cherkassky, A. V. Goldberg, and C. Silverstein, “Buckets, Heaps, Lists, and Monotone Priority Queues,” SIAM J. Comput., vol. 28, no. 4, pp. 1326–1346, Jan. 1999</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1106,7 +1135,7 @@ O(m + n \sqrt{\log C})
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
