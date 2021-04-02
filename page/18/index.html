@@ -146,6 +146,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/23/Working-Set-BST/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/23/Working-Set-BST/" class="post-title-link" itemprop="url">Working Set BST</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-23 23:59:24" itemprop="dateCreated datePublished" datetime="2020-03-23T23:59:24+11:00">2020-03-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-29 22:14:08" itemprop="dateModified" datetime="2020-03-29T22:14:08+11:00">2020-03-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Various implementations of Balanced Binary Search Tree (BST) guaranteed membership queries in <span class="math inline">\(O(\log n)\)</span> time, where <span class="math inline">\(n\)</span> is the number of elements in some set <span class="math inline">\(S\)</span>. The working set property is a stronger requirement than <span class="math inline">\(O(\log n)\)</span> time complexity. Suppose that an item <span class="math inline">\(x \in S\)</span> is accessed <span class="math inline">\(t\)</span> queries before, then we want to perform <span class="math inline">\(\text{find} (x)\)</span> in <span class="math inline">\(O(\log t)\)</span> time.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/WorkingSetBSForest.jpg" /></p>
+<p>The idea is to maintain a sequence of Balanced BST's, denoted as <span class="math inline">\(T_0, T_1, T_2, ...\)</span>. Denote the size of <span class="math inline">\(T_i\)</span> for some <span class="math inline">\(i \ge 0\)</span> as <span class="math inline">\(n_i\)</span>. Then the <span class="math inline">\(i\)</span>-th tree maintains the latest <span class="math inline">\(n_i\)</span> accessed items. The sizes of <span class="math inline">\(n_i\)</span>'s satisfy</p>
+<p><span class="math display">\[
+\begin{aligned}
+    &amp;   n_0 = 1 \\
+    &amp;   n_1 = 2 \\
+    &amp;   n_2 = 4 \\
+    &amp;   n_3 = 16 \\
+    &amp;   ...     \\
+    &amp;   n_i = 2^{2^{i - 1} }  \\
+    &amp;   n_{i + 1} = n_i^2 = 2^{2^i } \\
+    &amp;   ... \\
+    &amp;   n_k = 2^{2^{k - 1} }  
+\end{aligned}
+\]</span></p>
+<p>The largest tree has an index that equals to the smallest <span class="math inline">\(k\)</span> with <span class="math inline">\(2^{k - 1} \ge \log n\)</span> (assuming that <span class="math inline">\(n \ge 1\)</span>). It implies that <span class="math inline">\(k = O (\log \log n)\)</span>. The complexities for searching an element on these trees are <span class="math display">\[
+\begin{aligned}
+    &amp;   c_0 = 1 + \log 1    \\
+    &amp;   c_1 = 1 + \log 2    \\
+    &amp;   c_2 = 1 + \log 4    \\
+    &amp;   c_3 = 1 + \log 16   \\
+    &amp;   ...     \\
+    &amp;   c_k = 1 + \log 2^{2^{k - 1}}\\
+\end{aligned}
+\]</span></p>
+<p>When a query <span class="math inline">\(\text{find} (x)\)</span> is invoked, we first search it on <span class="math inline">\(T_0\)</span>. If we find it successfully, we stop. Otherwise we search it on <span class="math inline">\(T_1\)</span> and so on. If <span class="math inline">\(x\)</span> is accessed <span class="math inline">\(t\)</span> queries before (and is not accessed in the latest <span class="math inline">\(t - 1\)</span> queries if <span class="math inline">\(t \ge 1\)</span>), then it is contained in the tree <span class="math inline">\(T_{i_x}\)</span>, where <span class="math display">\[
+i_x \doteq \text{ the smallest non-negative integer, } s.t. \ 2^{i_x - 1} \ge t
+\]</span></p>
+<p>As a sanity check, note that when <span class="math inline">\(t = 0\)</span> (<span class="math inline">\(x\)</span> is the latest accessed item), we have <span class="math inline">\(i_x = 0\)</span> as <span class="math inline">\(2^{-1} \ge 0\)</span>. By definition of definition of <span class="math inline">\(i_x\)</span>, <span class="math inline">\(x\)</span> is not contained in any <span class="math inline">\(T_i\)</span> with <span class="math inline">\(i &lt; i_x\)</span>. The time to search <span class="math inline">\(x\)</span> is <span class="math display">\[
+\begin{aligned}
+    &amp;(1 + \log 1) + (1 + \log 2) + (1 + \log 4) + (1 + \log 16) + ... + (1 + \log 2^{2^{i_x - 1} }) \\
+    &amp;=i_x + 1  + \sum_{i = 0}^{i_x - 1} 2^{i} \\
+    &amp;=i_x + 1  + 2^{i_x} - 1 \\
+    &amp;=O(\log \log t) + O(\log t) \\
+    &amp;=O(\log t)    
+\end{aligned}
+\]</span></p>
+<p>Finally, we need to update the trees <span class="math inline">\(T_0\)</span>, <span class="math inline">\(T_1\)</span>, ... <span class="math inline">\(T_{i_x}\)</span> to reflect the last access of <span class="math inline">\(x\)</span>. In particular, we 1) insert <span class="math inline">\(x\)</span> into <span class="math inline">\(T_0\)</span>, <span class="math inline">\(T_1\)</span>, ... <span class="math inline">\(T_{i_x - 1}\)</span>; 2) for each <span class="math inline">\(i &lt; i_x\)</span>, we delete the least recently accessed item; 3) update the access time of <span class="math inline">\(x\)</span> in <span class="math inline">\(T_{i_x}\)</span>.</p>
+<p>Step 1) takes <span class="math inline">\(O(\log t)\)</span> time. To implement steps 2) and 3) in <span class="math inline">\(O(\log t)\)</span> time, we create a min-heap <span class="math inline">\(H_i\)</span> for each tree <span class="math inline">\(T_i\)</span> that keeps the the access time of items in <span class="math inline">\(T_i\)</span>. Both fetching least recently accessed item and updating access time can be performed in <span class="math inline">\(O(\log n_i)\)</span> time. Therefore, steps 2) and 3) take <span class="math inline">\(O(\log t)\)</span> time in total.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/09/Hessian/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -334,204 +438,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/06/Gradient-Descent/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/06/Gradient-Descent/" class="post-title-link" itemprop="url">Gradient Descent</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-06 10:10:45" itemprop="dateCreated datePublished" datetime="2020-03-06T10:10:45+11:00">2020-03-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 00:46:03" itemprop="dateModified" datetime="2020-03-09T00:46:03+11:00">2020-03-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Gradient descent is a greedy search method for optimization. It approximates a function locally by a linear function. Its analysis varies depending on the what kinds of constraints you place on it.</p>
-<p>We study a baby version of the method. The problem at hand is given by: <span class="math display">\[
-\min_{x \in \mathbb{R }^n} f(x)
-\]</span> where <span class="math inline">\(f\)</span> is twice continuous differentiable and convex. The convexity of <span class="math inline">\(f\)</span> implies that it has a unique minimum value <span class="math inline">\(\min_{x \in \mathbb{R }^n} f(x)\)</span>. Assume that <span class="math inline">\(f\)</span> indeed achieves minimum at some point and denote the optimal point as <span class="math inline">\(x^*\)</span>. Note that is some case, <span class="math inline">\(f\)</span> can not achieve minimum value at any point. Consider <span class="math inline">\(f(x) = e^x\)</span>. Then <span class="math inline">\(\min_{x \in \mathbb{R } } e^x = 0\)</span>. <span class="math inline">\(f\)</span> can approach arbitrary close to <span class="math inline">\(0\)</span> but never achieve that value.</p>
-<p>Before we delve into the details, we need to define some frequently used notations.</p>
-<ul>
-<li><p>The gradient <span class="math inline">\(\nabla f(x):\mathbb{R }^n \rightarrow \mathbb{R }^n\)</span> is the vector of partial derivatives of <span class="math inline">\(f\)</span> at point <span class="math inline">\(x\)</span>: <span class="math display">\[
-\nabla f(x) = \left[ \frac{\partial f (x) }{\partial x_1}, \frac{\partial f (x)}{\partial x_2}, .., \frac{\partial f (x) }{\partial x_n} \right]
-\]</span></p></li>
-<li><p>The Hessian <span class="math inline">\(\nabla^2 f(x) : \mathbb{R }^n \rightarrow \mathbb{R }^{n \times n}\)</span> is the matrix of second order derivatives of <span class="math inline">\(f\)</span> at <span class="math inline">\(x\)</span>: <span class="math display">\[
-  \nabla f(x) = 
-      \left[
-      \begin{aligned}
-          \frac{\partial^2 f (x)}{\partial x_1 \partial x_1}, \frac{\partial^2 f (x)}{\partial x_1 \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_1 \partial x_n} \\
-          \frac{\partial^2 f (x)}{\partial x_2 \partial x_1}, \frac{\partial^2 f (x)}{\partial x_2 \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_2 \partial x_n} \\
-          &amp;...\\
-          \frac{\partial^2 f (x)}{\partial x_n \partial x_1}, \frac{\partial^2 f (x)}{\partial x_n \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_n \partial x_n} \\
-      \end{aligned}
-      \right]
-  \]</span> Since <span class="math inline">\(f\)</span> is twice continuous differentiable, the Hessian is symmetric.</p></li>
-</ul>
-<p>The algorithm is itself very simple.</p>
-<h3 id="algorithm"><strong>Algorithm</strong></h3>
-<p><strong><em>Gradient Descent</em></strong></p>
-<ol type="1">
-<li>Begin from some <span class="math inline">\(x_0 \in \mathbb{R }^n\)</span>.</li>
-<li><span class="math inline">\(x^{t + 1} \leftarrow x^t - \eta \nabla f(x^t)\)</span>.</li>
-</ol>
-<p>where <span class="math inline">\(\eta &gt; 0\)</span> is called step size. Below is an example that show how <span class="math inline">\(f\)</span> decreases as the algorithm iterates.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/GradientDescent.jpg" /></p>
-<h2 id="convergence"><strong>Convergence</strong></h2>
-<p>To analyze the convergence behavior, we need additional assumptions on <span class="math inline">\(f\)</span>. We analyze a baby version of gradient descent with strong assumptions:</p>
-<ol type="1">
-<li><span class="math inline">\(f\)</span> is <span class="math inline">\(\beta\)</span> smooth, i.e., <span class="math inline">\(v^T \nabla^2 f(z) v \le \beta \| v \|^2\)</span> for <span class="math inline">\(\forall z, v \in \mathbb{R }^n\)</span>.</li>
-<li><span class="math inline">\(f\)</span> is <span class="math inline">\(\alpha\)</span> strongly convex, i.e., <span class="math inline">\(v^T \nabla^2 f(z) v \ge \alpha \| v \|^2\)</span> for <span class="math inline">\(\forall z, v \in \mathbb{R }^n\)</span>.</li>
-</ol>
-<p>The interpretation is that, <span class="math inline">\(\beta\)</span> is the upper bound of the largest possible eigenvalue of the Hessian at any point and <span class="math inline">\(\alpha\)</span> is the lower bound. By definition we have <span class="math inline">\(\beta \ge \alpha\)</span>.</p>
-<p>Now define <span class="math display">\[
-\Delta_t = f(x^t) - f(x^*)
-\]</span> and <span class="math inline">\(\kappa = \frac{\beta}{\alpha}\)</span>. The following theorem characterize the convergence speed of the algorithm:</p>
-<p><strong><em>Theorem.</em></strong> <em>If we set <span class="math inline">\(\eta = \frac{1}{\beta}\)</span>, then it holds that</em> <span class="math display">\[
-\Delta_t \le \Delta_0 \left( 1 - \frac{1}{4 \kappa } \right)^t.
-\]</span></p>
-<p>By the theorem, given any <span class="math inline">\(\epsilon &gt; 0\)</span>, after <span class="math display">\[
-O \left( \kappa \log \frac{\Delta_0}{\epsilon} \right) 
-\]</span></p>
-<p>iteration, the error <span class="math inline">\(\Delta_t\)</span> will be smaller than <span class="math inline">\(\epsilon\)</span>.</p>
-<p><em>Proof:</em></p>
-<p>The proof consists of two parts. <span class="math inline">\(\beta\)</span>-Smooth and <span class="math inline">\(\alpha\)</span>-Convexity play a role in each part separately.</p>
-<h4 id="beta-smoothness."><span class="math inline">\(\beta\)</span>-Smoothness.</h4>
-<p>The property guarantees that <span class="math inline">\(\epsilon_{t + 1} \le \epsilon_t - \frac{1}{2 \beta} \| f(x_t) \|^2\)</span>.</p>
-<p>First, by Taylor series expansion, we have for <span class="math inline">\(x, y \in \mathbb{R }^n\)</span>:</p>
-<p><span class="math display">\[
-\begin{aligned}
-    f(y)    &amp;= f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} (y - x)^T \nabla^2 f(z) (y - x) \\
-            &amp;\le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \|y - x \|^2
-\end{aligned}
-\]</span> where <span class="math inline">\(z = \lambda x + (1 - \lambda) y\)</span> for <span class="math inline">\(\lambda \in [0, 1]\)</span>. The second inequality comes from the <span class="math inline">\(\beta\)</span>-smoothness.</p>
-<p>Replacing <span class="math inline">\((y - x)\)</span> as <span class="math inline">\(-\eta \nabla f(x)\)</span>, we get <span class="math display">\[
-\begin{aligned}
-    f(y)  
-        &amp;\le f( x ) - \eta \| \nabla f(x) \|^2 + \frac{1}{2} \beta \eta^2 \| \nabla f( x ) \|^2 \\
-        &amp;\le f( x ) + (\frac{1}{2} \beta \eta^2 -\eta) \| \nabla f(x ) \|^2  \\ 
-\end{aligned}
-\]</span></p>
-<p>The second coefficient <span class="math inline">\((\frac{1}{2} \beta \eta^2 -\eta)\)</span> is minimized when <span class="math inline">\(\beta \eta - 1 = 0\)</span>, i.e., <span class="math inline">\(\eta = \frac{1}{\beta}\)</span>. It follows <span class="math display">\[
-\begin{aligned}
-    f(y ) 
-        &amp;\le f( x ) + (\frac{1}{2} \beta \eta^2 -\eta) \| \nabla f(x ) \|^2  \\ 
-        &amp;\le f( x  ) - \frac{1}{2 \beta}  \| \nabla f(x ) \|^2  \\ 
-\end{aligned}
-\]</span></p>
-<p>Finally, substituting <span class="math inline">\(y\)</span> with <span class="math inline">\(x^{t + 1}\)</span> and <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span>, it becomes <span class="math display">\[
-\begin{aligned}
-    f(x^{t + 1}) 
-        &amp;\le f(x^t) - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2 \\
-        &amp;\longleftrightarrow    \\
-    \Delta_{t + 1} 
-        &amp;\le \Delta_t - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2 
-\end{aligned}
-\]</span></p>
-<h4 id="alpha-convexity."><span class="math inline">\(\alpha\)</span> Convexity.</h4>
-<p>We might still have a problem, if when <span class="math inline">\(x^t\)</span> approaches <span class="math inline">\(x^*\)</span>, <span class="math inline">\(\| \nabla f(x^t) \|\)</span> decreases too fast. That where <span class="math inline">\(\alpha\)</span> convexity comes into play. We will show that <span class="math display">\[
-\| \nabla f(x^t) \|^2 \ge \Delta_t \cdot\frac{1}{2} \alpha
-\]</span></p>
-<ol type="1">
-<li><p>Proof 1. By <span class="math inline">\(\alpha\)</span> convexity, we have for all <span class="math inline">\(y \in \mathbb{R}^n\)</span>,<br />
-<span class="math display">\[
-f(y) \ge f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2
-\]</span> Taking minimum of both sides, <span class="math display">\[
-\min_{y \in \R^n} f(y) \ge \min_{y \in \R^n} \left( f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2\right)
-\]</span> The left hand side equals to <span class="math inline">\(f(x^*)\)</span> while the right hand side minimized to <span class="math inline">\(f(x) - \frac{1}{2 \alpha} \| \nabla f(x) \|^2\)</span> when <span class="math inline">\(y - x = -\frac{1}{\alpha} \nabla f(x)\)</span>.</p>
-<p>Substituting <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span>, we get <span class="math display">\[
-\| \nabla f(x^t) \|^2 \ge 2 \alpha \left( f(x^t) - f(x^*) \right) = 2\alpha \Delta_t
-\]</span></p></li>
-<li><p>Proof 2. By convexity, we have</p>
-<p><span class="math display">\[
- \begin{aligned}
-     \nabla f(x)^T (x - x^*) 
-         &amp;\ge f(x) - f(x^*) 
- \end{aligned}
- \]</span></p>
-<p>Then by Taylor expansion and <span class="math inline">\(\alpha\)</span> convexity, <span class="math display">\[
- \begin{aligned}
-     f(x) - f(x^*) 
-         &amp;\ge \nabla f(x^*)^T (x - x^*) +  \frac{1}{2} \alpha \| x - x^* \|^2\\
-         &amp;=\frac{1}{2} \alpha \| x - x^* \|^2
- \end{aligned}
- \]</span></p>
-<p>Concatenating the inequalities, we get <span class="math display">\[
- \| \nabla f(x) \| \| x - x^* \| \ge \nabla f(x)^T (x - x^*) \ge f(x) - f(x^*) \ge \frac{1}{2} \alpha \| x - x^* \|^2
- \]</span> where the first inequality is Cauchy-Schwartz inequality. Multiplying the inequalities we get</p>
-<p><span class="math display">\[
- \| \nabla f(x) \|^2 \| x - x^* \|^2 \ge (f(x) - f(x^*)) \cdot\frac{1}{2} \alpha \| x - x^* \|^2
- \]</span></p>
-<p>which implies that <span class="math display">\[
- \| \nabla f(x) \|^2 \ge (f(x) - f(x^*)) \cdot\frac{1}{2} \alpha 
- \]</span></p>
-<p>Replacing <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span> and <span class="math inline">\(f(x) - f(x^*)\)</span> with <span class="math inline">\(\Delta_t\)</span>, we have <span class="math display">\[
- \| \nabla f(x^t) \|^2 \ge \Delta_t \cdot\frac{1}{2} \alpha 
- \]</span></p></li>
-</ol>
-<p>In combination, we conclude that <span class="math display">\[
-\begin{aligned}
-    \Delta_{t + 1}
-        &amp;\le \Delta_t \left( 1- \frac{\alpha }{4 \beta} \right)
-\end{aligned}
-\]</span></p>
-<p>which finishes the proof.</p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/46/">46</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/17/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><a class="extend next" rel="next" href="/page/19/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -597,7 +507,7 @@ f(y) \ge f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">138</span>
+          <span class="site-state-item-count">139</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
