@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Suppose that a stream of items comes online \(S &#x3D; \{ a_1, a_2, ..., a_m \}\) where \(a_i \in [n]\). Denote the frequency of \(S\) as \(f &#x3D; &lt;f_1, f_2, ..., f_n&gt;\), where \(f_j &#x3D; |\{ a_i \in S : a">
+  <meta name="description" content="Background A stream of items \(S &#x3D; \{ a_1, a_2, ..., a_m \}\) where \(a_i \in [n]\). Let the frequencies of elements in \([n]\) be \(f &#x3D; \left&lt; f_1, f_2, ..., f_n \right&gt;\), where \(f_j &#x3D; |\{ a">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Sparse Recovery with Count-Sketch">
 <meta property="og:url" content="http://example.com/2020/01/14/Sparse-Recovery-with-Count-Sketch/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Suppose that a stream of items comes online \(S &#x3D; \{ a_1, a_2, ..., a_m \}\) where \(a_i \in [n]\). Denote the frequency of \(S\) as \(f &#x3D; &lt;f_1, f_2, ..., f_n&gt;\), where \(f_j &#x3D; |\{ a_i \in S : a">
+<meta property="og:description" content="Background A stream of items \(S &#x3D; \{ a_1, a_2, ..., a_m \}\) where \(a_i \in [n]\). Let the frequencies of elements in \([n]\) be \(f &#x3D; \left&lt; f_1, f_2, ..., f_n \right&gt;\), where \(f_j &#x3D; |\{ a">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-01-14T11:51:28.000Z">
-<meta property="article:modified_time" content="2020-01-15T12:01:24.000Z">
+<meta property="article:modified_time" content="2021-04-09T03:40:52.623Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 
@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-15 23:01:24" itemprop="dateModified" datetime="2020-01-15T23:01:24+11:00">2020-01-15</time>
+                <time title="Modified: 2021-04-09 13:40:52" itemprop="dateModified" datetime="2021-04-09T13:40:52+10:00">2021-04-09</time>
               </span>
 
           
@@ -195,60 +195,111 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Suppose that a stream of items comes online <span class="math inline">\(S = \{ a_1, a_2, ..., a_m \}\)</span> where <span class="math inline">\(a_i \in [n]\)</span>. Denote the frequency of <span class="math inline">\(S\)</span> as <span class="math inline">\(f = &lt;f_1, f_2, ..., f_n&gt;\)</span>, where <span class="math inline">\(f_j = |\{ a_i \in S : a_i = j \}|\)</span>. By running the count-sketch algorithm, we can obtain an estimation <span class="math inline">\(\hat f\)</span> of <span class="math inline">\(f\)</span> with space <span class="math inline">\(O(\frac{1}{\epsilon^2} \log n)\)</span>, such that with high probability, for <span class="math inline">\(i \in [n]\)</span>, <span class="math display">\[
-|\hat f_i - f_i| \le \epsilon |f|_2
-\]</span> where <span class="math inline">\(|f|_2 = \sqrt {\sum_{i = 1}^n f_i^2 }\)</span>.</p>
-<p>In general, a sketch is a concise representation of <span class="math inline">\(f\)</span>. Suppose that we limit our space usage to <span class="math inline">\(k\)</span> words (i.e., <span class="math inline">\(|\hat f|_0 = k\)</span>), and assume that <span class="math inline">\(H\)</span> is the set of items of <span class="math inline">\(k\)</span> most frequent items, then the sketch <span class="math inline">\(\hat f\)</span> that minimize the <span class="math inline">\(l_2\)</span> error keeps all items in <span class="math inline">\(H\)</span> and the error between <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat f\)</span> is <span class="math display">\[
-|f - \hat f|_2 \doteq err_2^k (f) = \sqrt {\sum_{i \in H} f_i^2}
+        <h1 id="background">Background</h1>
+<p>A stream of items <span class="math inline">\(S = \{ a_1, a_2, ..., a_m \}\)</span> where <span class="math inline">\(a_i \in [n]\)</span>. Let the frequencies of elements in <span class="math inline">\([n]\)</span> be <span class="math inline">\(f = \left&lt; f_1, f_2, ..., f_n \right&gt;\)</span>, where <span class="math inline">\(f_j = |\{ a_i \in S : a_i = j \}|\)</span>.</p>
+<h2 id="count-sketch">Count-Sketch</h2>
+<p>It returns an estimation <span class="math inline">\(\hat f\)</span> of <span class="math inline">\(f\)</span> with space <span class="math inline">\(O(\frac{1}{\epsilon^2} \log n)\)</span> words, such that with probability at least <span class="math inline">\(1 - 1 / n\)</span>, for every <span class="math inline">\(i \in [n]\)</span>, <span class="math display">\[
+    |\hat f_i - f_i| \le \epsilon \Vert f \Vert_2,
+\]</span> where <span class="math inline">\(\Vert f \Vert_2 = \sqrt {\sum_{i = 1}^n f_i^2 }\)</span>.</p>
+<h1 id="problem">Problem</h1>
+<p>In general, a sketch is a concise representation of <span class="math inline">\(f\)</span>. Suppose that we limit our space usage to <span class="math inline">\(k\)</span> words (i.e., <span class="math inline">\(\Vert \hat f \Vert_0 = k\)</span>). Then the sketch <span class="math inline">\(\hat f\)</span> that minimizes the <span class="math inline">\(\ell_2\)</span> error <span class="math display">\[
+    err_2^k (f) \doteq \Vert f - \hat f \Vert_2
 \]</span></p>
-<p>In practice, however, <span class="math inline">\(S\)</span> is not given offline. As we don't know <span class="math inline">\(H\)</span>, we can only compute an <span class="math inline">\(\hat f\)</span> with <span class="math inline">\(k\)</span> words that is as good as possible. The question is, how far <span class="math inline">\(|f - \hat f|_2\)</span> can be from the minimum possible value, namely <span class="math inline">\(err_2^k(f)\)</span>?</p>
-<p>One possible solution, proposed by Cormode and Muthukrishnan [1], is to construct <span class="math inline">\(\hat f\)</span> vis Count-Sketch with <span class="math inline">\(d = O(\log n)\)</span> hash tables each of which has size <span class="math inline">\(w = \frac{3k}{\epsilon^2}\)</span>.</p>
-<p><em>Lemma 1.</em> For any <span class="math inline">\(i \in [n]\)</span>, we have <span class="math inline">\(|f_i - \hat f_i| \le \frac{\epsilon}{\sqrt k } err_2^k(f)\)</span> with high probability.</p>
-<p><em>Proof</em><br />
-Denote <span class="math inline">\(h_j(i)\)</span> the value of item <span class="math inline">\(i\)</span> in the <span class="math inline">\(j\)</span>-th hash table. Let <span class="math inline">\(A_i\)</span> be the event such that any of the <span class="math inline">\(k\)</span> items with largest frequency is hashed to position <span class="math inline">\(h_j(i)\)</span> in the <span class="math inline">\(j\)</span>-th table. Then by union bound, <span class="math display">\[
-\Pr[A_i] \le \frac{k}{w} = \frac{\epsilon^2}{3}
+<p>keeps the set <span class="math inline">\(H\)</span> of <span class="math inline">\(k\)</span> items with highest frequencies. In such case, the error is given by <span class="math display">\[
+    err_2^k (f) = \sqrt {\sum_{i \notin H} f_i^2}
 \]</span></p>
-<p>Now,</p>
-<p><span class="math display">\[
+<p>In practice, however, <span class="math inline">\(S\)</span> is not given offline. As we don't know <span class="math inline">\(H\)</span>, we can only compute an <span class="math inline">\(\hat f\)</span> with <span class="math inline">\(k\)</span> words that is as good as possible. The question is, how far <span class="math inline">\(\Vert f - \hat f \Vert_2\)</span> can be from the minimum possible value, namely <span class="math inline">\(err_2^k(f)\)</span>?</p>
+<h1 id="algorithm">Algorithm</h1>
+<p>One possible solution, proposed by Cormode and Muthukrishnan [1], is to construct <span class="math inline">\(\hat f\)</span> vis Count-Sketch. In particular,</p>
+<ol type="1">
+<li>It uses <span class="math inline">\(d = O(\log n)\)</span> hash tables.<br />
+</li>
+<li>Each hash table has size <span class="math inline">\(w = \frac{3k}{\epsilon^2}\)</span>.</li>
+</ol>
+<h2 id="frequency-oracle-error">Frequency Oracle Error</h2>
+<blockquote>
+<p><strong>Lemma 1.</strong> For every <span class="math inline">\(i \in [n]\)</span>, with probability <span class="math inline">\(1 - 1 /n^2\)</span>, <span class="math display">\[
+|f_i - \hat f_i| \le \frac{\epsilon}{\sqrt k } err_2^k(f). 
+\]</span></p>
+</blockquote>
+<p><strong>Remark:</strong> <em>If <span class="math inline">\(f\)</span> is <span class="math inline">\(k\)</span> sparse, i.e., the number of non-zero elements of <span class="math inline">\(f\)</span> is at most <span class="math inline">\(k\)</span>, then <span class="math inline">\(err_2^k(f) = 0\)</span> and the algorithm recovers <span class="math inline">\(f\)</span> exactly.</em></p>
+<p><strong>Proof:</strong> Consider a fixed <span class="math inline">\(t \in [k]\)</span>. For <span class="math inline">\(i \in [n]\)</span>, let <span class="math inline">\(h_t(i)\)</span> the bucket of item <span class="math inline">\(i\)</span> in the <span class="math inline">\(t\)</span>-th hash table. Define <span class="math display">\[
+    A_i : \exist x \in H, \text{ s.t. } h_j(x) = h_j(i),
+\]</span> be the event such that some heavy item collides with <span class="math inline">\(i\)</span> in the <span class="math inline">\(t\)</span>-th table. Then by union bound, <span class="math display">\[
+    \Pr[A_i] \le \frac{k}{w} = \frac{\epsilon^2}{3}. 
+\]</span></p>
+<p>Therefore, by the law of total probability and monotonicity of probability, we have <span class="math display">\[
 \begin{aligned}
-    \Pr[|f_i - h_i(j)| \ge \frac{\epsilon}{\sqrt k } err_2^k(f)    ] 
-        &amp;= \Pr[|f_i - h_i(j) | \ge  \frac{\epsilon}{\sqrt k } err_2^k(f) \mid A_i ] + \Pr[|f_i - h_i(j) | \ge  \frac{\epsilon}{\sqrt k } err_2^k(f) \mid \bar A_i ] \\
-        &amp;\le \Pr[A_i] + \frac{ Var[ f_i - h_i(j)  \mid \bar A_i ] }{ (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
-        &amp;\le \frac{\epsilon^2}{3} + \frac{(err_2^k(f))^2}{ w (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
+    \Pr \left[ |f_i - h_i(j)| \ge \frac{\epsilon}{\sqrt k } err_2^k(f) \right] 
+        &amp;\le \Pr[A_i] + \Pr \left[ |f_i - h_i(j) | \ge  \frac{\epsilon}{\sqrt k } err_2^k(f) \mid \bar A_i \right] \\
+        &amp;\le \Pr[A_i] + \frac{ \mathbb{Var} [ f_i - h_i(j)  \mid \bar A_i ] }{ (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
+        &amp;\le \frac{\epsilon^2}{3} + \frac{(err_2^k(f))^2 / w }{ (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
         &amp;\le \frac{\epsilon^2}{3} + \frac{1}{3}
 \end{aligned}
 \]</span></p>
 <p>As long as <span class="math inline">\(\epsilon^2 / 3 &lt; 1 / 6\)</span>, this probability is smaller than <span class="math inline">\(1 / 2\)</span>. We can boost the failure probability to <span class="math inline">\(1/ n^2\)</span> by repeating the hash tables <span class="math inline">\(d = O(\log n)\)</span> times and taking the median as estimation.</p>
 <p><span class="math inline">\(\blacksquare\)</span></p>
-<p>The next step is keep only set <span class="math inline">\(\hat H\)</span> of the <span class="math inline">\(k\)</span> largest items in <span class="math inline">\(\hat f\)</span>. Note that <span class="math inline">\(\hat H\)</span> might not equals to <span class="math inline">\(H\)</span>. To bound the value <span class="math inline">\(|f - \hat f|_2\)</span>, we divide <span class="math inline">\([n]\)</span> into three subsets: <span class="math inline">\(\hat H\)</span>, <span class="math inline">\(H \setminus \hat H\)</span>, and <span class="math inline">\([n]\)</span>(H H)$</p>
-<p><em>Lemma 2</em>. <span class="math inline">\(\sum_{i \in \hat H} (f_i - \hat f_i)^2 \le \epsilon^2 (err_2^k(f))^2\)</span>.</p>
-<p><em>Proof.</em> As <span class="math inline">\(|\hat H| = k\)</span>, this follow directly from lemma 1.</p>
+<h2 id="sparse-vector-construction">Sparse Vector Construction</h2>
+<p>The next step is keep only set <span class="math inline">\(\hat H\)</span> of the <span class="math inline">\(k\)</span> largest items in <span class="math inline">\(\hat f\)</span>. Note that <span class="math inline">\(\hat H\)</span> might not equals to <span class="math inline">\(H\)</span>. To bound the value <span class="math inline">\(\Vert f - \hat f \Vert_2\)</span>, we partition <span class="math inline">\([n]\)</span> into three parts: <span class="math display">\[
+    \hat H, \quad H \setminus \hat H, \quad [n] \setminus (H \cup \hat H). 
+\]</span></p>
+<blockquote>
+<p><strong>Lemma 2</strong>. <span class="math inline">\(\sum_{i \in \hat H} (f_i - \hat f_i)^2 \le \epsilon^2 (err_2^k(f))^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> By lemma 1, each term <span class="math inline">\((f_i - \hat f_i)^2\)</span> has error at most <span class="math inline">\(\frac{\epsilon^2}{k} (err_2^k(f))^2\)</span>. The claim then follows from that <span class="math inline">\(|\hat H| = k\)</span>.</p>
 <p><span class="math inline">\(\blacksquare\)</span></p>
-<p><em>Lemma 3</em>. <span class="math inline">\(\sum_{i \in H \setminus \hat H} f_i ^2 \le \sum_{j \in \hat H \setminus H} \hat f_j^2 + (2 \epsilon + \epsilon^2) ( err_2^k(f))^2\)</span></p>
-<p><em>Proof.</em> <span class="math inline">\(|H| = |\hat H|\)</span>, we have <span class="math inline">\(|H \setminus \hat H| = |\hat H \setminus H|\)</span>.</p>
-<p>If <span class="math inline">\(H \setminus \hat H = \emptyset\)</span>, the claim is trivial. Otherwise, we can construct a bijection between <span class="math inline">\(H \setminus \hat H\)</span> and <span class="math inline">\(\hat H \setminus H\)</span>. Then for <span class="math inline">\(i \in H \setminus \hat H\)</span>,</p>
-<p><span class="math display">\[
-f_i = f_i - \hat f_i + \hat f_i - \hat f_j + \hat f_j
-\]</span></p>
-<p>As <span class="math inline">\(\hat H\)</span> contains the largest <span class="math inline">\(k\)</span> items in <span class="math inline">\(\hat f\)</span>, it must be that <span class="math inline">\(\hat f_i - \hat f_j \le 0\)</span>. Therefore,</p>
-<p><span class="math display">\[
-f_i \le f_i - \hat f_i + \hat f_j
-\]</span></p>
-<p>By lemma 1, we have <span class="math inline">\(f_i - \hat f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f)\)</span>, we have</p>
-<p><span class="math display">\[
-f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j
-\]</span></p>
-<p>Summing over all possible <span class="math inline">\(i\)</span>,</p>
+<blockquote>
+<p><strong>Lemma 3</strong>. <span class="math inline">\(\sum_{i \in H \setminus \hat H} f_i ^2 \le \sum_{j \in \hat H \setminus H} \hat f_j^2 + (2 \epsilon + \epsilon^2) ( err_2^k(f))^2\)</span></p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math inline">\(|H| = |\hat H|\)</span>, we have <span class="math inline">\(|H \setminus \hat H| = |\hat H \setminus H|\)</span>.</p>
+<p>If <span class="math inline">\(H \setminus \hat H = \emptyset\)</span>, the claim is trivial. Otherwise, we can construct a bijection between <span class="math inline">\(H \setminus \hat H\)</span> and <span class="math inline">\(\hat H \setminus H\)</span>. Then for <span class="math inline">\(i \in H \setminus \hat H\)</span>, let <span class="math inline">\(j\)</span> be its corresponding index in <span class="math inline">\(\hat H \setminus H\)</span>. Then</p>
 <p><span class="math display">\[
 \begin{aligned}
-    \sum_{i \in H \setminus \hat H} f_i ^2 
-    &amp;\le \sum_{j \in \hat H \setminus H} (\frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j)^2 \\
-    &amp;= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \left( \sum_{j \in \hat H \setminus H} \hat f_j \right) \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
-    &amp;\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 k \sqrt{ \sum_{j \in \hat H \setminus H} \frac{1}{k} \hat f_j^2} \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
-    &amp;= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \epsilon (err_2^k(f)) \sqrt{ \sum_{j \in \hat H \setminus H} \hat f_j^2} +  \epsilon^2 ( err_2^k(f))^2 \\
-    &amp;\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + (2 \epsilon +  \epsilon^2) ( err_2^k(f))^2 
+    f_j &amp;= (f_j - \hat f_j) + (\hat f_j - \hat f_i) + (\hat f_i - f_i) + f_i \\
+        &amp;\ge - \frac{\epsilon}{\sqrt k } err_2^k(f) + 0 - \frac{\epsilon}{\sqrt k } err_2^k(f) + f_i
 \end{aligned}
 \]</span></p>
+<p>Therefore, <span class="math display">\[
+    f_i \le f_j + \frac{2\epsilon}{\sqrt k } err_2^k(f)
+\]</span></p>
+<p>and <span class="math display">\[
+\begin{aligned}
+    \sum_{i \in H \setminus \hat H} f_i^2       
+        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4 \epsilon}{\sqrt k } \left( \sum_{j \in \hat H \setminus H} f_j\right) + 4 \epsilon^2 (err_2^k(f))^2 \\
+        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4 \epsilon}{\sqrt k } err_2^k(f) \left( \sum_{j \in \hat H \setminus H} f_j\right) + 4 \epsilon^2 (err_2^k(f))^2 \\
+        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4 \epsilon}{\sqrt k } err_2^k(f) \left( k \sqrt{ \frac{1}{k} \sum_{j \in \hat H \setminus H} f_j^2 } \right) + 4 \epsilon^2 (err_2^k(f))^2 \\
+        &amp;= \sum_{j \in \hat H \setminus H} f_j^2 + 4 \epsilon (err_2^k(f))^2 + 4 \epsilon^2 (err_2^k(f))^2 \\
+        &amp;= \sum_{j \in \hat H \setminus H} f_j^2 + (4 \epsilon + 4 \epsilon^2) (err_2^k(f))^2 
+\end{aligned}
+\]</span></p>
+<!-- $$
+    f_i = f_i - \hat f_i + \hat f_i - \hat f_j + \hat f_j
+$$ -->
+<!-- As $\hat H$ contains the largest $k$ items in $\hat f$, it must be that $\hat f_i - \hat f_j \le 0$. Therefore, 
+
+$$
+f_i \le f_i - \hat f_i + \hat f_j
+$$
+
+By lemma 1, we have $f_i - \hat f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f)$, we have 
+
+$$
+f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j
+$$
+
+Summing over all possible $i$, 
+
+$$
+\begin{aligned}
+    \sum_{i \in H \setminus \hat H} f_i ^2 
+    &\le \sum_{j \in \hat H \setminus H} (\frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j)^2 \\
+    &= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \left( \sum_{j \in \hat H \setminus H} \hat f_j \right) \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
+    &\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 k \sqrt{ \sum_{j \in \hat H \setminus H} \frac{1}{k} \hat f_j^2} \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
+    &= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \epsilon (err_2^k(f)) \sqrt{ \sum_{j \in \hat H \setminus H} \hat f_j^2} +  \epsilon^2 ( err_2^k(f))^2 \\
+    &\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + (2 \epsilon +  \epsilon^2) ( err_2^k(f))^2. 
+\end{aligned}
+$$ -->
+<p><span class="math inline">\(\square\)</span></p>
 <h2 id="reference">Reference</h2>
 <p>[1] G. Cormode and S. Muthukrishnan. Combinatorial algorithms for Compressed Sensing.<br />
 [2] Moses Charikar, Lecture 9, CS 369G: Algorithmic Techniques for Big Data</p>
@@ -332,7 +383,7 @@ f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">1.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#background"><span class="nav-number">1.</span> <span class="nav-text">Background</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#count-sketch"><span class="nav-number">1.1.</span> <span class="nav-text">Count-Sketch</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#problem"><span class="nav-number">2.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#algorithm"><span class="nav-number">3.</span> <span class="nav-text">Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#frequency-oracle-error"><span class="nav-number">3.1.</span> <span class="nav-text">Frequency Oracle Error</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sparse-vector-construction"><span class="nav-number">3.2.</span> <span class="nav-text">Sparse Vector Construction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">3.3.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
