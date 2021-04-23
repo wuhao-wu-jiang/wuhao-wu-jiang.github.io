@@ -28,7 +28,7 @@
 <meta property="og:description" content="Setting Let \(x \in \mathbb{R}^n\) be the vector initialized with all zeros. There is a sequence \(S\) of updates each of which consists of a pair \((t, \Delta) \in [n] \times \mathbb{R}\), causing \">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-04-14T05:41:33.000Z">
-<meta property="article:modified_time" content="2021-04-14T12:53:03.700Z">
+<meta property="article:modified_time" content="2021-04-15T02:01:13.477Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 
@@ -173,10 +173,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-04-14 15:41:33 / Modified: 22:53:03" itemprop="dateCreated datePublished" datetime="2021-04-14T15:41:33+10:00">2021-04-14</time>
+              <time title="Created: 2021-04-14 15:41:33" itemprop="dateCreated datePublished" datetime="2021-04-14T15:41:33+10:00">2021-04-14</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-15 12:01:13" itemprop="dateModified" datetime="2021-04-15T12:01:13+10:00">2021-04-15</time>
+              </span>
 
           
 
@@ -226,16 +232,16 @@
 <p><strong>Proof.</strong> By linearity of expectation, <span class="math display">\[
     \mathbb{E} [ a_i^2 ] = \sum_{j \in [m] } \mathbb{E}[ (M[i,j])^2 ]. 
 \]</span></p>
-<p>Fix a <span class="math inline">\(j \in [m]\)</span>. Define <span class="math inline">\(X_t \doteq \mathbb{1}[ h_i[t] = j ] \cdot g_i(t) \cdot x_t\)</span>. By four-wise independence of <span class="math inline">\(g_i\)</span>, it holds that <span class="math display">\[
-    \mathbb{E}[ X_t X_{t&#39;}] = \begin{cases}
-        x_t^2,  &amp; \text{ if } t = t&#39;,    \\
+<p>Fix a <span class="math inline">\(j \in [m]\)</span>. Define <span class="math inline">\(X_t \doteq g_i(t) \cdot x_t\)</span>. By four-wise independence of <span class="math inline">\(g_i\)</span>, it holds that <span class="math display">\[
+    \mathbb{E}[ \mathbb{1}[ h_i[t] = j ] \cdot \mathbb{1}[ h_i[t&#39;] = j ] \cdot X_t X_{t&#39;}] = \begin{cases}
+        x_t^2 / m,  &amp; \text{ if } t = t&#39;,    \\
         0,      &amp; \text{ otherwise }. 
     \end{cases}
 \]</span> Hence, <span class="math display">\[
 \begin{aligned}
     \mathbb{E}[ (M[i,j])^2 ] 
-        &amp;= \mathbb{E} \left[ \left( \sum_{ t \in [n] }   X_t \right)^2 \right]
-        &amp;= \sum_{ t, t&#39; \in [n] } \mathbb{E} \left[ X_t X_{t&#39;} \right] 
+        &amp;= \mathbb{E} \left[ \left( \sum_{ t \in [n] }  \mathbb{1}[ h_i[t] = j ] \cdot X_t \right)^2 \right]
+        &amp;= \sum_{ t } \frac{x_t^2}{m}
         &amp;= \frac{ \Vert x \Vert_2^2 }{ m }.
 \end{aligned}
 \]</span></p>
@@ -244,31 +250,28 @@
 <blockquote>
 <p><span class="math inline">\(\mathbb{Var}[ a_i^2 ] = \frac{\Vert x \Vert_2^4 }{ m }\)</span>.</p>
 </blockquote>
-<p><strong>Proof.</strong> For every <span class="math inline">\(t \in [n]\)</span>, <span class="math inline">\(j \in [m]\)</span>, define <span class="math inline">\(Y_{t, j} \doteq \mathbb{1}[ h_i[t] = j ] \cdot g_i(t) \cdot x_t\)</span>. Then <span class="math display">\[
+<p><strong>Proof.</strong> For every <span class="math inline">\(t \in [n]\)</span>, <span class="math inline">\(j \in [m]\)</span>, define <span class="math inline">\(Y_{t, j} \doteq \mathbb{1}[ h_i[t] = j ] \cdot X_t\)</span>. Then <span class="math display">\[
     M[i,j] = \sum_{t \in [n] } Y_{t, j}, 
 \]</span> and <span class="math display">\[
 \begin{aligned}
     \mathbb{Var}[a_i^2] 
         &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } (M[i, j])^2 \right] \\
         &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \left( \sum_{t \in [n] } Y_{t, j} \right)^2 \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t \in [n]} \sum_{j \in [m] } Y_{t, j}^2 + \sum_{j \in [m] } \sum_{t \neq t&#39; \in [n]} Y_t Y_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t \in [n]} \sum_{j \in [m] } Y_{t, j}^2 +  \sum_{j \in [m] } \sum_{t \neq t&#39; \in [n]} Y_{t, j} Y_{t&#39;, j} \right] \\
         &amp;= \mathbb{Var} \left[ \Vert x \Vert_2^2 + \sum_{j \in [m] } \sum_{t \neq t&#39; \in [n]} Y_{t, j} Y_{t&#39;, j} \right] \\
         &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} \sum_{j \in [m] }  Y_{t, j} Y_{t&#39;, j} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot g_i(t) \cdot g_i(t&#39;) \cdot x_t \cdot x_{t&#39;} \right] 
+        &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] 
 \end{aligned}
 \]</span></p>
-<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>, define <span class="math inline">\(Z_{t, t&#39;} = \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot g_i(t) \cdot g_i(t&#39;) \cdot x_t \cdot x_{t&#39;}\)</span>. Then <span class="math display">\[
-    \mathbb{E}[ Z_{t, t&#39;} ] = \mathbb{E}[ \mathbb{1}[ h_i[t] = h_i[t&#39;] ] ]  \cdot \mathbb{E}[ g_i(t) ] \cdot \mathbb{E}[ g_i(t&#39;) ] \cdot x_t \cdot x_{t&#39;} = 0. 
+<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>, define <span class="math inline">\(Z_{t, t&#39;} = \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;}\)</span>. Then <span class="math display">\[
+    \mathbb{E}[ Z_{t, t&#39;} ] = \mathbb{E}[ \mathbb{1}[ h_i[t] = h_i[t&#39;] ] ]  \cdot \mathbb{E}[ X_t ] \cdot \mathbb{E}[ x_{t&#39;} ] = 0. 
 \]</span></p>
-<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>, <span class="math inline">\(s \neq s&#39; \in [n]\)</span>, such that <span class="math inline">\((t, t&#39;) \neq (s, s&#39;)\)</span>, there is at least one element that is different from the rest elements. Suppose that such element is <span class="math inline">\(t\)</span>. As <span class="math inline">\(g_i\)</span> is four-wise independent, we have <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[ Z_{t, t&#39;} Z_{s, s&#39;}] 
-            &amp;= \mathbb{E}[  g_i(t) \cdot g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;) \cdot  \\ 
-            &amp;\qquad \quad  \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ]  \cdot x_t \cdot x_{t&#39;} \cdot x_s \cdot x_{s&#39;} ] \\
-            &amp;= \mathbb{E}[  g_i(t) ] \cdot \mathbb{E}[ g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;) \cdot  \\ 
-            &amp;\qquad \quad  \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ]  \cdot x_t \cdot x_{t&#39;} \cdot x_s \cdot x_{s&#39;} ] \\
-            &amp;= 0. 
-    \end{aligned}
+<p>Consider <span class="math inline">\(t &lt; t&#39; \in [n]\)</span>, <span class="math inline">\(s &lt; s&#39; \in [n]\)</span>. If <span class="math inline">\((t, t&#39;) \neq (s, s&#39;)\)</span>, then either <span class="math inline">\(t \neq s\)</span> or <span class="math inline">\(t&#39; \neq s&#39;\)</span>. Therefore, there must be an element that appears only once among the four. WLOG, suppose that <span class="math inline">\(t\)</span> is a unique element. Then <span class="math display">\[
+    Z_{t, t&#39;} Z_{s, s&#39;}
+            =  X_t \cdot \left( X_{t&#39;} \cdot X_s \cdot X_{s&#39;} \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right). 
+\]</span></p>
+<p>As <span class="math inline">\(g_i\)</span> is four-wise independent, and that <span class="math inline">\(t \neq t&#39;\)</span>, <span class="math inline">\(t \neq s\)</span> and <span class="math inline">\(t \neq s&#39;\)</span>, it holds that <span class="math inline">\(g_i(t)\)</span> is independent of <span class="math inline">\(\left( g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;) \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right)\)</span>. Hence, <span class="math display">\[
+    \mathbb{E}[ Z_{t, t&#39;} Z_{s, s&#39;}]  = 0. 
 \]</span></p>
 <p>Therefore, <span class="math display">\[
     \begin{aligned}
@@ -286,7 +289,7 @@
 <p><strong>Proof.</strong> By Chebyshev's inequality.</p>
 <p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><span class="math inline">\(\Pr \left[ \left| \{ i \in [k] : \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \le \epsilon \Vert x \Vert_2^2] \} \right| \right] \ge 1 - \delta\)</span>.</p>
+<p><span class="math inline">\(\Pr \left[ \left| \{ i \in [k] : \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \le \epsilon \Vert x \Vert_2^2] \} \right| &gt; \frac{k}{2} \right] \ge 1 - \delta\)</span>.</p>
 </blockquote>
 <p><strong>Proof.</strong> By Chernoff bound.</p>
 <p><span class="math inline">\(\square\)</span></p>
@@ -310,7 +313,10 @@
     <a href="/2021/04/02/The-Volume-Bound/" rel="prev" title="The Volume Bound">
       <i class="fa fa-chevron-left"></i> The Volume Bound
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/16/L0-Sampling/" rel="next" title="L0 Sampling">
+      L0 Sampling <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -383,7 +389,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-count">141</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

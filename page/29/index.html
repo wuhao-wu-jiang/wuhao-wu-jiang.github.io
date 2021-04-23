@@ -146,6 +146,262 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/05/18/The-Number-of-Distinct-Elements/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/18/The-Number-of-Distinct-Elements/" class="post-title-link" itemprop="url">The Number of Distinct Elements</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-18 16:09:20" itemprop="dateCreated datePublished" datetime="2019-05-18T16:09:20+10:00">2019-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-29 21:43:38" itemprop="dateModified" datetime="2021-03-29T21:43:38+11:00">2021-03-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>In many network applications, data comes as a stream <span class="math inline">\(S = \{x_1, x_2, ..., x_n \}\)</span>, where each <span class="math inline">\(x_i\)</span> (<span class="math inline">\(1 \le i \le n\)</span>) belongs to the domain <span class="math inline">\(D\)</span>. Suppose each element in <span class="math inline">\(D\)</span> appear at least once in <span class="math inline">\(S\)</span>, we want to evaluate the size of <span class="math inline">\(D\)</span>, i.e., the number of distinct elements in <span class="math inline">\(S\)</span> (denoted as <span class="math inline">\(N = |D|\)</span>).</p>
+<p>Potential solutions include</p>
+<ol type="1">
+<li>We can sort the elements in <span class="math inline">\(S\)</span> and count the number of distinct elements. This requires <span class="math inline">\(O(n \log n)\)</span> time (with quicksort) and <span class="math inline">\(O(n)\)</span> space.<br />
+</li>
+<li>We can use hashing to count the distinct elements. This can be done in <span class="math inline">\(O(n)\)</span> time and <span class="math inline">\(O(n)\)</span> space with two level hashing.</li>
+</ol>
+<p>In real world application, <span class="math inline">\(n\)</span> could be extremely large. Therefore, the demand for <span class="math inline">\(O(n)\)</span> space is expansive or even impossible. Can we do this with <span class="math inline">\(O(1)\)</span> space? If we allow some error, this is possible.</p>
+<h1 id="flajolet-and-martin-algorithm">Flajolet and Martin Algorithm</h1>
+<!-- The tool we resort to is a set of hash functions $\mathcal{H} = \{ h | h: U \rightarrow [0, 1] \}$ such that  
+$$
+    \begin{aligned}
+    &\Pr_{h \in \mathcal{H} } [h(x) \in [a, b]] = \frac{1}{b - a}, &\forall x \in U \wedge [a, b] \subset [0, 1]
+    \end{aligned}
+$$
+
+That is, given an element $x \in U$, if we choose an $h$ from $U$ randomly, then $h$ maps $x$ to a number between $[0, 1]$ uniformly at random. Further, we assume that $h$ maps different elements in $U$ to $[0, 1]$ independently (Remark: to what extend is this possible?).   -->
+<p>Suppose that there is an ideal hash family <span class="math inline">\(\mathcal{H}\)</span>, such that if we pick a function <span class="math inline">\(h\)</span> uniformly at randomly from <span class="math inline">\(\mathcal{H}\)</span>, it maps elements in <span class="math inline">\(\mathcal{U}\)</span> independently and uniformly at random to real numbers between <span class="math inline">\([0, 1]\)</span>.</p>
+<p><strong>Question: to what extend is this possible?</strong></p>
+<blockquote>
+<p><strong>Flajolet and Martin Algorithm.</strong><br />
+1. Denote <span class="math inline">\(h(S) = \{ h(x_1), h(x_2), ..., h(x_n)\}\)</span>;<br />
+2. Let <span class="math inline">\(Z \leftarrow \min h(S)\)</span>;<br />
+3. <strong>Return</strong> <span class="math inline">\(1 / Z - 1\)</span>.</p>
+</blockquote>
+<h2 id="expectation">Expectation</h2>
+<blockquote>
+<p><strong>Observation.</strong> <span class="math inline">\(\Pr [ Z \ge z] = (1 - z)^N​\)</span> and <span class="math inline">\(\Pr[Z \le z] = 1 - (1 - z)^N​\)</span>.</p>
+</blockquote>
+<p>Hence the density function is given as follows.</p>
+<blockquote>
+<p><strong>Density Function.</strong> Let <span class="math inline">\(p\)</span> be the density function of <span class="math inline">\(Z\)</span>, then <span class="math display">\[
+p(z) = \frac{\partial \Pr[Z \le z] }{ \partial z} = N (1 - z)^{N - 1}.
+\]</span></p>
+</blockquote>
+<p>We are ready to discuss the expectation.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math inline">\(\mathbb{E} [Z] = \frac{1}{N + 1}\)</span>.</p>
+</blockquote>
+<p><strong>Proof 1</strong>. <span class="math display">\[
+    \mathbb{E} [Z] = \int_{z = 0}^1 z p(z) \ dz = \frac{1}{N + 1}. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Proof 2</strong>. Another way to prove this is to introduce an additional element <span class="math inline">\(x_{n + 1}\)</span> which is different from any other element in <span class="math inline">\(D\)</span> and let <span class="math inline">\(S&#39; = S \cup \{ x_{n + 1} \}\)</span>.</p>
+<p>What is the probability that <span class="math inline">\(h(x_{n + 1})\)</span> is the smallest in <span class="math inline">\(h(S&#39;)\)</span>, i.e., <span class="math inline">\(\min h(S&#39;) = h(x_{n + 1})\)</span>? Conditioning on the minimum value of <span class="math inline">\(\{ h(x_1), h(x_2), ..., h(x_n) \}\)</span> (<span class="math inline">\(Z\)</span>) being some <span class="math inline">\(z\)</span> (<span class="math inline">\(z \in [0, 1]\)</span>), the probability becomes <span class="math display">\[
+    \begin{aligned}
+    &amp;\Pr[\min h(S&#39;) = h(x_{n + 1}) \mid Z = z] \\
+    = &amp;\Pr[h(x_{n + 1}) \in [0, z] \mid Z = z] \\
+    = &amp;z
+    \end{aligned}
+\]</span></p>
+<p>Integrating over all possible values of <span class="math inline">\(z\)</span>, we have <span class="math display">\[
+\Pr[\min h(S&#39;) = h(x_{n + 1})] = \int_{z = 0}^1 z \Pr[Z = z] \ dz
+\]</span></p>
+<p>This is exactly the expectation of <span class="math inline">\(Z\)</span>. Moreover, by symmetry, <span class="math inline">\(\Pr[\min h(S&#39;) = h(x_{n + 1})] = \frac{1}{N + 1}\)</span>. Therefore, it follows that <span class="math inline">\(\mathbb{E}[Z] = \frac{1}{N + 1}\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Next we upper bound and lower the value of <span class="math inline">\(Z\)</span>.</p>
+<!-- **Remark:** By upper bounding $Z$, we lower bound the value of $1 / Z$ and vice versa.  -->
+<!-- ## Upper Bound
+
+It is natural to ask how accurate our estimation is. On the one hand, by Markov inequality,
+$$
+    \Pr_{h \in \mathcal{H} } \left[ Z \ge  \frac{2}{N + 1} \right] \le \frac{\mathbb{E}[Z]}{ \frac{2}{N + 1} } = \frac{1}{2}.
+$$
+
+By repeating the algorithm $k$ times, the failure probability drops to $\frac{1}{2^k}$. 
+
+Or, more accurately, 
+$$
+    \Pr_{h \in \mathcal{H} } \left[ Z \ge  \frac{ 1 + \epsilon }{N + 1} \right] \le \left( 1 - \frac{ 1 + \epsilon }{N + 1} \right)^N \le \exp \left( - \frac{ 1 + \epsilon }{N + 1} N \right).
+$$
+
+We can boost the failure probability to $\delta$ by repeating the algorithm independently for 
+$$
+    \frac{N + 1}{N (1 + \epsilon)} \ln \frac{1}{\delta}
+$$
+times. 
+
+## Lower Bound
+
+First, 
+$$
+    \Pr \left[ Z \le \frac{1 - \epsilon}{N + 1} \right] = 1 - \left( 1 - \frac{ 1 - \epsilon }{N + 1} \right)^N 
+$$
+
+By repeating the algorithm $k$ times independently, the probability is decreased to 
+$$
+    \begin{aligned}
+        \left( 1 - \left( 1 - \frac{ 1 - \epsilon }{N + 1} \right)^N  \right)^k
+            &\le \exp \left( - k \left( 1 - \frac{ 1 - \epsilon }{N + 1} \right)^N  \right)
+    \end{aligned}
+$$ -->
+<h2 id="variance">Variance</h2>
+<p>As we need to bound the two side error of <span class="math inline">\(Z\)</span>, we can't use Markov inequality but rely on Chebyshev's inequality. In this section, we study the variance of <span class="math inline">\(Z\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math inline">\(\mathbb{Var}[Z] \le \frac{1}{(N + 1)^2}\)</span>.</p>
+</blockquote>
+<p><strong>Proof 1.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ Z^2 ]
+        &amp;= \int_{z = 0}^1 N z^2(1 - z)^{N - 1} dz \\
+        &amp;= \int_{z = 0}^1 N [(z - 1)^2  + 2(z - 1) + 1] (1 - z)^{N - 1}dz \\
+        &amp;= -\frac{N}{N + 2}(1 - z)^{N + 2} \mid_{0}^1 + \frac{2N}{N + 1} (1 - z)^{N + 1} \mid_{0}^1 - \frac{N}{N} (1 - z)^{N} \mid_{0}^1  \\  
+        &amp;= \frac{N}{N + 2} - \frac{2N}{N + 1} + \frac{N}{N} \\
+        &amp;= \frac{-(N - 1)(N + 2) + N^2 + N}{(N +2)(N + 1)} \\
+        &amp;= \frac{2}{(N +2)(N + 1)}
+    \end{aligned}
+\]</span></p>
+<p>Hence, <span class="math inline">\(\mathbb{Var} [ Z ] = \frac{2}{(N + 1)(N +2)} - \frac{1}{(N + 1)^2} \le \frac{1}{(N + 1)^2}\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Proof 2.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ Z^2 ] 
+            &amp;= \int_{z = 0}^1 \Pr[ Z^2 \ge z ] \ dz \\
+            &amp;= \int_{z = 0}^1 \Pr[ Z \ge \sqrt z ] \ dz \\
+            &amp;= \int_{z = 0}^1 (1 - \sqrt z)^N \ dz \\
+            &amp;\overset{t \doteq \sqrt z}{=} \int_{t = 0}^1 (1 - t)^N  \ d t^2 \\
+            &amp;= 2 \int_{t = 0}^1 (1 - t)^N (t - 1 + 1) \ d t \\
+            &amp;= 2 \int_{t = 0}^1 (1 - t)^N - (1 - t)^{N + 1}  \ d t \\
+            &amp;= 2 \left( \frac{1}{N + 1} - \frac{1}{N + 2} \right)
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><strong>Question to ponder: try to apply Chebyshev's inequality directly on this single estimate. Can we get a meaningful lower bound for <span class="math inline">\(Z\)</span>?</strong></p>
+<p>However, this alone is not enough to give an accurate estimate. Instead, we repeat the algorithm <span class="math inline">\(k\)</span> times, and take the average over the <span class="math inline">\(Z\)</span>'s.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(Z_1, ..., Z_k\)</span> be <span class="math inline">\(k\)</span> independent copies of <span class="math inline">\(Z\)</span> and define <span class="math inline">\(\bar Z \doteq (1 / k) \sum_{i \in [k] } Z_i\)</span>. Then <span class="math inline">\(0 &lt; \epsilon &lt; 1\)</span>, <span class="math display">\[
+\Pr \left[ |\bar Z - \frac{1}{N + 1} | \ge \frac{ \epsilon }{N + 1} \right] \le \frac{1}{k \epsilon^2}
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> By independence of <span class="math inline">\(Z_i\)</span>'s, we have <span class="math inline">\(\mathbb{Var} [ \bar Z ] = (1 / k^2) \sum_{i \in [k] } \mathbb{Var}[Z_i ] \le \frac{1}{k (N + 1)^2}\)</span>. The theorem follows directly from Chebyshev's inequality.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>That is, <span class="math inline">\(\bar Z \in \frac{1}{N + 1}[1 - \epsilon, 1 + \epsilon]\)</span> with probability <span class="math inline">\(\frac{1}{k \epsilon^2}\)</span>. Equivalently, <span class="math display">\[
+    \frac{1}{ \bar Z } \in   \left[ \frac{ N + 1 }{ 1 + \epsilon }, \frac{ N + 1 }{ 1 - \epsilon } \right]. 
+\]</span> with probability <span class="math inline">\(\frac{1}{k \epsilon^2}\)</span>.</p>
+<h2 id="quantiles">Quantiles</h2>
+<p>There exists other analysis for the concentration behavior when we repeat the experiment for <span class="math inline">\(k\)</span> times.</p>
+<p>We need the following inequalities:</p>
+<ol type="1">
+<li><span class="math inline">\(\forall x \in \mathbb{R}\)</span>, <span class="math inline">\(1 + x \le e^x\)</span>;<br />
+</li>
+<li><span class="math inline">\(\forall x \in [0, 1]\)</span>, <span class="math inline">\(e^x \le 1 + 2x\)</span>.</li>
+</ol>
+<p>The second inequality holds, since the function <span class="math inline">\(f(x) = 1 + 2x - e^x\)</span> increases for <span class="math inline">\(x \le \ln 2\)</span> and decreases after. But <span class="math inline">\(f(0) = 0\)</span> and <span class="math inline">\(f(1) \ge 0\)</span>.</p>
+<p>Now, for <span class="math inline">\(N \ge 1\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \Pr \left[ Z \ge (1 + \epsilon) \frac{1}{N + 1} \right]  
+    &amp;= \left(1 - \frac{1 + \epsilon}{N + 1} \right)^N \le \exp \left( -\frac{1 + \epsilon}{N + 1}N \right) \le \exp \left( -\frac{1 + \epsilon}{2} \right) = \frac{1}{\sqrt e} e^{-\epsilon / 2} \\
+    \Pr \left[ Z \le (1 - \epsilon) \frac{1}{N + 1} \right]  
+    &amp;= 1 - \left( 1 -  \frac{1 - \epsilon}{N + 1} \right)^N \le 1 - \exp \left( - \frac{ 1 - \epsilon }{2(N + 1)}N \right) \le 1 - \exp \left( - \frac{ 1 - \epsilon }{2} \right) = 1 - \frac{1}{\sqrt e} e^{ \epsilon / 2}
+\end{aligned}
+\]</span></p>
+<p>We claim that if we take the <span class="math inline">\(\frac{k}{\sqrt e}​\)</span>-th smallest element, our estimate <span class="math inline">\(\overline X​\)</span> satisfies</p>
+<p><span class="math display">\[
+\left| \overline X - \frac{1}{N + 1} \right| \le \epsilon \frac{1}{N + 1}
+\]</span></p>
+<p>with high probability.</p>
+<p>Denote <span class="math inline">\(z_1, z_2, ..., z_k\)</span> a set of i.i.d Bernoulli variables with mean <span class="math inline">\(\frac{1}{\sqrt e} e^{-\epsilon / 2}\)</span>. Then by Chernoff bound,<br />
+<span class="math display">\[
+    \begin{aligned}
+        \Pr[ \sum z_i \ge \frac{k}{\sqrt e} ]
+        &amp;= \Pr[ \sum z_i \ge (1 + (e^{\epsilon / 2} - 1) ) \frac{k}{\sqrt e} e^ {-\epsilon / 2}] \\
+        &amp;\le \exp \left( -(e^{\epsilon / 2} - 1)^2 \frac{k}{\sqrt e} e^ {-\epsilon / 2} / 3 \right) \\
+        &amp;= \exp \left( -(e ^\epsilon - 2 e^{\epsilon / 2} + 1) e^ {-\epsilon / 2} \frac{k}{\sqrt e}  / 3 \right) \\
+        &amp;= \exp \left( -( e^{\epsilon / 2} - 2 + e^ {-\epsilon / 2}) \frac{k}{\sqrt e}  / 3 \right) \\
+        &amp;\le \exp \left( - \frac{ \epsilon^2 }{4} \frac{k}{\sqrt e}  / 3 \right) \\
+        &amp; = \delta
+    \end{aligned}
+\]</span></p>
+<p>It suffices to set <span class="math inline">\(k = \frac{12 \sqrt e}{\epsilon^2} \ln \frac{1}{\delta}\)</span>.</p>
+<p>By symmetry, we can prove the inequality of the other hand.</p>
+<p><strong>Remark 2:</strong> Suppose that we have a function <span class="math inline">\(h\)</span> that maps each of the <span class="math inline">\(N\)</span> elements to a non-negative real number according to exponential distribution <span class="math inline">\(\exp(-1)\)</span> independently (the same element is mapped to the same number), then the minimum of these real numbers serves also as an unbiased estimator of <span class="math inline">\(\frac{1}{N}\)</span>. To verify this, <span class="math display">\[
+\Pr[ Z \le z] = 1 - \exp(-zN) 
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    p[Z = z] = \frac{\partial \Pr[ Z \le z]}{\partial z} = N \exp(-Nz)
+\]</span> and <span class="math display">\[
+    \mathbb{E}[Z] = \int_{0}^\infty Nz \exp(-Nz) dz = -\int_{0}^\infty z \ d\exp(-Nz) = -z \exp(-Nz) \mid_{0}^\infty + \int_0^\infty \exp(-Nz) dz = \frac{1}{N}
+\]</span> Further, <span class="math display">\[
+    \Pr[Z \ge (1 + \epsilon)  \frac{1}{N}] = \exp( - 1 - \epsilon) = \frac{1}{e}e^{-\epsilon} \\
+    \Pr[Z \le (1 - \epsilon)  \frac{1}{N}] = 1 - \exp( - 1 + \epsilon) = 1 - \frac{1}{e}e^{\epsilon}
+\]</span> Similarly, we can show that if we repeat the experiment <span class="math inline">\(k = O(\frac{\ln 1 / \delta }{\epsilon^2 } )\)</span> times, with probability at least <span class="math inline">\(1 - \delta\)</span>, the <span class="math inline">\(\frac{1}{e}\)</span> smallest elements is an <span class="math inline">\(1 \pm \epsilon\)</span> estimator of <span class="math inline">\(\frac{1}{N}\)</span>.</p>
+<h2 id="solution-2">Solution 2</h2>
+<p>Suppose we only want to know whether <span class="math inline">\(N \ge t​\)</span> or <span class="math inline">\(N \le t / 2​\)</span> for a given integer <span class="math inline">\(t​\)</span>, is this possible?</p>
+<p>The answer is yes and the solution is amazingly easy. We hash each element in <span class="math inline">\(D\)</span> uniformly at random into the range <span class="math inline">\([1, 2, 3, ..., t]\)</span>. If <span class="math inline">\(N \ge t\)</span>, the probability that no elements is assigned the value <span class="math inline">\(t\)</span> is given by <span class="math display">\[
+    (1 - 1 / t)^N \le (1 - 1 / t)^t \le 1/e
+\]</span> The second inequality holds since <span class="math inline">\((1 - 1 / t) \le e^{1 / t}\)</span>.</p>
+<p>On the other hand, when <span class="math inline">\(N \le t / 2\)</span>, the probability that no element is assigned the value <span class="math inline">\(t\)</span> is greater than <span class="math display">\[
+    (1 - 1 / t)^N \ge (1 - 1 / t)^{t / 2} \ge 1 / e
+\]</span> The second inequality holds since <span class="math inline">\((1 - 1 / t) \ge e^{- 2 / t} = 1 - \frac{2}{t} + \frac{1}{2!}(\frac{2}{t})^2 - \frac{1}{3!}(\frac{2}{t})^3 + ...\)</span> when <span class="math inline">\(1 / t \le 1/ 2\)</span>.</p>
+<p>We can boost the probability to some defined threshold <span class="math inline">\(1 - \delta\)</span> by repeating <span class="math inline">\(k = \log 1 / \delta\)</span> times and check whether the majority of the answers are "yes". Note that the expected number of "yes" is more than <span class="math inline">\((1 - 1 / e)k\)</span> and by chernoff bound the probability that less than <span class="math inline">\(0.5 k\)</span> "yes" are returned is given by <span class="math inline">\(\delta\)</span>.</p>
+<p>Now, to estimate <span class="math inline">\(N\)</span>, we can set up <span class="math inline">\(\log n\)</span> values of <span class="math inline">\(t: 1, 2, 4, 8, ..., n\)</span> and test for each value of <span class="math inline">\(t\)</span> whether <span class="math inline">\(N \ge t\)</span> or <span class="math inline">\(N \le t / 2\)</span>. We can find an interval <span class="math inline">\([t_1, t_2]\)</span>, such that <span class="math inline">\(N \in [t_1, t_2]\)</span> and <span class="math inline">\(N / 2 \le t_1 \le t_2 \le 2\cdot N\)</span>. The space complexity is <span class="math inline">\(O(\log n \log 1 / \delta)\)</span>.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2019/05/17/Jaccard-Similarity/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -494,89 +750,6 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/24/Monotone-Class/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/24/Monotone-Class/" class="post-title-link" itemprop="url">Monotone Class</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-24 16:06:49" itemprop="dateCreated datePublished" datetime="2019-03-24T16:06:49+11:00">2019-03-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-02 02:14:05" itemprop="dateModified" datetime="2019-04-02T02:14:05+11:00">2019-04-02</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="theorem">Theorem</h1>
-<p>If <span class="math inline">\(M\)</span> is a monotone class and <span class="math inline">\(R \subset M\)</span> is a ring, then <span class="math inline">\(M\)</span> contains the <span class="math inline">\(\sigma\)</span>-ring <span class="math inline">\(\sigma(R)\)</span> generated by <span class="math inline">\(R\)</span> and use the following lemma.</p>
-<p><strong>Proof:</strong></p>
-<p>Consider the monotone class <span class="math inline">\(M_0\)</span> generated by <span class="math inline">\(R\)</span>. By definition <span class="math inline">\(M_0 \subset M\)</span>. The goal is show that <span class="math inline">\(M_0\)</span> is a ring that contains <span class="math inline">\(R\)</span>.</p>
-<h2 id="lemma">Lemma</h2>
-<p>If <span class="math inline">\(M_0\)</span> is a ring, then it must be a <span class="math inline">\(\sigma\)</span>-ring.</p>
-<p><em>Pf:</em> For each countable collection of sets <span class="math inline">\(( E_n )\)</span>, <span class="math inline">\(\cup_{n} E_n = \cup_{n} (\cup_{k = 1}^n E_k)\)</span>. Denote <span class="math inline">\(F_n = \cup_{k = 1}^n E_n\)</span>, and <span class="math inline">\(F = \cup_{n} E_n\)</span>. Clearly <span class="math inline">\(F_n \uparrow F\)</span>, which implies that <span class="math inline">\(F \subset M_0\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p>It immediately follows that <span class="math inline">\(M_0 \supset \sigma(R)\)</span>. Indeed, as <span class="math inline">\(\sigma(R)\)</span> itself is a monotone class and <span class="math inline">\(M_0\)</span> is the smallest monotone class that contains <span class="math inline">\(R\)</span>, we have <span class="math inline">\(\sigma(R) \supset M_0\)</span>. It concludes that <span class="math inline">\(M_0 = \sigma(R)\)</span>.</p>
-<p>To show <span class="math inline">\(M_0\)</span> is a ring, we need to verify that <span class="math inline">\(E, F \in M_0\)</span>, <span class="math inline">\(E \cup F = M_0\)</span> and <span class="math inline">\(E \setminus F \in M_0\)</span>.</p>
-<p>Define <span class="math inline">\(S_E = \{ F \in M_0 : E \cup F \in M_0, E \setminus F \in M_0 \}\)</span>, the collection of sets that satisfies the conditions. Note that <span class="math inline">\(S_E\)</span> is a monotone class.</p>
-<ol type="1">
-<li><p><span class="math inline">\((F_n) \subset S_E\)</span>, and <span class="math inline">\((F_n) \uparrow F\)</span>, then <span class="math inline">\(E \cup F = E \cup [\cup_n F_n] = \cup_n [E \cup F_n]\)</span>. By definition of <span class="math inline">\(S_E\)</span>, <span class="math inline">\(E \cup F_n \in M_0\)</span>. As <span class="math inline">\(F_n \uparrow\)</span> and <span class="math inline">\(M_0\)</span> is monotone, <span class="math inline">\(E \cup F \in M_0\)</span>. Hence <span class="math inline">\(F \in M_0\)</span>.</p></li>
-<li><p><span class="math inline">\((F_n) \subset S_E\)</span>, and <span class="math inline">\((F_n) \uparrow F\)</span>, then <span class="math inline">\(E \setminus F = E \setminus [\cup_n F_n] = \cap_n [E \cap F_n] \in M_0\)</span>.</p></li>
-</ol>
-<p>We claim that for each <span class="math inline">\(E \in M_0\)</span>, it holds that <span class="math inline">\(F \in S_E\)</span> for any <span class="math inline">\(F \in M_0\)</span>, i.e., <span class="math inline">\(M_0 \subset S_E\)</span>. But this is equivalent to show <span class="math inline">\(E \in S_F\)</span>. Since <span class="math inline">\(M_0\)</span> is the smallest monotone class that contains <span class="math inline">\(R\)</span>, it suffices to prove <span class="math inline">\(R \subset S_F\)</span>. We need to utilize the following observation.</p>
-<p><em>Let <span class="math inline">\(O \subset R\)</span>, then <span class="math inline">\(S_O \supset R\)</span>, which implies that <span class="math inline">\(S_O \supset M_0\)</span>, as <span class="math inline">\(S_O\)</span> is a monotone class.</em></p>
-<p>Therefore, <span class="math inline">\(\forall F \in M_0\)</span>, <span class="math inline">\(R \subset S_F\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -646,7 +819,7 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-count">141</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
