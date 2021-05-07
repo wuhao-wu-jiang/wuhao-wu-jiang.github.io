@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2017/02/02/TF-IDF/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/02/02/Johnson-Lindenstrauss%20Lemma/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2017/02/02/TF-IDF/" class="post-title-link" itemprop="url">TF-IDF</a>
+            <a href="/2017/02/02/Johnson-Lindenstrauss%20Lemma/" class="post-title-link" itemprop="url">Johnson-Lindenstrauss Lemma</a>
         </h2>
 
         <div class="post-meta">
@@ -177,7 +177,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-07-02 18:29:42" itemprop="dateModified" datetime="2018-07-02T18:29:42+10:00">2018-07-02</time>
+                <time title="Modified: 2021-03-13 16:41:50" itemprop="dateModified" datetime="2021-03-13T16:41:50+11:00">2021-03-13</time>
               </span>
 
           
@@ -191,19 +191,282 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>TF-IDF stands for term frequency and inverse document frequency. It evaluates the importance of a word to a document in a corpus, which increases with the number of times it appears in the document but is offset by its frequency in the corpus. More precisely, for TF, we define <span class="math display">\[
-tf(term| document) = \frac{\mbox{the number of times 
-&quot;term&quot; appears in &quot;document&quot;} }{\mbox{total number of words in &quot;document&quot;} }
+          <blockquote>
+<p>Last modified date 19-Jan-2021.</p>
+</blockquote>
+<h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(\mathcal{U} \subset \mathbb{R}^d\)</span> be a set of <span class="math inline">\(n\)</span> points. We want to find a linear transformation <span class="math inline">\(A \in \mathbb{R}^{k \times d}\)</span> that embeds the points in <span class="math inline">\(\mathcal{U}\)</span> to <span class="math inline">\(\mathbb{R}^k\)</span> while preserving the pair-wise Euclidean distances.</p>
+<p>If <span class="math inline">\(k \ge d\)</span>, the problem is trivial. There is an isomorphic mapping between <span class="math inline">\(\mathbb{R}^d\)</span> and a <span class="math inline">\(d\)</span>-dimensional subspace in <span class="math inline">\(\mathbb{R}^k\)</span>. Let <span class="math inline">\(u_1, ..., u_d \in \mathbb{R}^k\)</span> and <span class="math inline">\(e_1, ..., e_d \in \mathbb{R}^d\)</span> be unit vectors, such that for <span class="math inline">\(i \in [d]\)</span>, <span class="math inline">\(u_i\)</span> (<span class="math inline">\(e_i\)</span>) has the <span class="math inline">\(i\)</span>-th entry equal to 1 and other entries equal to 0. Then one possible isomorphic mapping is</p>
+<p><span class="math display">\[
+A = u_1 e_1^T + ... + u_d e_d^T.
 \]</span></p>
-<p>For IDF, we define <span class="math display">\[
-idf(term) = 1 + \log(\frac{\mbox{the total number of documents} }{\mbox{the number of documents this term appears in} } )
+<p>If <span class="math inline">\(k &lt; d\)</span>, then such an isomorphic embedding is impossible. However, it is feasible if we aim to preserve the pair-wise distance up to a multiplicative error <span class="math inline">\(\epsilon \in (0, 1)\)</span> with high probability: <span class="math inline">\(\forall x, y \in \mathcal{U}\)</span>, <span class="math display">\[
+||A x - A y ||^2 \in (1 \pm \epsilon) || x - y ||^2.
 \]</span></p>
-<p>Now suppose we have a query. Let <span class="math inline">\(Q = \{t_1, t_2, ..., t_n \}\)</span> the set of different term in the query. We convert <span class="math inline">\(Q\)</span> into a vector, <span class="math display">\[
-V(Q) = [tf(t_1 | Q)* idf(t_1), tf(t_2|Q) * idf(t_2),..., tf(t_n|Q) * idf(t_n)]
+<p>The smaller <span class="math inline">\(k\)</span> is, the less space we need to store the embedded vectors <span class="math inline">\(A \mathcal{U} = \{ Ax : x \in \mathcal{U} \}\)</span>. It remains to study how small <span class="math inline">\(k\)</span> can be?</p>
+<blockquote>
+<p>Theorem. For any set <span class="math inline">\(\mathcal{U} \subset \mathbb{R}^d\)</span> of <span class="math inline">\(n\)</span>-points, there is a matrix <span class="math inline">\(A \in \mathbb{R}^{k \times d}\)</span>, such that with probability at least <span class="math inline">\(1 - \frac{1}{n}\)</span>, <span class="math display">\[
+\forall x, y \in \mathcal{U}, ||A x - A y ||^2 \in (1 \pm \epsilon) || x - y ||^2, 
+\]</span> where <span class="math inline">\(k = O\left( \frac{ \log n }{ \epsilon^2} \right)\)</span>.</p>
+</blockquote>
+<p>The value of <span class="math inline">\(k\)</span> depends only on <span class="math inline">\(n\)</span> but not <span class="math inline">\(d\)</span>.</p>
+<h1 id="properties">Properties</h1>
+<h2 id="column-perspective">Column Perspective</h2>
+<p>On the high level, we try to squeeze <span class="math inline">\(d\)</span> (in expectation) orthonormal vectors into a smaller space <span class="math inline">\(\mathbb{R}^k\)</span>. We do this by generating a set of <span class="math inline">\(d\)</span> random vectors <span class="math inline">\(u_1, u_2, ..., u_d \in \mathbb{R}^k\)</span>, such that:</p>
+<ol type="1">
+<li>Each coordinate of <span class="math inline">\(u_i\)</span> is generated independently for <span class="math inline">\(i \in [d]\)</span>;</li>
+</ol>
+<p>and in expectation, they are orthonormal:</p>
+<ol start="2" type="1">
+<li><span class="math inline">\(\mathbb{E} \big[ ||u_i ||^2 \big] = 1\)</span> for <span class="math inline">\(i \in [d]\)</span>;<br />
+</li>
+<li><span class="math inline">\(\mathbb{E} \big[ \left&lt; u_i, u_j \right&gt; \big] = 0\)</span> for <span class="math inline">\(i, j \in [d], i \neq j\)</span>.</li>
+</ol>
+<p>Let <span class="math inline">\(e_1, ..., e_d \in \mathbb{R}^d\)</span> be unit vectors in <span class="math inline">\(\mathbb{R}^d\)</span> and <span class="math inline">\(e_i\)</span> (<span class="math inline">\(i \in [d]\)</span>) has the <span class="math inline">\(i\)</span>-th entry equal to 1. Define <span class="math display">\[
+A = \begin{bmatrix}
+    u_1, u_2, ..., u_d
+\end{bmatrix} = u_1 e_1^T + ... + u_d e_d^T.
 \]</span></p>
-<p>Similarily, for a document <span class="math inline">\(D\)</span>, we can get a vector <span class="math inline">\(V(D)\)</span>. Now the similarity between <span class="math inline">\(Q\)</span> and <span class="math inline">\(D\)</span> is given by <span class="math display">\[
-\frac{V(Q) \times V(D)}{||V(Q)|| \times ||V(D)||}
+<p>For a fixed pair <span class="math inline">\(x, y \in \mathcal{U}\)</span>, define <span class="math inline">\(z = x - y\)</span>. Then <span class="math display">\[
+    \begin{aligned}
+        || A x - A y ||^2 
+            &amp;= || A z ||^2 \\
+            &amp;= || \sum_{ i \in [d] } z[i] \cdot u_i||^2 \\
+            &amp;= \sum_{i \in [d] } (z[i])^2 ||u_i||^2 + \sum_{ i, j \in [d], i \neq j} (z[i] \cdot z[j]) \cdot \left&lt; u_i, u_j \right&gt;.
+    \end{aligned}
 \]</span></p>
+<p>Taking expectation of both side, and by assumption of <span class="math inline">\(v_t, t \in [d]\)</span>, it holds that <span class="math display">\[
+\mathbb{ E } \big[ ||z||^2 \big] = ||z||^2. 
+\]</span></p>
+<h2 id="row-perspective">Row Perspective</h2>
+<p>We can also characterize <span class="math inline">\(A\)</span> by the properties of its rows. Let <span class="math inline">\(\tilde A\)</span> be a scaled version of <span class="math inline">\(A\)</span>, such that <span class="math display">\[
+A = \frac{1}{ \sqrt k} \tilde{A}.
+\]</span></p>
+<p>Denote <span class="math inline">\(v_1, v_2, ..., v_k \in \mathbb{R}^d\)</span> the row vectors of <span class="math inline">\(\tilde A\)</span>. They are generated randomly and independently. Each vector <span class="math inline">\(v_i\)</span> (<span class="math inline">\(i \in [k]\)</span>) satisfies</p>
+<ol type="1">
+<li>Each entry of <span class="math inline">\(v_i\)</span> is generated independently;</li>
+<li><span class="math inline">\(\mathbb{E} \big[v_i [j] \big] = 0, \forall j \in [d]\)</span>, i.e., each entry has mean zero;<br />
+</li>
+<li><span class="math inline">\(\mathbb{Var} \big[ v_i [j] \big] = 1, \forall j \in [d]\)</span>, i.e., each entry has variance one.</li>
+</ol>
+<p>For a fixed pair <span class="math inline">\(x, y \in \mathcal{U}\)</span>, define <span class="math inline">\(z = x - y\)</span>. Consider <span class="math display">\[
+||A z||^2 = \frac{1}{k} ||\tilde{A } z||^2 = \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2.
+\]</span></p>
+<p>Our assumption on <span class="math inline">\(v_i : i \in [k]\)</span> show that the <span class="math inline">\(\left&lt; v_i, z \right&gt;^2: i \in [k]\)</span> are independent random variables. We will verify that each of them has expectation <span class="math inline">\(||z||^2\)</span>. For fixed <span class="math inline">\(i \in [k]\)</span>, <span class="math display">\[
+\left&lt; v_i, z \right&gt; = \sum_{j \in [d] } v_i [j] \cdot z[j]
+\]</span></p>
+<p>can be view as the sum of <span class="math inline">\(d\)</span> independently random variables. Hence, by our assumption on <span class="math inline">\(v_i\)</span>, we have <!-- $$
+\mathbb{E} [ \left< v_i, z \right> ] = \sum_{j \in [d] } z[j] \cdot  \mathbb{E}[ v_i [j] ] = 0, \\
+$$ --></p>
+<p><span class="math display">\[
+    \mathbb{Var} \big[ \left&lt; v_i, z \right&gt; \big] = \sum_{j \in [d] } \mathbb{Var}\big[ v_i [j] \cdot z[j] \big] = \sum_{j \in [d] } (z[j])^2 \cdot \mathbb{Var} \big[ v_i [j] \big] = ||z||^2.
+\]</span></p>
+<p>By linearity of expectation, <span class="math display">\[
+    \mathbb{E} \big[ \left&lt; v_i, z \right&gt; \big] = \sum_{j \in [d] } \mathbb{E}\big[ v_i [j] \cdot z[j] \big] = \sum_{j \in [d] } z[j] \cdot \mathbb{E} \big[ v_i [j] \big] = 0.
+\]</span></p>
+<p>It concludes that <span class="math inline">\(\mathbb{E} \big[ \left&lt; v_i, z \right&gt;^2 \big] = \mathbb{Var} \big[ \left&lt; v_i, z \right&gt; \big] - \big( \mathbb{E} \big[ \left&lt; v_i, z \right&gt; \big] \big)^2 = ||z||^2\)</span>.</p>
+<p><strong>At this point, <span class="math inline">\(||A z||^2\)</span> is viewed as the average of <span class="math inline">\(k\)</span> independent, mean <span class="math inline">\(||z||^2\)</span> random variables.</strong> By the law of large numbers, the average should concentrate around <span class="math inline">\(||z||^2\)</span>. The detailed analysis of the concentration phenomenon depends on the implementation of <span class="math inline">\(\tilde A\)</span>.</p>
+<h1 id="implementation">Implementation</h1>
+<p>In this section, we discuss two implementations that fullfil the properties discussed above, in terms of both column and row perspectives.</p>
+<h2 id="gaussian">Gaussian</h2>
+<p>In the first implementation, each entry of <span class="math inline">\(\tilde A\)</span> is generated independently from standard normal distribution. Let <span class="math inline">\(u_1, ..., u_d\)</span> be the column vectors of <span class="math inline">\(\tilde A\)</span> and <span class="math inline">\(v_1, ..., v_k\)</span> be its row vectors. Hence, <span class="math inline">\(\frac{1}{\sqrt k} u_1, ..., \frac{1}{\sqrt k} u_d\)</span> and <span class="math inline">\(\frac{1}{\sqrt k} v_1, ..., \frac{1}{\sqrt k} v_k\)</span> are the column and row vectors of <span class="math inline">\(A\)</span>, respectively. It satisfies that</p>
+<ol type="1">
+<li><p><span class="math inline">\(\mathbb{E} \big[ || \frac{1}{\sqrt k} u_i||^2 \big] = \frac{1}{k} \mathbb{Var} \big[ ||u_i||^2 \big] = \frac{k}{k} = 1, \forall i \in [d]\)</span>;</p></li>
+<li><p><span class="math inline">\(\mathbb{E} \big[ \left&lt; \frac{1}{\sqrt k} u_i, \frac{1}{\sqrt k} u_j \right&gt; \big] = \frac{1}{k} \sum_{t \in [k] } \mathbb{E} \big[ u_i [t] \big] \cdot \mathbb{E} \big[ u_j[t] \big] = 0, \forall i, j \in [d], i \neq j\)</span>.</p></li>
+</ol>
+<p>Clearly, by definition, we have <span class="math inline">\(v_i[t] \sim N(0, 1), \forall i \in [k], t \in [d]\)</span>. Hence <span class="math inline">\(A\)</span> satisfies both the required column and row properties.</p>
+<p>It is left to analysis the concentration of <span class="math display">\[
+    ||A z||^2 = \frac{1}{k} ||\tilde{A } z||^2 = \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2
+\]</span> for a given <span class="math inline">\(z \in \mathbb{R}^d\)</span>.</p>
+<blockquote>
+<p>Theorem. (Chernoff bound for the chi-square distribution). Let <span class="math inline">\(X_i \sim N(0, \sigma^2): i \in [k]\)</span> be independent random variables. Then <span class="math display">\[
+\Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \ge (1 + \epsilon) \cdot  \sigma^2 \right] \le \exp \left( - \frac{k}{4} (\epsilon^2 - \epsilon^3) \right), \\
+\Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \le (1 - \epsilon) \cdot  \sigma^2 \right] \le \exp \left( - \frac{k}{4} \epsilon^2 \right). \\
+\]</span></p>
+</blockquote>
+<!-- #### Lemma One
+Let $t \in R^d$ be a random vector s.t. $t_i \overset{i.i.d}{\thicksim} N(0,1)$ and $x \in R^d$ be any fixed vector. Then 
+
+ 1.  $t^T x \thicksim N(0, ||x||^2)$, where $||x||^2 = \sum_{i = 1}^d x_i^2$.
+ 2.  $\mathbb{E}[(t^Tx)^2] = \mathbb{E}[(\sum_{i = 1}^d t_i x_i)^2]$ = $\sum_{1 \le i, j\le d} x_i x_j \mathbb{E}[t_i t_j]$ =$\sum_{i = 1}^d x_i^2 = ||x||^2$ -->
+<p>The proof of the theorem relies on the following lemmas.</p>
+<blockquote>
+<p>Lemma 1. (Moment Generating Function of Normal Distribution). Let <span class="math inline">\(X \thicksim N(0,\sigma^2)\)</span>, then for <span class="math inline">\(\lambda &lt; \frac{1}{2 \sigma^2}\)</span>, we have <span class="math display">\[
+\mathbb{E} \big[ \exp(\lambda X^2) \big] = \frac{1}{ \sqrt{ 1 - 2 \sigma^2 \lambda} }.
+\]</span></p>
+</blockquote>
+<p><em>Proof:</em> <span class="math display">\[
+    \begin{aligned}
+    \mathbb{E} [ \exp( \lambda X^2 ) ] &amp;= \frac{1}{ \sqrt{2 \pi \sigma } } \int \exp( \lambda X^2 ) \exp(-X^2 / 2 \sigma^2 ) \ dX \\
+    &amp;=  \frac{1}{ \sqrt{2 \pi \sigma } } \int \exp \left(- \frac{ (1 - 2 \sigma^2 \lambda ) X^2}{2 \sigma^2 } \right) \ dX  \\
+    &amp;= \frac{1}{ \sqrt{1 - 2 \sigma^2 \lambda } }.
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p>Lemma 2. Let <span class="math inline">\(\sigma^2 = ||z||^2\)</span>. It holds that <span class="math display">\[
+\Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) \le \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
+\]</span></p>
+</blockquote>
+<p>As <span class="math display">\[
+    \ln(1 + \epsilon) = \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3} - \left( \frac{\epsilon^4}{4} - \frac{\epsilon^5}{5} \right) - \left( \frac{\epsilon^6}{6} + \frac{\epsilon^7}{7} \right) - ...\le \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3}, 
+\]</span></p>
+<p>we get <span class="math display">\[
+    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) 
+        \le \exp \left( - \frac{k \cdot ( \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} ) }{2} \right) 
+        \le \exp \left( - \frac{k}{4} (\epsilon^2 - \epsilon^3) \right).
+\]</span></p>
+<p><em>Proof:</em> Define <span class="math inline">\(X \sim N(0, \sigma^2)\)</span> be a standard Gaussian random variable and let <span class="math inline">\(X_i = \left&lt; v_i, z \right&gt;, \forall i \in [k]\)</span>. Then, <span class="math inline">\(X_i \sim N(0, \sigma^2) : \forall i \in [k]\)</span> can be viewed as i.i.d copies of <span class="math inline">\(X\)</span>. By lemma 1, for any <span class="math inline">\(\lambda \in (0, \frac{1}{2 \sigma^2} )\)</span>, it holds that</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right)  
+    &amp; = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2 \ge (1 + \epsilon) \cdot \sigma^2 \right) \\
+    &amp; = \Pr \left( \sum_{i \in [k] } X_i^2 \ge k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \\
+    &amp; = \Pr \left( \exp \left( \lambda \sum_{i \in [k] } X_i^2 \right)\ge \exp \left( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \right) \\
+    &amp;\le \frac{\mathbb{E} [ \exp(\lambda X^2 ) ]^k}{ \exp( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 ) } \\
+    &amp;= \left( \frac{1}{ \exp( \lambda \cdot (1 + \epsilon) \cdot \sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \lambda} } \right)^k.
+\end{aligned}
+\]</span></p>
+<p>We want to find a <span class="math inline">\(\lambda\)</span> that minimizes the RHS. Let <span class="math display">\[
+f = \lambda \cdot (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \ln (1 - 2 \cdot \sigma^2 \cdot  \lambda).
+\]</span></p>
+<p>Taking the derivative with respect to <span class="math inline">\(\lambda\)</span>, <span class="math display">\[
+\begin{aligned}
+    \frac{ \partial f }{ \partial \lambda} 
+        &amp;= (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \cdot \frac{1}{1 - 2  \cdot \sigma^2 \cdot \lambda} \cdot (-2  \cdot \sigma^2 ) \\
+        &amp;= \sigma^2 \cdot \left( (1 + \epsilon) - \frac{1}{ 1 - 2 \cdot \sigma^2 \cdot \lambda } \right). 
+\end{aligned}
+\]</span></p>
+<p>Hence <span class="math inline">\(f\)</span> increases when <span class="math inline">\(\lambda &lt; \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) }\)</span> and decreases afterwards. It follows that <span class="math display">\[
+\begin{aligned}
+    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) 
+        &amp;\le \left( \frac{1}{ \exp( \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } \cdot (1 + \epsilon) \cdot \sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } } } \right)^k \\
+        &amp;= \left( \frac{ \sqrt{1 + \epsilon} }{ \exp( \epsilon / 2) } \right)^k \\
+        &amp;= \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p>Lemma 3. Let <span class="math inline">\(\sigma^2 = ||z||^2\)</span>. It holds that <span class="math display">\[
+\Pr \left( ||A z||^2 \le (1 - \epsilon) \sigma^2 \right) \le \exp\left( \frac{k \cdot (\epsilon + \ln (1 - \epsilon) ) }{2} \right).
+\]</span></p>
+</blockquote>
+<p>As <span class="math display">\[
+    \ln(1 - \epsilon) = -\epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} - \frac{\epsilon^4}{4} - ...\le - \epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3}, 
+\]</span></p>
+<p>we have <span class="math display">\[
+    \Pr \left( ||A z||^2 \le (1 - \epsilon) \sigma^2 \right) \le \exp\left( \frac{k \cdot (\epsilon - \epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} ) }{2} \right) \le \exp \left( - \frac{k }{4} \epsilon^2 \right).
+\]</span></p>
+<p><em>Proof:</em> Similar to the proof of lemma 2, we have <span class="math display">\[
+\begin{aligned}
+    \Pr \left( ||A z||^2 \le (1 - \epsilon) \sigma^2 \right) 
+        &amp; = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2 \le (1 - \epsilon) \cdot \sigma^2 \right) \\
+        &amp; = \Pr \left( \sum_{i \in [k] } X_i^2 \le k \cdot (1 - \epsilon) \cdot \sigma^2 \right) \\
+        &amp; = \Pr \left( \exp \left( - \lambda \sum_{i \in [k] } X_i^2 \right) \ge \exp \left( - \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 \right) \right) \\
+        &amp;\le \frac{\mathbb{E} [ \exp( -\lambda X^2 ) ]^k}{ \exp( - \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 ) } \\
+        &amp;= \left( \frac{1}{ \exp( -\lambda \cdot (1 - \epsilon) \cdot \sigma^2 ) \cdot \sqrt{ 1 + 2 \cdot \sigma^2 \cdot \lambda} } \right)^k. 
+\end{aligned}
+\]</span></p>
+<p>Taking <span class="math inline">\(\lambda = \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) }\)</span>, we get <span class="math display">\[
+\begin{aligned}
+    \Pr \left( ||A z||^2 \le (1 - \epsilon) \sigma^2 \right) 
+        &amp;\le \left( \frac{1}{ \exp( - \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) } \cdot (1 - \epsilon) \cdot \sigma^2 ) \cdot \sqrt{ 1 + 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) } } } \right)^k \\
+        &amp;= \left( \sqrt{1 - \epsilon} \exp( \epsilon / 2) \right)^k \\
+        &amp;= \exp\left( \frac{k \cdot (\epsilon + \ln (1 - \epsilon) ) }{2} \right).
+\end{aligned} 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- Thus, 
+$$
+\begin{aligned}
+\Pr (\frac{||Ax||^2}{k} \ge (1 + \epsilon) ||x||^2)  
+& \le (\frac{1}{e^{s(1 + \epsilon)} \sqrt{1 - 2s}})^k \\\\
+& \le (\frac{1 + \epsilon}{e^{\epsilon}})^{k / 2} \\\\
+& \le e^{(\ln (1 + \epsilon) - \epsilon) (k  / 2)}  \\\\
+& \le e^{(\epsilon - \epsilon^2 / 2 + \epsilon^3 / 3 - \epsilon) ( k / 2)} \\\\
+& \le e^{(- \epsilon^2 / 2 + \epsilon^3 / 3) ( k / 2)}  
+\end{aligned}
+$$ -->
+<!-- When $k$ = $4 \ln n \over (\epsilon^2 / 2- \epsilon^3/ 3)$, we get 
+$$
+\Pr (\frac{||Ax||^2}{k} \notin [ (1 - \epsilon) ||x||^2, (1 + \epsilon) ||x||^2])   \le 2 / n^2
+$$
+
+Given lemma three, by union bound $||f(x_i) - f(x_j)||^2 \notin (1 \pm \epsilon) ||x_i - x_j||^2$ occurs with less than $\frac{2}{n^2} * \frac{n (n -1)}{2} = 1 - \frac{1}{n}$ probability. Repeating generating $A$ will boost the success probability to a desired level.  -->
+<h2 id="rademacher">Rademacher</h2>
+<p>In this implementation, the entries of <span class="math inline">\(\tilde A\)</span> are simply independent Rademacher random variables which equal to <span class="math inline">\(1\)</span> and <span class="math inline">\(-1\)</span> with the same probability <span class="math inline">\(1/2\)</span>. Let <span class="math inline">\(u_1, ..., u_d\)</span> be the column vectors of <span class="math inline">\(\tilde A\)</span> and <span class="math inline">\(v_1, ..., v_k\)</span> be its row vectors. Hence, <span class="math inline">\(\frac{1}{\sqrt k} u_1, ..., \frac{1}{\sqrt k} u_d\)</span> and <span class="math inline">\(\frac{1}{\sqrt k} v_1, ..., \frac{1}{\sqrt k} v_k\)</span> are the column and row vectors of <span class="math inline">\(A\)</span>, respectively. It satisfies that</p>
+<ol type="1">
+<li><p><span class="math inline">\(\mathbb{E} \big[ || \frac{1}{\sqrt k} u_i||^2 \big] = \frac{1}{k} \mathbb{Var} \big[ ||u_i||^2 \big] = \frac{k}{k} = 1, \forall i \in [d]\)</span>;</p></li>
+<li><p><span class="math inline">\(\mathbb{E} \big[ \left&lt; \frac{1}{\sqrt k} u_i, \frac{1}{\sqrt k} u_j \right&gt; \big] = \frac{1}{k} \sum_{t \in [k] } \mathbb{E} \big[ u_i [t] \big] \cdot \mathbb{E} \big[ u_j[t] \big] = 0, \forall i, j \in [d], i \neq j\)</span>.</p></li>
+</ol>
+<p>Clearly, by definition, we have <span class="math inline">\(v_i[t]\)</span> has mean <span class="math inline">\(0\)</span> and variance <span class="math inline">\(1\)</span>, <span class="math inline">\(\forall i \in [k], t \in [d]\)</span>. Hence <span class="math inline">\(A\)</span> satisfies both the required column and row properties.</p>
+<p>The proof of the theorem relies on the following lemmas.</p>
+<blockquote>
+<p>Lemma 1. (Moment Generating Function of Rademacher random variable). Let <span class="math inline">\(X\)</span> be a random variable such that <span class="math display">\[
+X = \begin{cases}
+\begin{aligned}
+&amp; 1,    &amp;\text{w.p.} 0.5,    \\
+&amp;-1,    &amp;\text{w.p.} 0.5,    
+\end{aligned}
+\end{cases}
+\]</span> then for <span class="math inline">\(\lambda \in \mathbb{R}\)</span>, we have <span class="math display">\[
+\mathbb{E} \big[ \exp(\lambda X^2) \big] = \exp(\lambda ).
+\]</span></p>
+</blockquote>
+<p><em>Proof:</em> <span class="math display">\[
+    \begin{aligned}
+    \mathbb{E} [ \exp( \lambda X^2 ) ] &amp;= \frac{1}{2} \exp( \lambda ) + \frac{1}{2} \exp(\lambda) = \exp(\lambda)
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><span class="math display">\[
+\frac{1}{2} \exp( - \sigma \lambda ) + \frac{1}{2} \exp( \sigma \lambda) = \frac{1}{2} \left( \sum_{i = 0}^\infty \frac{ (- \sigma \lambda)^i }{ i! } + \sum_{i = 0}^\infty \frac{ ( \sigma \lambda)^i }{ i! } \right) \\
+=  \sum_{i = 0}^\infty \frac{ (\sigma \lambda)^{2i}  }{ (2i)! } 
+\le \exp( \sigma^2 \lambda^2 )
+\]</span></p>
+<blockquote>
+<p>Lemma 2. Let <span class="math inline">\(\sigma^2 = ||z||^2\)</span>. It holds that <span class="math display">\[
+\Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) \le \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
+\]</span></p>
+</blockquote>
+<p>As <span class="math display">\[
+    \ln(1 + \epsilon) = \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3} - \left( \frac{\epsilon^4}{4} - \frac{\epsilon^5}{5} \right) - \left( \frac{\epsilon^6}{6} + \frac{\epsilon^7}{7} \right) - ...\le \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3}, 
+\]</span></p>
+<p>we get <span class="math display">\[
+    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) 
+        \le \exp \left( - \frac{k \cdot ( \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} ) }{2} \right) 
+        \le \exp \left( - \frac{k}{4} (\epsilon^2 - \epsilon^3) \right).
+\]</span></p>
+<p><em>Proof:</em> Define <span class="math inline">\(X\)</span> be a Rademacher random variable and let <span class="math inline">\(X_i = \left&lt; v_i, z \right&gt;, \forall i \in [k]\)</span>. Then, <span class="math inline">\(X_i: \forall i \in [k]\)</span> can be viewed as i.i.d copies of <span class="math inline">\(X\)</span>. By lemma 1, for any <span class="math inline">\(\lambda \in (0, \frac{1}{2 \sigma^2} )\)</span>, it holds that</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right)  
+    &amp; = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2 \ge (1 + \epsilon) \cdot \sigma^2 \right) \\
+    &amp; = \Pr \left( \sum_{i \in [k] } X_i^2 \ge k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \\
+    &amp; = \Pr \left( \exp \left( \lambda \sum_{i \in [k] } X_i^2 \right)\ge \exp \left( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \right) \\
+    &amp;\le \frac{\mathbb{E} [ \exp(\lambda X^2 ) ]^k}{ \exp( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 ) } \\
+    &amp;= \left( \frac{ \exp(\lambda^2 \sigma^2 ) }{ \exp( \lambda \cdot (1 + \epsilon) \cdot \sigma^2 )  } \right)^k \\
+    &amp;= \exp(- \lambda \cdot \epsilon \cdot \sigma^2 \cdot k)
+\end{aligned}
+\]</span></p>
+<p>We want to find a <span class="math inline">\(\lambda\)</span> that minimizes the RHS. Let <span class="math display">\[
+f = \lambda \cdot (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \ln (1 - 2 \cdot \sigma^2 \cdot  \lambda).
+\]</span></p>
+<p>Taking the derivative with respect to <span class="math inline">\(\lambda\)</span>, <span class="math display">\[
+\begin{aligned}
+    \frac{ \partial f }{ \partial \lambda} 
+        &amp;= (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \cdot \frac{1}{1 - 2  \cdot \sigma^2 \cdot \lambda} \cdot (-2  \cdot \sigma^2 ) \\
+        &amp;= \sigma^2 \cdot \left( (1 + \epsilon) - \frac{1}{ 1 - 2 \cdot \sigma^2 \cdot \lambda } \right). 
+\end{aligned}
+\]</span></p>
+<p>Hence <span class="math inline">\(f\)</span> increases when <span class="math inline">\(\lambda &lt; \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) }\)</span> and decreases afterwards. It follows that <span class="math display">\[
+\begin{aligned}
+    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) 
+        &amp;\le \left( \frac{1}{ \exp( \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } \cdot (1 + \epsilon) \cdot \sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } } } \right)^k \\
+        &amp;= \left( \frac{ \sqrt{1 + \epsilon} }{ \exp( \epsilon / 2) } \right)^k \\
+        &amp;= \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
 
       
     </div>
