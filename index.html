@@ -358,7 +358,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-05-14 10:42:35" itemprop="dateModified" datetime="2021-05-14T10:42:35+10:00">2021-05-14</time>
+                <time title="Modified: 2021-05-14 21:20:45" itemprop="dateModified" datetime="2021-05-14T21:20:45+10:00">2021-05-14</time>
               </span>
 
           
@@ -381,6 +381,16 @@
 <p>Based on Count-Sketch.</p>
 <h2 id="algorithm">Algorithm</h2>
 <blockquote>
+<hr />
+<p><strong>Count-Sketch</strong><br />
+1. <span class="math inline">\(k \leftarrow O \left( \ln \frac{1}{ \delta} \right); m \leftarrow \frac{3}{\epsilon^2}\)</span>.<br />
+2. <span class="math inline">\(h_1, h_2, ..., h_k: [n] \rightarrow [m]\)</span>, pairwise independent hash functions.<br />
+3. <span class="math inline">\(g_1, g_2, ..., g_k: [n] \rightarrow \{-1, 1\}\)</span>, four-wise independent hash functions.<br />
+4. <span class="math inline">\(M \leftarrow \{ 0 \}^{k \times m}\)</span> be a <span class="math inline">\(k \times m\)</span> matrix initialized with zeros.<br />
+4. For <span class="math inline">\((t, \Delta) \in S:\)</span><br />
+5. <span class="math inline">\(\qquad\)</span> For <span class="math inline">\(i \in [k]:\)</span><br />
+6. <span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(M[i, h_i (t) ] \leftarrow M[i, h_i (t) ] + g_i(t) \cdot \Delta\)</span><br />
+<span class="math inline">\(\qquad\)</span></p>
 <p><strong>Estimation of <span class="math inline">\(\Vert f \Vert_2^2\)</span></strong><br />
 1. For <span class="math inline">\(i \in [k]:\)</span><br />
 2. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(M_i\)</span> be the <span class="math inline">\(i\)</span>-th row of <span class="math inline">\(M\)</span>.<br />
@@ -398,16 +408,16 @@
     M[i, j] = \sum_{ t \in h_i^{-1}[j] } g_i (t) \cdot f_t.
 \]</span></p>
 <p>By linearity of expectation and four-wise independence of <span class="math inline">\(g_i\)</span>, <span class="math display">\[
-    \underset{g}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t, t&#39; \in h_i^{-1}[j] } \underset{g}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] \cdot f_t \cdot f_{t&#39;}. 
+    \underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t, t&#39; \in h_i^{-1}[j] } \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] \cdot f_t \cdot f_{t&#39;}. 
 \]</span></p>
 <p>It holds that <span class="math display">\[
-    \underset{g}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] = 
+    \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] = 
     \begin{cases}
         1,  &amp; \text{ if } t = t&#39;,    \\
         0,      &amp; \text{ otherwise }. 
     \end{cases}
 \]</span></p>
-<p>Therefore, <span class="math inline">\(\underset{g}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t \in h_i^{-1}[j] } f_t^2\)</span>.</p>
+<p>Therefore, <span class="math inline">\(\underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t \in h_i^{-1}[j] } f_t^2\)</span>.</p>
 <p><strong>Remark. This is a rather deep result, which says that whatever elements are hashed to bucket <span class="math inline">\(j\)</span>, <span class="math inline">\(\underset{g}{ \mathbb{E} } [ (M[i,j] )^2 ]\)</span> equals the sum of squares of these elements.</strong></p>
 <p>By linearity of expectation, when <span class="math inline">\(h_i\)</span> is fixed, <span class="math display">\[
     \underset{g}{ \mathbb{E} } [ a_i^2 ] = \sum_{j \in [m] } \underset{g}{ \mathbb{E} } [ (M[i,j])^2 ] = \sum_{j \in [m] } \sum_{ t \in h_i^{-1}[j] } f_t^2 = \Vert f \Vert_2^2. 
