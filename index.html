@@ -177,7 +177,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-05-07 13:42:34" itemprop="dateModified" datetime="2021-05-07T13:42:34+10:00">2021-05-07</time>
+                <time title="Modified: 2021-05-15 12:15:01" itemprop="dateModified" datetime="2021-05-15T12:15:01+10:00">2021-05-15</time>
               </span>
 
           
@@ -255,7 +255,7 @@
 </blockquote>
 <p>For simplicity, we assume a perfect hash function <span class="math inline">\(h\)</span> that maps elements in <span class="math inline">\([n]\)</span> to <span class="math inline">\(\{0, 1\}\)</span> independently with probability <span class="math inline">\(p\)</span> (to be determined). For each update <span class="math inline">\((t, \Delta)\)</span> in the stream, we process it only if <span class="math inline">\(h(t) = 1\)</span>. As we are dealing with insertion only model, we can use a hashset to maintain the elements with hash value 1.</p>
 <p>Let <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. As analysed before, with probability <span class="math inline">\((1 - p)^k\)</span>, the algorithm fails. To make the failure probability as small as <span class="math inline">\(\delta\)</span>, we have that <span class="math inline">\((1 - p)^k = \delta\)</span>, i.e., <span class="math display">\[
-    p = 1 - \delta^{ \frac{1}{k} } \le \ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}. 
+    p = 1 - \delta^{ \frac{1}{k} } \le -\ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}. 
 \]</span></p>
 <p>The last inequality holds since the function <span class="math inline">\(y = - \ln x\)</span> is convex, and <span class="math inline">\(y = 1 - x\)</span> is the tangent line of <span class="math inline">\(y = - \ln x\)</span> at the point <span class="math inline">\((1, 0)\)</span>. By previous analysis, with probability at least <span class="math inline">\(1 - \delta\)</span>, the size of <span class="math inline">\(B\)</span> is bounded by <span class="math display">\[
     \left( kp + \sqrt{2 k p (1 - p) \ln \frac{1}{\delta} } + \frac{2}{3} \ln \frac{1}{\delta} \right) \in O \left( \ln \frac{1}{\delta} \right). 
@@ -273,15 +273,15 @@
 <p>using <span class="math inline">\(O(d (\log n + \log M) ) \subset O( d \log (nM) )\)</span> bits. It processes each update <span class="math inline">\((t, \Delta)\)</span> in the stream in <span class="math inline">\(O(d)\)</span> time and recovers <span class="math inline">\(x\)</span> in <span class="math inline">\(O(d^2 polylog(nM))\)</span> time. Its recovery can be wrong if <span class="math inline">\(\mathbb{Supp}(x) &gt; d\)</span>.</p>
 </blockquote>
 <p>It suffices to use such a data structure for the sampled set <span class="math inline">\(B\)</span> with <span class="math inline">\(d \in O( \ln \frac{1}{\delta} )\)</span>. We have seen that if we sampled each element in <span class="math inline">\(\mathbb{Supp}(x)\)</span> with probability <span class="math inline">\(p = 1 - \delta^{1 / k}\)</span>, then with probability at least <span class="math inline">\(1 - \delta\)</span>, we obtain a sampled set <span class="math inline">\(B\)</span> with size at most <span class="math inline">\(d\)</span>. Then we return one element from <span class="math inline">\(B\)</span> uniformly at random.</p>
-<p>Analyzing the probability of sampling an element is more subtle than the previous section. In previous section, each element is under-sampled with probability <span class="math inline">\(\frac{1 - \left(1 - p \right)^k }{ k }\)</span>. Here, conditioned on <span class="math inline">\(|B|\le d\)</span>, each element is sampled equally likely. However, <span class="math inline">\(|B| &gt; d\)</span>, the recovery of sampled elements fails, some element can be returned more frequently and some can be returned less frequently. As the failure probability is bounded by <span class="math inline">\(\delta\)</span>, therefore each element is returned with probability <span class="math display">\[
-    \left[ \frac{1 - \left(1 - p \right)^k }{ k } \pm \delta \right] \subseteq \left[ 1 - \left( 1 + \frac{ 1 }{ k } \right)  \delta, 1 + \delta \right]. 
+<p>Analyzing the probability of sampling an element is more subtle than the previous section. In previous section, each element is under-sampled with probability <span class="math inline">\(\frac{1 - \left(1 - p \right)^k }{ k }\)</span>. Here, conditioned on <span class="math inline">\(|B|\le d\)</span>, each element is sampled equally likely. However, <span class="math inline">\(|B| &gt; d\)</span>, the recovery of sampled elements fails, some element can be returned more frequently and some can be returned less frequently (the recovery behavior is un-defined). As the failure probability is bounded by <span class="math inline">\(\delta\)</span>, each element is returned with probability <span class="math display">\[
+    \left[ \frac{1 - \left(1 - p \right)^k }{ k } \pm \delta \right] \subseteq \left[ 1 - \left( 1 + \frac{ 1 }{ k } \right) \cdot \delta, 1 + \left( 1 - \frac{ 1 }{ k } \right) \cdot \delta \right]. 
 \]</span></p>
 <h1 id="sampling-with-unknown-support-size">Sampling With UnKnown Support Size</h1>
 <p>Previously, we want to sample each element in <span class="math inline">\([n]\)</span> with probability <span class="math inline">\(1 - \delta^{ \frac{1}{k} } \le \ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}\)</span>, where <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. When this information is unavailable, we can guess by trying the values <span class="math display">\[
     1 / 2, \quad 1 / 4, \quad 1 / 8, \quad 1 / 16,  ...
 \]</span></p>
 <p>We don't need to guess the value of <span class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta}\)</span> exactly. In order that the sparse recovery data structure works, any guess within a constant factor suffices.</p>
-<p>For simplicity, assume that <span class="math inline">\(n\)</span> is some power of <span class="math inline">\(2\)</span>. Now, instead of using one sampling set <span class="math inline">\(B\)</span>, we use <span class="math inline">\(\log n + 2\)</span> of them <span class="math inline">\(B_1, B_2, B_3, ...\)</span>, each associated with a sparse recovery structure with parameter <span class="math inline">\(d \in O( \ln \frac{1}{\delta} )\)</span>. Assume that we have a <span class="math inline">\(h\)</span> such that it holds independently for every <span class="math inline">\(t \in [n]\)</span>, <span class="math display">\[
+<p>For simplicity, assume that <span class="math inline">\(n\)</span> is some power of <span class="math inline">\(2\)</span>. Now, instead of using one sampling set <span class="math inline">\(B\)</span>, we use <span class="math inline">\(\log n + 2\)</span> of them <span class="math inline">\(B_1, B_2, B_3, ...\)</span>, each associated with a sparse recovery structure with parameter <span class="math inline">\(d \in \Theta( \ln \frac{1}{\delta} )\)</span>. Assume that we have a perfect hash function <span class="math inline">\(h: [n] \rightarrow [\log n + 2]\)</span> such that it holds independently for every <span class="math inline">\(t \in [n]\)</span>, <span class="math display">\[
 \begin{aligned}
     &amp;\Pr[ h(t) = i ]         = \frac{1}{2^i}, \forall i \in [\log n + 1], \\
     &amp;\Pr[ h(t) = \log n + 2] = \frac{1}{ 2^{\log n + 1} }.   
@@ -305,9 +305,60 @@
 <span class="math inline">\(\qquad\)</span> if <span class="math inline">\(B_j \neq \emptyset\)</span> then<br />
 <span class="math inline">\(\qquad\qquad\)</span> return one element from <span class="math inline">\(B_j\)</span> uniformly at random.</p>
 </blockquote>
-<p><strong>Proof of <span class="math inline">\(E_1\)</span>:</strong> By Bernstein's inequality, with probability at least <span class="math inline">\(1 - \delta\)</span>, it holds that <span class="math display">\[
-    |B_i| - \mathbb{E} \big[ |B_i| \big] \le \sqrt{2 k \frac{1}{2^i} \ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta } }{ 3 }. 
+<p><strong>Analysis the probability of <span class="math inline">\(E_1\)</span>:</strong></p>
+<p>For <span class="math inline">\(j \ge i\)</span>, it holds that <span class="math inline">\(\mathbb{E} [ |B_j| ] = k / 2^j\)</span>. Suppose that <span class="math inline">\(d = 2 \cdot C_d \cdot \ln \frac{1}{\delta}\)</span> for some constant <span class="math inline">\(C_d\)</span> (to be determined). Since <span class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta} \ge 1 / 2^{i + 1}\)</span>, we have that <span class="math display">\[
+    \frac{d}{\mathbb{E} [ |B_j| ]} \ge \frac{ 2^j }{ k } \cdot 2 \cdot C_d \cdot \ln \frac{1}{\delta} \ge C_d \cdot 2^{j - i}. 
 \]</span></p>
+<p>By Chernoff bound, <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ |B_j| \ge d \right] 
+            &amp;\le \left( \frac{e^{ \left( {d} / { \mathbb{E}  [ |B_j| ] } \right) - 1 } }{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right)^{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right) }  } \right)^{ \mathbb{E}  [ |B_j| ]} \\
+            &amp;\le \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d \left( \frac{1}{e} \right)^{ \mathbb{E}  [ |B_j| ]}.
+    \end{aligned}
+\]</span></p>
+<p>By union bound, when <span class="math inline">\(C_d \ge e^2\)</span>, it holds that <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ \exists j \ge i : |B_j| \ge d \right] 
+            &amp;\le \sum_{j \ge i} \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d \\
+            &amp;\le \left( \frac{e}{C_d } \right)^d \sum_{j = 0}^\infty \left( \frac{1}{2^{d} } \right)^j \\
+            &amp;\le \left( \frac{e}{C_d } \right)^d \frac{1}{1 - \frac{1}{2^{d} } } \\
+            &amp;\le 2 \cdot \delta^{2 e^2}. 
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Analysis the probability of <span class="math inline">\(E_2\)</span>:</strong></p>
+<p>For each <span class="math inline">\(t \in \mathbb{Supp}(x)\)</span>, we have <span class="math display">\[
+    \Pr[ h(t) &lt; i ] = \left( 1 - \frac{1}{2^i} \right).
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    \Pr[ h(t) &lt; i : \forall t \in \mathbb{Supp}(x)  ] = \left( 1 - \frac{1}{2^i} \right)^k \le \left( 1 - \frac{1}{k} \ln \frac{1}{\delta} \right)^k \le \delta.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- 
+By Bernstein's inequality, with probability at least $1 - \delta$, it holds that 
+$$
+    |B_i| - \mathbb{E} \big[ |B_i| \big] \le \sqrt{2 k \frac{1}{2^i} \ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta } }{ 3 }. 
+$$
+
+And for $j > i$, let $\delta_j = \delta / 2^{ j- i}$. It holds with probability $1 - \delta_j$ that
+$$
+    \begin{aligned}
+        |B_j| - \mathbb{E} \big[ |B_j| \big] 
+        &\le \sqrt{2 k \frac{1}{2^j} \ln \frac{1}{\delta_j} } + \frac{2 \ln \frac{1}{\delta_j } }{ 3 } \\
+        &= \sqrt{2 k \frac{1}{2^j} \left( (j - i）\cdot \ln 2 + \ln \frac{1}{\delta} \right) } + \frac{2 \ln \frac{1}{\delta } }{ 3 } \\
+    \end{aligned}
+$$
+
+Suppose that $d = C_d \cdot \ln \frac{1}{\delta}$. For $j \ge i$, as $\frac{1}{k} \ln \frac{1}{\delta} > \frac{1}{2^{i + 1} }$, we have that $2^{i - j + 2} \ln \frac{1}{\delta} \ge \frac{2k}{2^j}$
+
+$$
+    \begin{aligned}
+        \Pr \left[ |B_j| - \mathbb{E} \big[ |B_j| \big]  \ge  d \right] 
+            &\le \exp \left( - \frac{d^2}{ \frac{2k }{2^j} + \frac{2 d}{3} }\right) \\
+            &\le \exp \left( -\frac{ d^2 }{ 2^{i - j + 2} \cdot \frac{1}{C_d} \cdot d + \frac{2}{3} d } \right) \\
+            &= \exp(- \Theta(d) )
+    \end{aligned}
+$$ -->
 
       
     </div>
