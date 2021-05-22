@@ -146,6 +146,133 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/08/Balanced-Binary-Search-Tree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/08/Balanced-Binary-Search-Tree/" class="post-title-link" itemprop="url">Balanced Binary Search Tree</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-08 11:49:33" itemprop="dateCreated datePublished" datetime="2019-10-08T11:49:33+11:00">2019-10-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-10-11 12:17:57" itemprop="dateModified" datetime="2019-10-11T12:17:57+11:00">2019-10-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>It is the depth of the binary search that affects the performance of it. We say that a binary search tree with <span class="math inline">\(n\)</span> nodes is balanced if its depth is of order <span class="math inline">\(O(\log n)\)</span> (hence we can perform find, insert and delete operations in time <span class="math inline">\(O(\log n)\)</span>).</p>
+<p>If a tree is unbalanced, we can maintain the balance by rotation. Further, we need some criteria to guide the rotation. In what's follows we discuss some of the popular design of the criteria.</p>
+<h4 id="by-the-number-of-elements-of-the-subtree.">By the number of elements of the subtree.</h4>
+<p>Denote a note <span class="math inline">\(v\)</span> and its left and right child <span class="math inline">\(v.left\)</span> and <span class="math inline">\(v.right\)</span> respectively. Define the size of <span class="math inline">\(v\)</span> (<span class="math inline">\(s(v)\)</span>) the number of elements contained in the subtree rooted at <span class="math inline">\(v\)</span>.</p>
+<p>A critical observation is that, if for each node <span class="math inline">\(v\)</span> of the tree, the size of each of it subtrees is at most a constant fraction <span class="math inline">\(\big(\)</span> denoted as <span class="math inline">\(\epsilon \in (\frac{1}{2}, 1)\)</span>; Exercise: why can't we pick <span class="math inline">\(\epsilon \in [0, \frac{1}{2}] \big)\)</span> of its size, i.e., <span class="math display">\[
+s(v.left) \le \epsilon s(v) \\
+s(v.right) \le \epsilon s(v) 
+\]</span> then the depth of the tree is in the order of <span class="math inline">\(O(\log n)\)</span>. The reason is obvious: let <span class="math inline">\(r = v_0, v_1, v_2, ..., v_k\)</span> be any root-to-leaf path of the tree, then <span class="math display">\[
+s(v_1) \le \epsilon s(v_0) \\
+s(v_2) \le \epsilon s(v_1) \\
+...\\
+s(v_k) \le \epsilon s(v_{k - 1})
+\]</span> it follows that <span class="math inline">\(1 = s(v_k) \le \epsilon^k s(v_0) = \epsilon^k n\)</span> and <span class="math inline">\(k \le \log_\epsilon \frac{1}{n} = O(\log n)\)</span>.</p>
+<p>Therefore, we can pick arbitrary <span class="math inline">\(\epsilon \in (\frac{1}{2}, 1)\)</span> and maintain this criteria explicitly and recursively.</p>
+<p>WLOG, suppose a new element is inserted into the left subtree of a vertex <span class="math inline">\(v\)</span>. Denote the new size function <span class="math inline">\(s\)</span> as <span class="math inline">\(s&#39;\)</span> after insertion. If after insertion, <span class="math inline">\(s&#39;(v.left) \le \epsilon s&#39;(v)\)</span>, we do nothing and check the balance of <span class="math inline">\(v\)</span>'s parent (if there is any). Otherwise, we may try a right rotation on <span class="math inline">\(v\)</span>: <span class="math display">\[
+\begin{aligned}
+&amp;\qquad \qquad v \\
+&amp;/           &amp;\setminus \\
+&amp;v.left      &amp;&amp;v.right \\
+/           &amp;\setminus \\
+v.left.left &amp; \quad v.left.right
+\end{aligned}
+\]</span> the subtree transform into: <span class="math display">\[
+\begin{aligned}
+&amp;\qquad \qquad v.left \\
+&amp;/         &amp;\setminus \\
+v.left.left     &amp;&amp; v\\
+           &amp;&amp;/  &amp;\setminus \\
+ &amp;&amp; v.left.right &amp; \quad v.right
+\end{aligned}
+\]</span> Since before insertion, <span class="math inline">\(s(v.left) \le \epsilon s(v)\)</span>, it holds that <span class="math inline">\(s&#39;(v.left.left) \le \epsilon s&#39;(v.left) = \epsilon (s(v) + 1)\)</span>. Therefore, the left subtree no longer violate the balance constraint. However, the constraint could be violated by the right subtree. Since it is possible that <span class="math display">\[
+s&#39;(v.left.right) + s&#39;(v.right) + 1 &gt; \epsilon s&#39;(v.left) = \epsilon (s(v)  + 1)
+\]</span> For example, suppose that <span class="math inline">\(\epsilon = 0.8\)</span> and <span class="math inline">\(s(v.left.right) = 0.8 s(v.left) = 0.64 s(v)\)</span> and <span class="math inline">\(s(v.right) = 0.2 s(v) - 1\)</span>, then <span class="math display">\[
+s(v.left.right) + s(v.right) + 1 = 0.84 s(v)
+\]</span> The reason is that there is so much weight that <span class="math inline">\(v.left.right\)</span> has. Therefore, we don't want to rotate it to the right subtree. An alternative is to perform a left rotate on the left subtree first <span class="math display">\[
+\begin{aligned}
+&amp;\qquad \qquad v \\
+&amp;/           &amp;\setminus \\
+&amp;v.left.right      &amp;&amp;v.right \\
+/           &amp;\setminus \\
+v.left &amp; \quad v.left.right.right \\
+/ \setminus &amp; \\
+v.left.left &amp; \quad v.left.right.left
+\end{aligned}
+\]</span> Followed by a right rotation on <span class="math inline">\(v\)</span>: <span class="math display">\[
+\begin{aligned}
+&amp;\qquad \qquad v.left.right  \\
+&amp;/           &amp;\setminus \\
+&amp;v.left     &amp;&amp;v \\
+/ &amp;\setminus   &amp;&amp;/ \setminus\\
+v.left.left &amp;\quad v.left.right.left&amp; \quad v.left.right.right &amp;\quad v.right\\ 
+\end{aligned}
+\]</span></p>
+<p>To satisfy the balance requirement, we require that</p>
+<ol type="1">
+<li><span class="math inline">\(s&#39;&#39;(v.left.right.left) = s&#39;(v.left.right.left) \le \epsilon s&#39;&#39;(v.left) = \epsilon (s&#39;(v.left) - s&#39;(v.left.right.right) -1 )\)</span>.</li>
+<li><span class="math inline">\(s&#39;(v.left.left) \le s&#39;(v.left)\)</span></li>
+<li><span class="math inline">\(s&#39;(v.left.right.right) + s&#39;(v.right) + 1 \le \epsilon s&#39;(v.left.right)\)</span></li>
+</ol>
+<p>Condition 1 implies that <span class="math inline">\(s&#39;(v.left.right.right)\)</span> can take up too much weight of <span class="math inline">\(s&#39;(v.left)\)</span>, which imposes an upper bound on <span class="math inline">\(\epsilon\)</span> by <span class="math display">\[
+ (1 - \epsilon) \epsilon s&#39;(v.left) - 1 \le \epsilon (s&#39;(v.left) - \epsilon^2s&#39;(v.left) - 1)
+\]</span></p>
+<h4 id="by-the-height-of-the-subtree-avl-tree">By the height of the subtree (AVL Tree)</h4>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/18/Divided-by-Three/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -400,77 +527,10 @@ y^r \equiv x^r \equiv -1 \mod a \wedge y^r \equiv 1 \mod b
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/03/Less-Communication/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/03/Less-Communication/" class="post-title-link" itemprop="url">Less Communication</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2019-09-03 14:19:55 / Modified: 15:35:25" itemprop="dateCreated datePublished" datetime="2019-09-03T14:19:55+10:00">2019-09-03</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>A set of <span class="math inline">\(k\)</span> servers are receiving requests and they are required to report to a coordinator the numbers of requests they process. An event is trigerrd by the coordinator if the culmulative requests received by the serves reaches a threshold <span class="math inline">\(\tau\)</span>. The goal is to minimized the communicaiton between the coordinator and the servers.</p>
-<p>A naive approach asks the servers to send a notificiation to the coordinator each time they process a request, resulting in <span class="math inline">\(O(\tau)\)</span> bits communication in total.</p>
-<p>An alternative approach achieves <span class="math inline">\(O(h \log \tau)\)</span> words communication cost. Instead of response to the coordinator every a new request comes, the server reports only after some requests reaches. However, we don't want the coordinator to miss the <span class="math inline">\(\tau\)</span> threshold, i.e., it must triger the event when exactly <span class="math inline">\(\tau\)</span> requests come in total.</p>
-<p>Here is the scheme.<br />
-1. If <span class="math inline">\(\tau \le 5 \cdot h\)</span>, the server report each time a request comes. 2. The coordinator sends the threshold <span class="math inline">\(\lfloor \frac{\tau}{ 2h} \rfloor\)</span> to each server. This requires <span class="math inline">\(h\)</span> words. 3. Each server sends a report to the coordinator every <span class="math inline">\(\lfloor \frac{\tau}{ 2h} \rfloor\)</span> requests comes. 4. When the coordinator learns that, the servers has processed <span class="math inline">\(\lfloor \tau / 2 \rfloor\)</span> requests (at most <span class="math inline">\(2h\)</span> words communication needed), it collects how many requests are proceed in each servers which are not reported to it (at most <span class="math inline">\(2h\)</span> words communication needed). The number of requests comes is at most <span class="math display">\[
-        \lfloor \tau / 2 \rfloor + (h - 1) (\lfloor \tau / 2h \rfloor - 1) &lt; \tau /2 + \tau / 2 = \tau
-   \]</span> 5. The number of requests remains to reach the <span class="math inline">\(\tau\)</span> threshold is at most <span class="math inline">\(\tau&#39; \doteq \lceil \tau / 2 \rceil\)</span>. We set <span class="math inline">\(\tau&#39;\)</span> as the new threshold and go to step 1. 6. The overall communication cost is given by <span class="math display">\[
-        T(\tau) = T(\lceil \tau / 2 \rceil) + 5 \cdot h
-   \]</span> for some constant <span class="math inline">\(k\)</span>. 7. There are at most <span class="math inline">\(2 \log \tau\)</span> recursions. Each recursion requires <span class="math inline">\(k\)</span> words communication, resulting in a total communication cost <span class="math inline">\(O(h \log \tau)\)</span> words.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/26/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><span class="page-number current">27</span><a class="page-number" href="/page/28/">28</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><a class="extend next" rel="next" href="/page/28/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/26/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><span class="page-number current">27</span><a class="page-number" href="/page/28/">28</a><span class="space">&hellip;</span><a class="page-number" href="/page/48/">48</a><a class="extend next" rel="next" href="/page/28/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -536,7 +596,7 @@ y^r \equiv x^r \equiv -1 \mod a \wedge y^r \equiv 1 \mod b
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">141</span>
+          <span class="site-state-item-count">142</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

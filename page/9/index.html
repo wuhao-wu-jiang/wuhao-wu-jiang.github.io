@@ -146,6 +146,177 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/25/SmallDB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/25/SmallDB/" class="post-title-link" itemprop="url">SmallDB</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-25 22:34:48" itemprop="dateCreated datePublished" datetime="2020-11-25T22:34:48+11:00">2020-11-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-26 11:53:10" itemprop="dateModified" datetime="2020-11-26T11:53:10+11:00">2020-11-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Let <span class="math inline">\(U = \{x_1, x_2, ... , x_n \} \subset \mathcal{X}^n\)</span> be a set of <span class="math inline">\(n\)</span> points from a domain <span class="math inline">\(\mathcal{X}\)</span> and <span class="math inline">\(Q = \{ f_1, f_2, ... \mid f_i : \mathcal{X} \rightarrow [0, 1] \}\)</span> be a finite set of queries (functions). For any <span class="math inline">\(f \in Q\)</span> and finite set <span class="math inline">\(S\)</span> with domain <span class="math inline">\(\mathcal{X}\)</span>, define <span class="math display">\[
+f(S) \doteq \frac{1}{ |S| }\sum_{x \in S} f(x)
+\]</span></p>
+<p>as the average over the values <span class="math inline">\(\{ f(x) : x \in S \}\)</span>. Our goal is to find a subset <span class="math inline">\(S\)</span> with size <span class="math display">\[
+O( \frac{\log |Q| }{\lambda^2})
+\]</span></p>
+<p>in a <span class="math inline">\((2 \epsilon, 0)\)</span> differentially private manner, such that with probability at least <span class="math inline">\(1 - \delta\)</span>, it holds simultaneously <span class="math inline">\(\forall f \in Q\)</span>, <span class="math display">\[
+|f(S) - f(U) | \le \lambda + \frac{\frac{ }{} \log |Q| \log |\mathcal{X}|  } { \lambda^2 \epsilon n } + \frac{ \log (1 / \delta) }{ \epsilon n  }
+\]</span></p>
+<h3 id="existence-of-small-representative">Existence of Small Representative</h3>
+<p>Let <span class="math inline">\(X\)</span> be a random element sampled uniformly from <span class="math inline">\(U\)</span>. Then for a fixed <span class="math inline">\(f \in Q\)</span>, <span class="math display">\[
+\mathbb{E}[ f(X) ] = f(U)
+\]</span></p>
+<p>By Hoeffding, if we take <span class="math inline">\(m = \frac{\ln |Q|}{\lambda^2}\)</span> independent copies of <span class="math inline">\(X\)</span>, denoted as <span class="math inline">\(X_1, X_2, ..., X_m\)</span>, then <span class="math display">\[
+\Pr[ |\frac{1}{m} \sum_{i \in [m]} X_i - f(U) | \ge \lambda ] \le 2 \exp(- 2m \lambda^2 ) = \frac{2}{e^{2 \ln |Q|}} = \frac{2}{|Q|^2} &lt; \frac{1}{ |Q| }.
+\]</span></p>
+<p>By union bound, this happens for some <span class="math inline">\(f \in Q\)</span> with probability less than 1. Therefore, if we enumerate over all sets <span class="math inline">\(S \subset \mathcal{X}^m\)</span> (which takes exponential time), then it is guaranteed that we can find one such that <span class="math display">\[
+|f(S) - f(U) | \le \lambda. 
+\]</span></p>
+<p>This is tighter than the bound we would like to prove. The additional error is due to the privacy protection mechanism.</p>
+<h3 id="release-representative-differential-privately">Release Representative Differential-Privately</h3>
+<p>We can just release the <span class="math inline">\(S\)</span> blatantly.</p>
+<h4 id="counter-example">Counter Example</h4>
+<p>Suppose <span class="math inline">\(\mathcal{X} = \{0, 1\}\)</span>, and <span class="math inline">\(U = \{0, 0, ..., 0\} \subset \mathcal{X}^n\)</span>. Further, the set <span class="math inline">\(Q\)</span> contains two copies of the function <span class="math inline">\(f\)</span>, defined as <span class="math display">\[
+f(0) = 0, f(1) = 1.
+\]</span></p>
+<p>Assume that <span class="math inline">\(\lambda = \sqrt{\frac{ 2 \ln 2 }{ n } }\)</span>. Then <span class="math inline">\(m = \frac{n \ln 2}{2 \ln 2} = n / 2\)</span>. Any <span class="math inline">\(S \subset \mathcal{X}^m\)</span> that contains no more than <span class="math display">\[
+\lfloor m \sqrt{\frac{ 2 \ln 2 }{ n } } \rfloor = \lfloor \sqrt{\frac{ 2 \ln 2 }{ n } } \frac{n}{2} \rfloor = \lfloor \sqrt{\frac{ n \ln 2 }{ 2 } } \rfloor
+\]</span> ones, will satisfies <span class="math display">\[
+|f(S) - f(U) | \le \lambda. 
+\]</span></p>
+<p>Now, consider a neighboring set <span class="math inline">\(U&#39; = \{0, 0, ..., 1\}\)</span>, obtained by replacing the last zero with one in <span class="math inline">\(U\)</span>. Any <span class="math inline">\(S\)</span> with no more than <span class="math inline">\(\lfloor \sqrt{\frac{ n \ln 2 }{ 2 } } + 1 \rfloor\)</span> ones satisfies <span class="math inline">\(|f(S) - f(U&#39;) | \le \lambda\)</span>.</p>
+<p>Consider the scenario where we know the underlying set is either <span class="math inline">\(U\)</span> or <span class="math inline">\(U&#39;\)</span>. If a set in <span class="math inline">\(\mathcal{X}^m\)</span> with exactly <span class="math inline">\(\lfloor \sqrt{\frac{ n \ln 2 }{ 2 } } + 1 \rfloor\)</span> is released as an representative of the underlying set, we can infer immediately that the underlying set is <span class="math inline">\(U&#39;\)</span>.</p>
+<h4 id="exponential-mechanism">Exponential Mechanism</h4>
+<p>One remedy for the above problem is that, for a set <span class="math inline">\(S \subset \mathcal{X}^m\)</span>, even if <span class="math inline">\(\exists f \in Q\)</span>, s.t., <span class="math inline">\(|f(S) - f(U)| &gt; \lambda\)</span>, we output <span class="math inline">\(S\)</span> as the representative of <span class="math inline">\(U\)</span> with some probability, because <span class="math inline">\(S\)</span> might be a feasible solution for <span class="math inline">\(U\)</span>'s neighbors. This motivates the <em>exponential mechanism</em>. In particular,</p>
+<ol type="1">
+<li>It outputs the <span class="math inline">\(S \in \mathcal{X}^m\)</span> that minimizes <span class="math inline">\(\max_{f \in Q} |f(S) - f(U)|\)</span> with highest probability.</li>
+<li>It outputs other <span class="math inline">\(S \in \mathcal{X}^m\)</span> with probability exponentially and inversely proportional to its error <span class="math inline">\(\max_{f \in Q} | f(S) - f(U) |\)</span>.</li>
+</ol>
+<p>The mechanism, termed <span class="math inline">\(M\)</span>, is as follows.</p>
+<blockquote>
+<ol type="1">
+<li>For <span class="math inline">\(S \in \mathcal{X}^m\)</span>, define weight <span class="math inline">\(w(U, S) \doteq \exp(- \epsilon n \max_{f \in Q} | f(S) - f(U) | )\)</span>.<br />
+</li>
+<li>Sample and output an <span class="math inline">\(S \in \mathcal{X}^m\)</span> with probability <span class="math display">\[
+\frac{ w(U, S) }{ \sum_{T \in \mathcal{X}^m} w(U, T)}
+\]</span></li>
+</ol>
+</blockquote>
+<h5 id="privacy"><strong><em>Privacy</em></strong></h5>
+<p>The mechanism <span class="math inline">\(M\)</span> is <span class="math inline">\((2\epsilon, 0)\)</span> differentially private.</p>
+<p><em>Proof.</em> Let <span class="math inline">\(U&#39; \in \mathcal{X}^n\)</span> be obtained by replacing exactly one element in <span class="math inline">\(U\)</span>. For any <span class="math inline">\(T \in \mathcal{X}^m\)</span>, by definition, <span class="math display">\[
+\begin{aligned}
+    \max_{f \in Q} |f(U) - f(T)| - \max_{f \in Q} |f(T) - f(U&#39;) |
+        &amp;\le \max_{f \in Q} \big( |f(U) - f(T)| - |f(T) - f(U&#39;) | \big) \\
+        &amp;\le \max_{f \in Q} \big( |f(U) - f(T) + f(T) - f(U&#39;) | \big) \\
+        &amp;\le \max_{f \in Q} \big( |f(U) - f(U&#39;) | \big) \\
+        &amp;\le 1 / n \\
+\end{aligned}
+\]</span></p>
+<p>By symmetry, <span class="math inline">\(\max_{f \in Q} |f(U) - f(T)| - \max_{f \in Q} |f(T) - f(U&#39;) | \in [- 1 / n, 1 / n ]\)</span> and <span class="math display">\[
+\frac{w(U, T)}{ w(U&#39;, T)} \in [e^{-\epsilon}, e^\epsilon]
+\]</span></p>
+<p>For an <span class="math inline">\(S \in \mathcal{X}^m\)</span>, it holds that <span class="math display">\[
+\begin{aligned}
+    \frac{\Pr[M(U) = S]}{ \Pr[M(U&#39;) = S]} 
+        &amp;= \frac{ w(U, S) }{ w(U, S&#39;) } \frac{ \sum_{T \in \mathcal{X}^m} w(U&#39;, T) }{ \sum_{T \in \mathcal{X}^m} w(U, T) } \\
+        &amp;\le e^\epsilon \cdot \frac{ \sum_{T \in \mathcal{X}^m} e^\epsilon \cdot w(U, T) }{ \sum_{T \in \mathcal{X}^m} w(U, T) } \\
+        &amp;= e^{2\epsilon}
+\end{aligned}
+\]</span></p>
+<h5 id="error"><strong><em>Error</em></strong></h5>
+<p>For a set <span class="math inline">\(U\)</span>, although we might assign probabilities to bad <span class="math inline">\(S \in \mathcal{X}^m\)</span>, as long as the probability mass assigned is small, we are unlikely to get a bad representative.</p>
+<blockquote>
+<p>Theorem. With probability at most <span class="math inline">\(\delta\)</span>, <span class="math inline">\(M\)</span> returns an <span class="math inline">\(S\)</span>, such that <span class="math display">\[
+\max_{f \in Q} | f(S) - f(U) | \ge \lambda + \frac{m \log |\mathcal{X}| + \log (1 / \delta) } {\epsilon n }
+\]</span></p>
+</blockquote>
+<p><em>Proof.</em> Let <span class="math inline">\(S^* \in \mathcal{X}^m\)</span> be the set that minimizes <span class="math inline">\(\max_{f \in Q} |f(S) - f(U)|\)</span>.</p>
+<p>For a <span class="math inline">\(S \in \mathcal{X}^m\)</span>, if <span class="math inline">\(\max_{f \in Q} |f(S) - f(U)| \ge \lambda + t\)</span> for some <span class="math inline">\(t &gt; 0\)</span>, then <span class="math display">\[
+\begin{aligned}
+    \Pr[M(U) = S] 
+        &amp;= \frac{ w(U, S) }{ \sum_{T \in \mathcal{X}^m} w(U, T)} \\
+        &amp;\le \frac{ w(U, S) }{ w(U, S^*) } \\
+        &amp;\le \exp( - \epsilon n (\max_{f \in Q} |f(S) - f(U)| - \max_{f \in Q} |f(S^*) - f(U)|)) \\
+        &amp;\le \exp( - \epsilon n t)
+\end{aligned}
+\]</span></p>
+<p>By union bound, <span class="math display">\[
+\begin{aligned}
+    \Pr[ M(U) \in \{ S : \max_{f \in Q} |f(S) - f(U)| \ge \lambda + t \} ] 
+        &amp;\le |\{ S : \max_{f \in Q} |f(S) - f(U)| \ge \lambda + t \} | \exp( - \epsilon n t) \\
+        &amp;\le |\mathcal{X}|^m \exp( - \epsilon n t)
+\end{aligned}
+\]</span></p>
+<p>By requiring this probability to be bounded by some <span class="math inline">\(\delta &gt; 0\)</span>, we get <span class="math display">\[
+t = \frac{m \log |\mathcal{X}| + \log (1 / \delta) } {\epsilon n }
+\]</span></p>
+<p><span class="math inline">\(\square\)</span>.</p>
+<p>Substituting <span class="math inline">\(m\)</span> with <span class="math inline">\(\frac{\log |Q| }{\lambda^2}\)</span>, the error is then <span class="math display">\[
+\lambda + \frac{\frac{\log |Q| }{\lambda^2} \log |\mathcal{X}| + \log (1 / \delta) } {\epsilon n }
+\]</span></p>
+<p>When <span class="math inline">\(\lambda = (\frac{\log |Q| \log |\mathcal{X}| }{ \epsilon n})^{1 / 3}\)</span>, the error is given by <span class="math display">\[
+2(\frac{\log |Q| \log |\mathcal{X}| }{ \epsilon n})^{1 / 3} + \frac{\log (1 / \delta) }{ \epsilon n }
+\]</span></p>
+<h3 id="reference">Reference</h3>
+<p>[1] S. Vadhan, “The Complexity of Differential Privacy,” in Tutorials on the Foundations of Cryptography, Y. Lindell, Ed. Cham: Springer International Publishing, 2017, pp. 347–450.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/25/Releasing-Histogram-Privately/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -466,285 +637,10 @@ M(x) = q(x) + N
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/19/PAC-Learning-From-Countable-Hypothesis-Family/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/19/PAC-Learning-From-Countable-Hypothesis-Family/" class="post-title-link" itemprop="url">PAC Learning From Countable Hypothesis Family</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-19 15:17:27" itemprop="dateCreated datePublished" datetime="2020-11-19T15:17:27+11:00">2020-11-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-27 11:22:12" itemprop="dateModified" datetime="2021-03-27T11:22:12+11:00">2021-03-27</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>We generalize the PAC learning problem of finding an hypothesis from a finite hypothesis family to the one from a countable hypothesis family.</p>
-<h1 id="problem-setting">Problem Setting</h1>
-<ol type="1">
-<li><p><span class="math inline">\(\mathcal{X}:\)</span> the input space.</p></li>
-<li><p><span class="math inline">\(\mathcal{Y} \doteq \{-1, 1\}:\)</span> the output space.</p></li>
-<li><p><span class="math inline">\(\mathcal{Z} \doteq \mathcal{X} \times \mathcal{Y}:\)</span> the product space of <span class="math inline">\(\mathcal{X}\)</span> and <span class="math inline">\(\mathcal{Y}\)</span>.</p></li>
-<li><p><span class="math inline">\(\mathcal{D}:\)</span> an unknown distribution defined on <span class="math inline">\(\mathcal{X} \times \mathcal{Y}\)</span>.</p></li>
-<li><p><span class="math inline">\(\mathcal{H}:\)</span> an countable family of hypothesis, s.t., each <span class="math inline">\(h \in \mathcal{H}\)</span> is a function from <span class="math inline">\(\mathcal{X}\)</span> to <span class="math inline">\(\mathcal{Y}\)</span>.</p></li>
-<li><p><span class="math inline">\(\ell: \mathcal{Y} \times \mathcal{Y} \rightarrow [0, 1]\)</span>, a loss function that takes two points in <span class="math inline">\(\mathcal{Y}\)</span> and outputs a value between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p></li>
-<li><p><span class="math inline">\(L_\mathcal{D} (h):\)</span> the expected loss of a hypothesis <span class="math inline">\(h\)</span> is defined as <span class="math display">\[
- L_\mathcal{D} (h) = \mathbb{E}_{ (x, y) \sim \mathcal{D} } [ \ell( h(x), y) ]
- \]</span></p>
-<p>where <span class="math inline">\((x, y) \sim \mathcal{D}\)</span> implies that the pair <span class="math inline">\((x, y) \in \mathcal{Z}\)</span> is sampled according to the distribution <span class="math inline">\(\mathcal{D}\)</span>.</p></li>
-<li><p><span class="math inline">\(h^* \doteq \arg\min_{h \in \mathcal{H} } L_\mathcal{D} (h):\)</span> the hypothesis that minimize the expected loss.</p></li>
-<li><p><span class="math inline">\(\mu_h:\)</span> an alias for <span class="math inline">\(L_\mathcal{D} (h)\)</span>, when the distribution <span class="math inline">\(\mathcal{D}\)</span> discussed in the context is unique.</p></li>
-<li><p><span class="math inline">\(B(\mu_h, \epsilon) \doteq \{ r \in \mathbb{R} : |r - \mu_h | &lt; \epsilon \}:\)</span> an open ball, which is an open interval in <span class="math inline">\(\mathbb{R}\)</span> centered at <span class="math inline">\(\mu_h\)</span> with length <span class="math inline">\(2 \epsilon\)</span>, where <span class="math inline">\(\epsilon &gt; 0\)</span>.</p></li>
-<li><p><span class="math inline">\(S \sim \mathcal{D}^n:\)</span> a set of <span class="math inline">\(n\)</span> i.i.d samples drawn from <span class="math inline">\(\mathcal{D}\)</span>, where <span class="math inline">\(n \in \mathbb{N}^+\)</span> is some positive integer. In particular, when <span class="math inline">\(S \sim \mathcal{D}^n\)</span>, it can be represented as <span class="math display">\[
- S = \{ (x_1, y_1), (x_2, y_2), ..., (x_n, y_n) : (x_i, y_i) \sim \mathcal  {D}, \forall i \in [n] \}.
- \]</span> We also view <span class="math inline">\(S\)</span> as a point in <span class="math inline">\(\mathcal{Z}^n\)</span>.</p></li>
-<li><p><span class="math inline">\(L_{S}(h) \doteq \frac{1}{ |S| } \sum_{ (x, y) \in S } \ell( h(x) , y ) :\)</span> the empirical loss of a hypothesis <span class="math inline">\(h\)</span> on a sample set <span class="math inline">\(S\)</span>.</p></li>
-<li><p>Given a <span class="math inline">\(h \in \mathcal{H}\)</span>, its restriction on <span class="math inline">\(\mathcal{C} \subset \mathcal{X}\)</span> is a function <span class="math inline">\(h_S\)</span> defined on <span class="math inline">\(S\)</span>, such that <span class="math display">\[
-h_\mathcal{C} (x) = h(x), \forall x \in \mathcal{C} 
-\]</span></p></li>
-<li><p>The restriction of <span class="math inline">\(\mathcal{H}\)</span> on <span class="math inline">\(\mathcal{C}\)</span> is the set of possible restriction of a function in <span class="math inline">\(\mathcal{H}\)</span> to <span class="math inline">\(\mathcal{C}\)</span> <span class="math display">\[
-        \mathcal{H}_\mathcal{C}  = \{ h_\mathcal{C}  : \mathcal{C}  \rightarrow \mathcal{Y} : h \in \mathcal{H} \}
-\]</span></p>
-<p>As <span class="math inline">\(\mathcal{Y} = \{ -1, +1 \}\)</span>, the set of possible functions defined on <span class="math inline">\(\mathcal{C}\)</span> is bounded by <span class="math inline">\(2^{n}\)</span>. Hence, <span class="math display">\[
-    |\mathcal{H}_\mathcal{C} | \le 2^{n}.
-\]</span></p></li>
-<li><p>The growth function <span class="math inline">\(\Pi_{\mathcal{H} } (n): \mathbb{N}^+ \rightarrow \mathbb{N}^+\)</span> of <span class="math inline">\(\mathcal{H}\)</span> is defined as <span class="math display">\[
-   \Pi_{\mathcal{H} } (n) = \max_{\mathcal{C} \subset \mathcal{X}, |C| = n} | \mathcal{H}_\mathcal{C} |
-   \]</span></p></li>
-</ol>
-<p>Ideally, we would like to find <span class="math inline">\(h^*\)</span>. The problem is difficult, as</p>
-<ul>
-<li>The space <span class="math inline">\(\mathcal{X} \times \mathcal{Y}\)</span> could be infinite.</li>
-<li>The distribution <span class="math inline">\(\mathcal{D}\)</span> is unknown.</li>
-</ul>
-<p>To deal with the possibly infinite space <span class="math inline">\(\mathcal{X} \times \mathcal{Y}\)</span> and the unknown distribution <span class="math inline">\(\mathcal{D}\)</span>, we investigate <span class="math inline">\(\mathcal{H}\)</span> on a finite sample set <span class="math inline">\(S\)</span>. Due to the randomness inherited in sampling <span class="math inline">\(S\)</span>, we allow our solution to be approximate and to make error. For a given pair of parameters of <span class="math inline">\(\epsilon &gt; 0\)</span> and <span class="math inline">\(\delta &gt; 0\)</span>, we relax the goal to designing an <span class="math inline">\((\epsilon, \delta)\)</span>-learning algorithm <span class="math inline">\(A\)</span> that returns an <span class="math inline">\(h&#39;\)</span>, that is</p>
-<blockquote>
-<ul>
-<li><span class="math inline">\(\epsilon\)</span>-approximate: <span class="math inline">\(\mu_{h&#39;} \le \mu_{h^*} + \epsilon\)</span>,<br />
-</li>
-<li>probably correct: <span class="math inline">\(A\)</span> return an <span class="math inline">\(h&#39;\)</span> that does not satisfies the above condition with probability at most <span class="math inline">\(\delta\)</span>.</li>
-</ul>
-</blockquote>
-<p>Combined, <span class="math inline">\(A\)</span> should return an <span class="math inline">\(\epsilon\)</span>-approximate solution <span class="math inline">\(h&#39;\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
-<h1 id="the-algorithm">The Algorithm</h1>
-<blockquote>
-<p>An <span class="math inline">\((\epsilon, \delta)\)</span> approximate algorithm <span class="math inline">\(A\)</span><br />
-1. Draw a set <span class="math inline">\(S\)</span> of <span class="math inline">\(n =\)</span> samples independently from <span class="math inline">\(\mathcal{D}\)</span>.<br />
-2. Return an <span class="math inline">\(h&#39;\)</span> such that <span class="math display">\[
-h&#39; = \arg\min_{h \in \mathcal{H} } L_{S} (h)
-\]</span></p>
-</blockquote>
-<p>A key result of the algorithm states that <span class="math inline">\(L_S(h)\)</span> is a good approximation of <span class="math inline">\(\mu_h\)</span> for all <span class="math inline">\(h \in \mathcal{H}\)</span> simultaneously.</p>
-<blockquote>
-<p>Theorem. If <span class="math inline">\(n \ge\)</span>, then <span class="math display">\[
-\Pr_{S \sim \mathcal{D}^n } [ \exists h \in \mathcal{H} : L_S(h) \notin B(\mu_h, \epsilon / 2 )  ] \le \delta
-\]</span></p>
-</blockquote>
-<p>An immediate corollary is that <span class="math inline">\(h&#39;\)</span> is <span class="math inline">\(\epsilon\)</span>-approximate with probability at least <span class="math inline">\(1 - \delta\)</span>: <span class="math display">\[
-\mu_{h&#39;} \le L_S(h&#39;) + \frac{\epsilon}{2} \le L_S(h^*) + \frac{\epsilon}{2} \le \mu_{h^*} + \epsilon.
-\]</span></p>
-<h2 id="proof-of-the-theorem">Proof of The Theorem</h2>
-<p>The proof relies on a technique called double sampling. Alongside with <span class="math inline">\(S\)</span>, we create another sample set <span class="math inline">\(S&#39; \sim \mathcal{D}^n\)</span> independently, termed the "ghost sample". Let <span class="math display">\[
-S = \{ (x_1, y_1), (x_2, y_2), ..., (x_n, y_n) \}
-\]</span> and <span class="math display">\[
-S&#39; = \{ (x_1&#39;, y_1&#39;), (x_2&#39;, y_2&#39;), ..., (x_n&#39;, y_n&#39;) \}.
-\]</span></p>
-<p>Then, we define</p>
-<ol start="16" type="1">
-<li><span class="math inline">\(\sigma:\)</span> a random swap that exchanges the <span class="math inline">\(i\)</span>-th (<span class="math inline">\(i \in [n]\)</span>) element of <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> independently with probability 0.5. Call the resulting sample sets <span class="math inline">\(\sigma S\)</span> and <span class="math inline">\(\sigma S&#39;\)</span>. Let <span class="math inline">\(\sigma S[i]\)</span> (<span class="math inline">\(\sigma S&#39;[i]\)</span>) be the <span class="math inline">\(i\)</span>-th element of <span class="math inline">\(\sigma S[i]\)</span> (<span class="math inline">\(\sigma S&#39;[i]\)</span>). So <span class="math display">\[
-\Pr \left[ 
-    \sigma S [i] = (x_i,  y_i) \wedge
-    \sigma S&#39;[i] = (x_i&#39;, y_i&#39;)
- \right] = 0.5 \\
- \Pr \left[ 
-    \sigma S [i] = (x_i&#39;, y_i&#39;) \wedge
-    \sigma S&#39;[i] = (x_i,  y_i)
- \right] = 0.5
-\]</span></li>
-</ol>
-<p>We use the gap of <span class="math inline">\(|L_{\sigma S} (h) - L_{\sigma S&#39;} (h)|\)</span> as a proxy of <span class="math inline">\(|L_S(h) - \mu_h|\)</span>. This enables us to focus on finite sets <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> without worrying about the infinite size of <span class="math inline">\(\mathcal{H}\)</span>.</p>
-<p>For convenience, we use <span class="math inline">\(\underset{S}{\Pr}[\cdot]\)</span> (<span class="math inline">\(\underset{S&#39;}{\Pr}[\cdot]\)</span>) as shorthand for <span class="math inline">\(\underset{S \sim \mathcal{D}^n}{\Pr}[\cdot]\)</span> (<span class="math inline">\(\underset{S&#39; \sim \mathcal{D}^n}{\Pr}[\cdot]\)</span>). The road map of our proof is as follows.</p>
-<blockquote>
-<p>Lemma 1.<br />
-<span class="math display">\[
-\Pr_{S}[ \exists h : L_S(h) \notin B(\mu_h, \epsilon ) ] \le 2 \max_{S, S&#39; \in \mathcal{Z}^n } \Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma S&#39; } (h) | \ge \frac{\epsilon}{2} \right]
-\]</span></p>
-</blockquote>
-<p>On the left hand side of the inequality, the probability measures the event of a random set <span class="math inline">\(S\)</span> sampling from <span class="math inline">\(\mathcal{D}\)</span>. On the right hand side, we can pick a fixed pair of <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> that maximize <span class="math display">\[
-\Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma S&#39; } (h) | \ge \frac{\epsilon}{2} \right],
-\]</span></p>
-<p>and the probability measures the event of the random swap <span class="math inline">\(\sigma\)</span>. Fixing <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> significantly simplifies the structure of <span class="math inline">\(\mathcal{H}\)</span>. By Hoeffding inequality and union bound, we will prove that</p>
-<blockquote>
-<p>Lemma 2. For any fixed pair of <span class="math inline">\(S, S&#39; \in \mathcal{Z}^n\)</span>, <span class="math display">\[
-\Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma S&#39; } (h) | \ge \frac{\epsilon}{2} \right] \le 2 \Pi_\mathcal{H} (2n) \exp( - \frac{n^2 \epsilon^2 }{2} )
-\]</span></p>
-</blockquote>
-<h3 id="proof-of-lemma-1."><strong>Proof of Lemma 1.</strong></h3>
-<p>The proof of Lemma 1 consists of three steps.</p>
-<h4 id="step-1"><strong>Step 1</strong></h4>
-<blockquote>
-<p><span class="math display">\[
-\Pr_{S}[ \exists h : L_S(h) \notin B(\mu_h, \epsilon ) ] \le 2 \Pr_{S , S&#39;} [ \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge  L_{S&#39;} (h) \in B(\mu_h, \epsilon / 2)  ].
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> By Hoeffding inequality, for a fixed <span class="math inline">\(h \in \mathcal{H}\)</span>, when <span class="math inline">\(n \ge \frac{2}{\epsilon^2} \ln 4\)</span> <span class="math display">\[
-    \Pr_{S&#39;} [ L_{S&#39;} (h) \notin B(\mu_h, \epsilon / 2) ] \le 2 \exp \left(- 2 n \left( \frac{\epsilon }{ 2 } \right)^2 \right) = 2 \exp \left( - \frac{n \epsilon^2}{2} \right) \le \frac{1}{2}
-\]</span></p>
-<p>It follows that <span class="math display">\[
-    \Pr_{S , S&#39;} [ \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge  L_{S&#39;} (h) \in B(\mu_h, \epsilon / 2)  ] 
-        \ge 
-    \frac{1}{2} \Pr_{S}[ \exists h : L_S(h) \notin B(\mu_h, \epsilon ) ]
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Remark:</strong> Mathematically, I don't know how to make prove this step rigorously. Suppose that for every <span class="math inline">\(i \in [n]\)</span>, we know that the events <span class="math inline">\(E_i\)</span> and <span class="math inline">\(F_i\)</span> are measurable and independent. If <span class="math inline">\(\Pr[ F_i ] \ge 1 / 2\)</span>, then <span class="math inline">\(\Pr[ E_i \wedge F_i ] \ge 1 / 2\)</span>. But, can we claim that <span class="math display">\[
-    \Pr[ \cup (E_i \wedge F_i) ] \ge \frac{1}{2} \Pr[ \cup E_i ]. 
-\]</span></p>
-<h4 id="step-2"><strong>Step 2</strong></h4>
-<blockquote>
-<p><span class="math display">\[
-\Pr_{S} [ \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge  L_{S&#39;} (h) \in B(\mu_h, \epsilon / 2) ] 
-\le 
-\Pr_{S, S&#39;} \left[ \exists h : |L_S (h) - L_{S&#39;} (h) | \ge \frac{\epsilon}{2} \right]
-\]</span></p>
-</blockquote>
-<p><strong>Proof</strong>. Observe that <span class="math display">\[
-    \{  \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge  L_{S&#39;} (h) \in B(\mu_h, \epsilon / 2)  \} 
-        \subset 
-    \left\{  \exists h : |L_S (h) - L_{S&#39;} (h) | \ge \frac{\epsilon}{2} \right\}. 
-\]</span> By monotonicity of probability, we finish the proof.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h4 id="step-3"><strong>Step 3</strong></h4>
-<blockquote>
-<p><span class="math display">\[
-\Pr_{S, S&#39; } \left[  \exists h : |L_S (h) - L_{S&#39;} (h) | \ge \frac{\epsilon}{2} \right] 
-\le 
-\max_{S, S&#39; \in \mathcal{Z}^n } \Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma S&#39; } (h) | \ge \frac{\epsilon}{2} \right]
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> We claim that <span class="math inline">\(\sigma S\)</span> and <span class="math inline">\(\sigma S&#39;\)</span> have the same joint distribution as <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> (if <span class="math inline">\(S, S&#39; \sim \mathcal{D}^n\)</span>). For points <span class="math inline">\(\forall Z, Z&#39; \in \mathcal{Z}^n\)</span>, by symmetry, it holds that <span class="math display">\[
-\Pr_{S, S&#39;} [ S = Z, S&#39; = Z&#39;] = \Pr_{S, S&#39;, \sigma} [ \sigma S = Z, \sigma S&#39; = Z&#39;]
-\]</span></p>
-<p>The right hand side can be viewed as the successful probability of the following experiment:</p>
-<ul>
-<li>Sample independently <span class="math inline">\(S \sim \mathcal{D}^n\)</span> and <span class="math inline">\(S&#39; \sim \mathcal{D}^n\)</span>.<br />
-</li>
-<li>For each <span class="math inline">\(i \in [n]\)</span>, exchange the <span class="math inline">\(i\)</span>-th elements of <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> independently with probability <span class="math inline">\(0.5\)</span>.</li>
-<li>After the random swap, <span class="math inline">\(\sigma S = Z\)</span> and <span class="math inline">\(\sigma S&#39; = Z&#39;\)</span>.</li>
-</ul>
-<p>Now, <span class="math inline">\(\forall \mathcal{E} \subset \mathcal{Z}^{2n}\)</span>, it holds that <span class="math display">\[
-\begin{aligned}
-    \Pr_{S, S&#39;} [ (S, S&#39;) \in \mathcal{E} ] 
-        &amp;= \Pr_{S, S&#39;, \sigma} [ (\sigma S, \sigma S&#39;) \in \mathcal{E} ] \\
-        &amp;= \mathbb{E}_{S, S&#39;} [ \Pr_\sigma [(\sigma S, \sigma S&#39;) \in \mathcal{E} ] \mid S, S&#39; ] \\
-        &amp;\le \max_{S, S&#39; \in \mathcal{Z}^n } \Pr_\sigma [(\sigma S, \sigma S&#39;) \in \mathcal{E} ]
-\end{aligned}
-\]</span></p>
-<p>Replacing <span class="math inline">\(\mathcal{E}\)</span> with the set <span class="math inline">\(\{Z, Z&#39; \in \mathcal{Z}^n : \exists h : |L_Z (h) - L_{Z&#39;} (h) | \ge \frac{\epsilon}{2} \}\)</span> finishes the proof.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<!-- *Remark of the proof of step 1.* If we define 
-$$
-\mathcal{H}(S, \epsilon) \doteq \{ h \in \mathcal{H} :L_S(h) \notin B(\mu_h, \epsilon ) \}.
-$$
-*which is the set of hypothesis whose empirical loss on $S$ is $\epsilon$ more than its expectation. Then,* 
-$$
-\begin{aligned}
-    \Pr_{S} [ \exists h : L_S(h) \notin B(\mu_h, \epsilon ) ] \cdot \frac{1}{2} 
-    &= \Pr_{S } [ \mathcal{H}(S, \epsilon) \neq \emptyset ] \cdot \frac{1}{2} \\
-    &\le \Pr_{S } [ \mathcal{H}(S, \epsilon) \neq \emptyset] \\
-    & \ \ \cdot \Pr_{S, S' } [ \exists h \in \mathcal{H}(S, \epsilon) : L_{S'} (h) \in B(\mu_h, \epsilon / 2 ) \mid \mathcal{H}(S, \epsilon) \neq \emptyset ] \\
-    &= \Pr_{S, S' } [ \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge L_{S'} (h) \in B(\mu_h, \epsilon / 2 )  ]
-\end{aligned}
-$$
-
-*Note that the event $\mathcal{H}(S, \epsilon) \neq \emptyset$ is equivalent to the one* 
-$$
-\cup_{h \in \mathcal{H} } \{ L_S(h) \notin B(\mu_h, \epsilon ) \} 
-$$
-
-*For a fixed $h \in \mathcal{H}$, the event $\{ L_S(h) \notin B(\mu_h, \epsilon ) \}$ is measurable when $S$ consists of a finite number of i.i.d samples from $\mathcal{D}$. If $\mathcal{H}$ consists of countable number of $h$, then $\cup_{h \in \mathcal{H} } \{ L_S(h) \notin B(\mu_h, \epsilon ) \}$ is a countable union and should be measurable.*  -->
-<h3 id="proof-of-lemma-2."><strong>Proof of Lemma 2.</strong></h3>
-<p>Let <span class="math display">\[
-S = \{ (x_1, y_1), (x_2, y_2), ..., (x_n, y_n) \}
-\]</span> and <span class="math display">\[
-S&#39; = \{ (x_1&#39;, y_1&#39;), (x_2&#39;, y_2&#39;), ..., (x_n&#39;, y_n&#39;) \}.
-\]</span> be a pair of fixed sample sets. Define the set <span class="math inline">\(\mathcal{C} = \{ x_1, x_2, ..., x_n, x_1&#39;, x_2&#39;, ..., x_n&#39; \} \subset \mathcal{X}\)</span> (with duplicates removed). The size of <span class="math inline">\(\mathcal{C}\)</span> is bounded by <span class="math inline">\(2n\)</span> and therefore the size of restriction of <span class="math inline">\(\mathcal{H}\)</span> on <span class="math inline">\(\mathcal{C}\)</span> is bounded by <span class="math inline">\(\Pi_\mathcal{H} (2n)\)</span>.</p>
-<p>First, fix a hypothesis <span class="math inline">\(h\)</span>. For all <span class="math inline">\(i \in [n]\)</span>, define <span class="math inline">\(a_i = |\ell( h( x_i ), y_i) - \ell( h( x_i&#39; ), y_i&#39; ) | \le 1\)</span> and let <span class="math inline">\(V_i \in \{-1, 1\}\)</span> be a random variable with equal probability: <span class="math display">\[
-\Pr[ V_i = -1 ] = \Pr[ V_i = 1] = 0.5
-\]</span></p>
-<p>If we apply a random swap <span class="math inline">\(\sigma\)</span> to <span class="math inline">\((S, S&#39;)\)</span>, then <span class="math inline">\(L_{ \sigma S} (h_S) - L_{ \sigma S&#39; } (h_S)\)</span> has the same distribution as <span class="math inline">\(\sum_{i \in [n] } \frac{1}{n} a_i V_i\)</span>. Since <span class="math display">\[
-\mathbb{E} \left[ \sum_{i \in [n] } \frac{1}{n} a_i V_i \right] = \sum_{i \in [n] } \frac{1}{n} a_i \mathbb{E}[ V_i ] = 0,
-\]</span></p>
-<p>by Hoeffding inequality, <span class="math display">\[
-\begin{aligned}
-    \Pr_\sigma \left[ |L_{ \sigma S} (h) - L_{ \sigma  S&#39; } (h) | \ge \frac{\epsilon}{2} \right] 
-        &amp;= \Pr \left[ \left| \sum_{i \in [n] } \frac{1}{n} a_i V_i - 0 \right| \ge \frac{\epsilon}{2} \right] \\
-        &amp;\le 2 \exp \left( - \frac{ 2 }{  \sum_{i \in [n] } a_i^2 } \left( \frac{n \epsilon}{2} \right)^2 \right)  \\
-        &amp;\le 2 \exp \left( - \frac{n^2 \epsilon^2 }{2} \right)
-\end{aligned}
-\]</span></p>
-<p>The last inequality follows from that <span class="math inline">\(\sum_{i \in [n] } a_i^2 \le n\)</span>.</p>
-<p>Since for each <span class="math inline">\(h \in \mathcal{H}\)</span>, it has the same behavior on <span class="math inline">\(\mathcal{C}\)</span> as some function in <span class="math inline">\(\mathcal{H}_\mathcal{C}\)</span>. We can apply union bound on <span class="math inline">\(\mathcal{H}_\mathcal{C}\)</span>. <span class="math display">\[
-\Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma  S&#39; } (h) | \ge \frac{\epsilon}{2} \right] \le 2 |\mathcal{H}_\mathcal{C} | \exp \left( - \frac{n^2 \epsilon^2 }{2} \right) \le 2 \Pi_\mathcal{H} (2n) \exp \left( - \frac{n^2 \epsilon^2 }{2} \right)
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1] Ethan Fetaya, "Lecture 02 - Introduction to Statistical Learning Theory", Weizmann Institute of Science, 2016</p>
-<p>[2].R. Schapire and D. Bieber, “Lecture 05 - COS 511: Theoretical Machine Learning,”, Princeton University, 2013</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/48/">48</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -810,7 +706,7 @@ S&#39; = \{ (x_1&#39;, y_1&#39;), (x_2&#39;, y_2&#39;), ..., (x_n&#39;, y_n&#39;
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">141</span>
+          <span class="site-state-item-count">142</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

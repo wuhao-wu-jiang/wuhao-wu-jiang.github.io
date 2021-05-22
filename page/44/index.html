@@ -146,6 +146,155 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/04/18/FORA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/18/FORA/" class="post-title-link" itemprop="url">FORA [1]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-18 22:51:54" itemprop="dateCreated datePublished" datetime="2018-04-18T22:51:54+10:00">2018-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-07-02 18:57:47" itemprop="dateModified" datetime="2018-07-02T18:57:47+10:00">2018-07-02</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose that we know the values of <span class="math inline">\(\pi^o(s, t)\)</span> for all <span class="math inline">\(t \in V\)</span> and <span class="math inline">\(r(s, v_i)\)</span> for all <span class="math inline">\(v_i \in V\)</span>. We would like to evaluate the value of <span class="math display">\[
+\pi(s, t) = \pi^o(s, t) + \sum_{i = 1}^n r(s, v_i) \pi(v_i, t)
+\]</span></p>
+<p>where <span class="math inline">\(\pi(v_i, t)\)</span> denotes the probability of a random starts from <span class="math inline">\(v_i\)</span> and terminate at <span class="math inline">\(t\)</span>. Let <span class="math inline">\(\tilde \pi(v_i, t)\)</span> be our estimation of <span class="math inline">\(\pi(v_i,t)\)</span>, then we have an estimation of <span class="math inline">\(\pi(s, t)\)</span>: <span class="math display">\[
+\tilde\pi(s, t) = \pi^o(s, t) + \sum_{i = 1}^n r(s, v_i) \tilde\pi(v_i, t)
+\]</span> To get <span class="math inline">\(\tilde\pi(v_i, t)\)</span>, we perform <span class="math inline">\(w_i\)</span> (a value to be determined latter) random walks that start from <span class="math inline">\(v_i\)</span> and count the fraction of walks that terminate at <span class="math inline">\(t\)</span>. Formally, let <span class="math inline">\(X_{i, j}\)</span> be a Bernoulli random variable that takes value 1 if the <span class="math inline">\(j\)</span>-th walk from <span class="math inline">\(v_i\)</span> terminates at <span class="math inline">\(t\)</span>. Then <span class="math display">\[
+E[X_{i,j}] = \pi(v_i, t)
+\]</span> Let <span class="math inline">\(\tilde \pi(v_i, t) = \frac{1}{w_i} \sum_{j = 1}^{w_i} X_{i,j}\)</span> , so <span class="math display">\[
+E[r(s, v_i) \tilde \pi(v_i, t)] = \frac{r(s, v_i)}{w_i} \sum_{j = 1}^{w_i} E[X_{i,j}] = r(s, v_i) \pi(v_i, t)
+\]</span> A naïve use of Chenoff bound to us <span class="math inline">\(w_i = \Omega(\frac{\log (1 / p_{fail} ) }{\epsilon^2 \pi(v_i, t)} )\)</span> (which is even worse than evaluating <span class="math inline">\(\pi(s, t)\)</span> by Monte Carlo directly), such that <span class="math inline">\(r(s, v_i) \tilde \pi(v_i, t)\)</span> takes value within <span class="math inline">\(\big[(1 - \epsilon) r(s, v_i) \pi(v_i, t), (1 + \epsilon) r(s, v_i) \pi(v_i, t)\big]\)</span>with probability <span class="math inline">\(1 - p_{fail}\)</span>. The problem here is that when <span class="math inline">\(\pi(v_i, t)\)</span> is small, we need large number of random walks to get a good approximation of it. On the other hand, when <span class="math inline">\(\pi(v_i, t)\)</span> is small, the contribution of <span class="math inline">\(r(s, v_i)\pi(v_i, t)\)</span> to <span class="math inline">\(\sum_{i = 1}^n r(s, v_i) \pi(v_i, t)\)</span> is small, which means that more deviation is allowed on the estimation of <span class="math inline">\(\pi(v_i, t)\)</span>.</p>
+<blockquote>
+<p>What if the amount of deviation on the estimation of <span class="math inline">\(r(s, v_i) \pi(v_i, t)\)</span> we allow is <span class="math inline">\(\pi(s, t)\)</span>? How about <span class="math inline">\(\pi(s, t) / n\)</span>? More clever way of allocating deviation? Better Chernoff bound?</p>
+</blockquote>
+<p>[1] solves this by bounding the cumulative deviation of <span class="math inline">\(\sum_{i = 1}^n r(s, v_i) \tilde \pi(v_i, t)\)</span> as a whole. The statistical tool it turns to is a special Chernoff bound:</p>
+<h4 id="theorem">Theorem</h4>
+<blockquote>
+<p>Let <span class="math inline">\(Y_1, Y_2, ..., Y_w\)</span> be independent random variables with <span class="math display">\[
+Pr[Y_i = 1] = p_i \qquad Pr[Y_i = 0 ]  = 1 - p_i.
+\]</span> Let <span class="math inline">\(Y = \frac{1}{w} \sum_{i = 1}^w b_i Y_i\)</span> with <span class="math inline">\(b_i &gt; 0\)</span>, and <span class="math inline">\(v = \frac{1}{w} \sum_{i = 1}^w b_i^2 p_i\)</span>. Then <span class="math display">\[
+Pr[|Y - E[Y]| \ge \lambda ] \le 2 \exp \big(-\frac{\lambda^2 w} {2 v + 2 b \lambda / 3} \big)
+\]</span> where <span class="math inline">\(b = \max\{ b_1, b_2, ..., b_w\}\)</span></p>
+</blockquote>
+<p>To apply this bound, we perform in total <span class="math inline">\(w = \sum_{i = 1}^n w_i\)</span> random walks. The first <span class="math inline">\(w_1\)</span> walks starts from <span class="math inline">\(v_1\)</span> , the next <span class="math inline">\(w_2\)</span> walks starts from <span class="math inline">\(v_2\)</span>, and so on. Let <span class="math display">\[
+\{ Y_{1}, ..., Y_{w_1}, Y_{w_1 + 1}, ..., Y_{w_1 + w_2}, ..., Y_{\sum_{i = 1}^{n -1}w_i + 1}, ..., Y_{w} \}
+\]</span> be the corresponding independent indicator random variables that take value 1 if the walks terminate at <span class="math inline">\(t\)</span> and</p>
+<p><span class="math display">\[
+b_j = \frac{w}{w_i} r(s, v_i)
+\]</span> if the <span class="math inline">\(j\)</span>-th walk starts from vertex <span class="math inline">\(v_i\)</span>. So <span class="math display">\[
+b = \max \{b_1, b_2, ..., b_w\} = \max_{1 \le i \le n} \frac{w}{w_i} r(s, v_i)
+\]</span> It can be verified that <span class="math display">\[
+E[Y] = \frac{1}{w} \sum_{i = 1}^w E[Y_i] = \frac{1}{w} \sum_{i = 1}^n \sum_{j = 1}^{w_i} \frac{w}{w_i} r(s, v_i) \pi(v_i, t) = \sum_{i = 1}^n r(s, v_i) \pi(v_i, t)
+\]</span> To bound the deviation of <span class="math inline">\(\tilde \pi(s, t)\)</span> from <span class="math inline">\(\pi(s, t)\)</span>, we notice that <span class="math display">\[
+|\tilde \pi(s, t) - \pi(s, t)| = | \sum_{i = 1}^n r(s, v_i) \tilde \pi(v_i, t)  -  \sum_{i = 1}^n r(s, v_i) \pi(v_i, t)| = |Y - E[Y]|
+\]</span> So <span class="math display">\[
+Pr[|Y - E[Y]| \ge \epsilon \pi(s, t)] \le 2 \exp ( - \frac{ \epsilon^2 \pi^2(s, t) \ w}{2 v + 2 b \epsilon \pi(s, t) / 3})
+\]</span> But notice that <span class="math display">\[
+v = \frac{1}{w} \sum_{i = 1}^w b_i^2 p_i \le  \big( \frac{b}{w}  \sum_{i = 1}^w b_i p_i \big) = b \ E[Y] \le b \ \pi(s, t)
+\]</span> Thus <span class="math display">\[
+\begin{align}
+Pr[|Y - E[Y]| \ge \epsilon \pi(s, t)] 
+&amp;\le 2 \exp ( - \frac{ \epsilon^2 \pi^2(s, t) \ w}{2 v + 2 b \epsilon \pi(s, t) / 3}) \\\\
+&amp;\le 2 \exp ( - \frac{ \epsilon^2 \pi^2(s, t) \ w}{2 b \pi(s, t) + 2 b \epsilon \pi(s, t) / 3}) \\\\
+&amp;\le 2 \exp ( - \frac{ \epsilon^2 \pi (s, t) \ w}{b (2   + 2\epsilon  / 3)}) \\\\
+&amp;\le p_{fail}
+\end{align}
+\]</span> So <span class="math display">\[
+w \ge b  \frac{2 + 2\epsilon / 3}{\epsilon^2 \delta} \log \frac{2}{p_{fail} }
+\]</span> We would like to minimize <span class="math inline">\(b\)</span> in order to minimize <span class="math inline">\(w\)</span>, which can be formulated as an convex optimization problem:</p>
+<p><span class="math display">\[
+\begin{align} 
+\min \quad &amp;b \\\\
+s.t.   \quad &amp;b \ge r(s, v_i) / k_i \\\\
+&amp;\sum_i k_i = 1 \\\\
+&amp;k_i \ge 0
+\end{align}
+\]</span></p>
+<p>Here we rewrite <span class="math inline">\(\frac{w_i}{w} = k_i\)</span>. One simple way to solve this is to guess that <span class="math inline">\(b\)</span> is minimized when all <span class="math inline">\({r(s, v_i)}/{k_i}\)</span> equals. This gives <span class="math inline">\(k_i = r(s, v_i) / r_{sum}\)</span>. We can prove this is indeed optimal: if this is not the case, there must be some <span class="math inline">\(k_i &lt; r(s, v_i) / r_{sum}\)</span>. Then <span class="math inline">\(b \ge r(s, v_i) / k_i &gt; r_{sum}\)</span> .</p>
+<p>We can also solve this problem by a heavy mechanism: KKT conditions. First, define <span class="math display">\[
+L(b, k, \lambda, \beta, , \mu) = b + \sum_{i = 1}^n \lambda_i (r(s, v_i) / k_i - b) + \sum_{i = 1}^n \beta_i (0 - k_i) + \mu (\sum_{i = 1}^n k_i - 1)
+\]</span> Thus, the KKT conditions are <span class="math display">\[
+\begin{align}
+    &amp; r(s, v_i) / k_i - b \le 0 &amp;\forall i \in [1, n] \\\\
+    &amp; -k_i \le 0 &amp;\forall i \in [1, n] \\\\
+    &amp; \sum_i k_i  - 1 = 0 \\\\
+    &amp; \lambda_i \ge 0, \beta_i \ge 0 &amp;\forall i \in [1, n] \\\\
+    &amp; \lambda_i (r(s, v_i) / k_i - b) = 0 &amp;\forall i \in [1, n] \\\\
+    &amp;\beta_i (0 - k_i) = 0 &amp;\forall i \in [1, n] \\\\
+    &amp; \frac{\partial L}{\partial b}  = 1 - \sum_{i = 1}^n \lambda_i = 0 \\\\
+    &amp; \frac{\partial L}{\partial k_i} = -\lambda_i r(s, v_i) / k_i^2 - \beta_i + \mu = 0 &amp;\forall i \in [1, n]\\\\
+\end{align}
+\]</span> So one solution is given by <span class="math display">\[
+\begin{align}
+&amp;b = r_{sum} \\\\
+&amp;k_i = r(s, v_i) / r_{sum} &amp; \forall i \in [1, n] \\\\
+&amp;\lambda_i = r(s, v_i) / r_{sum}^2 &amp; \forall i \in [1, n] \\\\
+&amp;\beta_i = 0 &amp; \forall i \in [1, n] \\\\
+&amp;\mu = 1
+\end{align}
+\]</span></p>
+<p>which implies <span class="math display">\[
+w \ge b  \frac{2 + 2\epsilon / 3}{\epsilon^2 \delta} \log \frac{2}{p_{fail} } \\\\
+w_i = w k_i = \frac{w r(s, v_i)}{r_{sum} }
+\]</span></p>
+<h4 id="citations">Citations</h4>
+<p>[1] Wang, Sibo, et al. "FORA: Simple and Effective Approximate Single-Source Personalized PageRank." <em>Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>. ACM, 2017.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2017/11/05/Lebesgue%20Measure/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -398,87 +547,10 @@ m^*(A)  \ge m^*(A \cap F) + m^*(A \cap \overline{F})
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2017/02/02/TF-IDF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/02/02/TF-IDF/" class="post-title-link" itemprop="url">TF-IDF</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2017-02-02 20:38:54" itemprop="dateCreated datePublished" datetime="2017-02-02T20:38:54+11:00">2017-02-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-07-02 18:29:42" itemprop="dateModified" datetime="2018-07-02T18:29:42+10:00">2018-07-02</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>TF-IDF stands for term frequency and inverse document frequency. It evaluates the importance of a word to a document in a corpus, which increases with the number of times it appears in the document but is offset by its frequency in the corpus. More precisely, for TF, we define <span class="math display">\[
-tf(term| document) = \frac{\mbox{the number of times 
-&quot;term&quot; appears in &quot;document&quot;} }{\mbox{total number of words in &quot;document&quot;} }
-\]</span></p>
-<p>For IDF, we define <span class="math display">\[
-idf(term) = 1 + \log(\frac{\mbox{the total number of documents} }{\mbox{the number of documents this term appears in} } )
-\]</span></p>
-<p>Now suppose we have a query. Let <span class="math inline">\(Q = \{t_1, t_2, ..., t_n \}\)</span> the set of different term in the query. We convert <span class="math inline">\(Q\)</span> into a vector, <span class="math display">\[
-V(Q) = [tf(t_1 | Q)* idf(t_1), tf(t_2|Q) * idf(t_2),..., tf(t_n|Q) * idf(t_n)]
-\]</span></p>
-<p>Similarily, for a document <span class="math inline">\(D\)</span>, we can get a vector <span class="math inline">\(V(D)\)</span>. Now the similarity between <span class="math inline">\(Q\)</span> and <span class="math inline">\(D\)</span> is given by <span class="math display">\[
-\frac{V(Q) \times V(D)}{||V(Q)|| \times ||V(D)||}
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/43/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><span class="page-number current">44</span><a class="page-number" href="/page/45/">45</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><a class="extend next" rel="next" href="/page/45/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/43/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><span class="page-number current">44</span><a class="page-number" href="/page/45/">45</a><span class="space">&hellip;</span><a class="page-number" href="/page/48/">48</a><a class="extend next" rel="next" href="/page/45/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -544,7 +616,7 @@ V(Q) = [tf(t_1 | Q)* idf(t_1), tf(t_2|Q) * idf(t_2),..., tf(t_n|Q) * idf(t_n)]
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">141</span>
+          <span class="site-state-item-count">142</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

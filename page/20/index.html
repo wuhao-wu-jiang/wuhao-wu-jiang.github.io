@@ -146,6 +146,200 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/06/Gradient-Descent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/06/Gradient-Descent/" class="post-title-link" itemprop="url">Gradient Descent</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-06 10:10:45" itemprop="dateCreated datePublished" datetime="2020-03-06T10:10:45+11:00">2020-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-09 00:46:03" itemprop="dateModified" datetime="2020-03-09T00:46:03+11:00">2020-03-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Gradient descent is a greedy search method for optimization. It approximates a function locally by a linear function. Its analysis varies depending on the what kinds of constraints you place on it.</p>
+<p>We study a baby version of the method. The problem at hand is given by: <span class="math display">\[
+\min_{x \in \mathbb{R }^n} f(x)
+\]</span> where <span class="math inline">\(f\)</span> is twice continuous differentiable and convex. The convexity of <span class="math inline">\(f\)</span> implies that it has a unique minimum value <span class="math inline">\(\min_{x \in \mathbb{R }^n} f(x)\)</span>. Assume that <span class="math inline">\(f\)</span> indeed achieves minimum at some point and denote the optimal point as <span class="math inline">\(x^*\)</span>. Note that is some case, <span class="math inline">\(f\)</span> can not achieve minimum value at any point. Consider <span class="math inline">\(f(x) = e^x\)</span>. Then <span class="math inline">\(\min_{x \in \mathbb{R } } e^x = 0\)</span>. <span class="math inline">\(f\)</span> can approach arbitrary close to <span class="math inline">\(0\)</span> but never achieve that value.</p>
+<p>Before we delve into the details, we need to define some frequently used notations.</p>
+<ul>
+<li><p>The gradient <span class="math inline">\(\nabla f(x):\mathbb{R }^n \rightarrow \mathbb{R }^n\)</span> is the vector of partial derivatives of <span class="math inline">\(f\)</span> at point <span class="math inline">\(x\)</span>: <span class="math display">\[
+\nabla f(x) = \left[ \frac{\partial f (x) }{\partial x_1}, \frac{\partial f (x)}{\partial x_2}, .., \frac{\partial f (x) }{\partial x_n} \right]
+\]</span></p></li>
+<li><p>The Hessian <span class="math inline">\(\nabla^2 f(x) : \mathbb{R }^n \rightarrow \mathbb{R }^{n \times n}\)</span> is the matrix of second order derivatives of <span class="math inline">\(f\)</span> at <span class="math inline">\(x\)</span>: <span class="math display">\[
+  \nabla f(x) = 
+      \left[
+      \begin{aligned}
+          \frac{\partial^2 f (x)}{\partial x_1 \partial x_1}, \frac{\partial^2 f (x)}{\partial x_1 \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_1 \partial x_n} \\
+          \frac{\partial^2 f (x)}{\partial x_2 \partial x_1}, \frac{\partial^2 f (x)}{\partial x_2 \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_2 \partial x_n} \\
+          &amp;...\\
+          \frac{\partial^2 f (x)}{\partial x_n \partial x_1}, \frac{\partial^2 f (x)}{\partial x_n \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_n \partial x_n} \\
+      \end{aligned}
+      \right]
+  \]</span> Since <span class="math inline">\(f\)</span> is twice continuous differentiable, the Hessian is symmetric.</p></li>
+</ul>
+<p>The algorithm is itself very simple.</p>
+<h3 id="algorithm"><strong>Algorithm</strong></h3>
+<p><strong><em>Gradient Descent</em></strong></p>
+<ol type="1">
+<li>Begin from some <span class="math inline">\(x_0 \in \mathbb{R }^n\)</span>.</li>
+<li><span class="math inline">\(x^{t + 1} \leftarrow x^t - \eta \nabla f(x^t)\)</span>.</li>
+</ol>
+<p>where <span class="math inline">\(\eta &gt; 0\)</span> is called step size. Below is an example that show how <span class="math inline">\(f\)</span> decreases as the algorithm iterates.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/GradientDescent.jpg" /></p>
+<h2 id="convergence"><strong>Convergence</strong></h2>
+<p>To analyze the convergence behavior, we need additional assumptions on <span class="math inline">\(f\)</span>. We analyze a baby version of gradient descent with strong assumptions:</p>
+<ol type="1">
+<li><span class="math inline">\(f\)</span> is <span class="math inline">\(\beta\)</span> smooth, i.e., <span class="math inline">\(v^T \nabla^2 f(z) v \le \beta \| v \|^2\)</span> for <span class="math inline">\(\forall z, v \in \mathbb{R }^n\)</span>.</li>
+<li><span class="math inline">\(f\)</span> is <span class="math inline">\(\alpha\)</span> strongly convex, i.e., <span class="math inline">\(v^T \nabla^2 f(z) v \ge \alpha \| v \|^2\)</span> for <span class="math inline">\(\forall z, v \in \mathbb{R }^n\)</span>.</li>
+</ol>
+<p>The interpretation is that, <span class="math inline">\(\beta\)</span> is the upper bound of the largest possible eigenvalue of the Hessian at any point and <span class="math inline">\(\alpha\)</span> is the lower bound. By definition we have <span class="math inline">\(\beta \ge \alpha\)</span>.</p>
+<p>Now define <span class="math display">\[
+\Delta_t = f(x^t) - f(x^*)
+\]</span> and <span class="math inline">\(\kappa = \frac{\beta}{\alpha}\)</span>. The following theorem characterize the convergence speed of the algorithm:</p>
+<p><strong><em>Theorem.</em></strong> <em>If we set <span class="math inline">\(\eta = \frac{1}{\beta}\)</span>, then it holds that</em> <span class="math display">\[
+\Delta_t \le \Delta_0 \left( 1 - \frac{1}{4 \kappa } \right)^t.
+\]</span></p>
+<p>By the theorem, given any <span class="math inline">\(\epsilon &gt; 0\)</span>, after <span class="math display">\[
+O \left( \kappa \log \frac{\Delta_0}{\epsilon} \right) 
+\]</span></p>
+<p>iteration, the error <span class="math inline">\(\Delta_t\)</span> will be smaller than <span class="math inline">\(\epsilon\)</span>.</p>
+<p><em>Proof:</em></p>
+<p>The proof consists of two parts. <span class="math inline">\(\beta\)</span>-Smooth and <span class="math inline">\(\alpha\)</span>-Convexity play a role in each part separately.</p>
+<h4 id="beta-smoothness."><span class="math inline">\(\beta\)</span>-Smoothness.</h4>
+<p>The property guarantees that <span class="math inline">\(\epsilon_{t + 1} \le \epsilon_t - \frac{1}{2 \beta} \| f(x_t) \|^2\)</span>.</p>
+<p>First, by Taylor series expansion, we have for <span class="math inline">\(x, y \in \mathbb{R }^n\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+    f(y)    &amp;= f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} (y - x)^T \nabla^2 f(z) (y - x) \\
+            &amp;\le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \|y - x \|^2
+\end{aligned}
+\]</span> where <span class="math inline">\(z = \lambda x + (1 - \lambda) y\)</span> for <span class="math inline">\(\lambda \in [0, 1]\)</span>. The second inequality comes from the <span class="math inline">\(\beta\)</span>-smoothness.</p>
+<p>Replacing <span class="math inline">\((y - x)\)</span> as <span class="math inline">\(-\eta \nabla f(x)\)</span>, we get <span class="math display">\[
+\begin{aligned}
+    f(y)  
+        &amp;\le f( x ) - \eta \| \nabla f(x) \|^2 + \frac{1}{2} \beta \eta^2 \| \nabla f( x ) \|^2 \\
+        &amp;\le f( x ) + (\frac{1}{2} \beta \eta^2 -\eta) \| \nabla f(x ) \|^2  \\ 
+\end{aligned}
+\]</span></p>
+<p>The second coefficient <span class="math inline">\((\frac{1}{2} \beta \eta^2 -\eta)\)</span> is minimized when <span class="math inline">\(\beta \eta - 1 = 0\)</span>, i.e., <span class="math inline">\(\eta = \frac{1}{\beta}\)</span>. It follows <span class="math display">\[
+\begin{aligned}
+    f(y ) 
+        &amp;\le f( x ) + (\frac{1}{2} \beta \eta^2 -\eta) \| \nabla f(x ) \|^2  \\ 
+        &amp;\le f( x  ) - \frac{1}{2 \beta}  \| \nabla f(x ) \|^2  \\ 
+\end{aligned}
+\]</span></p>
+<p>Finally, substituting <span class="math inline">\(y\)</span> with <span class="math inline">\(x^{t + 1}\)</span> and <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span>, it becomes <span class="math display">\[
+\begin{aligned}
+    f(x^{t + 1}) 
+        &amp;\le f(x^t) - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2 \\
+        &amp;\longleftrightarrow    \\
+    \Delta_{t + 1} 
+        &amp;\le \Delta_t - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2 
+\end{aligned}
+\]</span></p>
+<h4 id="alpha-convexity."><span class="math inline">\(\alpha\)</span> Convexity.</h4>
+<p>We might still have a problem, if when <span class="math inline">\(x^t\)</span> approaches <span class="math inline">\(x^*\)</span>, <span class="math inline">\(\| \nabla f(x^t) \|\)</span> decreases too fast. That where <span class="math inline">\(\alpha\)</span> convexity comes into play. We will show that <span class="math display">\[
+\| \nabla f(x^t) \|^2 \ge \Delta_t \cdot\frac{1}{2} \alpha
+\]</span></p>
+<ol type="1">
+<li><p>Proof 1. By <span class="math inline">\(\alpha\)</span> convexity, we have for all <span class="math inline">\(y \in \mathbb{R}^n\)</span>,<br />
+<span class="math display">\[
+f(y) \ge f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2
+\]</span> Taking minimum of both sides, <span class="math display">\[
+\min_{y \in \R^n} f(y) \ge \min_{y \in \R^n} \left( f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2\right)
+\]</span> The left hand side equals to <span class="math inline">\(f(x^*)\)</span> while the right hand side minimized to <span class="math inline">\(f(x) - \frac{1}{2 \alpha} \| \nabla f(x) \|^2\)</span> when <span class="math inline">\(y - x = -\frac{1}{\alpha} \nabla f(x)\)</span>.</p>
+<p>Substituting <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span>, we get <span class="math display">\[
+\| \nabla f(x^t) \|^2 \ge 2 \alpha \left( f(x^t) - f(x^*) \right) = 2\alpha \Delta_t
+\]</span></p></li>
+<li><p>Proof 2. By convexity, we have</p>
+<p><span class="math display">\[
+ \begin{aligned}
+     \nabla f(x)^T (x - x^*) 
+         &amp;\ge f(x) - f(x^*) 
+ \end{aligned}
+ \]</span></p>
+<p>Then by Taylor expansion and <span class="math inline">\(\alpha\)</span> convexity, <span class="math display">\[
+ \begin{aligned}
+     f(x) - f(x^*) 
+         &amp;\ge \nabla f(x^*)^T (x - x^*) +  \frac{1}{2} \alpha \| x - x^* \|^2\\
+         &amp;=\frac{1}{2} \alpha \| x - x^* \|^2
+ \end{aligned}
+ \]</span></p>
+<p>Concatenating the inequalities, we get <span class="math display">\[
+ \| \nabla f(x) \| \| x - x^* \| \ge \nabla f(x)^T (x - x^*) \ge f(x) - f(x^*) \ge \frac{1}{2} \alpha \| x - x^* \|^2
+ \]</span> where the first inequality is Cauchy-Schwartz inequality. Multiplying the inequalities we get</p>
+<p><span class="math display">\[
+ \| \nabla f(x) \|^2 \| x - x^* \|^2 \ge (f(x) - f(x^*)) \cdot\frac{1}{2} \alpha \| x - x^* \|^2
+ \]</span></p>
+<p>which implies that <span class="math display">\[
+ \| \nabla f(x) \|^2 \ge (f(x) - f(x^*)) \cdot\frac{1}{2} \alpha 
+ \]</span></p>
+<p>Replacing <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span> and <span class="math inline">\(f(x) - f(x^*)\)</span> with <span class="math inline">\(\Delta_t\)</span>, we have <span class="math display">\[
+ \| \nabla f(x^t) \|^2 \ge \Delta_t \cdot\frac{1}{2} \alpha 
+ \]</span></p></li>
+</ol>
+<p>In combination, we conclude that <span class="math display">\[
+\begin{aligned}
+    \Delta_{t + 1}
+        &amp;\le \Delta_t \left( 1- \frac{\alpha }{4 \beta} \right)
+\end{aligned}
+\]</span></p>
+<p>which finishes the proof.</p>
+<p><span class="math inline">\(\square\)</span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/05/Beta-Smoothness/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -363,127 +557,10 @@ f(y) \le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \| y - x \|^2
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/27/Primal-Dual-Algorithm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/27/Primal-Dual-Algorithm/" class="post-title-link" itemprop="url">Primal-Dual Algorithm</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-02-27 21:57:12" itemprop="dateCreated datePublished" datetime="2020-02-27T21:57:12+11:00">2020-02-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-02-28 11:36:47" itemprop="dateModified" datetime="2020-02-28T11:36:47+11:00">2020-02-28</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Primal: <span class="math display">\[
-\begin{aligned}
-    &amp;\min       &amp;c^T x \\
-    &amp;s.t.       &amp;Ax = b\\
-    &amp;           &amp;x \ge 0
-\end{aligned}
-\]</span></p>
-<p>We assume that <span class="math inline">\(b \ge 0\)</span>. Otherwise we can flip the <span class="math inline">\(i\)</span> constraints <span class="math inline">\(A^T_i x = b_i\)</span> by <span class="math inline">\(- A^T_i x = -b_i\)</span>, where <span class="math inline">\(A^T_i\)</span> is the <span class="math inline">\(i\)</span>-th column of matrix <span class="math inline">\(A^T\)</span>, i.e, the <span class="math inline">\(i\)</span>-th row of matrix <span class="math inline">\(A\)</span>.</p>
-<p>Dual: <span class="math display">\[
-\begin{aligned}
-    &amp;\max       &amp;y^T b \\
-    &amp;s.t.       &amp;y^TA \le c^T \\
-\end{aligned}
-\]</span></p>
-<p>Suppose that we have a feasible solution <span class="math inline">\(y\)</span> for the dual (if <span class="math inline">\(c \ge 0\)</span>, then <span class="math inline">\(y = 0\)</span> is a feasible solution). Weak duality states that <span class="math display">\[
-c^T x \ge y^T A x = y^T b
-\]</span></p>
-<p>Denote <span class="math inline">\(S = \{ i : i \in [n], y^T A_i &lt; c_i \}\)</span> (the set of constraints that have slacks for increments) and <span class="math inline">\(\bar S = [n] \setminus S\)</span> (the set of indexes of tight dual constraints), where <span class="math inline">\(A_i\)</span> is the <span class="math inline">\(i\)</span>-th columns of <span class="math inline">\(A\)</span>.</p>
-<p>By weak duality, if we can find an <span class="math inline">\(x\)</span> such that</p>
-<ol type="1">
-<li><span class="math inline">\(x_{S } = 0\)</span>, where <span class="math inline">\(x_{S} \doteq (x_i : i \in {S})\)</span>.</li>
-<li><span class="math inline">\(x_{\bar S} \ge 0\)</span> and <span class="math inline">\(A_{\bar S} x_{\bar S} = b\)</span>, where <span class="math inline">\(A_{\bar S}\)</span> is the sub-matrix of <span class="math inline">\(A\)</span> containing only columns in <span class="math inline">\({\bar S}\)</span>.</li>
-</ol>
-<p>then both <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span> are optimal. However, as <span class="math inline">\(y\)</span> is not necessarily optimal, we have the following relaxed optimization problem, which is called <em>restricted primal</em></p>
-<p>Relaxation: <span class="math display">\[
-\begin{aligned}
-    &amp;\min       &amp;1^T \bar x \\
-    &amp;s.t.       &amp;A_{\bar S} x_{\bar S} + \bar x = b \\
-    &amp;           &amp;x_{\bar S} \ge 0 \\
-    &amp;           &amp;\bar x \ge 0
-\end{aligned}
-\]</span></p>
-<p>Note that <span class="math inline">\(x_{\bar S} = 0\)</span> and <span class="math inline">\(\bar x = b\)</span> is a feasible solution as we assume that <span class="math inline">\(b \ge 0\)</span>. Therefore, <em>restricted primal</em> is feasible. Further, it is bounded below by <span class="math inline">\(1^{\bar S} 0 = 0\)</span>. Indeed, if it achieves optimal solution value <span class="math inline">\(0\)</span>, it holds that <span class="math inline">\(\bar x = 0\)</span> so that <span class="math inline">\(A_{\bar S} x_{\bar S} = b\)</span>.</p>
-<p>Associated with the <em>restricted primal</em> is the <em>restricted dual</em> <span class="math display">\[
-\begin{aligned}
-    &amp;\max       &amp; \bar y^T b \\
-    &amp;s.t.       &amp; \bar y^TA_{\bar S} \le 0 \\
-    &amp;           &amp; \bar y^T \le 1^T
-\end{aligned}
-\]</span></p>
-<p>By strong duality, it optimal solution <span class="math inline">\(\bar y^T b = 1^T \bar x\)</span>. If <span class="math inline">\(1^T \bar x= \bar y^T b &gt; 0\)</span>, then we can improve the dual solution <span class="math inline">\(y\)</span> by <span class="math display">\[
-y \leftarrow y + \epsilon \bar y
-\]</span></p>
-<p>for some <span class="math inline">\(\epsilon\)</span>. To determine its value, first observe that <span class="math display">\[
-(y + \epsilon \bar y)^{T} A_{\bar S} = y^T A_{\bar S} + \epsilon \bar y^T A_{\bar S} \le y^T A_{\bar S} = c_{\bar S}^T
-\]</span></p>
-<p>Hence it is left to guarantee that <span class="math display">\[
-(y + \epsilon \bar y)^T A_S = y^T A_S + \epsilon \bar y^T A_S \le  c_S
-\]</span></p>
-<p>By definition of <span class="math inline">\({S}\)</span>, we have <span class="math inline">\(y^T A_{S} &lt; c_{S}^T\)</span>. If that <span class="math inline">\(\bar y^T A_i \le 0\)</span> for <span class="math inline">\(\forall i \in {S}\)</span>, then <span class="math inline">\(\epsilon\)</span> can be arbitrary large and the dual is unbounded. Otherwise,</p>
-<p><span class="math display">\[
-\epsilon = \min_{i \in S, \bar y^T A_i &gt; 0} \frac{c_i - y^T A_i } { \bar y^T A_i }
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/48/">48</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -549,7 +626,7 @@ y \leftarrow y + \epsilon \bar y
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">141</span>
+          <span class="site-state-item-count">142</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
