@@ -146,6 +146,216 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/12/Priority-Sampling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/01/12/Priority-Sampling/" class="post-title-link" itemprop="url">Priority Sampling</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-01-12 14:32:57" itemprop="dateCreated datePublished" datetime="2020-01-12T14:32:57+11:00">2020-01-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-02-24 17:07:43" itemprop="dateModified" datetime="2021-02-24T17:07:43+11:00">2021-02-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose there are a set of <span class="math inline">\(n\)</span> items with nonnegative weights <span class="math inline">\(w_1, w_2, ..., w_n\)</span>. We want to maintain a subset of samples <span class="math inline">\(S \subset [n]\)</span> in order to answer queries like given arbitrary <span class="math inline">\(I \subset [n]\)</span> , what is <span class="math inline">\(\sum_{i \in I} w_i\)</span>?</p>
+<p>A trivial solution is to set <span class="math inline">\(S = [n]\)</span> and we can answer the query exactly. This is an overkill if our goal is to only answer the query approximately.</p>
+<p>Alternatively, we can sample each item <span class="math inline">\(i \in [n]\)</span> independently with probability <span class="math inline">\(p_i\)</span> (to be determined), and maintain a random variable <span class="math display">\[
+\begin{aligned}
+X_i = 
+    \begin{cases}
+        \frac{w_i}{p_i} &amp; i \text{ is chosen} \\
+        0               &amp;   \text{ else }
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p>Note that <span class="math display">\[
+\mathbb{E} \left[ X_i \right] = w_i
+\]</span></p>
+<p>And therefore, <span class="math display">\[
+\mathbb{E} \left[\sum_{i \in I} X_i \right] = \sum_{i \in I} \mathbb{E}[X_i] = \sum_{i \in I} w_i
+\]</span></p>
+<h1 id="threshold-sampling">Threshold Sampling</h1>
+<p>One possible implementation of this sampling scheme is called <em>threshold sampling</em>.</p>
+<p>First, a threshold <span class="math inline">\(T\)</span> is chosen. Then, for each item <span class="math inline">\(i \in [n]\)</span>, if <span class="math inline">\(w_i \ge T\)</span>, then the algorithm record a value <span class="math inline">\(X_i = w_i\)</span> deterministically. Otherwise, the algorithm record a value <span class="math inline">\(X_i = T\)</span> with probability <span class="math inline">\(\frac{w_i}{T}\)</span>. If <span class="math inline">\(X_i\)</span> is not recorded, it has default value <span class="math inline">\(0\)</span>. In both cases, <span class="math inline">\(\mathbb{E} [ X_i ] = w_i\)</span>.</p>
+<!-- $\forall i \in [n]$, $w_i$ is kept with probability with $p_i = \min \{ 1 , \frac{w_i}{T} \}$. In particular, for each $i \in [n]$, we sample a uniform random variable $u_i \in [0, 1]$, and set  -->
+<p>Mathematically, the two cases can be combined into one. Let <span class="math inline">\(u_i\)</span> be a random number generated between <span class="math inline">\((0, 1)\)</span>. Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+X_i = 
+    \begin{cases}
+        \max \{ w_i, T \} &amp; u_i &lt; \frac{w_i}{T} \\
+        0               &amp;   \text{ else }
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p>Observe that if <span class="math inline">\(w_i \ge T\)</span>, then <span class="math inline">\(w_i / T \ge 1\)</span> and <span class="math inline">\(X_i \equiv \max \{ w_i, T \} = w_i\)</span>. The expectation of <span class="math inline">\(X_i\)</span> is given algebraically by <span class="math display">\[
+\begin{aligned}
+    \mathbb{E} [ X_i ] = \max \{ w_i, T \} \cdot \Pr \left[ u_i \le \frac{w_i}{T} \right] = \max \{ w_i, T \} \cdot \min \{ 1, w_i / T \} = w_i.
+\end{aligned}
+\]</span></p>
+<p>It follows by linearity of expectation that <span class="math display">\[
+    \mathbb{E} \left[ \sum_{i \in I} X_i \right] = \sum_{i \in I} w_i.
+\]</span></p>
+<h2 id="space-usage">Space Usage</h2>
+<p>Denote <span class="math inline">\(S\)</span> the set of items with <span class="math inline">\(X_i \neq 0\)</span> and let <span class="math inline">\(p_i\)</span> be the probability of <span class="math inline">\(i\)</span> being sampled. Then the expected size of <span class="math inline">\(S\)</span> is given by <span class="math display">\[
+\sum_{i = 1}^n p_i = \sum_{i = 1}^n \min \left\{ 1 , \frac{w_i}{T} \right\}
+\]</span></p>
+<p>The problem with threshold sampling is that it is hard to control the memory usage of the sample set <span class="math inline">\(S\)</span>. If the <span class="math inline">\(n\)</span> items are known offline, and we would like <span class="math inline">\(|S| \approx k\)</span> for some integer <span class="math inline">\(k \le n\)</span>, then we can search for some <span class="math inline">\(T\)</span> such that <span class="math display">\[
+\sum_{i = 1}^n p_i = k
+\]</span></p>
+<p>Then <span class="math inline">\(|S| = k\)</span> in expectation.</p>
+<p>The question is, is it possible to force <span class="math inline">\(|S|= k\)</span> exactly? Further, what if the items come online (one by one)?</p>
+<h1 id="priority-sampling">Priority Sampling</h1>
+<p><em>Priority sampling</em> achieves this. First recall that in <em>threshold sampling</em> we decide whether to keep <span class="math inline">\(i\)</span> by checking whether a uniform sampled real number <span class="math inline">\(u_i\)</span> is less than <span class="math inline">\(\frac{w_i}{T}\)</span>: <span class="math display">\[
+u_i &lt; \frac{w_i}{T}
+\]</span></p>
+<p>This is equivalent to <span class="math display">\[
+T &lt; \frac{w_i}{u_i}
+\]</span></p>
+<p>Define the <em>priority</em> of an item <span class="math inline">\(i \in [n]\)</span> as <span class="math inline">\(q_i = \frac{w_i}{u_i}\)</span>. Note that <span class="math inline">\(q_i\)</span> is a random variable. In <em>threshold sampling</em>, item <span class="math inline">\(i\)</span> is kept with weight <span class="math inline">\(\max \{ w_i, T \}\)</span> if <span class="math display">\[
+T &lt; q_i
+\]</span></p>
+<p>Now, instead of using a fixed value of <span class="math inline">\(T\)</span>, the <em>Priority sampling</em> sets <span class="math display">\[
+T = (k + 1) \text{-th largest } \{ q_i \}
+\]</span></p>
+<p>By the definition of <span class="math inline">\(T\)</span>, only the <span class="math inline">\(k\)</span> items with largest priorities <span class="math inline">\(q_i\)</span>'s are kept in the sample set <span class="math inline">\(S\)</span>: <span class="math display">\[
+S = \{ k \text{ items with largest } q_i \text{ &#39;s } \}
+\]</span></p>
+<p>It can be seen that <span class="math inline">\(S\)</span> and <span class="math inline">\(T\)</span> can be easily maintained by a binary heap when the items come in stream fashion.</p>
+<p>The challenge is not to analyze the behaviors of the r.v.'s: <span class="math display">\[
+\begin{aligned}
+X_i = 
+    \begin{cases}
+        \max \{ w_i, T \} &amp; T &lt; \frac{w_i}{u_i} \equiv u_i &lt; \frac{w_i}{T} \\
+        0               &amp;   \text{ else }
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p>since now <span class="math inline">\(T\)</span> is itself a random variable.</p>
+<h2 id="theorem">Theorem</h2>
+<p><span class="math display">\[
+    \mathbb{E}[X_i] = w_i.
+\]</span></p>
+<p><em>Proof.</em> There is an elegant proof based on conditional expectation. For <span class="math inline">\(i \in [n]\)</span>, define the random variable <span class="math inline">\(T_i\)</span> as the <span class="math inline">\(k\)</span>-th largest priority of elements other than <span class="math inline">\(i\)</span>. If <span class="math inline">\(i\)</span>-th is sampled, then <span class="math inline">\(q_i \ge T_i\)</span> and <span class="math inline">\(T_i\)</span> becomes the <span class="math inline">\(k+1\)</span>-th largest priority. Therefore, <span class="math display">\[
+    \mathbb{E}_{X_i} [ X_i \mid T_i ] = \max \{ X_i, T_i \} \cdot \min \{1, w_i / T_i \} = w_i. 
+\]</span></p>
+<p>Finally, <span class="math inline">\(\mathbb{E}_{X_i} [X_i ] = \mathbb{E}_{T_i} [ \mathbb{E}_{X_i} [ X_i \mid T_i] ] = w_i\)</span>.</p>
+<!-- The trick is to condition $X_i$ on the $k$-th and $k+1$-th largest priority of the rest items. Define the random variables 
+$$
+L = (k + 1) \text{-th largest } \{ q_j \}_{j \neq i} \\
+U = (k) \text{-th largest } \{ q_j \}_{j \neq i}
+$$
+
+Consider the case $L = a$ and $U = b$, where $a \le b$. There two possible cases
+
+1. If $w_i > b$, then $T = b$ and surely $\frac{w_i}{u_i} > T$ holds. In this case  $X_i = w_i$ and 
+    $$
+        \mathbb{E}[X_i | U = b] = w_i
+    $$
+
+2. If $w_i < b$, then there are four sub-cases:
+   * $\frac{w_i}{u_i} \le a$, then $T = b$ and $i$ is not selected into $S$. Therefore $X_i = 0$.   
+  
+   * $a < \frac{w_i}{u_i} < b$, now $\frac{w_i}{u_i}$ becomes the $k+1$-th largest priority of all items and $T = \frac{w_i}{u_i}$. In this case $i$ is not selected into $S$, and $X_i = 0$ (since $\frac{w_i}{u_i} < T$ does not hold). 
+  
+   * $\frac{w_i}{u_i} = b$, then there is a tie and $T = b$ in this case. Depending on how the tie is broken, either $i$ is put into $S$ or not. But in both cases, $X_i = 0$ since $\frac{w_i}{u_i} < T$ does not hold. 
+  
+   * $\frac{w_i}{u_i} > b$, then $T = b$ and $i$ is put into $S$. As $w_i < T$, we have $X_i = T = b$. 
+
+    Therefore, 
+    $$
+        \mathbb{E}[X_i | U = b] = b \cdot \Pr\left[ \frac{w_i}{u_i} > b \mid w_i < b \wedge U = b \right] = b \cdot \frac{w_i}{b} = w_i
+    $$
+
+In conclusion, 
+$$
+\mathbb{E}[X_i] = \mathbb{E}[\mathbb{E}[X_i | U]]  = w_i
+$$ -->
+<h2 id="theorem-1">Theorem</h2>
+<p>For <span class="math inline">\(I \subset [n]\)</span>, <span class="math display">\[
+\begin{aligned}
+    \mathbb{E}\left[ \prod_{i \in I} X_i \right] =
+    \begin{cases}
+         \prod_{i \in I} w_i     &amp; \text{ if } |I| \le k \\
+         0                      &amp; else 
+    \end{cases}
+\end{aligned}
+\]</span></p>
+<p><em>Proof:</em> Clearly, when <span class="math inline">\(|I| &gt; k\)</span>, then <span class="math inline">\(\exists i \in I\)</span>, such that <span class="math inline">\(q_i\)</span> is not one of the <span class="math inline">\(k\)</span> largest priorities. Hence <span class="math inline">\(\prod_{i \in I} X_i = 0\)</span> for sure.</p>
+<p>If <span class="math inline">\(|I| \le k\)</span>, define <span class="math inline">\(T_I\)</span> to be the <span class="math inline">\(k - |I| + 1\)</span>-th largest priority of elements in <span class="math inline">\([n] \setminus I\)</span>. Observe that <span class="math inline">\(\prod_{i \in I} X_i \neq 0\)</span>, if only the priorities of all <span class="math inline">\(i \in I\)</span> are among the <span class="math inline">\(k\)</span> largest ones. In such case, <span class="math inline">\(T_I\)</span> becomes the <span class="math inline">\(k+1\)</span>-th largest priority. Therefore, <span class="math display">\[
+    \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] = \prod_{i \in I} \mathbb{E} [ X_i \mid T_I ] = \prod_{i \in I} w_i, 
+\]</span></p>
+<p>and <span class="math inline">\(\mathbb{E}[ \prod_{i \in I} X_i ] = \mathbb{E} [ \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] ] = \prod_{i \in I} w_i\)</span>.</p>
+<!-- If $|I| \le k$, we show the claims holds by induction. The base case of $|I| = 1$ reduces to *Theorem 1*. Suppose that the claim hold for $|I| \le t < k$, we show it holds for $|I| = t + 1$. 
+
+Similarly to *Theorem 1*, define $U$ to be the $k + 1 - |I|$-th largest priority in $[n] \setminus I$. Conditioning on $U = b$, then we can divide $I$ into two sets: $I_1 = \{ i \in I :   w_i > b\}$ and $I_2 = I \setminus I_1$.  For $i \in I_1$, we have $X_i = w_i$ by definition. Now consider $I_2$. Let $j = \arg \min_{i \in I_2} q_i$. 
+If $q_j \le b$, then it holds that $b \ge T \ge q_j$ and $X_j = 0$. In this case it does not contribute to $\prod_{i \in I} X_i$. Hence
+$$
+\begin{aligned}
+\mathbb{E} \left[ \prod_{i \in I} X_i \mid U = b \right] 
+    &= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \Pr \left[ \frac{w_i}{u_i} > b \right] ) \\
+    &= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \frac{w_i}{b} ) \\
+    &= \prod_{i \in I} w_i
+\end{aligned}
+$$ -->
+<h3 id="reference">Reference</h3>
+<ol type="1">
+<li>Nick Duffield, Carsten Lund, and Mikkel Thorup. Priority sampling for estimation fo arbitrary subset sums. Journal of ACM, 2007</li>
+<li>Chandra Chekuri, Lecture note, CS 598: Algorithms for Big Data</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/02/Newton-s-Method/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -474,116 +684,6 @@ f_t[v] - \hat f_{B_t} [v] &lt; \frac{t}{k}.
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/12/13/Polyhydra-and-Polytope/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/12/13/Polyhydra-and-Polytope/" class="post-title-link" itemprop="url">Polyhydra and Polytopes</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-12-13 23:54:11" itemprop="dateCreated datePublished" datetime="2019-12-13T23:54:11+11:00">2019-12-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-15 22:37:11" itemprop="dateModified" datetime="2019-12-15T22:37:11+11:00">2019-12-15</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>When studying linear program, it necessary that we understand the structure of the feasible region. We investigate here some critical ideas of characterizing the feasible region.</p>
-<ol type="1">
-<li><em>Polyhedron</em>: <span class="math inline">\(P\)</span> is a polyhedron in <span class="math inline">\(R^n\)</span> if it is the intersection of a set of linear constraints: <span class="math inline">\(P = \{ x: Ax \le b \}\)</span> for some <span class="math inline">\(A \in R^{m \times n}, b \in R^n\)</span>. A polyhedron is a convex set.</li>
-<li><em>Polytope</em>: <span class="math inline">\(P\)</span> is a polytope if it consists of points that are convex combination of finite number of points <span class="math inline">\(v_1, v_2, ..., v_k\)</span>, i.e., <span class="math inline">\(P = \{ x: x = \sum_{i = 1}^k \mu_i v_i , \ s.t., \ \sum_{i =1}^k \mu_i = 1 \wedge \mu_i \in [0, 1] \quad \forall i \in [k] \}\)</span>.</li>
-</ol>
-<p>Of interest are the vertices, or extreme points or basic feasible solution of a polyhedron <span class="math inline">\(P\)</span>:</p>
-<ol type="1">
-<li><em>Vertex</em>: <span class="math inline">\(v \in P\)</span> is called a vertex if <span class="math inline">\(\exists c \in R^n\)</span>, s.t., <span class="math inline">\(c^T v &gt; c^T x\)</span> <span class="math inline">\(\forall x \neq v \wedge x\in R\)</span>.</li>
-<li><em>Extreme Point</em>: <span class="math inline">\(v \in R\)</span> is an extreme point of <span class="math inline">\(P\)</span> if <span class="math inline">\(\nexists x, y \neq v, x, y \in P\)</span>, s.t., <span class="math inline">\(v = \mu_1 x + \mu_2 y\)</span>, <span class="math inline">\(\mu_1, \mu_2 \in [0, 1]\)</span> and <span class="math inline">\(\mu_1 + \mu_2 = 1\)</span>.</li>
-<li><em>Basic Feasible Solution:</em> <span class="math inline">\(v \in P\)</span> is a basic feasible solution of <span class="math inline">\(P = \{ x: Ax \le b \}\)</span>, if the number of tight constraints <span class="math inline">\(A v \le b\)</span> equals to <span class="math inline">\(n\)</span>. In particular, denote <span class="math inline">\(A_{i, :}\)</span> the <span class="math inline">\(i\)</span>-th row of matrix <span class="math inline">\(A\)</span> and <span class="math inline">\(b_i\)</span> the <span class="math inline">\(i\)</span>-th element of <span class="math inline">\(b\)</span>. The constraint <span class="math inline">\(A_{i, :} v \le b_i\)</span> is called tight if equality holds. For convenience of discussion, denote <span class="math inline">\(A_{=} x = b_{=}\)</span> the set of tight constraints and <span class="math inline">\(A_{&lt;} x &lt; b_{&lt;}\)</span> the set of non-tight constraints.</li>
-</ol>
-<p>It turns out that the three definitions are equivalent. Here is the proof.</p>
-<p><em>Proof:</em></p>
-<p><span class="math inline">\(1 \rightarrow 2:\)</span> <span class="math inline">\(c^T(\mu_1 x + \mu_2 y) = \mu_1 c^T x + \mu_2 c^T y &lt; \mu_1 c^T v + \mu_2 c^T v = c^T v\)</span>, it concludes that <span class="math inline">\(\mu_1 x + \mu_2 y \neq v\)</span>.</p>
-<p><span class="math inline">\(2 \rightarrow 3:\)</span> suppose that <span class="math inline">\(rank(A_{=}) \neq n\)</span>. There <span class="math inline">\(\exists y \in R^n, y \neq 0\)</span>, and <span class="math inline">\(A_{=} y = 0\)</span>. For inequality constraints, we can find small enough <span class="math inline">\(\epsilon\)</span>, such that <span class="math inline">\(A_{&lt; } (x \pm \epsilon y) &lt; b\)</span>. Hence <span class="math inline">\(x \pm \epsilon y \in P\)</span>. But <span class="math inline">\(\frac{1}{2} (x + \epsilon y) + \frac{1}{2} (x - \epsilon y) = x\)</span>, a contradiction.</p>
-<p><span class="math inline">\(3 \rightarrow 1:\)</span> just define <span class="math inline">\(c^T = \sum_{i = 1}^m A_{i, :}\)</span>. If <span class="math inline">\(x \in P\)</span>, then <span class="math inline">\(\sum_{i = 1}^m A_{i, :} x \le \sum_{i = 1}^m b_i = \sum_{i = 1}^m A_{i, :} v\)</span>. As <span class="math inline">\(A_{=}\)</span> has rank <span class="math inline">\(n\)</span>, when equality holds, it implies <span class="math inline">\(x = y\)</span>.</p>
-<p>The relationship between polyhedron and polytope is stated as follows:</p>
-<p><em>Theorem:</em> if a polyhedron <span class="math inline">\(P\)</span> is bounded, that is, <span class="math inline">\(\exists M &gt; 0\)</span>, <span class="math inline">\(\forall x \in P\)</span>, we have <span class="math inline">\(x^T x &lt; M\)</span>, then <span class="math inline">\(P\)</span> is a polytope.</p>
-<p><em>Proof:</em> It suffice to show that every <span class="math inline">\(x \in P\)</span> is a convex combination of vertices of <span class="math inline">\(P\)</span>. The proof is by induction on the rank of <span class="math inline">\(A_{=}\)</span>, given <span class="math inline">\(x \in A\)</span>.</p>
-<ol type="1">
-<li>If <span class="math inline">\(rank(A_{=}) = n\)</span>, then by definition <span class="math inline">\(x\)</span> is a vertex.</li>
-<li>Suppose the claim holds for all ranks <span class="math inline">\(\ge k + 1\)</span> for some <span class="math inline">\(k &lt; n\)</span>. We show it carries to <span class="math inline">\(x \in P\)</span> with <span class="math inline">\(rank(A_{=}) = k\)</span>.
-<ul>
-<li>As <span class="math inline">\(k &lt; n\)</span>, <span class="math inline">\(\exists y \in R^n, y \neq 0\)</span>, such that <span class="math inline">\(A_{=} y = 0\)</span>.</li>
-<li>We extend <span class="math inline">\(x\)</span> from the directions of <span class="math inline">\(y\)</span> and <span class="math inline">\(-y\)</span> as much as possible. We find the largest <span class="math inline">\(\lambda_+ \in R, \lambda_+ &gt; 0\)</span>, such that <span class="math inline">\(x + \lambda_+ y \in P\)</span>. Since <span class="math inline">\(A_{=} (x + \lambda_+ y) = b_{=}\)</span>, these constraints will never be violated. Hence some constraints <span class="math inline">\(A_{&lt; } x &lt; b_{&lt;}\)</span> becomes tight for <span class="math inline">\(A_{&lt;} (x + \lambda_+ y)\)</span>. Which implies that the rank of <span class="math inline">\(x + \lambda_+ y\)</span> is at least <span class="math inline">\(k + 1\)</span> and thus can be expressed a convex combination of vertices. Similarly, we can find some <span class="math inline">\(x - \lambda_- y\)</span> that is a convex combination of vertices.</li>
-<li><span class="math inline">\(x\)</span> can now be express a convex combination of <span class="math inline">\(x + \lambda_+ y\)</span> and <span class="math inline">\(x - \lambda_- y\)</span>, therefore a convex combination of vertices.</li>
-</ul></li>
-</ol>
-<p>The reverse is also true:</p>
-<p><em>Theorem:</em> Let <span class="math inline">\(P\)</span> be a polytope, then <span class="math inline">\(P\)</span> is a bounded polyhedron.</p>
-<p>To prove this, we need an intermediate definition--<em>polar set</em>. It means something on the opposite direction.</p>
-<p><em>Definition:</em> Given a set <span class="math inline">\(P\)</span>, its polar set is defined as <span class="math inline">\(\bar P = \{ y \in R^n, y^T x \le 1, \forall x \in P\}\)</span>.</p>
-<p><em>Lemma</em>: If <span class="math inline">\(P\)</span> is closed, convex and <span class="math inline">\(0\)</span> is the interior point of <span class="math inline">\(P\)</span>, then <span class="math inline">\(\overline{\bar P} = P\)</span>, that is the polar set of the polar set of <span class="math inline">\(P\)</span> is <span class="math inline">\(P\)</span> itself.</p>
-<p><em>Proof of the Lemma</em>:</p>
-<ol type="1">
-<li><span class="math inline">\(P \subset \overline{\bar P}\)</span>. If <span class="math inline">\(x \in P\)</span>, then by definition of <span class="math inline">\(\bar P\)</span>, <span class="math inline">\(\forall y \in \overline{\bar P}\)</span>, we have <span class="math inline">\(y^T x \le 1\)</span>, then <span class="math inline">\(x \in P^{oo}\)</span>.</li>
-<li><span class="math inline">\((R^n - P) \cap \overline{\bar P} = \emptyset\)</span>, i.e., <span class="math inline">\(\forall x \notin P\)</span>, we have <span class="math inline">\(v \notin \overline{\bar P}\)</span>. Since <span class="math inline">\(P\)</span> is convex and closed, <span class="math inline">\(\exists y \in R^n\)</span>, such that <span class="math inline">\(y^T v &gt; k\)</span> and <span class="math inline">\(y^T x &lt; k\)</span> for all <span class="math inline">\(x \in P\)</span>. The fact that <span class="math inline">\(0 \in P\)</span> implies <span class="math inline">\(k &gt; 0\)</span>. Replace <span class="math inline">\(y\)</span> with <span class="math inline">\(\bar y = y / k\)</span>, we have <span class="math inline">\(\bar y^T x &lt; 1\)</span> for all <span class="math inline">\(x \in P\)</span>. Hence <span class="math inline">\(\bar y \in \bar P\)</span>. But now <span class="math inline">\(\bar y^T v &gt; 1\)</span>. By definition, <span class="math inline">\(v\)</span> does not belong to the polar set of <span class="math inline">\(\bar P\)</span>.</li>
-</ol>
-<p><em>Proof of the Theorem:</em> We assume that <span class="math inline">\(P\)</span> contains the point <span class="math inline">\(0\)</span>. Otherwise, we perform a translation <span class="math inline">\(R^n \rightarrow R^n: f(x) = x + t, \forall x \in R^n\)</span>, such that <span class="math inline">\(0 \in f(P)\)</span>. If we can show <span class="math inline">\(f(P)\)</span> is a polyhedron, then <span class="math inline">\(f(P) = \{f(x) : A f(x) \le b \}\)</span>, then we have <span class="math inline">\(P = \{ x : Ax \le b - At \}\)</span>.</p>
-<p>Back to our proof. As <span class="math inline">\(P\)</span> is a polytope, then it can be written as <span class="math inline">\(P = \{ x: x = \sum_{i = 1}^k \mu_i v_i , \ s.t., \ \sum_{i =1}^k \mu_i = 1 \wedge \mu_i \in [0, 1] \quad \forall i \in [k] \}\)</span>. A point <span class="math inline">\(y\)</span> belongs to the polar set of <span class="math inline">\(P\)</span> if and only if <span class="math inline">\(y^T v_i \le 1, \forall i \in [k]\)</span>. Therefore, <span class="math inline">\(\bar P = \{y : y^T v_i \le 1, \forall i \in [k] \}\)</span>, which is a polyhedron.</p>
-<p>Next, we show that <span class="math inline">\(\bar P\)</span> is bounded. This results from the assumption that <span class="math inline">\(0\)</span> is an interior point of <span class="math inline">\(P\)</span>. Therefore, <span class="math inline">\(\exists \epsilon &gt; 0\)</span>, such that <span class="math inline">\(x \in P, \forall x \in R^n, |x|_2 &lt; \epsilon\)</span>. For any <span class="math inline">\(y \in \bar P\)</span>, with proper scaling, we have <span class="math inline">\(\frac{\epsilon}{|y|_2} y \in P\)</span>. Which further implies that <span class="math inline">\(y^T \frac{\epsilon}{|y|} y = \epsilon |y|_2 \le 1\)</span>, and <span class="math inline">\(|y|_2 \le \frac{1}{\epsilon}\)</span>.</p>
-<p>Now, <span class="math inline">\(\bar P\)</span> is a bounded polyhedron, hence a polytope. By previous lemma, <span class="math inline">\(P = \overline{\bar P}\)</span>, hence a polyhedron.</p>
-<h3 id="reference">Reference</h3>
-<ol type="1">
-<li><a target="_blank" rel="noopener" href="https://people.orie.cornell.edu/dpw/orie6300/Lectures/lec03.pdf">David P. Williamson, ORIE 6300, Lecture 03, Polyhedra and polytopes.</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -653,7 +753,7 @@ f_t[v] - \hat f_{B_t} [v] &lt; \frac{t}{k}.
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">142</span>
+          <span class="site-state-item-count">143</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
