@@ -146,6 +146,205 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/31/Sparse-Recovery/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/31/Sparse-Recovery/" class="post-title-link" itemprop="url">Sparse Recovery</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-31 09:45:57" itemprop="dateCreated datePublished" datetime="2021-03-31T09:45:57+11:00">2021-03-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-08 23:55:01" itemprop="dateModified" datetime="2021-04-08T23:55:01+10:00">2021-04-08</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="model">Model</h1>
+<p>The focus of this article is recovering a sparse vector <span class="math inline">\(x \in \mathbb{R}^n\)</span> in the streaming setting. Initially, <span class="math inline">\(x = 0\)</span>. Then we see a sequence of updates <span class="math inline">\((i, \Delta)\)</span> each causing the change <span class="math inline">\(x_i \leftarrow x_i + \Delta\)</span>. There are three popular studied models</p>
+<ol type="1">
+<li><strong>insertion only:</strong> <span class="math inline">\(\Delta = 1\)</span> for each update.<br />
+</li>
+<li><strong>strict turnstile:</strong> <span class="math inline">\(\Delta\)</span> can be negative, but it is guaranteed that <span class="math inline">\(x \ge 0\)</span> all the time.<br />
+</li>
+<li><strong>general turnstile:</strong> <span class="math inline">\(\Delta\)</span> can be negative, and entries of <span class="math inline">\(x\)</span> can be negative.</li>
+</ol>
+<p>Let <span class="math inline">\(\text{supp}(x) \subset [n]\)</span> be the set of nonzero indices of <span class="math inline">\(x\)</span>. The vector <span class="math inline">\(x\)</span> is called <span class="math inline">\(k\)</span> sparse if <span class="math inline">\(\text{supp}(x) \le k\)</span>.</p>
+<blockquote>
+<p><strong>Goal.</strong> Given an integer <span class="math inline">\(k\)</span>, design a data structure such that, if <span class="math inline">\(x\)</span> is <span class="math inline">\(k\)</span> sparse, the structure returns <span class="math inline">\(x\)</span> exactly; otherwise, the return can be arbitrary.</p>
+</blockquote>
+<p>As we can't actually store real numbers, we use the following assumption:</p>
+<blockquote>
+<p>The updates are integers and the entries of <span class="math inline">\(x\)</span> are bounded by <span class="math inline">\(\pm M\)</span>.</p>
+</blockquote>
+<p>With this restriction, it suffices to solve this problem in a finite field <span class="math inline">\(\mathbb{F}_p\)</span> where <span class="math inline">\(p \ge \max \{ n, M \}\)</span>. As opposed to the naive solution that keeps all entries of <span class="math inline">\(x\)</span> and uses <span class="math inline">\(O(n \log M)\)</span> bits of memory, we show that the memory can be reduced to <span class="math inline">\(O( k \log (nM) )\)</span> bits.</p>
+<h1 id="algorithm">Algorithm</h1>
+<p>The problem is easy to solve in the insertion only model. We can use a hash set that keeps the first <span class="math inline">\(k\)</span> occurrence of the indices. If the we detect the <span class="math inline">\(k + 1\)</span> new index, we can just report error.</p>
+<p>The scenario is a little more complicated for the other two models. E.g., let <span class="math inline">\(n = 4\)</span> and <span class="math inline">\(k = 1\)</span>. Consider the following stream <span class="math display">\[
+    (1, 1), (2, 1), (3, -1), (4, 1), (1, -1), (2, -1), (3, 1). 
+\]</span></p>
+<p>The vector <span class="math inline">\(x\)</span> is finally <span class="math inline">\(1\)</span>-sparse and the only non-zero index is revealed at the end of the stream.</p>
+<h2 id="solution-1">Solution 1</h2>
+<h3 id="encode">Encode</h3>
+<p>In the first approach, we use a matrix <span class="math inline">\(H \in \mathbb{F}_p^{m \times n}\)</span> (<span class="math inline">\(m\)</span> to be determined) and encode <span class="math inline">\(x\)</span> as <span class="math inline">\(\mathbb{Enc}(x) = H x\)</span>. If the following property holds, we are guaranteed to recover <span class="math inline">\(x\)</span> if it is <span class="math inline">\(k\)</span> sparse.</p>
+<blockquote>
+<p>For every <span class="math inline">\(k\)</span> sparse <span class="math inline">\(x, x&#39; \in \mathbb{F}_p^n\)</span>, if <span class="math inline">\(x \neq x&#39;\)</span>, then <span class="math inline">\(Hx \neq H x&#39;\)</span>.</p>
+</blockquote>
+<p>If <span class="math inline">\(H x \neq Hx&#39;\)</span>, then <span class="math inline">\(H (x - x&#39;) \neq 0\)</span>. Observe that <span class="math inline">\(x - x&#39;\)</span> is a <span class="math inline">\(2k\)</span> sparse vector. This is equivalent to that <span class="math inline">\(H z \neq 0\)</span> for every nonzero <span class="math inline">\(2k\)</span> sparse vector <span class="math inline">\(z \in \mathbb{F}_p^n\)</span>.</p>
+<p>Such <span class="math inline">\(H\)</span> does exists, with <span class="math inline">\(m = 2k\)</span>. Let <span class="math inline">\(a_1, a_2, ..., a_n \in \mathbb{F}_p\)</span> be different integers. Then <span class="math inline">\(H\)</span> is given as <span class="math display">\[
+    H = \begin{bmatrix}
+        1   &amp;1  &amp;...    &amp;1  &amp;...    &amp;1 \\
+        a_1 &amp;a_2    &amp;...    &amp;a_i    &amp;...    &amp;a_n    \\
+        a_1^2   &amp;a_2^2  &amp;...    &amp;a_i^2  &amp;...    &amp;a_n^2  \\
+        ...\\
+        a_1^{2k - 1}    &amp;a_2^{2k - 1}   &amp;...    &amp;a_i^{2k - 1}   &amp;...    &amp;a_n^{2k - 1}
+    \end{bmatrix}
+\]</span></p>
+<p>Let <span class="math inline">\(S = \text{supp}(z) \subset [n]\)</span> be a set of size <span class="math inline">\(2k\)</span>. Denote <span class="math inline">\(z_S\)</span> be the vector by keeping only the nonzero dimensions of <span class="math inline">\(z\)</span> and <span class="math inline">\(H_S\)</span> be an <span class="math inline">\(2k \times 2k\)</span> matrix by keeping only columns indexed by <span class="math inline">\(S\)</span>. Then <span class="math inline">\(H z = H_S z_S\)</span>. We show that the rows of <span class="math inline">\(H_S\)</span> are linearly independently, hence its columns. It follows that if <span class="math inline">\(z_S \neq 0 \Longrightarrow H_S z_S \neq 0\)</span>.</p>
+<p>It is left to show that <span class="math inline">\(\forall c \in \mathbb{F}_p^{2k}\)</span>, <span class="math inline">\(c \neq 0 \rightarrow H_S^T c \neq 0\)</span>. Define the polynomial in <span class="math inline">\(\mathbb{F}_p\)</span> <span class="math display">\[
+    f(x) = c_{2k} x^{2k - 1} + c_{2k - 1} x^{2k - 1} + ... + c_1. 
+\]</span></p>
+<p>Then <span class="math inline">\(H_S^T c = ( f(a_i ) )_{i \in [S] }\)</span>. As <span class="math inline">\(f(x)\)</span> has at most <span class="math inline">\(2k - 1\)</span> distinct roots, and the <span class="math inline">\((a_i)_{i \in [S] }\)</span> are different, there exists some <span class="math inline">\(i \in [S]\)</span> such that <span class="math inline">\(f(a_i) \neq 0\)</span>.</p>
+<h3 id="decode">Decode</h3>
+<p>Given <span class="math inline">\(y = \mathbb{Enc}(x) = H x\)</span>, how can we recover <span class="math inline">\(x\)</span>? We can loop over every subset <span class="math inline">\(S \subset [n ]\)</span> of size <span class="math inline">\(2k\)</span> and compute <span class="math inline">\(x&#39; = H_S^{-1} y\)</span>. If <span class="math inline">\(x&#39;\)</span> is <span class="math inline">\(k\)</span> sparse, by the property of <span class="math inline">\(H\)</span>, it is the unique <span class="math inline">\(k\)</span>-sparse vector such that <span class="math inline">\(H_S x&#39; = y\)</span>.</p>
+<p><strong>Remark:</strong> The proposed method is exponential respect to <span class="math inline">\(k\)</span>. However, there is an algorithm (called <em>syndrome decoding</em>) to perform the recovery in <span class="math inline">\(O(k^2 poly(\log p))\)</span> time.</p>
+<h4 id="space-and-time">Space and Time</h4>
+<blockquote>
+<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(k \log (nM))\)</span> bits.</p>
+</blockquote>
+<p>This is because we don't store <span class="math inline">\(H\)</span>. For the finite field <span class="math inline">\(\mathbb{F}_p\)</span>, there exists at least one primitive element whose powers give all nonzero elements. We can pick such a primitive element <span class="math inline">\(a\)</span>, and set <span class="math inline">\(a_1 = a\)</span>, <span class="math inline">\(a_2 = a^2\)</span>, ..., <span class="math inline">\(a_n = a^n\)</span>. Storing <span class="math inline">\(y = Hx\)</span> requires only <span class="math inline">\(O(k \log (nM))\)</span> bits.</p>
+<blockquote>
+<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> in the stream takes <span class="math inline">\(O(k)\)</span> time.</p>
+</blockquote>
+<h2 id="solution-2">Solution 2</h2>
+<p>We first show how to recover an <span class="math inline">\(1\)</span> sparse vector when negative updates are allowed, then use it as a black box to recover <span class="math inline">\(k\)</span> sparse vector.</p>
+<h3 id="sparse-recovery">1 sparse recovery</h3>
+<p>We show an algorithm that successes with probability <span class="math inline">\(n / p\)</span>.</p>
+<p>First, we pick a non-zero integer <span class="math inline">\(z\)</span> uniformly at random from <span class="math inline">\(\mathbb{F}_p\)</span>. Let <span class="math display">\[
+    H = \begin{bmatrix}
+        1   &amp;1  &amp;1  &amp;...    &amp;1  \\
+        1   &amp;2  &amp;3  &amp;...    &amp;n  \\
+        z   &amp;z^2    &amp;z^3    &amp;...    &amp;z^n
+    \end{bmatrix}.
+\]</span></p>
+<p>The algorithm consists of 3 parts.</p>
+<blockquote>
+<p><strong>Initialize:</strong><br />
+<span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow \{ 0 \}^3\)</span><br />
+<span class="math inline">\(\qquad\)</span> Sample <span class="math inline">\(z\)</span> uniformly from <span class="math inline">\(1, ..., p - 1\)</span>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Updates</strong>: <span class="math inline">\((i, \Delta)\)</span><br />
+<span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow w + \Delta \cdot H_i\)</span>, where <span class="math inline">\(H_i\)</span> is the <span class="math inline">\(i\)</span>th column of <span class="math inline">\(H\)</span>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Output:</strong><br />
+<span class="math inline">\(\qquad\)</span> If <span class="math inline">\(w_1 = 0\)</span> or <span class="math inline">\(w_3 \neq w_1 \cdot z^{w_2 / w_1}\)</span>:<br />
+<span class="math inline">\(\qquad\qquad\)</span> <strong>Return</strong> <span class="math inline">\(x\)</span> is not <span class="math inline">\(1\)</span> sparse;<br />
+<span class="math inline">\(\qquad\)</span> Else:<br />
+<span class="math inline">\(\qquad\qquad\)</span> <strong>Return</strong> <span class="math inline">\(j \doteq w_2 / w_1\)</span></p>
+</blockquote>
+<h4 id="failure-analysis">Failure Analysis</h4>
+<blockquote>
+<p><strong>Theorem.</strong> The algorithm fails with probability <span class="math inline">\(n / p\)</span>.</p>
+</blockquote>
+<p>Observe that <span class="math display">\[
+    w_1 = \sum_{i \in [n] } x_i, \qquad
+    w_2 = \sum_{i \in [n] } i \cdot x_i, \qquad
+    w_3 = \sum_{i \in [n] } z^i \cdot x_i.
+\]</span></p>
+<p>If <span class="math inline">\(w_1 = 0\)</span>, either <span class="math inline">\(x = 0\)</span> or there is cancellation. Conditioned on <span class="math inline">\(w_1 \neq 0\)</span>, if <span class="math inline">\(x\)</span> is <span class="math inline">\(1\)</span> sparse, then <span class="math display">\[
+    w_1 = x_j, \qquad w_2 = j \cdot x_j, \qquad w_3 = z^j \cdot x_j. 
+\]</span></p>
+<p>Hence, <span class="math inline">\(j = w_2 / w_1\)</span> is exactly the non-zero index, and <span class="math inline">\(w_3 = w_1 \cdot z^{j}\)</span>.</p>
+<p>If <span class="math inline">\(x\)</span> is not <span class="math inline">\(1\)</span> sparse, then <span class="math display">\[
+    w_3 - w_1 \cdot z^{j} 
+\]</span> is a polynomial of degree at most <span class="math inline">\(n\)</span>. It has at most <span class="math inline">\(n\)</span> distinct roots with one of them being <span class="math inline">\(0\)</span>. The probability that <span class="math inline">\(z\)</span> being a root is at most <span class="math inline">\((n - 1) / (p - 1) \le n / p\)</span>.</p>
+<h4 id="space-and-time-1">Space and Time</h4>
+<blockquote>
+<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(\log (nM))\)</span> bits.</p>
+</blockquote>
+<blockquote>
+<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> takes <span class="math inline">\(O(1)\)</span> time.</p>
+</blockquote>
+<h3 id="k-sparse-recovery"><span class="math inline">\(k\)</span> sparse recovery</h3>
+<p>To apply the <span class="math inline">\(1\)</span> sparse recovery data structure, we partition <span class="math inline">\(x\)</span> into <span class="math inline">\(2k\)</span> subsets randomly. In particular, we use a pairwise hash function that maps each <span class="math inline">\(i \in [n]\)</span> to <span class="math inline">\([2k]\)</span> uniformly at random. For <span class="math inline">\(\ell \in [2k]\)</span>, let <span class="math inline">\(S_\ell\)</span> be the set of indices mapped to <span class="math inline">\(\ell\)</span>: <span class="math display">\[
+    S_\ell \doteq \{ i \in [n]: h(i) = \ell \}. 
+\]</span></p>
+<p>Then we run <span class="math inline">\(1\)</span> sparse recovery on each partition. If some partition contains only one nonzero index, then we recover it successfully.</p>
+<blockquote>
+<p><strong>Theorem.</strong> If <span class="math inline">\(x\)</span> is <span class="math inline">\(k\)</span> sparse, an nonzero dimension <span class="math inline">\(i\)</span> is recovered with probability <span class="math inline">\(1 / 2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> It suffices to prove that <span class="math inline">\(i\)</span> is the only nonzero index in <span class="math inline">\(S_{h (i) }\)</span>. For <span class="math inline">\(j \in \text{supp}(x)\)</span>, define the indicator variable <span class="math inline">\(X_j\)</span> which equals <span class="math inline">\(1\)</span> if <span class="math inline">\(h(j) = h(i)\)</span> and equals 0 otherwise. By Markov's inequality and linearity of expectation, <span class="math display">\[
+    \Pr\left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \ge 1 \right] \le \mathbb{E} \left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \right] = \sum_{ i \neq j \in \text{supp}(x) } \mathbb{E} \left[  X_j \right] \le \frac{k - 1}{2k} \le \frac{1}{2}.  
+\]</span></p>
+<p><strong>Remark.</strong> The Markov's inequality is rather tight here. Even if we have a fully independent hash function <span class="math inline">\(h\)</span>, the probability that none of the nonzero indices collides with <span class="math inline">\(i\)</span> is given by <span class="math display">\[
+    \left( 1 - \frac{1}{2k} \right)^{k - 1} \lessapprox \exp \left( - \frac{k - 1}{2k} \right) \approx \exp \left( - \frac{1}{2} \right) \approx 0.60653. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Corollary.</strong> Running <span class="math inline">\(\log (k / \delta)\)</span> independent copies of the above structure reduce the failure probability to <span class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<h4 id="space-and-time-2">Space and Time</h4>
+<blockquote>
+<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(k (\log (k / \delta)) \log (nM))\)</span> bits.</p>
+</blockquote>
+<blockquote>
+<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> takes <span class="math inline">\(O(\log (k / \delta))\)</span> time.</p>
+</blockquote>
+<h1 id="reference">Reference</h1>
+<p>[1]. Jelani Nelson, Chapter 4, <a target="_blank" rel="noopener" href="https://www.sketchingbigdata.org/fall20/lec/notes.pdf">Sketching Algorithms</a>, 2020.</p>
+<p>[2]. Moses Charikar, <a target="_blank" rel="noopener" href="http://web.stanford.edu/class/cs369g/files/lectures/lec11.pdf"><span class="math inline">\(\ell_{0}\)</span> Sampling and Sketching Distances</a>, CS369G: Algorithmic Techniques for Big Data, 2016</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/27/Hanson-Wright-Inequality/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -612,208 +811,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/24/Fast-Fourier-Transform-In-Finite-Field/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/24/Fast-Fourier-Transform-In-Finite-Field/" class="post-title-link" itemprop="url">Fast Fourier Transform In Finite Field</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-03-24 14:21:14 / Modified: 15:30:52" itemprop="dateCreated datePublished" datetime="2021-03-24T14:21:14+11:00">2021-03-24</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>We discuss the fast Fourier transform in a finite field <span class="math inline">\(\mathbb{F}\)</span> with size <span class="math inline">\(p\)</span>.</p>
-<blockquote>
-<p>For <span class="math inline">\(w \in \mathbb{F}\)</span>, and <span class="math inline">\(n \in \mathbb{F}_+\)</span>, define <span class="math display">\[
-M_{w, n} \doteq 
-\begin{bmatrix}
-1   &amp;w  &amp;w^2    &amp;...    &amp;w^{n - 1}  \\
-1   &amp;w^2    &amp;w^4    &amp;...    &amp;w^{2(n - 1)}   \\
-... \\
-1   &amp;w^{n}  &amp;w^{2n} &amp;...    &amp;w^{n(n - 1)}
-\end{bmatrix}.
-\]</span></p>
-<p>If the following two conditions hold:<br />
-1. <span class="math inline">\(n\)</span> is some power of <span class="math inline">\(2\)</span> and; 2. <span class="math inline">\(w^n = 1\)</span> in the finite field.</p>
-<p>Then <span class="math inline">\(\forall \vec x \doteq (x_1, x_2, ..., x_n) \in \mathbb{F}^n\)</span>, we can compute <span class="math display">\[
-M_{w, n} \vec x 
-= 
-\begin{bmatrix}
-1   &amp;w  &amp;w^2    &amp;...    &amp;w^{n - 1}  \\
-1   &amp;w^2    &amp;w^4    &amp;...    &amp;w^{2(n - 1)}   \\
-... \\
-1   &amp;w^{n}  &amp;w^{2n} &amp;...    &amp;w^{n(n - 1)}
-\end{bmatrix} 
-\begin{bmatrix}
-x_1 \\
-x_2 \\
-... \\
-x_n
-\end{bmatrix}
-\]</span> in <span class="math inline">\(O(n \log n)\)</span> time.</p>
-</blockquote>
-<p><strong>Proof.</strong> If <span class="math inline">\(n = 2\)</span>, then the claim holds trivially.</p>
-<p>Otherwise, let <span class="math inline">\(d = n / 2 = 2^{k - 1}\)</span> and <span class="math inline">\(v = w^2\)</span>. The odd columns of the first <span class="math inline">\(d\)</span> rows of the matrix <span class="math inline">\(M_{w, n}\)</span> constitutes <span class="math display">\[
-    \begin{bmatrix}
-            1   &amp;w^2  &amp;w^4    &amp;...    &amp;w^{n - 2}  \\
-            1   &amp;w^4    &amp;w^8    &amp;...    &amp;w^{2(n - 2)}   \\
-                &amp;       &amp;       &amp;... \\
-            1   &amp;w^{2d}  &amp;w^{4d} &amp;...    &amp;w^{d(n - 2)}
-    \end{bmatrix} 
-    =
-    \begin{bmatrix}
-            1   &amp;v  &amp;v^2    &amp;...    &amp;v^{d - 1}  \\
-            1   &amp;v^2    &amp;v^4    &amp;...    &amp;v^{2(d - 1)}   \\
-                &amp;       &amp;       &amp;... \\
-            1   &amp;v^{d}  &amp;v^{2d} &amp;...    &amp;v^{d(d - 1)}
-    \end{bmatrix} 
-    = 
-    M_{v, d}. 
-\]</span></p>
-<p>By assumption, for even numbers <span class="math inline">\(i = 2, 4, ..., (n - 2)\)</span>, we have <span class="math inline">\(i \cdot d = 1\)</span> in the finite field. Hence, the odd columns of the last <span class="math inline">\(d\)</span> rows of <span class="math inline">\(M_{w, n}\)</span> is <span class="math display">\[
-    \begin{bmatrix}
-            1   &amp;w^{2(d + 1)}   &amp;w^{4(d + 1)}    &amp;...    &amp;w^{(n - 2)(d + 1)}  \\
-            1   &amp;w^{2(d + 2)}   &amp;w^{4(d + 2)}    &amp;...    &amp;w^{(n - 2)(d + 2)}   \\
-                &amp;       &amp;       &amp;... \\
-            1   &amp;w^{2(d + d)}   &amp;w^{4(d + d)}   &amp;...    &amp;w^{(n - 2)(d + d)}
-    \end{bmatrix} 
-    =
-    \begin{bmatrix}
-            1   &amp;w^2  &amp;w^4    &amp;...    &amp;w^{n - 2}  \\
-            1   &amp;w^4    &amp;w^8    &amp;...    &amp;w^{2(n - 2)}   \\
-                &amp;       &amp;       &amp;... \\
-            1   &amp;w^{2d}  &amp;w^{4d} &amp;...    &amp;w^{d(n - 2)}
-    \end{bmatrix}  
-    = 
-    M_{v, d}. 
-\]</span></p>
-<p>Let <span class="math inline">\(\vec x_o, \vec x_e \in \mathbb{F}^d\)</span> be the vectors obtained by the odd and even dimensions of <span class="math inline">\(\vec x\)</span> respectively. By our construction,</p>
-<blockquote>
-<ol type="1">
-<li><span class="math inline">\(d\)</span> is some power of <span class="math inline">\(2\)</span> and;<br />
-</li>
-<li><span class="math inline">\(v^d = w^n = 1\)</span>.</li>
-</ol>
-</blockquote>
-<p>Hence, by induction hypothesis we can compute <span class="math inline">\(M_{v, d} \vec x_o\)</span> in <span class="math inline">\(O(d \log d) = O( n \log n)\)</span> time.</p>
-<p>Next, consider the even columns of the first <span class="math inline">\(d\)</span> rows of the matrix <span class="math inline">\(M_{w, n}\)</span> constitutes <span class="math display">\[
-\begin{aligned}
-    \begin{bmatrix}
-            w   &amp;w^3  &amp;w^5    &amp;...    &amp;w^{n - 1}  \\
-            w^2   &amp;w^6    &amp;w^{10}    &amp;...    &amp;w^{2(n - 1)}   \\
-                &amp;       &amp;       &amp;... \\
-            w^d   &amp;w^{3d}  &amp;w^{5d} &amp;...    &amp;w^{d(n - 1)}
-    \end{bmatrix} 
-    &amp;=
-    \begin{bmatrix}
-        w   &amp;...    &amp;               \\
-            &amp;w^2    &amp;...            \\
-            &amp;       &amp;   &amp;...        \\
-            &amp;       &amp;   &amp;   &amp; w^d   \\
-    \end{bmatrix}
-    \begin{bmatrix}
-            1   &amp;w^2  &amp;w^4    &amp;...    &amp;w^{n - 2}  \\
-            1   &amp;w^4    &amp;w^8    &amp;...    &amp;w^{2(n - 2)}   \\
-                &amp;       &amp;       &amp;... \\
-            1   &amp;w^{2d}  &amp;w^{4d} &amp;...    &amp;w^{d(n - 2)}
-    \end{bmatrix} 
-    \\
-    &amp;= 
-    \begin{bmatrix}
-        w   &amp;...    &amp;               \\
-            &amp;w^2    &amp;...            \\
-            &amp;       &amp;   &amp;...        \\
-            &amp;       &amp;   &amp;   &amp; w^d   \\
-    \end{bmatrix}
-    M_{v, d} 
-\end{aligned}
-\]</span></p>
-<p>Similarly, the even columns of the last <span class="math inline">\(d\)</span> rows of the matrix <span class="math inline">\(M_{w, n}\)</span> constitutes <span class="math display">\[
-\begin{aligned}
-    \begin{bmatrix}
-        w^{d + 1}   &amp;...    &amp;               \\
-            &amp;w^{d + 2}    &amp;...            \\
-            &amp;       &amp;   &amp;...        \\
-            &amp;       &amp;   &amp;   &amp; w^{d + d}   \\
-    \end{bmatrix}
-    M_{v, d} 
-    =
-    (-1)
-    \begin{bmatrix}
-        w   &amp;...    &amp;               \\
-            &amp;w^2    &amp;...            \\
-            &amp;       &amp;   &amp;...        \\
-            &amp;       &amp;   &amp;   &amp; w^d   \\
-    \end{bmatrix}
-    M_{v, d}.
-\end{aligned}
-\]</span></p>
-<p>The equality comes from that <span class="math inline">\(w^d = w^{n / 2} = -1\)</span>. By induction hypothesis, we can compute <span class="math inline">\(M_{v, d} \vec x_e\)</span> in <span class="math inline">\(O(n \log n)\)</span> time.</p>
-<p>Finally, the first <span class="math inline">\(d\)</span> dimensions of <span class="math inline">\(M_{w, n} \vec x\)</span> equals <span class="math display">\[
-    M_{v, d} \vec x_o +     \begin{bmatrix}
-        w   &amp;...    &amp;               \\
-            &amp;w^2    &amp;...            \\
-            &amp;       &amp;   &amp;...        \\
-            &amp;       &amp;   &amp;   &amp; w^d   \\
-    \end{bmatrix} M_{v, d} \vec x_e, 
-\]</span> which can be computed in <span class="math inline">\(O(n \log n) + O(n \log n) + O(n) = O(n \log n)\)</span> time.</p>
-<p>The last <span class="math inline">\(d\)</span> dimensions of <span class="math inline">\(M_{w, n} \vec x\)</span> equals <span class="math display">\[
-    M_{v, d} \vec x_o -     \begin{bmatrix}
-        w   &amp;...    &amp;               \\
-            &amp;w^2    &amp;...            \\
-            &amp;       &amp;   &amp;...        \\
-            &amp;       &amp;   &amp;   &amp; w^d   \\
-    \end{bmatrix} M_{v, d} \vec x_e, 
-\]</span> which can also be computed in <span class="math inline">\(O(n \log n) + O(n \log n) + O(n) = O(n \log n)\)</span> time.</p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -883,7 +880,7 @@ x_n
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">143</span>
+          <span class="site-state-item-count">144</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
