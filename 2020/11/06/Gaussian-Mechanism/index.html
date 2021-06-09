@@ -20,25 +20,17 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Gaussian Distribution We illustrate how Gaussian distribution (a.k.a. normal distribution) is constructed and some of its basic properties. Suppose we would like to have a distribution in \(\mathbb{">
+  <meta name="description" content="Background Let \((\mathcal{X}, d)\) be a metric space, and \(f\) be a function \(\mathcal{X} \rightarrow \mathbb{R}^n\). A Gaussian mechanism adds Gaussian noise to the output of \(f\), such that for">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Gaussian Mechanism">
 <meta property="og:url" content="http://example.com/2020/11/06/Gaussian-Mechanism/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Gaussian Distribution We illustrate how Gaussian distribution (a.k.a. normal distribution) is constructed and some of its basic properties. Suppose we would like to have a distribution in \(\mathbb{">
+<meta property="og:description" content="Background Let \((\mathcal{X}, d)\) be a metric space, and \(f\) be a function \(\mathcal{X} \rightarrow \mathbb{R}^n\). A Gaussian mechanism adds Gaussian noise to the output of \(f\), such that for">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration1.png?raw=true">
-<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution.png?raw=true">
-<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-3D-0.png?raw=true">
-<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-3D-1.png?raw=true">
-<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration2.png?raw=true">
-<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Concentration.png?raw=true">
-<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration3.png?raw=true">
 <meta property="article:published_time" content="2020-11-06T12:00:19.000Z">
-<meta property="article:modified_time" content="2021-06-03T14:14:31.943Z">
+<meta property="article:modified_time" content="2021-06-09T10:59:47.491Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration1.png?raw=true">
 
 <link rel="canonical" href="http://example.com/2020/11/06/Gaussian-Mechanism/">
 
@@ -189,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-04 00:14:31" itemprop="dateModified" datetime="2021-06-04T00:14:31+10:00">2021-06-04</time>
+                <time title="Modified: 2021-06-09 20:59:47" itemprop="dateModified" datetime="2021-06-09T20:59:47+10:00">2021-06-09</time>
               </span>
 
           
@@ -203,237 +195,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="gaussian-distribution">Gaussian Distribution</h2>
-<p>We illustrate how Gaussian distribution (a.k.a. normal distribution) is constructed and some of its basic properties.</p>
-<p>Suppose we would like to have a distribution in <span class="math inline">\(\mathbb{R}\)</span>, such that</p>
-<ol type="1">
-<li>It is centered at the origin.<br />
-</li>
-<li>Its density function decreases exponentially with respect to the square distance to the origin.</li>
-</ol>
-<p><em>Remark: if we replace 2 with "a density function decreases exponentially with the distance to the origin", we obtain Laplace distribution.</em></p>
-<p>By definition, the density function <span class="math inline">\(p(x)\)</span> should be inversely and exponentially proportional to <span class="math inline">\(x^2\)</span>:</p>
-<p><span class="math display">\[
-    p(x) \propto \exp(-x^2 )
-\]</span></p>
-<p>If we define <span class="math inline">\(M\)</span> to be the value of<br />
-<span class="math display">\[
-    M \doteq \int_{-\infty}^\infty \exp(-x^2) \ dx, 
-\]</span></p>
-<p>then we can give the precise formula of <span class="math inline">\(p(x)\)</span>: <span class="math display">\[
-    p(x)  = \frac{1}{M} \exp(- x^2)
-\]</span></p>
-<p>It is easy to see that <span class="math inline">\(p(x)\)</span> is a density function such that <span class="math inline">\(\int_{-\infty}^\infty p(x) \ dx = 1\)</span>.</p>
-<h3 id="closed-form">Closed Form</h3>
-<p>In general, it is not hard to construct a distribution. Let <span class="math inline">\(h(x)\)</span> be any integrable function on a domain <span class="math inline">\(\mathcal{D}\)</span> such that <span class="math display">\[
-    M = \int_\mathcal{D} h(x) \ dx &lt; \infty
-\]</span></p>
-<p>Then we can view <span class="math inline">\(h(x)\)</span> as almost an density function of some distribution. The only obstacle is that <span class="math inline">\(M\)</span> might not be <span class="math inline">\(1\)</span>. However this is easy to overcome. We just scale the value of <span class="math inline">\(h(x)\)</span> by a constant factor at each point on <span class="math inline">\(\mathbb{R}\)</span> and set <span class="math display">\[
-    p(x) = \frac{1}{M} h(x)
-\]</span></p>
-<p>then we have immediately a density function. We don't even need to know the exact value of <span class="math inline">\(M\)</span>. What we need to guarantee is just that</p>
-<blockquote>
-<p>The value of <span class="math inline">\(M\)</span> exists and is finite.</p>
-</blockquote>
-<p>And we can safely use <span class="math inline">\(M\)</span> to denote this value. For example, we know that <span class="math display">\[
-    \int_0^\infty x^{0.2} e^{-x} \ dx \le  \int_0^1 e^{-x} \ dx  + \int_1^\infty x e^{-x} \ dx &lt; \infty.
-\]</span></p>
-<p>We can construct a density function as above. It turns out that this is a special case of <em>Gamma distribution</em>.</p>
-<p>For Gaussian distribution, we are lucky as we can compute a closed form of <span class="math inline">\(M\)</span>. This is done by a trick of computing its square: <span class="math display">\[
-\begin{aligned}
-    M^2 &amp;= \big( \int_{-\infty}^\infty \exp( -x^2 ) \  dx \big)^2 \\
-        &amp;= \int_{-\infty}^\infty \exp( -x^2 ) \  dx \ \cdot \int_{-\infty}^\infty \exp( -y^2 ) \  dy \\
-        &amp;= \int_{-\infty}^\infty \int_{-\infty}^\infty \exp( -(x + y) ^2 ) \  dx  dy. 
-\end{aligned}
-\]</span></p>
-<p>Denote <span class="math inline">\(r = \sqrt{ x^2 + y^2}\)</span> the distance of <span class="math inline">\((x, y)\)</span> to <span class="math inline">\((0, 0)\)</span>. We are integrating the function <span class="math inline">\(\exp( - r^2)\)</span> over the plane <span class="math inline">\(\mathbb{R}^2\)</span>. It is natural to switch to polar coordinate system <span class="math inline">\((r, \theta)\)</span>, where <span class="math inline">\(\theta\)</span> is the angle of a point. Here is an informal but intuitive explanation. As the picture demonstrated below, if <span class="math inline">\(r\)</span> increases by <span class="math inline">\(dr\)</span> and <span class="math inline">\(\theta\)</span> increases by <span class="math inline">\(d\theta\)</span>, the new area spanned by <span class="math inline">\(dr\)</span> and <span class="math inline">\(d \theta\)</span> is roughly <span class="math inline">\(r dr d \theta\)</span>. Or we can calculate it algebraically <span class="math display">\[
-\frac{1}{2} [(r + dr)^2 - r^2] d\theta = r dr d \theta + \frac{1}{2} (dr)^2 d \theta \approx r dr d \theta.
-\]</span></p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration1.png?raw=true" width="400" height="340" /></p>
-</div>
-<p>Therefore, <span class="math display">\[
-\begin{aligned}
-    M^2 &amp;= \int_{0}^{ 2 \pi} \int_{0}^\infty \exp( -r^2 ) r d r d \theta \\
-        &amp;= \int_{0}^{ 2 \pi} \frac{1}{2}  \int_{0}^\infty \exp( -r^2 ) d r^2 d \theta \\
-        &amp;= \int_{0}^{ 2 \pi} \frac{1}{2} d \theta \\
-        &amp;= \pi.
-\end{aligned}
-\]</span></p>
-<p>Hence, <span class="math display">\[
-p(x) = \frac{1}{ \sqrt \pi} \exp( - x^2 ).
-\]</span></p>
-<h3 id="basic-properties">Basic Properties</h3>
-<ol type="1">
-<li><blockquote>
-<p><em>Expectation.</em> As the distribution is symmetric to <span class="math inline">\(0\)</span>, it has expectation 0.</p>
-</blockquote></li>
-<li><blockquote>
-<p><em>Variance.</em> As its expectation is 0, the variance is given by</p>
-</blockquote>
-<span class="math display">\[
- \begin{aligned}
-     \int_{-\infty}^\infty  \frac{ x^2 }{ \sqrt \pi } \exp( -x^2 ) \ dx 
-         &amp;= -\frac{1}{2 \sqrt \pi } \int_{-\infty}^\infty x \ d \exp( -x^2 ) \\
-         &amp;= \frac{1}{2 \sqrt \pi } \int_{-\infty}^\infty \exp( -x^2 ) d x\\
-         &amp;= \frac{1}{2 \sqrt \pi } \sqrt \pi \\
-         &amp;= \frac{1}{2}
- \end{aligned}
- \]</span></li>
-</ol>
-<h3 id="general-gaussian-distribution">General Gaussian Distribution</h3>
-<p>We have proved that if <span class="math inline">\(X\)</span> is a random variable with density function <span class="math inline">\(p(x) = \frac{1}{\sqrt \pi} \exp( -x^2)\)</span>, then <span class="math display">\[
-\mathbb{Var}[X] = \frac{1}{2}
-\]</span></p>
-<p>Consider another random variable <span class="math inline">\(Y = \sqrt{2} X\)</span>. It has variance <span class="math display">\[
-\mathbb{Var}[X] = 2 \mathbb{Var}[X] = 1
-\]</span></p>
-<p>To obtain its density function of <span class="math inline">\(Y\)</span>, we first scale the function <span class="math inline">\(p(x)\)</span> horizontally by a factor of <span class="math inline">\(\sqrt 2\)</span> to get <span class="math display">\[
-\frac{1}{ \sqrt{ \pi } } \exp( -\frac{x^2}{2} ).
-\]</span></p>
-<p>Now the area under the curve is <span class="math inline">\(\sqrt 2\)</span>. We normalize this area to 1 and obtain <span class="math inline">\(Y\)</span>'s density function as <span class="math display">\[
-p(y) = \frac{1}{ \sqrt{2 \pi } } \exp( -\frac{y^2}{2} )
-\]</span></p>
-<p>From now on, we use <span class="math inline">\(N(0, 1)\)</span> to denote a Gaussian distribution with mean 0 and variance <span class="math inline">\(1\)</span>. We can also scale <span class="math inline">\(X\)</span> by a factor of <span class="math inline">\(\sqrt 2 \sigma\)</span> for any <span class="math inline">\(\sigma &gt; 0\)</span>, to get <span class="math inline">\(Y = \sqrt 2 \sigma X\)</span>. It have variance <span class="math inline">\(\sigma^2\)</span> and density function <span class="math display">\[
-p(y) = \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp( - (\frac{y}{ \sqrt{2} \sigma })^2 ) = \frac{1}{ \sqrt{2 \pi \sigma^2 } } \exp( -\frac{y^2}{ 2 \sigma^2 } )
-\]</span></p>
-<p>Finally, we can shift the center of <span class="math inline">\(0\)</span> to any real number <span class="math inline">\(\mu \in \mathbb{R}\)</span>, and obtain a density function <span class="math display">\[
-p(y) = \frac{1}{ \sqrt{ \pi\cdot 2  \sigma^2 } } \exp( -\frac{ (y - \mu)^2 }{ 2 \sigma^2 } )
-\]</span></p>
-<p>The corresponding distribution is denoted as <span class="math inline">\(N(\mu, \sigma^2)\)</span>.</p>
-<em>The picture below shows a few Gaussian distributions.</em>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution.png?raw=true" width="700" height="430" /></p>
-</div>
-<h3 id="further-properties">Further Properties</h3>
-<ol type="1">
-<li><blockquote>
-<p>If <span class="math inline">\(X \sim N(0, a^2)\)</span> and <span class="math inline">\(Y \sim N(0, b^2)\)</span>, then <span class="math inline">\(X + Y \sim N(0, a^2 + b^2)\)</span>.</p>
-</blockquote>
-<p>The demonstration here follows from [1]. The key observation is that the joint distribution of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is rotation invariant with the origin.</p>
-<p>As an example, we plot below the joint distribution of <span class="math inline">\(X, Y \sim N(0, 1)\)</span>.</p>
-<div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-3D-0.png?raw=true" width="500" height="330" />
-</div>
-<p>The figure below shows the same distribution. Observe again that the probability mass concentrates at a small region centered at origin.</p>
-<div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-3D-1.png?raw=true" width="500" height="330" />
-</div>
-<p>Therefore, for any <span class="math inline">\(t \in \mathbb{R}\)</span>, the set <span class="math display">\[
- \{ (x, y) \in \mathbb{R}^2 : ax + by \le t \}
- \]</span> has the same probability measure as the one <span class="math display">\[
- \{ (x, y) \in \mathbb{R}^2 : x \le \frac{ t}{ \sqrt{a^2 + b^2} } \}.
- \]</span></p>
-<p>Observe that the latter can be obtained by rotating the former with respect to the origin (see the figure below).</p>
-<div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration2.png?raw=true" width="800" height="350" />
-</div>
-<p>Now, the probability of the latter set is given by <span class="math display">\[
- \Pr[ X \le \frac{ t}{ \sqrt{a^2 + b^2} } ] = \Pr[  \sqrt{a^2 + b^2} X \le t]
- \]</span></p>
-<p>It concludes that <span class="math inline">\(X + Y\)</span> has the same distribution as <span class="math inline">\(\sqrt{a^2 + b^2} X \sim N(0, a^2 + b^2)\)</span>.</p>
-<p><em>Remark:if we want, we can verify this algebraically:</em><br />
-<span class="math display">\[
- \Pr[X + Y \le t] = \int_{-\infty}^{ \frac{ t}{ \sqrt{a^2 + b^2} }  } \frac{1}{ \sqrt{2 \pi} }\exp(-\frac{x^2}{2} ) \ dx 
- \]</span></p>
-<p>hence <span class="math display">\[
- \begin{aligned}
-     \frac{ \partial }{ \partial t} \Pr[X + Y \le t]
-         &amp;= \frac{ \partial }{ \partial t} \int_{-\infty}^{ \frac{ t}{ \sqrt{a^2 + b^2} }  } \frac{1}{ \sqrt{2 \pi} }\exp(-\frac{x^2}{2} ) \ dx \\
-         &amp;= \frac{1}{ \sqrt{2 \pi (a^2 + b^2) } }\exp(-\frac{x^2}{2 (a^2 + b^2) } )
- \end{aligned}
- \]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p></li>
-<li><blockquote>
-<p>If <span class="math inline">\(X \sim N(0, \sigma^2)\)</span>, then <span class="math inline">\(\forall t &gt; 0\)</span>, <span class="math display">\[
-\Pr[ |X| \ge t] \le \exp( -\frac{t^2}{ 2\sigma^2} )
-\]</span></p>
-</blockquote>
-<p><em>Remark: it is possible to get a tighter bound by using more advanced techniques.</em></p>
-<p>In previous figures, it seems Gaussian distributions have a shape bump around its mean. This is kind of mis-leading, because the x-axis and y-axis are scaled. In the figure below, we plot <span class="math inline">\(N(0, 1)\)</span>, with ratio between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> axes being approximate <span class="math inline">\(1:1\)</span>. We see only a small bump around its mean. Although the distribution span the entire range of <span class="math inline">\(\mathbb{R}\)</span>, the probability mass is centered tightly around the origin.</p>
-<div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Concentration.png?raw=true" width="800" height="550" />
-</div>
-<p><strong>Proof 1.</strong> For all <span class="math inline">\(\lambda \in \mathbb{R}\)</span>, <span class="math display">\[
-     \begin{aligned}
-         \mathbb{E}[ e^{\lambda X} ] 
-             &amp;= \frac{1}{\sqrt{2 \pi \sigma} }\int e^{\lambda x} e^{ - \frac{x^2}{2 \sigma^2 } } \ d x \\
-             &amp;= \frac{ e^{\lambda^2 \sigma^2 / 2} }{\sqrt{2 \pi \sigma} }\int e^{ - \frac{ (x - \lambda \sigma^2)^2}{2 \sigma^2 } } \ d x \\
-             &amp;= e^{\lambda^2 \sigma^2 / 2}.
-     \end{aligned}
- \]</span> By Markov's inequality, for all <span class="math inline">\(\lambda \ge 0\)</span>, we have <span class="math display">\[
-     \begin{aligned}
-         \Pr[ X \ge t] 
-             &amp;\le \frac{ \mathbb{E}[ e^{\lambda X} ]  }{ e^{\lambda t} } 
-             &amp;\le e^{\lambda^2 \sigma^2 / 2 - \lambda t}.
-     \end{aligned}
- \]</span> Setting <span class="math inline">\(\lambda = \frac{t}{\sigma^2}\)</span>, we get <span class="math display">\[
-     \Pr[ X \ge t ] \le e^{ - \frac{t^2}{2 \sigma^2} }.
- \]</span></p>
-<p><strong>Proof 2.</strong> Let <span class="math inline">\(T = \Pr[ |X| \ge t]\)</span>. Then <span class="math display">\[
-     T^2 = \int_{ |x| \ge t, |y| \ge t} \frac{1}{ 2 \pi \sigma^2 } \exp( - \frac{ x^2 + y^2}{2 \sigma^2} ) 
- \]</span></p>
-<p>As <span class="math display">\[
-     \{ (x, y) \in \mathbb{R}^2: |x| \ge t \wedge |y| \ge t \} \subset
-     \{ (x, y) \in \mathbb{R}^2: x^2 + y^2 \ge 2 t^2 \} 
- \]</span></p>
-<div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration3.png?raw=true" width="600" height="600" />
-</div>
-<p>It follows that <span class="math display">\[
- \begin{aligned}
-     T^2 
-         &amp;\le \int_{ \sqrt 2 t}^\infty \int_{0}^{2 \pi } \frac{1}{ 2 \pi \sigma^2 } \exp( - \frac{ r^2 }{2 \sigma^2} ) r \ d\theta dr\\
-         &amp;\le \int_{ \sqrt 2 t }^\infty \exp( - \frac{ r^2 }{2 \sigma^2} ) \ d \frac{r^2}{ 2\sigma^2} \\
-         &amp;\le \int_{ \frac{ t^2 }{  \sigma^2 } }^\infty \exp( - z ) \ d z \\
-         &amp;= \exp( -\frac{t^2}{ \sigma^2} )
- \end{aligned}
- \]</span></p>
-<p>Hence <span class="math inline">\(T \le \exp( -\frac{t^2}{ 2\sigma^2} )\)</span>.</p>
-<p><em>Remark: we briefly discuss the algebraic approach here.</em> <span class="math display">\[
- \begin{aligned}
-     \Pr[X &gt; t] = \int_{t}^\infty \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp( - \frac{ x^2 }{ 2 \sigma^2 } ) \ dx
- \end{aligned}
- \]</span></p>
-<p><em>When <span class="math inline">\(x \ge t\)</span>, <span class="math inline">\(\frac{x}{t} \ge 1\)</span>, therefore,</em> <span class="math display">\[
- \begin{aligned}
-     \Pr[X &gt; t] 
-         &amp;\le \int_{t}^\infty \frac{1}{ \sqrt{2 \pi \sigma^2} } \frac{x}{t} \exp( - \frac{ x^2 }{ 2  \sigma^2 } ) \ dx \\
-         &amp;\le  \frac{ \sigma }{ \sqrt{2 \pi }  t }  \int_{t}^\infty  \exp( - \frac{ x^2 }{ 2  \sigma^2 } ) \ d \frac{ x^2 }{ 2 \sigma^2 } \\
-         &amp;=  - \frac{ \sigma }{ \sqrt{2 \pi }  t }  \exp( - \frac{ x^2 }{ 2  \sigma^2 } ) \mid_{t}^\infty \\
-         &amp;=  \frac{ \sigma }{ \sqrt{2 \pi }  t }  \exp( - \frac{ t^2 }{ 2 \sigma^2 } )  \\
- \end{aligned}
- \]</span></p>
-<p><em>This bound is more useful only when we know that <span class="math inline">\(t \ge \frac{ \sigma }{ \sqrt{2 \pi } }\)</span></em>. <!-- ![](https://www.mathworks.com/help/examples/stats/win64/ComputeTheMultivariateNormalPdfExample_01.png) --></p>
-<p><span class="math inline">\(\blacksquare\)</span></p></li>
-</ol>
-<h2 id="gaussian-mechanism">Gaussian Mechanism</h2>
-<p>Our discussion in this section focus on a metric space <span class="math inline">\((\mathcal{X}, d)\)</span> and a function <span class="math inline">\(f: \mathcal{X} \rightarrow \mathbb{R}^n\)</span>. The Gaussian mechanism adds Gaussian noise to the output of <span class="math inline">\(f\)</span>, such that for any neighboring pairs <span class="math inline">\(x, y \in \mathcal{X}\)</span> with <span class="math inline">\(d(x, y) = 1\)</span>, it is hard to distinguish the outputs, i.e., their outputs have similar distribution after adding noises.</p>
+        <h1 id="background">Background</h1>
+<p>Let <span class="math inline">\((\mathcal{X}, d)\)</span> be a metric space, and <span class="math inline">\(f\)</span> be a function <span class="math inline">\(\mathcal{X} \rightarrow \mathbb{R}^n\)</span>. A Gaussian mechanism adds Gaussian noise to the output of <span class="math inline">\(f\)</span>, such that for all neighboring pairs <span class="math inline">\(x, y \in \mathcal{X}\)</span> with <span class="math inline">\(d(x, y) = 1\)</span>, it is hard to distinguish the outputs, i.e., their outputs distributions are similar.</p>
 <blockquote>
 <p><strong>Definition.</strong> The sensitivity <span class="math inline">\(\Delta\)</span> of <span class="math inline">\(f\)</span> is defined as <span class="math display">\[
-\Delta = \max_{x, y \in \mathcal{X}, d(x, y) = 1 } ||f(x) - f(y) ||
-\]</span> where <span class="math inline">\(|| \cdot ||\)</span> is the <span class="math inline">\(\ell_2\)</span>-norm of a vector in <span class="math inline">\(\mathbb{R}^n\)</span>.</p>
+\Delta = \max_{x, y \in \mathcal{X}, d(x, y) = 1 } \Vert f(x) - f(y) \Vert_2, 
+\]</span> where <span class="math inline">\(\Vert \cdot \Vert_2\)</span> is the <span class="math inline">\(\ell_2\)</span>-norm of a vector in <span class="math inline">\(\mathbb{R}^n\)</span>.</p>
 </blockquote>
 <blockquote>
-<p><strong>Definition.</strong> Given <span class="math inline">\(f\)</span>, and a variance parameter <span class="math inline">\(\sigma^2\)</span>, the Gaussian mechanism is a random variable defines as <span class="math display">\[
-g(x) = f(x) + X
+<p><strong>Definition.</strong> Given <span class="math inline">\(f\)</span> and a variance parameter <span class="math inline">\(\sigma^2\)</span>, the output of the Gaussian mechanism is a random variable defines as <span class="math display">\[
+g(x) = f(x) + X,
   \]</span> where <span class="math inline">\(X = (X_1, X_2, ..., X_n) \sim N(0, \sigma^2 I)\)</span>.</p>
 </blockquote>
-<p>We are ready to state the main theorem of this section.</p>
+<h1 id="privacy-guarantee">Privacy Guarantee</h1>
 <blockquote>
-<p><strong>Theorem.</strong> For <span class="math inline">\(\delta, \epsilon \in (0, 1)\)</span>, if <span class="math inline">\(\sigma = \frac{ \Delta \log \frac{1}{\delta} }{ \epsilon }\)</span>, then <span class="math inline">\(\forall x, y \in \mathcal{X}\)</span>, s.t., <span class="math inline">\(d(x, y) = 1\)</span>, and for all measurable subset <span class="math inline">\(S \subset \mathbb{R}^n\)</span>, it holds</p>
-<p><span class="math display">\[
+<p><strong>Theorem.</strong> For <span class="math inline">\(\delta, \epsilon \in (0, 1)\)</span>, if <span class="math inline">\(\sigma^2 = \frac{ \Delta^2 }{ \epsilon^2 } \Big( 2 \ln \frac{1}{\delta} + \epsilon \Big)\)</span>, then <span class="math inline">\(\forall x, y \in \mathcal{X}\)</span>, s.t., <span class="math inline">\(d(x, y) = 1\)</span>, and for all measurable subset <span class="math inline">\(S \subset \mathbb{R}^n\)</span>, it holds <span class="math display">\[
 \Pr[ g(x) \in S] \le e^\epsilon \cdot \Pr[ g(y) \in S] + \delta 
 \]</span></p>
 </blockquote>
-<p>It is obvious that if we set <span class="math inline">\(\sigma \rightarrow \infty\)</span>, then the Gaussian distribution tends to be a uniform one over <span class="math inline">\(\mathbb{R}^n\)</span>. So we are interested in how small <span class="math inline">\(\sigma\)</span> can be.</p>
-<p>We claim that <span class="math inline">\(\sigma = O(\frac{\Delta}{\epsilon } )\)</span> suffices. This is based on three observations: 1) Most of the probability mass of a Gaussian distribution concentrates on a ball centered at its mean with radius <span class="math inline">\(O(\sigma)\)</span>; 2) the density ratio of any two points within the ball is bounded by a constant; 3) the distance between the distribution center of <span class="math inline">\(g(x)\)</span> and <span class="math inline">\(g(y)\)</span> is bounded by <span class="math inline">\(\Delta\)</span>.</p>
-<p><strong><em>Proof.</em></strong> For convenience of discussion, we write <span class="math inline">\(g(y) = f(y) + Y\)</span> to distinguish it from <span class="math inline">\(g(x)\)</span>. By definition, <span class="math inline">\(g(x)\)</span> is a random variable that follows <span class="math inline">\(N(f(x), \sigma^2 I)\)</span>. Similarly, <span class="math inline">\(g(y) \sim N( f(y), \sigma^2 I)\)</span>.</p>
-<p>Further, we define <span class="math inline">\(p_x\)</span> and <span class="math inline">\(p_y\)</span> the density function of <span class="math inline">\(g(x)\)</span> and <span class="math inline">\(g(y)\)</span> respectively. The sketch of the proof is as follows: we partition <span class="math inline">\(\mathbb{R}^n\)</span> into two parts: <span class="math display">\[
-\mathcal{Y}_1 = \{ t \in \mathcal{R}^n : p_x(t) \le e^\epsilon \cdot p_y(t) \} \\
-\mathcal{Y}_2 = \{ t \in \mathcal{R}^n : p_x(t) &gt; e^\epsilon \cdot p_y(t) \}.
+<p>It is obvious that if we set <span class="math inline">\(\sigma \rightarrow \infty\)</span>, then the Gaussian distribution converge to a uniform one and it holds that <span class="math inline">\(\Pr[ g(x) \in S] = \Pr[ g(y) \in S]\)</span>. Therefore, we are interested in how small <span class="math inline">\(\sigma\)</span> can be.</p>
+<p>We claim that <span class="math inline">\(\sigma = O(\frac{\Delta}{\epsilon } )\)</span> suffices. This is based on three observations: 1. Most of the probability mass of a Gaussian distribution concentrates on a ball centered at its mean with radius <span class="math inline">\(O(\sigma)\)</span>. 2. The density ratio of any two points within the ball is bounded by a constant. 3. The distance between the distribution center of <span class="math inline">\(g(x)\)</span> and <span class="math inline">\(g(y)\)</span> is bounded by <span class="math inline">\(\Delta\)</span>.</p>
+<p><strong>Proof.</strong> To ease the notations, we write <span class="math inline">\(g(y) = f(y) + Y\)</span> to distinguish it from <span class="math inline">\(g(x)\)</span>. By definition, <span class="math display">\[g(x) \sim N(f(x), \sigma^2 I), \quad g(y) \sim N( f(y), \sigma^2 I).
 \]</span></p>
-<p>If <span class="math inline">\(\Pr[ g(x) \in \mathcal{Y}_2 ] \le \delta\)</span>, then <span class="math display">\[
+<p>Let <span class="math inline">\(p_x\)</span> and <span class="math inline">\(p_y\)</span> the density functions of <span class="math inline">\(g(x)\)</span> and <span class="math inline">\(g(y)\)</span> respectively. The sketch of the proof is as follows: we partition <span class="math inline">\(\mathbb{R}^n\)</span> into two parts: <span class="math display">\[
+    \mathcal{Y}_1 = \{ t \in \mathcal{R}^n : p_x(t) \le e^\epsilon \cdot p_y(t) \} \\
+    \mathcal{Y}_2 = \{ t \in \mathcal{R}^n : p_x(t) &gt; e^\epsilon \cdot p_y(t) \}.
+\]</span></p>
+<p>If <span class="math inline">\(\Pr[ g(x) \in \mathcal{Y}_2 ] \le \delta\)</span> <span class="math inline">\(\big(\)</span> here we measure the size of <span class="math inline">\(\mathcal{Y}_2\)</span> by the probability measure induced by <span class="math inline">\(g(x)\)</span> <span class="math inline">\(\big)\)</span>, then <span class="math display">\[
 \begin{aligned}
     \Pr[ g(x) \in S] 
         &amp;= \Pr[ g(x) \in S \cap \mathcal{Y}_1] + \Pr[ g(x) \in S \cap \mathcal{Y}_2] \\
@@ -442,59 +230,61 @@ g(x) = f(x) + X
         &amp;= \int_{S \cap \mathcal{Y}_1 } p_x(t) \ d t + \delta \\
         &amp;\le \int_{S \cap \mathcal{Y}_1 } e^\epsilon \cdot p_y(t) \ d t + \delta \\
         &amp;= e^\epsilon \cdot \Pr[ g(y) \in S \cap \mathcal{Y}_1] + \delta. \\
+        &amp;\le e^\epsilon \cdot \Pr[ g(y) \in S ] + \delta. \\
 \end{aligned}
 \]</span></p>
 <p>As <span class="math inline">\(p_y(t) &gt; 0\)</span> for all <span class="math inline">\(t \in \mathbb{R}^n\)</span>, we can rewrite <span class="math display">\[
-\mathcal{Y}_1 = \{ t \in \mathcal{R}^n : \ln \frac{p_x(t) }{ p_y(t) } \le \epsilon  \} \\
-\mathcal{Y}_2 = \{ t \in \mathcal{R}^n : \ln \frac{p_x(t) }{ p_y(t) } &gt; \epsilon  \}.
+    \mathcal{Y}_1 = \Big\{ t \in \mathcal{R}^n : \ln \frac{p_x(t) }{ p_y(t) } \le \epsilon \Big\} \\
+    \mathcal{Y}_2 = \Big\{ t \in \mathcal{R}^n : \ln \frac{p_x(t) }{ p_y(t) } &gt; \epsilon \Big\}.
 \]</span></p>
-<p>In literature, the ratio <span class="math inline">\(\ln \frac{p_x(t) }{ p_y(t) }\)</span> is know as <em>privacy loss</em>. Substituting <span class="math inline">\(p_x(t)\)</span> and <span class="math inline">\(p_y(t)\)</span> with their definitions, we get <span class="math display">\[
+<p>In literature, the ratio <span class="math inline">\(\ln \frac{p_x(t) }{ p_y(t) }\)</span> is know as <em>privacy loss</em>. Substituting <span class="math inline">\(p_x(t)\)</span> and <span class="math inline">\(p_y(t)\)</span> with their definitions, and letting <span class="math inline">\(t&#39; = t - f(x)\)</span> and <span class="math inline">\(v = f(x) - f(y)\)</span>, we get <span class="math display">\[
 \begin{aligned}
     \ln \frac{ p_x( t)  }{  p_y(t)} 
-        &amp;= \ln \frac{ \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp( -\frac{ ||t - f(x)||^2 }{ 2 \sigma^2 } ) }{ \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp( -\frac{ ||t - f(y) ||^2 }{ 2 \sigma^2 } )  } \\
-        &amp;=  -\frac{ || t - f(x) ||^2 - || t - f(x) + f(x) - f(y) ||^2 }{ 2 \sigma^2 } 
+        &amp;= \ln \frac{ \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp \Big( -\frac{ \Vert t - f(x)\Vert ^2 }{ 2 \sigma^2 } \Big) }{ \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp \Big( -\frac{ \Vert t - f(y) \Vert ^2 }{ 2 \sigma^2 } \Big)  } \\
+        &amp;=  -\frac{ \Vert t&#39; \Vert ^2 - \Vert  t&#39; + v \Vert ^2 }{ 2 \sigma^2 } \\
+        &amp;= \frac{ 2 v^T t&#39; + \Vert  v \Vert ^2 }{ 2 \sigma^2 }  . 
 \end{aligned}
 \]</span></p>
-<p>As <span class="math inline">\(t \sim N( f(x), \sigma^2 I)\)</span>, it holds that <span class="math inline">\(t - f(x) \sim N( 0, \sigma^2 I)\)</span>. Let <span class="math inline">\(t&#39; = t - f(x)\)</span> and <span class="math inline">\(v = f(x) - f(y)\)</span>, then <span class="math display">\[
+<p>If <span class="math inline">\(t \sim N( f(x), \sigma^2 I)\)</span>, it holds that <span class="math inline">\(t&#39; \sim N( 0, \sigma^2 I)\)</span>.</p>
+<!-- $$
 \begin{aligned}
     \ln \frac{ p_x( t)  }{  p_y(t)} 
-        &amp;=  -\frac{ || t&#39; ||^2 - || t&#39; + v ||^2 }{ 2 \sigma^2 }    \\
-        &amp;= \frac{ 2 v^T t&#39; + || v ||^2 }{ 2 \sigma^2 }    \\
+        &=  -\frac{ \Vert  t' \Vert ^2 - \Vert  t' + v \Vert ^2 }{ 2 \sigma^2 }    \\
+        &= \frac{ 2 v^T t' + \Vert  v \Vert ^2 }{ 2 \sigma^2 }    \\
 \end{aligned}
-\]</span></p>
-<p>But <span class="math inline">\(v^T t&#39; \sim N(0, || v ||^2 \sigma^2)\)</span>. Let <span class="math inline">\(Z \sim N(0, 1)\)</span>, then <span class="math inline">\(\ln \frac{ p_x( t) }{ p_y(t)}\)</span> has the same distribution as <span class="math display">\[
-\frac{ 2 ||v|| \sigma Z + ||v||^2 }{ 2 \sigma^2  } = \frac{ ||v||^2 }{ 2 \sigma^2  } + \frac{ ||v|| }{  \sigma  } Z \sim N(\frac{ ||v||^2 }{ 2 \sigma^2  },  \frac{ ||v||^2 }{  \sigma^2  } ).   \\
+$$ -->
+<p>Then <span class="math inline">\(v^T t&#39; \sim N(0, \Vert v \Vert ^2 \sigma^2)\)</span>. Let <span class="math inline">\(Z \sim N(0, 1)\)</span>, then <span class="math inline">\(\ln \frac{ p_x( t) }{ p_y(t)}\)</span> has the same distribution as <span class="math display">\[
+    \frac{ 2 \Vert v\Vert  \sigma Z + \Vert v\Vert ^2 }{ 2 \sigma^2  } = \frac{ \Vert v\Vert ^2 }{ 2 \sigma^2  } + \frac{ \Vert v\Vert  }{  \sigma  } Z \sim N \Big( \frac{ \Vert v\Vert ^2 }{ 2 \sigma^2  },  \frac{ \Vert v\Vert ^2 }{  \sigma^2  } \Big).   \\
 \]</span></p>
 <p>Now, <span class="math display">\[
-\frac{ ||v||^2 }{ 2 \sigma^2  } + \frac{ ||v|| }{  \sigma  } Z  \ge \epsilon \\
-\longleftrightarrow  Z  \ge \frac{  \sigma  }{ ||v|| } \epsilon - \frac{ ||v|| }{ 2 \sigma  }
+    \frac{ \Vert v\Vert ^2 }{ 2 \sigma^2  } + \frac{ \Vert v\Vert  }{  \sigma  } Z  \ge \epsilon \\
+    \longleftrightarrow  Z  \ge \frac{  \sigma  }{ \Vert v\Vert  } \epsilon - \frac{ \Vert v\Vert  }{ 2 \sigma  }
 \]</span></p>
-<p>As <span class="math inline">\(Z \sim N(0, 1)\)</span>, as shown in the previous section, <span class="math inline">\(\forall z \in \mathbb{R}\)</span>, <span class="math display">\[
-\Pr[ Z \ge z] \le \exp( -\frac{ z^2 }{2} )
+<p>As <span class="math inline">\(Z \sim N(0, 1)\)</span>, <span class="math inline">\(\forall z \in \mathbb{R}_{\ge 0}\)</span>, <span class="math display">\[
+    \Pr[ Z \ge z] \le \exp \Big( -\frac{ z^2 }{2} \Big).
 \]</span></p>
-<p>Replacing <span class="math inline">\(z\)</span> with <span class="math inline">\(\frac{ \sigma }{ ||v|| } \epsilon - \frac{ ||v|| }{ 2 \sigma }\)</span>, <span class="math display">\[
-\Pr[ z \ge t ] \le  \exp( -\frac{1}{2} (\frac{  \sigma  }{ ||v|| } \epsilon - \frac{ ||v|| }{ 2 \sigma  } )^2 ).
+<p>Assuming that <span class="math inline">\(\sigma^2 \ge \frac{\Vert v \Vert^2}{ 2 \epsilon }\)</span>. Then <span class="math inline">\(\frac{ \sigma }{ \Vert v\Vert } \epsilon - \frac{ \Vert v\Vert }{ 2 \sigma } \ge 0\)</span>. Replacing <span class="math inline">\(z\)</span> with <span class="math inline">\(\frac{ \sigma }{ \Vert v\Vert } \epsilon - \frac{ \Vert v\Vert }{ 2 \sigma }\)</span>, <span class="math display">\[
+    \Pr[ z \ge t ] \le  \exp \Big( -\frac{1}{2} \Big( \frac{  \sigma  }{ \Vert v\Vert  } \epsilon - \frac{ \Vert v\Vert  }{ 2 \sigma  } \Big)^2 \Big).
 \]</span></p>
 <p>We would like to bound this probability by some <span class="math inline">\(\delta \in (0, 1)\)</span>, then <span class="math display">\[
 \begin{aligned}
-    &amp;\exp( -\frac{1}{2} ( \frac{  \sigma  }{ ||v|| } \epsilon - \frac{ ||v|| }{ 2 \sigma  } )^2 ) \le \delta \\
-    &amp;\Longrightarrow \frac{  \sigma  }{ ||v|| } \epsilon - \frac{ ||v|| }{ 2 \sigma  } \ge \sqrt{2 \ln \frac{1}{\delta} } \\
-    &amp;\Longrightarrow \frac{\epsilon }{||v|| } \sigma^2 - \sqrt{2 \ln \frac{1}{\delta} } \sigma - \frac{ ||v|| }{2} \ge 0
+    &amp;\exp \Big( -\frac{1}{2} \Big( \frac{  \sigma  }{ \Vert v\Vert  } \epsilon - \frac{ \Vert v\Vert  }{ 2 \sigma  } \Big)^2 \Big) \le \delta \\
+    &amp;\Longrightarrow \frac{  \sigma  }{ \Vert v\Vert  } \epsilon - \frac{ \Vert v\Vert  }{ 2 \sigma  } \ge \sqrt{2 \ln \frac{1}{\delta} } \\
+    &amp;\Longrightarrow \frac{\epsilon }{\Vert v\Vert  } \sigma^2 - \sqrt{2 \ln \frac{1}{\delta} } \sigma - \frac{ \Vert v\Vert  }{2} \ge 0
 \end{aligned}
 \]</span></p>
 <p>Finally, we get <span class="math display">\[
-\sigma \ge \frac{ \sqrt{ 2 \ln \frac{1}{\delta} } + \sqrt{ 2 \ln \frac{1}{\delta} + 2 \epsilon  }  }{ 2 \frac{\epsilon }{||v|| } }
+    \sigma \ge \frac{ \sqrt{ 2 \ln \frac{1}{\delta} } + \sqrt{ 2 \ln \frac{1}{\delta} + 2 \epsilon  }  }{ 2 \frac{\epsilon }{\Vert v\Vert  } }
 \]</span></p>
 <p>By concavity of the square root function, it suffices to take <span class="math display">\[
-\sigma = \frac{ ||v|| }{ \epsilon } \sqrt{ 0.5 * 2 \ln \frac{1}{\delta} + 0.5 * (2 \ln \frac{1}{\delta} + 2\epsilon) } = \frac{ ||v|| }{ \epsilon } \sqrt{  2 \ln \frac{1}{\delta} + \epsilon },
+    \sigma = \frac{ \Vert v\Vert  }{ \epsilon } \sqrt{ 0.5 \cdot 2 \ln \frac{1}{\delta} + 0.5 \cdot \Big( 2 \ln \frac{1}{\delta} + 2 \epsilon \Big) } = \frac{ \Vert v\Vert  }{ \epsilon } \sqrt{  2 \ln \frac{1}{\delta} + \epsilon },
 \]</span></p>
 <p>i.e., <span class="math display">\[
-\sigma^2 = \frac{ ||v||^2 }{ \epsilon^2 } (2 \ln \frac{1}{\delta} + \epsilon) 
+    \sigma^2 = \frac{ \Vert v\Vert ^2 }{ \epsilon^2 } \Big( 2 \ln \frac{1}{\delta} + \epsilon \Big). 
 \]</span></p>
 <p><span class="math inline">\(\blacksquare\)</span></p>
-<h3 id="reference">Reference</h3>
-<p>[1] B. Eisenberg and R. Sullivan, “Why Is the Sum of Independent Normal Random Variables Normal?,” Mathematics Magazine, vol. 81, no. 5, pp. 362–366, Dec. 2008<br />
-[2] G. Kamath, “Lecture 5 — Approximate Diﬀerential Privacy”, CS 860 - Algorithms for Private Data Analysis.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] G. Kamath, “Lecture 5 — Approximate Diﬀerential Privacy”, CS 860 - Algorithms for Private Data Analy sis.</p>
 
     </div>
 
@@ -514,8 +304,8 @@ g(x) = f(x) + X
       <i class="fa fa-chevron-left"></i> Laplace Distribution
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/11/12/PAC-learning/" rel="next" title="PAC Learning Basic">
-      PAC Learning Basic <i class="fa fa-chevron-right"></i>
+    <a href="/2020/11/06/Gaussian-Distribution/" rel="next" title="Gaussian Distribution">
+      Gaussian Distribution <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -575,7 +365,7 @@ g(x) = f(x) + X
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#gaussian-distribution"><span class="nav-number">1.</span> <span class="nav-text">Gaussian Distribution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#closed-form"><span class="nav-number">1.1.</span> <span class="nav-text">Closed Form</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#basic-properties"><span class="nav-number">1.2.</span> <span class="nav-text">Basic Properties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#general-gaussian-distribution"><span class="nav-number">1.3.</span> <span class="nav-text">General Gaussian Distribution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#further-properties"><span class="nav-number">1.4.</span> <span class="nav-text">Further Properties</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gaussian-mechanism"><span class="nav-number">2.</span> <span class="nav-text">Gaussian Mechanism</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#reference"><span class="nav-number">2.1.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#background"><span class="nav-number">1.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#privacy-guarantee"><span class="nav-number">2.</span> <span class="nav-text">Privacy Guarantee</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -589,7 +379,7 @@ g(x) = f(x) + X
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">145</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

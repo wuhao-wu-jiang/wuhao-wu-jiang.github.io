@@ -146,6 +146,362 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/01/Online-Matrix-Sketch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/01/01/Online-Matrix-Sketch/" class="post-title-link" itemprop="url">Online Matrix Sketch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-01-01 21:04:12" itemprop="dateCreated datePublished" datetime="2020-01-01T21:04:12+11:00">2020-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-05-07 15:28:23" itemprop="dateModified" datetime="2021-05-07T15:28:23+10:00">2021-05-07</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="background">Background</h1>
+<p>Given a matrix <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span>, the goal of low rank matrix approximation is to find a matrix <span class="math inline">\(B \in \mathbb{R}^{k \times n}\)</span> with rank at most <span class="math inline">\(k\)</span> that approximates <span class="math inline">\(A\)</span> as well as possible. This can be measured by <span class="math inline">\(2\)</span>-norm, i.e., <span class="math display">\[
+     \Vert A - B \Vert_2  = \max_{x \in \mathbb{R}^n,  \Vert x \Vert_2  = 1} \Vert (A - B) x \Vert_2 
+\]</span></p>
+<p>If we know the entire matrix <span class="math inline">\(A\)</span>, its best approximation is given by the singular vector decomposition, <span class="math display">\[
+    B \doteq \sum_{i = 1}^k \sigma_i u_i v_i^T
+\]</span> where <span class="math inline">\(\sigma_i \in \mathbb{R}\)</span>, <span class="math inline">\(u_i \in \mathbb{R}^m\)</span> and <span class="math inline">\(v_i \in \mathbb{R}^n\)</span> are the <span class="math inline">\(i\)</span>-th largest singular value, left singular vector and right singular vector of <span class="math inline">\(A\)</span>, respectively.</p>
+<p>When some elements of <span class="math inline">\(A\)</span> are missing, finding such a matrix <span class="math inline">\(B\)</span> to approximate <span class="math inline">\(A\)</span> as well as to predict the missing entries of <span class="math inline">\(A\)</span> is known as collaborative filtering, which is used in recommendation system.</p>
+<h1 id="problem">Problem</h1>
+<p>One scenario is to approximate <span class="math inline">\(A\)</span> in an online fashion, i.e., the rows of <span class="math inline">\(A\)</span> comes on by one (no missing values). Denote the <span class="math inline">\(i\)</span>-th row of <span class="math inline">\(A\)</span> as <span class="math inline">\(a_i\)</span>. We need to maintain a smaller matrix <span class="math inline">\(B \in \mathbb{R}^{k \times n}\)</span>, termed the matrix sketch of <span class="math inline">\(A\)</span>, that approximate <span class="math inline">\(A\)</span> well, in the sense that <span class="math display">\[
+ \Vert  A - B  \Vert_2  \le \frac{2  \Vert A \Vert _F^2}{ k },
+\]</span></p>
+<p>where <span class="math inline">\(\Vert A \Vert _F \doteq \sqrt{ \sum_{ i, j \in [n] } A_{i,j}^2 }\)</span> is the Frobenius norm of <span class="math inline">\(A\)</span>.</p>
+<h1 id="algorithm">Algorithm</h1>
+<blockquote>
+<p><strong>Algorithm</strong> [1]<br />
+1. <span class="math inline">\(B_0 \leftarrow\)</span> <span class="math inline">\({k \times n}\)</span> all zero matrix.<br />
+2. For <span class="math inline">\(i \in [m]\)</span>:<br />
+3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(C_i \leftarrow\)</span> matrix obtained by inserting <span class="math inline">\(a_i\)</span> into a zero row of <span class="math inline">\(B_{i - 1}\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> If <span class="math inline">\(C_i\)</span> has no zero row after insertion:<br />
+5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(U_i, \Sigma_{C_i}, V_i \leftarrow \text{SVD} (C_i)\)</span>, such that <span class="math inline">\(C_i = U_i \Sigma_{C_i} V_i^T\)</span>.<br />
+6. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\Sigma_{B_i} \leftarrow \sqrt{ \max \{ \Sigma_{C_i}^2 - \sigma_{i, k / 2}^2 I, 0 \} }\)</span><br />
+7. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(B_i \leftarrow \Sigma_{B_i} V_i^T\)</span>.<br />
+8. <span class="math inline">\(\qquad\)</span> Else<br />
+9. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> Set <span class="math inline">\(\sigma_{i, k / 2} \leftarrow 0\)</span> // <em>needed only for the proof</em><br />
+9. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(B_i \leftarrow C_i\)</span>.</p>
+</blockquote>
+<p>Here <span class="math inline">\(\sigma_{i, k / 2}\)</span> is the <span class="math inline">\(k / 2\)</span>-th largest singular value of <span class="math inline">\(\Sigma_{C_i}\)</span>. The line 6 throws away all singular values that are less than <span class="math inline">\(\sigma_{i, k / 2}\)</span>, and then subtract the squares of all singular values that are greater by <span class="math inline">\(\sigma_{i, k / 2}^2\)</span>.</p>
+<h2 id="theorem-1.">Theorem 1.</h2>
+<blockquote>
+<p><span class="math inline">\(B_k^T B_k \preccurlyeq A^T A\)</span> for <span class="math inline">\(k \in [m]\)</span>.</p>
+</blockquote>
+<p><strong>Proof:</strong> To show <span class="math inline">\(A^T A - B_k^T B_k\)</span> is semi-positive definitive, we need to show that <span class="math inline">\(\forall x \in \mathbb{R}^n\)</span>, we have <span class="math display">\[
+    x^T A^T A x - x^T B_k^T B_k  x \ge 0
+    \Longleftrightarrow  \Vert Ax \Vert_2^2 \ge  \Vert B_k x \Vert_2^2. 
+\]</span></p>
+<p>To prove this, we are going to show that <span class="math display">\[
+    \Vert Ax \Vert_2^2 = \sum_{i \in [m] } \left&lt;a_i, x \right&gt;^2 \ge \sum_{i \in [k] } \left&lt;a_i, x \right&gt;^2 \ge \Vert B_k x \Vert_2^2.
+\]</span></p>
+<p>To prove the last inequality, we will prove that for <span class="math inline">\(i \in [m]\)</span>, <span class="math display">\[
+     \Vert C_i \Vert_2^2 = \Vert B_{i - 1} x \Vert_2^2 + \left&lt;a_i, x \right&gt;^2 \ge  \Vert B_i x \Vert_2^2.
+\]</span></p>
+<p>There are two possible cases.</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(C_i\)</span> contains empty row, then the inequality holds with equality as <span class="math inline">\(B_i \leftarrow C_i\)</span>.</p></li>
+<li><p>Otherwise, as <span class="math inline">\(B_i = \Sigma_{B_i} V_i^T\)</span>, <span class="math display">\[
+\Vert B_i x \Vert_2^2  =  \Vert \Sigma_{B_i} V_i^T x \Vert_2^2.
+\]</span></p>
+<p>On the other hand, <span class="math display">\[
+    \begin{aligned}
+        \Vert C_i x \Vert_2^2 
+            &amp;= \Vert U_i \Sigma_{C_i} V_i^T x \Vert_2^2 \\
+            &amp;= x^T V_i \Sigma_{C_i}^T U_i^T U_i \Sigma_{C_i} V_i^T x \\
+            &amp;= x^T V_i \Sigma_{C_i}^T \Sigma_{C_i} V_i^T x \\
+            &amp;= \Vert \Sigma_{C_i} V_i^T x \Vert_2^2 . 
+    \end{aligned}
+\]</span> Since <span class="math inline">\(U_i\)</span> is an orthogonal matrix and corresponds to a left rotation, it should not change the <span class="math inline">\(\ell_2\)</span>-norm of <span class="math inline">\(\Sigma_{C_i} V_i^T x\)</span>.</p>
+<p>By the transformation performed by the algorithm, we have <span class="math inline">\(\Sigma_{C_i}^T \Sigma_{C_i} \preccurlyeq \Sigma_{B_i}^T \Sigma_{B_i}\)</span>, therefore, <span class="math display">\[
+    \Vert C_i x \Vert_2^2 \ge \Vert B_i x \Vert_2^2.
+\]</span></p></li>
+</ol>
+<h2 id="theorem-2.">Theorem 2.</h2>
+<blockquote>
+<p><span class="math display">\[
+\Vert A^T A - B_m^T B_m \Vert_2  \le 2 \frac{ \Vert A \Vert _F^2 }{ k }. 
+\]</span></p>
+</blockquote>
+<p><strong>Proof:</strong> First, we show that for a positive semi-definite matrix <span class="math inline">\(S\)</span>, we have <span class="math display">\[
+     \Vert S \Vert_2  = \max_{ x \in \mathbb{R}^n,  \Vert x \Vert  = 1}  \Vert S x \Vert_2  = \lambda_1 = v_1^T S v_1,
+\]</span></p>
+<p>where <span class="math inline">\(\lambda_1\)</span> is the largest eigenvalue of <span class="math inline">\(S\)</span> and <span class="math inline">\(v_1\)</span> is the corresponding eigenvector. To see this, let <span class="math inline">\(S = V_S \Sigma_S V_S^T\)</span> be the singular value decomposition of <span class="math inline">\(S\)</span>. Then <span class="math display">\[
+    \Vert S x \Vert_2^2 = (V_S^T x)^T \Sigma_S (V_S^T x) = \sum \lambda_i \big( (V_S^T x)_i \big)^2 \le \lambda_1 \big( (V_S^T x)_1 \big)^2.
+\]</span></p>
+<p>For <span class="math inline">\(x \in \mathbb{R}^n, \Vert x \Vert_2 = 1\)</span>, this is maximized when <span class="math inline">\(x = v_1\)</span>.</p>
+<p>In the previous section, we have proven that <span class="math inline">\(B_m^T B_m \preccurlyeq A^T A\)</span>. Hence, <span class="math inline">\(S \doteq A^T A - B_m^T B_m\)</span> is a positive semi-definite matrix. Let <span class="math inline">\(v_1\)</span> be its unit eigenvector associated with the largest eigenvalue. Then <span class="math display">\[
+\begin{aligned}
+ \Vert A^T A - B_m^T B_m \Vert_2
+    &amp;=  v_1 ^TA^T A  v_1 -  v_1 ^T B_m^T B_m v_1  \\
+    &amp;=  \Vert A v_1  \Vert_2^2 -  \Vert B_m v_1  \Vert_2^2 \\
+    &amp;= \sum_{i = 1}^m \left( \left&lt;a_i, x \right&gt;^2  +  \Vert B_{i - 1}  v_1  \Vert_2^2 -  \Vert B_{i}  v_1  \Vert_2^2 \right) \\
+    &amp;= \sum_{i = 1}^m \left( \Vert \Sigma_{C_i} V_i^T  v_1  \Vert_2^2 -  \Vert \Sigma_{B_i} V_i^T  v_1  \Vert_2^2 \right) \\
+    &amp;= \sum_{i = 1}^m \left( v_1^T V_i \Sigma_{C_i}^T \Sigma_{C_i} V_i^T v_1 - v_1^T V_i \Sigma_{B_i}^T \Sigma_{B_i} V_i^T v_1 \right) \\
+    &amp;= \sum_{i = 1}^m (V_i^T v_1)^T \left( \Sigma_{C_i}^T \Sigma_{C_i} - \Sigma_{B_i}^T \Sigma_{B_i} \right) (V_i^T v_1) \\
+    &amp;\le \sum_{i = 1}^m  \left\Vert \Sigma_{C_i}^T \Sigma_{C_i}  - \Sigma_{B_i}^T \Sigma_{B_i}  \right\Vert_2  \\
+    &amp;= \sum_{i = 1}^m \sigma_{i, k /2 }^2.
+\end{aligned}
+\]</span></p>
+<p>It is left to bound the size of <span class="math inline">\(\sum_{i = 1}^m \sigma_{i, k /2 }^2\)</span>: <span class="math display">\[
+\begin{aligned}
+ \Vert A \Vert^2_F -  \Vert B_m \Vert^2_F
+    &amp;= \sum_{i = 1}^m  \left( \Vert a_i \Vert_2^2  +  \Vert B_{i - 1} \Vert^2_F -  \Vert B_{i} \Vert^2_F \right) \\
+    &amp;= \sum_{i = 1}^m  \left( \Vert U_i \Sigma_{C_i} V_i^T \Vert^2_F -  \Vert \Sigma_{B_i} V_i^T \Vert^2_F \right) \\
+    &amp;= \sum_{i = 1}^m  \left( \Vert \Sigma_{C_i} V_i^T \Vert^2_F -  \Vert \Sigma_{B_i} V_i^T \Vert^2_F \right) \\
+    &amp;= \sum_{i = 1}^m \left( \Vert \Sigma_{C_i} \Vert^2_F -  \Vert \Sigma_{B_i} \Vert^2 _F \right) \\
+    &amp;\ge (k / 2) \sum_{i = 1}^m \sigma_{i, k /2 }^2.
+\end{aligned}
+\]</span></p>
+<p>The last inequality holds by the definition of <span class="math inline">\(\Sigma_{C_i}\)</span> and <span class="math inline">\(\Sigma_{B_i}\)</span>.</p>
+<p><strong>Remark:</strong> <em>The underlying idea for the proof is that the squared Frobenius norm of a matrix <span class="math inline">\(C_i\)</span> equals the sum of the squares of its singular values, since</em><br />
+<span class="math display">\[
+    \begin{aligned}
+        \Vert C_i \Vert_F^2 
+        &amp;= \text{tr} (C_i^T C_i) \\
+        &amp;= \text{tr} ( V_i \Sigma_{C_i}^T U_i^T U_i \Sigma_{C_i} V_i^T ) \\
+        &amp;= \text{tr} ( V_i \Sigma_{C_i}^T \Sigma_{C_i} V_i^T ) \\
+        &amp;= \text{tr} ( \Sigma_{C_i}^T \Sigma_{C_i} V_i^T V_i ) \\
+        &amp;= \text{tr} ( \Sigma_{C_i}^T \Sigma_{C_i} ). 
+    \end{aligned}
+\]</span></p>
+<p>In conclusion, <span class="math display">\[
+\begin{aligned}
+    \frac{ \Vert A^T A - B_m^T B_m \Vert_2 }{ \Vert A \Vert^2_F} \le \frac{ \Vert A^T A - B_m^T B_m \Vert_2 }{ \Vert A \Vert^2_F -  \Vert B_m \Vert^2_F} \le \frac{2}{k}.
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="a-counterpart-for-heavy-hitters">A Counterpart For Heavy Hitters</h1>
+<p>We apply similar idea for the heavy hitter problem in streaming model.</p>
+<h2 id="problem-1">Problem</h2>
+<p>There is a streaming <span class="math inline">\(S = \{ a_1, ..., a_m \}\)</span> of <span class="math inline">\(m\)</span> elements each from a finite domain <span class="math inline">\([d]\)</span>. Given a parameter <span class="math inline">\(k\)</span>, we want to find the elements in <span class="math inline">\([d]\)</span> whose frequencies, i.e., the number of times they appear in <span class="math inline">\(S\)</span>, are at least <span class="math inline">\(k\)</span>.</p>
+<h2 id="algorithm-1">Algorithm</h2>
+<p>The following algorithm will provide under-estimates of elements' frequencies, with space usage <span class="math inline">\(2k\)</span> and error <span class="math inline">\(m / k\)</span>.</p>
+<blockquote>
+<p><strong>Processing Stream</strong><br />
+1. <span class="math inline">\(B_0 \leftarrow\)</span> an empty (element, frequency) list of capacity <span class="math inline">\(2k\)</span>.<br />
+2. For <span class="math inline">\(t \in [m]\)</span>:<br />
+3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(C_t \leftarrow\)</span> list obtained by inserting <span class="math inline">\(\{ a_t, 1 \}\)</span> into <span class="math inline">\(B_{t - 1}\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> If <span class="math inline">\(C_t\)</span> has size <span class="math inline">\(2k\)</span>:<br />
+5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(B_t \leftarrow\)</span> list obtained from <span class="math inline">\(C_t\)</span> by merging frequencies.<br />
+6. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> // each element in <span class="math inline">\([d]\)</span> now appears in <span class="math inline">\(B_t\)</span> at most once.<br />
+6. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\sigma_t \leftarrow\)</span> the <span class="math inline">\(k\)</span>-th largest frequency in <span class="math inline">\(B_t\)</span>.<br />
+7. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> Subtract the frequency of each element in <span class="math inline">\(B_t\)</span> by <span class="math inline">\(\sigma_t\)</span>.<br />
+8. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> Remove elements with non-positive frequencies.<br />
+8. <span class="math inline">\(\qquad\)</span> Else<br />
+9. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\sigma_t \leftarrow 0;\)</span><br />
+9. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(B_t \leftarrow C_t\)</span>.</p>
+</blockquote>
+<blockquote>
+<p><strong>QUERY</strong><br />
+<strong>Input: <span class="math inline">\(B_t\)</span> for some <span class="math inline">\(t \in [m]\)</span>, <span class="math inline">\(v \in [d].\)</span></strong><br />
+<strong>Output: frequency estimation of <span class="math inline">\(v\)</span> in <span class="math inline">\(\{a_1, ...., a_t \}\)</span></strong><br />
+1. <span class="math inline">\(\hat f_{B_t}[v] \leftarrow 0;\)</span><br />
+2. for <span class="math inline">\((v_i, f_i) \in B_t\)</span> do<br />
+3. <span class="math inline">\(\qquad\)</span> if <span class="math inline">\(v_i = v\)</span> then<br />
+4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat f_{B_t} [ v ] \leftarrow \hat f_{B_t} [v] + f_i;\)</span><br />
+5. <strong>Return</strong> <span class="math inline">\(\hat f_{B_t} [v]\)</span>.</p>
+</blockquote>
+<p>Observe that for <span class="math inline">\(v \in [d]\)</span>, if <span class="math inline">\(v\)</span> does not appears in <span class="math inline">\(B_t\)</span>, then the algorithm returns 0.</p>
+<h2 id="time">Time</h2>
+<blockquote>
+<p>The amortized time for each update is <span class="math inline">\(O(1)\)</span>.</p>
+</blockquote>
+<ol type="1">
+<li>Inserting <span class="math inline">\(\{a_i, 1\}\)</span> into <span class="math inline">\(B_{i - 1}\)</span> takes <span class="math inline">\(O(1)\)</span> time.<br />
+</li>
+<li>Merging <span class="math inline">\(C_i\)</span>, subtracting elements' frequencies by <span class="math inline">\(\sigma_i\)</span> and removing non-positive elements take <span class="math inline">\(O(k)\)</span> time. But this happens only every <span class="math inline">\(k / 2\)</span> updates. Hence the amortized time is <span class="math inline">\(O(1)\)</span>.</li>
+</ol>
+<h2 id="error">Error</h2>
+<blockquote>
+<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall t \in [m], v \in [d]\)</span>, <span class="math inline">\(\hat f_{B_t} [v]\)</span> is an underestimate of <span class="math inline">\(v\)</span>'s frequency in <span class="math inline">\(\{a_1, ... a_t \}\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Obviously true by how the algorithm works.</p>
+<blockquote>
+<p><strong>Theorem 2.</strong> <span class="math inline">\(\forall v \in [d], t \in [m]\)</span>, let <span class="math inline">\(f_t [v]\)</span> be the number of times <span class="math inline">\(v\)</span> appears in <span class="math inline">\(\{a_1, ..., a_t \}\)</span>. We have that <span class="math display">\[
+f_t[v] - \hat f_{B_t} [v] &lt; \frac{t}{k}. 
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> For each <span class="math inline">\(i \in \{0, 1, ..., m \}\)</span>, define <span class="math inline">\(\Vert B_i \Vert_1 = \left( \sum_{ (v_j, f_j) \in B_i } f_j \right)\)</span> and for each <span class="math inline">\(i \in [m]\)</span>, let <span class="math inline">\(\Vert C_i \Vert_1 = \left( \sum_{ (v_j, f_j) \in C_i } f_j \right)\)</span>. Observe that <span class="math display">\[
+\begin{aligned}
+    f_t[v]- \hat f_{B_t} [v] \le \sum_{i \in [t] } \sigma_i.
+\end{aligned}
+\]</span></p>
+<p>On the other hand, <span class="math display">\[
+\begin{aligned}
+ t -  \Vert B_m \Vert_1
+    &amp;= \sum_{i \in [t] }  \left( 1  +  \Vert B_{i - 1} \Vert_1 -  \Vert B_i \Vert_1 \right) \\
+    &amp;= \sum_{i \in [t] }  \left( \Vert C_i \Vert_1  -  \Vert B_i \Vert_1 \right) \\
+    &amp;\ge k \cdot \sum_{i \in [t] } \sigma_i.
+\end{aligned}
+\]</span></p>
+<p>Combined, we get <span class="math inline">\(f_t[v]- \hat f_{B_t} [v] \le \frac{t - \Vert B_t \Vert_1}{k}\)</span>.</p>
+<h1 id="reference">Reference</h1>
+<p>[1]. Edo, Liberty. "Simple and deterministic matrix sketching." In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining, pp. 581-588. ACM, 2013.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/12/13/Polyhydra-and-Polytope/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/12/13/Polyhydra-and-Polytope/" class="post-title-link" itemprop="url">Polyhydra and Polytopes</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-12-13 23:54:11" itemprop="dateCreated datePublished" datetime="2019-12-13T23:54:11+11:00">2019-12-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-15 22:37:11" itemprop="dateModified" datetime="2019-12-15T22:37:11+11:00">2019-12-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>When studying linear program, it necessary that we understand the structure of the feasible region. We investigate here some critical ideas of characterizing the feasible region.</p>
+<ol type="1">
+<li><em>Polyhedron</em>: <span class="math inline">\(P\)</span> is a polyhedron in <span class="math inline">\(R^n\)</span> if it is the intersection of a set of linear constraints: <span class="math inline">\(P = \{ x: Ax \le b \}\)</span> for some <span class="math inline">\(A \in R^{m \times n}, b \in R^n\)</span>. A polyhedron is a convex set.</li>
+<li><em>Polytope</em>: <span class="math inline">\(P\)</span> is a polytope if it consists of points that are convex combination of finite number of points <span class="math inline">\(v_1, v_2, ..., v_k\)</span>, i.e., <span class="math inline">\(P = \{ x: x = \sum_{i = 1}^k \mu_i v_i , \ s.t., \ \sum_{i =1}^k \mu_i = 1 \wedge \mu_i \in [0, 1] \quad \forall i \in [k] \}\)</span>.</li>
+</ol>
+<p>Of interest are the vertices, or extreme points or basic feasible solution of a polyhedron <span class="math inline">\(P\)</span>:</p>
+<ol type="1">
+<li><em>Vertex</em>: <span class="math inline">\(v \in P\)</span> is called a vertex if <span class="math inline">\(\exists c \in R^n\)</span>, s.t., <span class="math inline">\(c^T v &gt; c^T x\)</span> <span class="math inline">\(\forall x \neq v \wedge x\in R\)</span>.</li>
+<li><em>Extreme Point</em>: <span class="math inline">\(v \in R\)</span> is an extreme point of <span class="math inline">\(P\)</span> if <span class="math inline">\(\nexists x, y \neq v, x, y \in P\)</span>, s.t., <span class="math inline">\(v = \mu_1 x + \mu_2 y\)</span>, <span class="math inline">\(\mu_1, \mu_2 \in [0, 1]\)</span> and <span class="math inline">\(\mu_1 + \mu_2 = 1\)</span>.</li>
+<li><em>Basic Feasible Solution:</em> <span class="math inline">\(v \in P\)</span> is a basic feasible solution of <span class="math inline">\(P = \{ x: Ax \le b \}\)</span>, if the number of tight constraints <span class="math inline">\(A v \le b\)</span> equals to <span class="math inline">\(n\)</span>. In particular, denote <span class="math inline">\(A_{i, :}\)</span> the <span class="math inline">\(i\)</span>-th row of matrix <span class="math inline">\(A\)</span> and <span class="math inline">\(b_i\)</span> the <span class="math inline">\(i\)</span>-th element of <span class="math inline">\(b\)</span>. The constraint <span class="math inline">\(A_{i, :} v \le b_i\)</span> is called tight if equality holds. For convenience of discussion, denote <span class="math inline">\(A_{=} x = b_{=}\)</span> the set of tight constraints and <span class="math inline">\(A_{&lt;} x &lt; b_{&lt;}\)</span> the set of non-tight constraints.</li>
+</ol>
+<p>It turns out that the three definitions are equivalent. Here is the proof.</p>
+<p><em>Proof:</em></p>
+<p><span class="math inline">\(1 \rightarrow 2:\)</span> <span class="math inline">\(c^T(\mu_1 x + \mu_2 y) = \mu_1 c^T x + \mu_2 c^T y &lt; \mu_1 c^T v + \mu_2 c^T v = c^T v\)</span>, it concludes that <span class="math inline">\(\mu_1 x + \mu_2 y \neq v\)</span>.</p>
+<p><span class="math inline">\(2 \rightarrow 3:\)</span> suppose that <span class="math inline">\(rank(A_{=}) \neq n\)</span>. There <span class="math inline">\(\exists y \in R^n, y \neq 0\)</span>, and <span class="math inline">\(A_{=} y = 0\)</span>. For inequality constraints, we can find small enough <span class="math inline">\(\epsilon\)</span>, such that <span class="math inline">\(A_{&lt; } (x \pm \epsilon y) &lt; b\)</span>. Hence <span class="math inline">\(x \pm \epsilon y \in P\)</span>. But <span class="math inline">\(\frac{1}{2} (x + \epsilon y) + \frac{1}{2} (x - \epsilon y) = x\)</span>, a contradiction.</p>
+<p><span class="math inline">\(3 \rightarrow 1:\)</span> just define <span class="math inline">\(c^T = \sum_{i = 1}^m A_{i, :}\)</span>. If <span class="math inline">\(x \in P\)</span>, then <span class="math inline">\(\sum_{i = 1}^m A_{i, :} x \le \sum_{i = 1}^m b_i = \sum_{i = 1}^m A_{i, :} v\)</span>. As <span class="math inline">\(A_{=}\)</span> has rank <span class="math inline">\(n\)</span>, when equality holds, it implies <span class="math inline">\(x = y\)</span>.</p>
+<p>The relationship between polyhedron and polytope is stated as follows:</p>
+<p><em>Theorem:</em> if a polyhedron <span class="math inline">\(P\)</span> is bounded, that is, <span class="math inline">\(\exists M &gt; 0\)</span>, <span class="math inline">\(\forall x \in P\)</span>, we have <span class="math inline">\(x^T x &lt; M\)</span>, then <span class="math inline">\(P\)</span> is a polytope.</p>
+<p><em>Proof:</em> It suffice to show that every <span class="math inline">\(x \in P\)</span> is a convex combination of vertices of <span class="math inline">\(P\)</span>. The proof is by induction on the rank of <span class="math inline">\(A_{=}\)</span>, given <span class="math inline">\(x \in A\)</span>.</p>
+<ol type="1">
+<li>If <span class="math inline">\(rank(A_{=}) = n\)</span>, then by definition <span class="math inline">\(x\)</span> is a vertex.</li>
+<li>Suppose the claim holds for all ranks <span class="math inline">\(\ge k + 1\)</span> for some <span class="math inline">\(k &lt; n\)</span>. We show it carries to <span class="math inline">\(x \in P\)</span> with <span class="math inline">\(rank(A_{=}) = k\)</span>.
+<ul>
+<li>As <span class="math inline">\(k &lt; n\)</span>, <span class="math inline">\(\exists y \in R^n, y \neq 0\)</span>, such that <span class="math inline">\(A_{=} y = 0\)</span>.</li>
+<li>We extend <span class="math inline">\(x\)</span> from the directions of <span class="math inline">\(y\)</span> and <span class="math inline">\(-y\)</span> as much as possible. We find the largest <span class="math inline">\(\lambda_+ \in R, \lambda_+ &gt; 0\)</span>, such that <span class="math inline">\(x + \lambda_+ y \in P\)</span>. Since <span class="math inline">\(A_{=} (x + \lambda_+ y) = b_{=}\)</span>, these constraints will never be violated. Hence some constraints <span class="math inline">\(A_{&lt; } x &lt; b_{&lt;}\)</span> becomes tight for <span class="math inline">\(A_{&lt;} (x + \lambda_+ y)\)</span>. Which implies that the rank of <span class="math inline">\(x + \lambda_+ y\)</span> is at least <span class="math inline">\(k + 1\)</span> and thus can be expressed a convex combination of vertices. Similarly, we can find some <span class="math inline">\(x - \lambda_- y\)</span> that is a convex combination of vertices.</li>
+<li><span class="math inline">\(x\)</span> can now be express a convex combination of <span class="math inline">\(x + \lambda_+ y\)</span> and <span class="math inline">\(x - \lambda_- y\)</span>, therefore a convex combination of vertices.</li>
+</ul></li>
+</ol>
+<p>The reverse is also true:</p>
+<p><em>Theorem:</em> Let <span class="math inline">\(P\)</span> be a polytope, then <span class="math inline">\(P\)</span> is a bounded polyhedron.</p>
+<p>To prove this, we need an intermediate definition--<em>polar set</em>. It means something on the opposite direction.</p>
+<p><em>Definition:</em> Given a set <span class="math inline">\(P\)</span>, its polar set is defined as <span class="math inline">\(\bar P = \{ y \in R^n, y^T x \le 1, \forall x \in P\}\)</span>.</p>
+<p><em>Lemma</em>: If <span class="math inline">\(P\)</span> is closed, convex and <span class="math inline">\(0\)</span> is the interior point of <span class="math inline">\(P\)</span>, then <span class="math inline">\(\overline{\bar P} = P\)</span>, that is the polar set of the polar set of <span class="math inline">\(P\)</span> is <span class="math inline">\(P\)</span> itself.</p>
+<p><em>Proof of the Lemma</em>:</p>
+<ol type="1">
+<li><span class="math inline">\(P \subset \overline{\bar P}\)</span>. If <span class="math inline">\(x \in P\)</span>, then by definition of <span class="math inline">\(\bar P\)</span>, <span class="math inline">\(\forall y \in \overline{\bar P}\)</span>, we have <span class="math inline">\(y^T x \le 1\)</span>, then <span class="math inline">\(x \in P^{oo}\)</span>.</li>
+<li><span class="math inline">\((R^n - P) \cap \overline{\bar P} = \emptyset\)</span>, i.e., <span class="math inline">\(\forall x \notin P\)</span>, we have <span class="math inline">\(v \notin \overline{\bar P}\)</span>. Since <span class="math inline">\(P\)</span> is convex and closed, <span class="math inline">\(\exists y \in R^n\)</span>, such that <span class="math inline">\(y^T v &gt; k\)</span> and <span class="math inline">\(y^T x &lt; k\)</span> for all <span class="math inline">\(x \in P\)</span>. The fact that <span class="math inline">\(0 \in P\)</span> implies <span class="math inline">\(k &gt; 0\)</span>. Replace <span class="math inline">\(y\)</span> with <span class="math inline">\(\bar y = y / k\)</span>, we have <span class="math inline">\(\bar y^T x &lt; 1\)</span> for all <span class="math inline">\(x \in P\)</span>. Hence <span class="math inline">\(\bar y \in \bar P\)</span>. But now <span class="math inline">\(\bar y^T v &gt; 1\)</span>. By definition, <span class="math inline">\(v\)</span> does not belong to the polar set of <span class="math inline">\(\bar P\)</span>.</li>
+</ol>
+<p><em>Proof of the Theorem:</em> We assume that <span class="math inline">\(P\)</span> contains the point <span class="math inline">\(0\)</span>. Otherwise, we perform a translation <span class="math inline">\(R^n \rightarrow R^n: f(x) = x + t, \forall x \in R^n\)</span>, such that <span class="math inline">\(0 \in f(P)\)</span>. If we can show <span class="math inline">\(f(P)\)</span> is a polyhedron, then <span class="math inline">\(f(P) = \{f(x) : A f(x) \le b \}\)</span>, then we have <span class="math inline">\(P = \{ x : Ax \le b - At \}\)</span>.</p>
+<p>Back to our proof. As <span class="math inline">\(P\)</span> is a polytope, then it can be written as <span class="math inline">\(P = \{ x: x = \sum_{i = 1}^k \mu_i v_i , \ s.t., \ \sum_{i =1}^k \mu_i = 1 \wedge \mu_i \in [0, 1] \quad \forall i \in [k] \}\)</span>. A point <span class="math inline">\(y\)</span> belongs to the polar set of <span class="math inline">\(P\)</span> if and only if <span class="math inline">\(y^T v_i \le 1, \forall i \in [k]\)</span>. Therefore, <span class="math inline">\(\bar P = \{y : y^T v_i \le 1, \forall i \in [k] \}\)</span>, which is a polyhedron.</p>
+<p>Next, we show that <span class="math inline">\(\bar P\)</span> is bounded. This results from the assumption that <span class="math inline">\(0\)</span> is an interior point of <span class="math inline">\(P\)</span>. Therefore, <span class="math inline">\(\exists \epsilon &gt; 0\)</span>, such that <span class="math inline">\(x \in P, \forall x \in R^n, |x|_2 &lt; \epsilon\)</span>. For any <span class="math inline">\(y \in \bar P\)</span>, with proper scaling, we have <span class="math inline">\(\frac{\epsilon}{|y|_2} y \in P\)</span>. Which further implies that <span class="math inline">\(y^T \frac{\epsilon}{|y|} y = \epsilon |y|_2 \le 1\)</span>, and <span class="math inline">\(|y|_2 \le \frac{1}{\epsilon}\)</span>.</p>
+<p>Now, <span class="math inline">\(\bar P\)</span> is a bounded polyhedron, hence a polytope. By previous lemma, <span class="math inline">\(P = \overline{\bar P}\)</span>, hence a polyhedron.</p>
+<h3 id="reference">Reference</h3>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://people.orie.cornell.edu/dpw/orie6300/Lectures/lec03.pdf">David P. Williamson, ORIE 6300, Lecture 03, Polyhedra and polytopes.</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2019/12/02/Unique-Factorization/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -230,292 +586,6 @@ d_i \le f_j
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/07/Approximate-Membership-Problem/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/07/Approximate-Membership-Problem/" class="post-title-link" itemprop="url">Approximate Membership Problem</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-11-07 16:14:36" itemprop="dateCreated datePublished" datetime="2019-11-07T16:14:36+11:00">2019-11-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-06 21:33:25" itemprop="dateModified" datetime="2020-04-06T21:33:25+10:00">2020-04-06</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>In the approximate membership problem, we have subset <span class="math inline">\(S \subset U\)</span>, that supports two operations:</p>
-<ol type="1">
-<li><em>update(<span class="math inline">\(x\)</span>)</em>: <span class="math inline">\(S \leftarrow S \cup \{x\}\)</span></li>
-<li><em>query(<span class="math inline">\(x\)</span>)</em>: return True if <span class="math inline">\(x\in S\)</span> else False.</li>
-</ol>
-<p>where <span class="math inline">\(U\)</span> is the domain that elements <span class="math inline">\(x\)</span> belongs to. If <span class="math inline">\(U = 2^{32}\)</span>, then each representation of <span class="math inline">\(x\)</span> takes <span class="math inline">\(32\)</span> bits. If <span class="math inline">\(U = 2^{64}\)</span>, then each <span class="math inline">\(x\)</span> needs <span class="math inline">\(64\)</span> bits. If <span class="math inline">\(U\)</span> is the website address, the length of its elements might is unlimited. Suppose that the average length is about <span class="math inline">\(15\)</span> chars, and each char takes <span class="math inline">\(8\)</span> bits, then the representation could occupy most <span class="math inline">\(120\)</span> bits.</p>
-<p>We can solve the membership problem exactly by dictionaries, such as balanced-binary search tree and hash set. This requires space <span class="math inline">\(O(n \log U)\)</span> bits. If we allows false positive, we can break this bound.</p>
-<p>The idea is to have a bit array <span class="math inline">\(A\)</span> with length <span class="math inline">\(O(kn)\)</span> bits and a pairwise hash family <span class="math inline">\(H\)</span> that maps the elements in <span class="math inline">\(U\)</span> uniformly at random to each bit in the array. After picking a hash function uniformly at random from <span class="math inline">\(H\)</span>, the operation on <span class="math inline">\(S\)</span> is performed as follows:</p>
-<ol type="1">
-<li><em>update(<span class="math inline">\(x\)</span>)</em>: <span class="math inline">\(A[h(x)] \leftarrow 1\)</span></li>
-<li><em>query(<span class="math inline">\(x\)</span>)</em>: return True if <span class="math inline">\(A[h(x)] = 1\)</span> else False.</li>
-</ol>
-<p>We can only make a mistake if an element <span class="math inline">\(y \notin S\)</span> and <span class="math inline">\(A[h(y)] = 1\)</span>. However, the probability of such event is bounded by <span class="math display">\[
-\Pr[\exists x \in S, s.t., h(x) = h(y)] \le \sum_{x \in S} \Pr[h(x) = h(y)] = \frac{n}{m} = \frac{1}{k}
-\]</span></p>
-<p>Remark: the accurate probability is given by <span class="math display">\[
-1 - \Pr[\forall x \in S, s.t., h(x) \neq h(y)] = 1 - (1 - \frac{1}{m})^n \le \frac{n}{m}
-\]</span></p>
-<p>To amplify the failure probability to a specified threshold <span class="math inline">\(\delta\)</span>, we can set <span class="math inline">\(k = \frac{1}{\delta}\)</span>. A more efficient way is by repetition the array <span class="math inline">\(\ln \frac{1}{\delta} /\ln k\)</span> times. Then the overall space usage is <span class="math display">\[
-\frac{ n k \ln \frac{1}{\delta} }{ \ln k }
-\]</span></p>
-<p>Note that <span class="math inline">\(f(k) = \frac{k}{\ln k} \ge e\)</span>, since it holds that <a target="_blank" rel="noopener" href="https://www.google.com/search?q=y%3Dx-e*ln(x)"><span class="math inline">\(y = x - e\ln x\)</span></a> (click to see the plot) for <span class="math inline">\(x &gt; 0\)</span>: <span class="math display">\[
-y&#39; = 1 - e / x = 0 \longrightarrow x = e.
-\]</span></p>
-<p>When <span class="math inline">\(k = e\)</span> the space usage is <span class="math display">\[
-ne \ln \frac{1}{\delta}
-\]</span></p>
-<p>The compress ratio is given by <span class="math display">\[
-\frac{\log U}{e \ln \frac{1}{\delta} }
-\]</span></p>
-<p>If we require the failure probability <span class="math inline">\(\delta = 1 / 100\)</span>, then <span class="math inline">\(\ln 1 / \delta \approx 4.6\)</span>, and <span class="math inline">\(e \ln 1/\delta \approx 12.5 \le 13\)</span>. That is, we need on <span class="math inline">\(13\)</span> bits for each element in <span class="math inline">\(S\)</span>, and the average number of operations for updating <span class="math inline">\(S\)</span> is <span class="math inline">\(5\)</span>, which is about <span class="math inline">\(1/2\)</span> space when <span class="math inline">\(U = 2^{32}\)</span>, <span class="math inline">\(1/5\)</span> space when <span class="math inline">\(U = 2^{64}\)</span>, and much less when <span class="math inline">\(U\)</span> is the set of possible web addresses.</p>
-<h4 id="remark">Remark</h4>
-<p>There is another implementation that use a single bit array <span class="math inline">\(A\)</span> of size <span class="math inline">\(m\)</span> but <span class="math inline">\(k\)</span> hash functions <span class="math inline">\(h_1, h_2, ..., h_k\)</span>. We initialization by setting</p>
-<blockquote>
-<p>For <span class="math inline">\(x \in S\)</span>:<br />
-<span class="math inline">\(\qquad\)</span> set <span class="math inline">\(A[h_i(x)] = 1\)</span> for all <span class="math inline">\(i \in [k]\)</span>.</p>
-</blockquote>
-<p>As a result, at most <span class="math inline">\(kn\)</span> bits of <span class="math inline">\(A\)</span> are initialized to be 1.</p>
-<p>Now, for an element <span class="math inline">\(x&#39; \notin S\)</span>, we accidentally report it as a member <span class="math inline">\(\in S\)</span> if <span class="math inline">\(h_i(x&#39;) = 1\)</span> for all <span class="math inline">\(i \in [k]\)</span>. But the probability that <span class="math display">\[
-\Pr[h_i(x&#39;) = 1] \le \frac{kn}{m} 
-\]</span></p>
-<p>and <span class="math display">\[
-\Pr[h_i(x&#39;) = 1, \forall i \in [k]] \le (\frac{kn}{m} )^k
-\]</span></p>
-<p>If we use <span class="math inline">\(k = \ln \frac{1}{\delta}\)</span> hash functions and set the size <span class="math inline">\(m = ne \ln \frac{1}{\delta}\)</span>, we can also achieve failure probability <span class="math inline">\(\delta\)</span>.</p>
-<p>Question to ponder: what is <span class="math inline">\(S\)</span> is dynamic?</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/02/Frequency-Estimators/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/02/Frequency-Estimators/" class="post-title-link" itemprop="url">Frequency Estimators</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-11-02 20:47:52" itemprop="dateCreated datePublished" datetime="2019-11-02T20:47:52+11:00">2019-11-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-12 12:28:57" itemprop="dateModified" datetime="2021-03-12T12:28:57+11:00">2021-03-12</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="problem">Problem</h1>
-<p>A stream <span class="math inline">\(S\)</span> (viewed as a multi-set) of <span class="math inline">\(n\)</span> elements each from a domain <span class="math inline">\(U = [1, , 2, ..., u]\)</span>. Estimate the number of times each element appears in the <span class="math inline">\(S\)</span>.</p>
-<p>If we use a balanced binary search, this can be done in <span class="math inline">\(O(n \log \min\{n, u\})\)</span> time and <span class="math inline">\(\Theta(\min\{n, u\})\)</span> space. If we use a hash table, this can be done in <span class="math inline">\(\Theta(\min\{n, u\})\)</span> time and space.</p>
-<p><strong><em>Question to ponder</em></strong>: can we do it with sub-linear space?</p>
-<p>By allowing errors, this is possible. Let <span class="math inline">\(a = \left&lt; a_1, a_2, ..., a_{u} \right&gt;\)</span> be the frequency of elements in <span class="math inline">\(U\)</span> and <span class="math inline">\(b = \left&lt; b_1, ..., b_{u} \right&gt;\)</span> be our estimation. Our goal is to minimize the <span class="math inline">\(\ell_\infty\)</span> error: <span class="math display">\[
-    || a - b ||_\infty \doteq \max_i |b_i - a_i|.
-\]</span></p>
-<h1 id="count-min-sketch">Count-Min Sketch</h1>
-<p>We use array <span class="math inline">\(A\)</span> with size <span class="math inline">\(m &lt; \min\{n, u\}\)</span> such that each element in <span class="math inline">\(U\)</span> is allocated a bucket in <span class="math inline">\(A\)</span> to keep its frequency. Some elements must share the buckets. Now we apply the following strategy:</p>
-<blockquote>
-<ol type="1">
-<li>Pick a perfect hash function <span class="math inline">\(h : U \rightarrow [m]\)</span> (this condition can be weaken, but for convenience of discussion, we assume perfectness here), that maps the elements uniformly to every bucket in the array.<br />
-</li>
-<li>For <span class="math inline">\(\forall s \in S\)</span>,<br />
-<span class="math inline">\(\qquad A[h(s)] \leftarrow A[h(s)] + 1\)</span> .</li>
-<li>Return <span class="math inline">\(b_i = A[h(i)]\)</span> as the estimation of <span class="math inline">\(a_i\)</span>.</li>
-</ol>
-</blockquote>
-<p>Intuitively, each slot obtains <span class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass <span class="math inline">\(\sum_i a_i = |a|\)</span> (where <span class="math inline">\(|\cdot |\)</span> denotes the <span class="math inline">\(\ell_1\)</span> norm). Conditioned on <span class="math inline">\(i\)</span>-th element is hashed to the <span class="math inline">\(h(i)\)</span> slots, <span class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass <span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is hashed to the <span class="math inline">\(h(i)\)</span>-th slot. Therefore, in expectation, <span class="math display">\[
-0 \le \mathbb{E}[b_i - a_i] \le \frac{|a|}{m}
-\]</span></p>
-<p>An interesting property is that, if some <span class="math inline">\(a_j\)</span> (<span class="math inline">\(j \neq i\)</span>) (or a small subset of <span class="math inline">\(a_j\)</span>'s) constitutes, say <span class="math inline">\(0.99\)</span> percent of the mass <span class="math inline">\(|a|\)</span>, as long as it is not hashed to <span class="math inline">\(h(i)\)</span>, then the expected error is less than <span class="math inline">\(0.01 \frac{|a|}{m}\)</span>.</p>
-<p>Formally, define the binary random variables <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \neq i\)</span> such that <span class="math display">\[
-X_j = \begin{cases}
-    a_j     &amp;\quad \text{if} \quad h(i) = h(j)\\
-    0       &amp;\quad \text{otherwise}
-\end{cases}
-\]</span> Then by perfectness of <span class="math inline">\(h\)</span>, <span class="math inline">\(\Pr[X_j = a_j] = \frac{1}{m}\)</span> and <span class="math inline">\(\mathbb{E}[X_j] = \frac{a_j}{m}\)</span>. (Indeed, pairwise independence of <span class="math inline">\(h\)</span> suffices to guarantee this condition).</p>
-<p>Then <span class="math display">\[
-    \mathbb{E} [b_i - a_i] = \mathbb{E} \left[ \sum_{j \neq i} X_j \right] = \sum_{j \neq i} \mathbb{E}[X_j] \le \frac{|a|}{m}
-\]</span></p>
-<p>As <span class="math inline">\(b_i - a_i\)</span> is non-negative, by Markov inequality, <span class="math display">\[
-\Pr \left[ b_i - a_i \ge \epsilon |a| \right] \le \frac{\mathbb{E}[b_i - a_i]}{\epsilon |a|}  \le \frac{1}{\epsilon m}
-\]</span> If we would like to achieve failure probability <span class="math inline">\(\delta\)</span>, we can set <span class="math inline">\(m = \epsilon^{-1} \delta^{-1}\)</span>.</p>
-<p>Question to ponder: can we improve this?</p>
-<p>Yes, by repetition. Instead of using just one array, we set <span class="math inline">\(d\)</span> arrays (to be set latter) and choose <span class="math inline">\(d\)</span> hash functions independently. Then the probability that all estimations deviate more than <span class="math inline">\(\epsilon |a|\)</span> is at most <span class="math display">\[
-\left( \frac{1}{\epsilon m} \right)^d
-\]</span></p>
-<p>When <span class="math inline">\(d = \ln{\delta} / \ln \frac{1}{\epsilon m} = \ln{ \frac{1}{\delta} } / \ln \epsilon m\)</span>, the failure probability decreases to <span class="math inline">\(\delta\)</span>. To minimize the space usage, we solve the following optimization problem: <span class="math display">\[
-\begin{aligned}
-    &amp;\min           &amp;\ln \frac{1} {\delta} \frac{m}{\ln m + \ln \epsilon} \\
-    &amp;\text{s.t. }   &amp;m \ge \frac{1}{\epsilon}
-\end{aligned}
-\]</span></p>
-<p>Solving the equation gives <span class="math inline">\(m = e \epsilon^{-1}\)</span>. The space consumption is <span class="math inline">\(\frac{e}{\epsilon} \ln \frac{1}{\delta}\)</span>.</p>
-<p>Note: suppose that <span class="math inline">\(|a| = 10000\)</span> and <span class="math inline">\(\epsilon = 0.1\)</span>, <span class="math inline">\(\delta = 0.01\)</span>, then with <span class="math inline">\(10 \cdot e \ln 100 \approx 125\)</span> words, we can estimate a particular <span class="math inline">\(a_i\)</span> with the absolute error less than <span class="math inline">\(1000\)</span>. If <span class="math inline">\(a_i = 9000\)</span>, the relative error is small. However, if <span class="math inline">\(a_i = 1\)</span>, basically our estimation if rather inaccurate.</p>
-<p>Question to ponder: what if we analyze this by Chernoff style inequality?</p>
-<p>If we make <span class="math inline">\(d\)</span> repetition, then the confidence interval of the mean estimation is given by (Hoeffding's inequality) <span class="math display">\[
-|a|\sqrt{\frac{\log \frac{2}{\delta} }{2 d} }
-\]</span> If we want this interval to be smaller than <span class="math inline">\(\epsilon |a|\)</span>, then we need <span class="math inline">\(d = \frac{ \log \frac{2}{\delta} }{2 \epsilon^2}\)</span>, which is a <span class="math inline">\(\frac{1}{\epsilon }\)</span> worse than the above analysis. Intuitively, we require stronger condition for concentration of mean value than that for existence of near-min value.</p>
-<h1 id="count-sketch">Count-Sketch</h1>
-<p>One drawback of Count-Min Sketch is that the estimator constructed is one-sided and not unbiased. This can be fixed by introducing an additional function <span class="math inline">\(g : U \rightarrow \{ - 1, 1 \}\)</span> that gives each elements in <span class="math inline">\(U\)</span> a sign ("+" or "-") independently and uniformly at random. Now,</p>
-<ol start="2" type="1">
-<li>For each element <span class="math inline">\(s \in S\)</span>, we increase the counter <span class="math inline">\(h(s)\)</span> in the array by 1 if <span class="math inline">\(g(s) &gt; 0\)</span> or <span class="math inline">\(-1\)</span> if <span class="math inline">\(g(s) &lt; 0\)</span>.</li>
-<li>Finally, we set <span class="math inline">\(b_i = A[h(i)] \cdot g(i)\)</span> as the estimation of <span class="math inline">\(a_i\)</span>.</li>
-</ol>
-<p>In expectation, each slot obtains <span class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass <span class="math inline">\(\sum_i a_i = |a|\)</span>. But as each element "flips" it sign randomly, the expected value obtained is 0. Now, conditioned on <span class="math inline">\(i\)</span>-th element is hashed to the <span class="math inline">\(h(i)\)</span> slots, <span class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass <span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is hashed to the <span class="math inline">\(h(i)\)</span>-th slot. With their signs flipped randomly, they contribute 0 to the <span class="math inline">\(h(i)\)</span>-th slot. Hence, <span class="math display">\[
-\mathbb{E}[b_i - a_i] = 0
-\]</span> Formally, define the binary random variables <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \neq i\)</span> such that <span class="math display">\[
-X_j = \begin{cases}
-    a_j     &amp;\text{if} \quad h(i) = h(j) \wedge g(j) = g(i) \\
-    - a_j   &amp;\text{if} \quad h(i) = h(j) \wedge g(j) \neq g(i) \\
-    0       &amp;\text{otherwise}
-\end{cases}
-\]</span> Then by perfectness and independence of <span class="math inline">\(h\)</span> and <span class="math inline">\(g\)</span>,</p>
-<p><span class="math display">\[
-    \Pr[X_j = a_j] = \frac{1}{2m} \\
-    \Pr[X_j = -a_j] = \frac{1}{2m} \\
-    \Pr[X_j = 0] = 1 - \frac{1}{m}
-\]</span></p>
-<p>and <span class="math display">\[
-\begin{aligned}
-    \mathbb{E}[X_j] 
-    &amp;= 0 \\
-    \mathbb{E}[b_i - a_i] 
-    &amp;= \mathbb{E}[\sum_{j \neq i} X_j] 
-    = \sum_{j \neq i} \mathbb{E}[X_j] 
-    = 0 \\
-    \mathbb{Var} \left[ X_j \right] 
-    &amp;= \mathbb{E} [X_j^2] - (\mathbb{E}[X_j])^2 
-    = \frac{a_j^2}{m} \\
-    \mathbb{Var} \left[ \sum_{j \neq i} X_j \right] 
-    &amp;= \sum_{j \neq i} \mathbb{Var} [X_j] 
-    = \sum_{j \neq i} \frac{a_j^2}{m} 
-    \le \frac{|a|_2^2}{m}
-    \end{aligned}
-\]</span></p>
-<p>where <span class="math inline">\(|a|_2^2\)</span> is the <span class="math inline">\(l_2\)</span> norm of <span class="math inline">\(a\)</span>. Note that the above analysis requires only pair independence. The random variable <span class="math inline">\(X_j\)</span> is two sided, therefore we can not use Markov Inequality for analysis.</p>
-<p>Question to ponder: is it possible to analyze this directly by Chernoff style inequality?</p>
-<p>The tool we resort to is Chebyshev's inequality: <span class="math display">\[
-\Pr \left[ |\sum_{j \neq i} X_j - 0| \ge \epsilon |a|_2 \right] \le \frac{\mathbb{Var} [\sum_{j \neq i} X_j]}{\epsilon^2 |a|_2^2 } \le \frac{1}{m\epsilon^2 }
-\]</span> we take <span class="math inline">\(m = k\epsilon^{-2}\)</span> for some integer <span class="math inline">\(k&gt; 2\)</span>.</p>
-<p>How do we amplify the successful probability? We repeat the experiment <span class="math inline">\(d\)</span> times, and take the median. The only way that the median makes a mistake is when more than half of the estimations deviate more <span class="math inline">\(\epsilon |a|_2\)</span>. Denote <span class="math inline">\(Y\)</span> the number of estimation such that the error is more than <span class="math inline">\(\epsilon |a|_2\)</span>. By Chernoff, <span class="math display">\[
-\begin{aligned}
-    \Pr \left[ Y - \frac{d}{k}\ge \frac{d}{2} - \frac{d}{k} \right] 
-    &amp;= \Pr \left[ Y - \frac{d}{k}\ge (\frac{1}{2} - \frac{1}{k})\cdot k \cdot \frac{d}{k} \right] \\
-    &amp;\le \exp \big( -\frac{d}{3 k} (\frac{k}{2} - 1)^2  \big) \\
-    &amp;= \delta 
-\end{aligned}
-\]</span></p>
-<p>which solves to <span class="math display">\[
-d= \frac{3k}{(k/2  -1)^2} \log \frac{1}{\delta}
-\]</span> The overall space usage is therefore <span class="math display">\[
-md = \frac{3k^2}{\epsilon^2 (k/2  -1)^2} \log \frac{1}{\delta} 
-= \frac{3}{\epsilon^2 (1/2  - \frac{1}{k} )^2} \log \frac{1}{\delta}
-\]</span> Question to ponder: the expression is wired, which implies that <span class="math inline">\(k \rightarrow \infty\)</span>, the space usage converges to <span class="math inline">\(\frac{12}{\epsilon^2} \log \frac{1}{\delta}\)</span>, which is worse than count-min hash than a <span class="math inline">\(\frac{1}{\epsilon}\)</span> factor.</p>
-<h4 id="relation-between-a_1-and-a_2.">Relation between <span class="math inline">\(|a|_1\)</span> and <span class="math inline">\(|a|_2\)</span>.</h4>
-<p>Their relation is given as follows (by concavity of the <span class="math inline">\(\sqrt \cdot\)</span> function) <span class="math display">\[
-|a|_2 \le |a|_1 \le \sqrt{ |u| } |a|_2
-\]</span> In particular, when <span class="math inline">\(|u| = 2\)</span>, the inequality becomes <span class="math display">\[
-|a_1 + a_2| \le \sqrt 2 \sqrt{a_1^2 + a_2^2 }
-\]</span> When the dimension is higher than <span class="math inline">\(2\)</span>, the factor in the RHS can not bounded to <span class="math inline">\(\sqrt 2\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -585,7 +655,7 @@ md = \frac{3k^2}{\epsilon^2 (k/2  -1)^2} \log \frac{1}{\delta}
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">145</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

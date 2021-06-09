@@ -146,6 +146,239 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/18/Hashing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/18/Hashing/" class="post-title-link" itemprop="url">Hashing</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-18 15:07:42" itemprop="dateCreated datePublished" datetime="2018-07-18T15:07:42+10:00">2018-07-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-03 00:17:49" itemprop="dateModified" datetime="2020-05-03T00:17:49+10:00">2020-05-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Let <span class="math inline">\(S = \{ x_1, x_2, ..., x_m \}\)</span> be a set of distinct element from domain <span class="math inline">\(U\)</span>. A function <span class="math inline">\(h: U \rightarrow [n]\)</span> that takes element from <span class="math inline">\(U\)</span> to a smaller domain <span class="math inline">\([n]\)</span> is called a hash function, where <span class="math inline">\([n] = \{ 0, 1, ..., n - 1\}\)</span> and <span class="math inline">\(n \le |U|\)</span>. In the case where <span class="math inline">\(n &lt; |U|\)</span>, there must be some <span class="math inline">\(i \in [n]\)</span>, s.t., <span class="math inline">\(|h^{-1}(i)| &gt; 1\)</span>. We are interested in the number of total duplicate value in <span class="math inline">\(h(S) = \{ h(x_1), h(x_2), ..., h(x_m) \}\)</span>.</p>
+<p>If both <span class="math inline">\(S\)</span> and <span class="math inline">\(h\)</span> are fixed, there is nothing uncertain. There are two ways to add some randomness to our analysis</p>
+<ol type="1">
+<li><p><span class="math inline">\(h\)</span> is fixed, and <span class="math inline">\(S\)</span> follows some distribution on <span class="math inline">\(U\)</span>. As an example, let <span class="math inline">\(U = [0, 2^{20} - 1]\)</span> and <span class="math inline">\(h(x) = x \ \&amp; \ 1023\)</span> that returns the last <span class="math inline">\(10\)</span> bits of <span class="math inline">\(x\)</span> (in binary form). If <span class="math inline">\(S\)</span> is sampled uniformly at random from <span class="math inline">\(U\)</span>, then on average for each <span class="math inline">\(x_i \in S\)</span>, there are <span class="math inline">\(\frac{m - 1}{1024}\)</span> elements that have the same value as <span class="math inline">\(x_i\)</span> under <span class="math inline">\(h\)</span>.</p></li>
+<li><p>The assumption that <span class="math inline">\(S\)</span> follows some distribution is too strong. Instead we assume that given <span class="math inline">\(S\)</span>, we select a function <span class="math inline">\(h\)</span> uniformly, from a set of functions <span class="math inline">\(\mathcal{H}\)</span>. Now we are going to analyze the probability <span class="math inline">\(P[ h(x_i) = h(x_j) ]\)</span> for <span class="math inline">\(i \neq j\)</span>.</p></li>
+</ol>
+<p>Let <span class="math inline">\(p &gt; |U|\)</span> be a prime number and <span class="math display">\[
+\mathcal{H} \doteq \{ h(x) = ax + b \mod p \mod n | 1 \le a &lt; p, 0 \le b &lt; p \}
+\]</span></p>
+<p>It follows that if <span class="math inline">\(h\)</span> is sampled uniformly at random, <span class="math inline">\(P[h(x_i) = h(x_j)] \le 1 / n\)</span> for <span class="math inline">\(i \neq j\)</span>.</p>
+<h5 id="lemma-1.">Lemma 1.</h5>
+<p>For <span class="math inline">\(x_i \neq x_j\)</span>, and <span class="math inline">\(s, t \in [p], s \neq t\)</span>, there is a unique pair <span class="math inline">\((a,b) \in [p]^+ \times [p]\)</span> <span class="math display">\[
+    a x_i + b \mod p = s \\
+    a x_j + b \mod p = t
+\]</span> where <span class="math inline">\([p]^+ \doteq \{1, 2, ..., p-1 \}\)</span>.</p>
+<p><strong>Proof</strong>: Since <span class="math inline">\([p]\)</span> is a finite filed and <span class="math inline">\(x_i \neq x_j\)</span>, the matrix</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+x_i \mod p, 1 \\
+x_j \mod p, 1
+\end{bmatrix} \in [p]^{2 \times 2}
+\]</span></p>
+<p>is invertible. Therefore,</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+a \\ 
+b
+\end{bmatrix} 
+= 
+\begin{bmatrix}
+x_i \mod p, 1 \\
+x_j \mod p, 1
+\end{bmatrix}^{-1}
+\begin{bmatrix}
+s \\ 
+t
+\end{bmatrix}
+\]</span> is unique. Moreover, <span class="math inline">\(a \neq 0\)</span>. Otherwise <span class="math inline">\(b = s\)</span> and <span class="math inline">\(b = t\)</span>, a contradiction to <span class="math inline">\(s \neq t\)</span>.</p>
+<h5 id="lemma-2.">Lemma 2.</h5>
+<p>For <span class="math inline">\(x_i \neq x_j\)</span>, <span class="math display">\[
+\begin{aligned}
+P[h(x_i = x_j)] 
+&amp;= \sum_{s, t \in [p], s \neq t, s \mod n = t \mod n} P[ h(x_i) = s \wedge h(x_j) = t] \\
+&amp;= \sum_{s, t \in [p], s \neq t, s = t \mod n} \frac{1}{ (p-1)p } \\
+&amp;= \sum_{s \in [p]} \sum_{t \in [p], t \neq s, t = s \mod n} \frac{1}{ (p-1)p } \\
+&amp;\le \sum_{s \in [p]} \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
+&amp;= p \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
+&amp;= \frac{1}{ n }
+\end{aligned}
+\]</span></p>
+<h5 id="lemma-3.">Lemma 3.</h5>
+<p>The expected number of pair <span class="math inline">\(x_i, x_j\)</span>, s.t., <span class="math inline">\(x_i \neq x_j \wedge h(x_i) = h(x_j)\)</span> is given by</p>
+<p><span class="math display">\[
+E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] = \sum_{x_i \neq x_j} P[h(x_i = x_j)] = \binom{m}{2} \frac{1}{n} = \frac{m (m - 1)}{ 2n }
+\]</span></p>
+<p>When <span class="math inline">\(m^2 \le n\)</span>, then <span class="math inline">\(E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] \le \frac{1}{2}\)</span>. By Markov inequality,</p>
+<p><span class="math display">\[
+P[\exists \quad \text{collision}] \le \frac{1}{ 2 }
+\]</span></p>
+<p>Lemma 4.</p>
+<p>With probability at most <span class="math inline">\(1/2\)</span>, some bin contains more than <span class="math inline">\(\frac{m}{n} + \sqrt{2m}\)</span> balls.</p>
+<p>For a fixed bin, let <span class="math inline">\(Y\)</span> denote the number of ball in this bin. Further, define <span class="math display">\[
+Y_i = \begin{cases}
+1, \qquad \text{if the } i \text{-th ball falls into the bin} \\
+0, \qquad \text{otherwise}
+\end{cases}
+\]</span> Then <span class="math inline">\(Y = \sum_i Y_i\)</span>, and <span class="math display">\[
+E[Y] = \frac{m}{n} \\
+\]</span> By pair-wise independence, we have <span class="math display">\[
+Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
+\]</span> Therefore, by Chebyshev inequality, we have <span class="math display">\[
+\Pr \left[ |Y - E[Y]| \ge \sqrt{2n} \sqrt{ m \frac{1}{n} \left(1 - \frac{1}{n} \right)} \right] = \Pr[|Y - E[Y]| \ge \sqrt{2n} \cdot \sigma] \le \frac{Var[Y]}{2n\sigma^2} = \frac{1}{2n}
+\]</span> Finally, applying union bound over <span class="math inline">\(n\)</span> bins, we get <span class="math display">\[
+\Pr[\text{some bin gets more than } \sqrt{2m} \text{ balls} ] \le \frac{1}{2}
+\]</span></p>
+<h5 id="reference">Reference:</h5>
+<ol type="1">
+<li>Sanjeev Arora, Cos 521: Advanced Algorithm Design, Lecture 1: Course Intro and Hashing</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/17/Sampling-Probability/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/17/Sampling-Probability/" class="post-title-link" itemprop="url">Sampling Probability</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-17 21:34:45" itemprop="dateCreated datePublished" datetime="2018-07-17T21:34:45+10:00">2018-07-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-07-18 00:19:26" itemprop="dateModified" datetime="2018-07-18T00:19:26+10:00">2018-07-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose we have a set of number <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> and we would like to estimate its sum <span class="math inline">\(s = \sum_i x_i\)</span>. However, we can only access the set <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> by sampling an element <span class="math inline">\(x_i, 1 \le i \le n\)</span> randomly. Let <span class="math inline">\(p_i\)</span> be the probability that we get <span class="math inline">\(x_i\)</span>. If <span class="math inline">\(p_i\)</span> is known (either before sampling or the moment we get a sampled element, depending on application), then we can still construct an unbiased estimator of <span class="math inline">\(s\)</span>. To see this, define</p>
+<p><span class="math display">\[
+y_i = \frac{x_i} {p_i}
+\]</span></p>
+<p>and <span class="math inline">\(Y\)</span> a random variable that takes value <span class="math inline">\(y_i\)</span> with probability <span class="math inline">\(p_i\)</span>. The mean of <span class="math inline">\(Y\)</span> is given by</p>
+<p><span class="math display">\[
+E[Y] = \sum_i p_i y_i = \sum_i p_i \frac{x_i} {p_i} = \sum_i x_i = s. 
+\]</span></p>
+<p>Moreover, the variance of <span class="math inline">\(Y\)</span> is minimized when <span class="math inline">\(p_i = \frac{x_i} { s }\)</span> for all <span class="math inline">\(i\)</span>. It follows that <span class="math inline">\(y_i = \frac{ x_i } { x_i / s } = s\)</span> is a constant and <span class="math inline">\(Y\)</span> has variance <span class="math inline">\(0\)</span> (which is the smallest variance possible as its must be non-negative).</p>
+<blockquote>
+<p>Remark: we can also verify this by formulating this as an optimization problem then using Lagrangian method.</p>
+</blockquote>
+<p>In some applications, some elements in <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> may have same value. Suppose there are <span class="math inline">\(m\)</span> different value in <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> and define <span class="math inline">\(X_j ( 1 \le j \le m)\)</span> the set of elements with the <span class="math inline">\(j\)</span>-th largest value. Denote the sum of probability of elements in <span class="math inline">\(X_j\)</span> as <span class="math inline">\(P_j = \sum_{x \in X_j} p_x\)</span>. Also, let <span class="math inline">\(f(x_i)\)</span> denote the group that element <span class="math inline">\(x_i\)</span> belongs to, i.e., <span class="math inline">\(x_i \in X_{ f( x_i ) }\)</span>. Consider</p>
+<p><span class="math display">\[
+y&#39;_i = \frac{ x_i |X_{ f(x_i) }| } { P_{ f(x_i) } }
+\]</span></p>
+<p>and <span class="math inline">\(Y&#39;\)</span> a random variable that takes value <span class="math inline">\(y&#39;_i\)</span> with probability <span class="math inline">\(p_i\)</span>. The mean of <span class="math inline">\(Y&#39;\)</span> is also an unbiased estimator of <span class="math inline">\(s\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+E[Y&#39;] 
+&amp;= \sum_{i = 1}^n p_i y&#39;_i \\
+&amp;= \sum_{i = 1}^n p_i \frac{ x_i |X_{ f(x_i) }| } { P_{ f(x_i) } } \\
+&amp;= \sum_{j = 1}^m \sum_{x \in X_j} p_x \frac{ x |X_{ f(x) }| } { P_j } \\
+&amp;= s
+\end{aligned}
+\]</span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/04/Fabonacci-Number/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -292,358 +525,6 @@ x_{2n} - x_{2n - 1} = \frac{1}{x_{2n - 1} } - \frac{1}{x_{2n - 2} }  = - \frac{ 
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/06/20/Bennett-s-Inequality/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/20/Bennett-s-Inequality/" class="post-title-link" itemprop="url">Bennett's Inequality</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-06-20 21:56:51" itemprop="dateCreated datePublished" datetime="2018-06-20T21:56:51+10:00">2018-06-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-09 16:34:40" itemprop="dateModified" datetime="2021-03-09T16:34:40+11:00">2021-03-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(X\)</span> be a random variable such that <span class="math inline">\(X \le M\)</span> and <span class="math inline">\(\mathbb{E} [X]= \mu\)</span>. Let <span class="math inline">\(X_1, X_2, ..., X_n\)</span> be a set of <span class="math inline">\(i.i.d\)</span> copies of <span class="math inline">\(X\)</span> and <span class="math inline">\(\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i\)</span>. Then <span class="math display">\[
-\begin{aligned}
-    \Pr \{ \bar{X} \ge \mu + t\} 
-    &amp;= \Pr \{ e^{ \lambda \bar{X} } \ge e^{\lambda (\mu + t)} \} \\
-    &amp;\le \frac{  \mathbb{E}  [ \exp ( \lambda \bar{ X} ) ] }{ \exp \{ \lambda(\mu + t) \} } \\
-    &amp;= \frac{ \mathbb{E} [ \exp (\lambda\sum_{i=1}^n X_i ) ]}{ \exp \{ \lambda n(\mu + t) \}  } \\
-    &amp;= \frac{ \prod_{i=1}^n  \mathbb{E} [ \exp (\lambda X ) ]}{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;= \frac{ \prod_{i=1}^n  \sum_{j=1}^\infty \frac{\lambda^j  \mathbb{E} [X^j]}{j!}  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;= \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \sum_{j=2}^\infty \frac{\lambda^j  \mathbb{E} [X^{j-2}X^2]}{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\ 
-    &amp;\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \sum_{j=2}^\infty \frac{\lambda^j M^{j-2}  \mathbb{E} [X^2]}{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} \sum_{j=2}^\infty \frac{\lambda^j M^{j} }{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M))  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;= \left( \frac{  \exp \left\{\lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M ) \right\} }{ \exp( \lambda   (\mu + t) ) } \right)^n \\
-    &amp;= \left( \exp \left( -\lambda t + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M ) \right)  \right)^n \\
-\end{aligned}
-\]</span></p>
-<p>By setting the derivative of <span class="math inline">\(\lambda\)</span> to 0, we get <span class="math display">\[
--t + { \mathbb{E} [X^2] \over M^2} ( M e^{\lambda M} - M) = 0 \rightarrow  \lambda = {1 \over M} \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 })}
-\]</span> Therefore, <span class="math display">\[
-\begin{aligned}
-    \Pr \{ \overline{X} \ge \mu + t\} 
-    &amp;\le \left( \exp \left\{ - {t \over M} \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } }) + \frac{ \mathbb{E} [X^2]}{M^2}{ {( {t M \over  \mathbb{E} [X^2] }  + 1  - 1 - \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } } ) } } ) \right\} \right)^n \\
-    &amp;=  \exp \left\{ \frac{n \mathbb{E} [X^2]}{M^2}{ {( {t M \over  \mathbb{E} [X^2] }  - ({t M \over  \mathbb{E} [X^2] }  + 1 ) \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } })} }) \right\} \\
-    &amp;= \exp \left\{ \frac{n \mathbb{E} [X^2]}{M^2} h(\frac{tM}{ \mathbb{E} [X^2]})\right\}
-\end{aligned}
-\]</span> where <span class="math inline">\(h(x) = x - (1 + x) \ln (1 + x)\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/05/21/SVD-Computation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/05/21/SVD-Computation/" class="post-title-link" itemprop="url">SVD Computation</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-05-21 10:49:11" itemprop="dateCreated datePublished" datetime="2018-05-21T10:49:11+10:00">2018-05-21</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-30 13:41:10" itemprop="dateModified" datetime="2021-04-30T13:41:10+10:00">2021-04-30</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Singular vector decomposition is one of the highlights of linear algebra.</p>
-<h1 id="review-of-linear-transformation">Review of Linear Transformation</h1>
-<p>Before diving into the topic, we have a brief review of linear transformation. Given a matrix <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> with rank <span class="math inline">\(r\)</span>, we can view it as a linear transformation from <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span> defined as <span class="math display">\[
-    f(x) = Ax,  \forall x \in \mathbb{R}^n.
-\]</span> It maps a vector in the row space, i.e., the subspace spanned by row vectors of <span class="math inline">\(A\)</span>, to a vector in the column space, the subspace spanned by column vectors of <span class="math inline">\(A\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Linear%20Mapping.jpg" /></p>
-<p>Define</p>
-<ol type="1">
-<li><p><span class="math inline">\(S(A^T) = \{ \sum_{i = 1}^n \lambda_i A[i,:] : \lambda_i \in \mathbb{R}, \forall i \in [n] \}\)</span>, which we call the row space of <span class="math inline">\(A\)</span>.</p></li>
-<li><p><span class="math inline">\(N(A^T) = \{ x \in \mathbb{R}^m, s.t., Ax = 0\}\)</span>, the subspace perpendicular to <span class="math inline">\(S(A^T)\)</span>.</p></li>
-<li><p><span class="math inline">\(S(A) = \{ \sum_{i = 1}^m \lambda_i A[:,i] : \lambda_i \in \mathbb{R}, \forall i \in [m] \}\)</span>, the columns space of <span class="math inline">\(A\)</span>.</p></li>
-<li><p><span class="math inline">\(N(A)\)</span> the space perpendicular to <span class="math inline">\(S(A)\)</span>.</p></li>
-</ol>
-<p>Note that <span class="math inline">\(S(A^T)\)</span> and <span class="math inline">\(S(A)\)</span> has the same dimension <span class="math inline">\(r\)</span>. For any <span class="math inline">\(x \in \mathbb{R}^n\)</span>, we can write <span class="math inline">\(x = y + z\)</span>, such that <span class="math inline">\(y \in S(A^T)\)</span> and <span class="math inline">\(z \in N(A^T)\)</span>. The operation <span class="math inline">\(Ax = Ay + Az\)</span>, takes the <span class="math inline">\(y\)</span> component to a vector in <span class="math inline">\(S(A)\)</span> and the <span class="math inline">\(z\)</span> component to point <span class="math inline">\(0\)</span>, as illustrated by the figure.</p>
-<h1 id="singular-vector-decomposition">Singular Vector Decomposition</h1>
-<p>Singular vector decomposition aims to find</p>
-<ol type="1">
-<li>an orthonormal basis <span class="math inline">\(\{ v_1, v_2, ..., v_r \}\)</span> for <span class="math inline">\(S(A^T)\)</span>,</li>
-<li>and an orthogonal base <span class="math inline">\(\{ u_1, u_2, ..., u_r \}\)</span> for <span class="math inline">\(S(A)\)</span>,</li>
-<li>such that <span class="math inline">\(f(v_i) = A v_i = \sigma_i u_i\)</span> for all <span class="math inline">\(i \in [r]\)</span> and <span class="math inline">\(\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r &gt; 0\)</span>.</li>
-</ol>
-<p>When restricted to the sets <span class="math inline">\(\{ v_1, v_2, ..., v_r \}\)</span> and <span class="math inline">\(\{ u_1, u_2, ..., u_r \}\)</span>, <span class="math inline">\(f\)</span> is a bijection.</p>
-<p>If we write <span class="math inline">\(V = [v_1, v_2, ..., v_r]\)</span>, <span class="math display">\[
-    \Sigma = 
-        \begin{bmatrix} 
-            &amp;\sigma_1 \\ 
-            &amp;&amp;\sigma_2 \\ 
-            &amp;&amp;&amp; ... \\ 
-            &amp;&amp;&amp;&amp;\sigma_r 
-        \end{bmatrix}
-\]</span> and <span class="math inline">\(U = [u_1, u_2, ..., u_r]\)</span>, then <span class="math display">\[
-    A V = U \Sigma. 
-\]</span></p>
-<p>As the columns of <span class="math inline">\(V\)</span> are orthonormal vectors, it is invertible and <span class="math inline">\(V^{-1} = V^T\)</span>. Hence <span class="math display">\[
-    A = U \Sigma V^{-1} = U \Sigma V^T
-\]</span></p>
-<p>Equivalently, it holds that <span class="math display">\[
-    A = \sigma_1 u_1 v_1^T + \sigma_2 u_2 v_2^T + ... + \sigma_r u_r v_r^T. 
-\]</span></p>
-<p>Further, <span class="math display">\[
-    A^T A = V \Sigma^2 V^T, A A^T = U \Sigma^2 U^T.
-\]</span> which implies that <span class="math display">\[
-    A^T A V = V \Sigma^2, A A^T U = U \Sigma^2.
-\]</span> The <span class="math inline">\(v_i\)</span>'s and <span class="math inline">\(u_i\)</span>'s are eigenvectors of <span class="math inline">\(A^T A\)</span> and <span class="math inline">\(A A^T\)</span> respectively.</p>
-<h2 id="existence">EXISTENCE</h2>
-<p>The key is <span class="math inline">\(A^T A\)</span>, which is semi-positive. Since <span class="math display">\[
-    A^T A x = 0 \Leftrightarrow x A^T A x = 0 \Leftrightarrow Ax = 0,
-\]</span></p>
-<p><span class="math inline">\(A^T A\)</span> and <span class="math inline">\(A\)</span> has the rank <span class="math inline">\(r\)</span>, the same null space and hence the same row space. Further, as <span class="math inline">\(A^T A\)</span> is semi-positive, it has <span class="math inline">\(r\)</span> positive eigenvalue. Denote the eigenvalues of <span class="math inline">\(A^TA\)</span> in decreasing order as <span class="math inline">\(\lambda_1 \ge \lambda_2 \ge ... \ge \lambda_r &gt; 0\)</span> and the corresponding (unit length) eigenvectors as <span class="math inline">\(v_1, v_2, ..., v_r\)</span>. The <span class="math inline">\(v_i\)</span>'s are orthogonal, as</p>
-<ul>
-<li>For <span class="math inline">\(i \neq j\)</span>, <span class="math inline">\(v_i^T A^T A v_j = \lambda_i v_i^T v_j = \lambda_j v_i^T v_j\)</span>. As <span class="math inline">\(\lambda_i \neq \lambda_j\)</span>, <span class="math inline">\(v_i^T v_j = 0\)</span>.</li>
-</ul>
-<p>They constitute an orthogonal base of the row space of <span class="math inline">\(A^T A\)</span> and the row space <span class="math inline">\(A\)</span>.</p>
-<p>Now we use the <span class="math inline">\(v_i\)</span>'s to search for <span class="math inline">\(u_i\)</span>'s as follows: let <span class="math inline">\(\sigma = \sqrt{\lambda_i}\)</span>, we claim that <span class="math display">\[
-    u_i \doteq \frac{1}{\sigma_i} A v_i, \forall i \in [r]
-\]</span> are orthonormal.</p>
-<ol type="1">
-<li>The <span class="math inline">\(u_i\)</span>'s are orthogonal: <span class="math inline">\(u_i^T u_j = \frac{1}{\sigma_i \sigma_j} v_i^T A^T A v_j = \frac{\sigma_j^2 }{\sigma_i \sigma_j} v_i^T v_j = 0\)</span></li>
-<li>The <span class="math inline">\(u_i\)</span>'s are unite vectors: <span class="math inline">\(u_i^T u_i = \frac{1}{\sigma_i^2} v_i^T A^T A v_i = 1\)</span></li>
-</ol>
-<p>Hence <span class="math inline">\(u_i\)</span>'s constitutes an orthonormal basis. As the columns of <span class="math inline">\(A\)</span> has dimension <span class="math inline">\(r\)</span>, the <span class="math inline">\(u_i\)</span>'s covers the entire columns space. This completes the proof.<br />
-<span class="math inline">\(\blacksquare\)</span></p>
-<h2 id="geometric-interpretation">GEOMETRIC INTERPRETATION</h2>
-<p>To understand the geometry of SVD, we first extend the matrix <span class="math inline">\(V\)</span> to an orthogonal base in <span class="math inline">\(\mathbb{R}^n\)</span> and <span class="math inline">\(U\)</span> to an orthogonal base in <span class="math inline">\(\mathbb{R}^m\)</span>. By adding proper zero rows and columns to <span class="math inline">\(\Sigma\)</span>, we still have <span class="math inline">\(A = U \Sigma V^T\)</span>.</p>
-<p>Now, the transformation <span class="math inline">\(f(x)\)</span> is decomposed into three steps: <span class="math display">\[
-x \rightarrow V^Tx \rightarrow \Sigma (V^T x) \rightarrow U(\Sigma V^T x)
-\]</span></p>
-<p>It suffices to under the effect of multiplying an orthogonal matrix <span class="math inline">\(V\)</span>. It is indeed a rotation. To see this, multiply <span class="math inline">\(V\)</span> by <span class="math inline">\(e_i\)</span> gives <span class="math inline">\(v_i\)</span>, i.e., <span class="math inline">\(V e_i = v_i\)</span>, for all for <span class="math inline">\(i \in [n]\)</span>. Therefore, <span class="math inline">\(V\)</span> takes the orthogonal base <span class="math inline">\(I = [e_1, e_2, ..., e_n]\)</span> to the orthogonal base <span class="math inline">\(V = [v_1, v_2, ..., v_n]\)</span>.</p>
-<p>Note that the inverse <span class="math inline">\(V^{-1}\)</span> of <span class="math inline">\(V\)</span> is also an orthogonal matrix and hence a rotation. Indeed it rotates the orthogonal base <span class="math inline">\(V = [v_1, v_2, ..., v_n]\)</span> back to <span class="math inline">\(I = [e_1, e_2, ..., e_n]\)</span>. To understand this, observe that <span class="math inline">\(V^{-1} = V^T\)</span>. For arbitrary <span class="math inline">\(v_i\)</span>, we have <span class="math inline">\(V^T v_i = e_i\)</span>.</p>
-<p>Therefore, <span class="math inline">\(V^T x\)</span> corresponds to a rotation, in the reverse direction to the one defined by <span class="math inline">\(V\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Rotation.jpg" /></p>
-<p>Next, the matrix <span class="math inline">\(\Sigma\)</span> scales the <span class="math inline">\(i\)</span>-th dimension of <span class="math inline">\(V^T x\)</span> by <span class="math inline">\(\sigma_i\)</span>, for all <span class="math inline">\(i \in [n]\)</span>. Combined with the first step, if <span class="math inline">\(x = v_i\)</span>, then it is first rotation to the direction <span class="math inline">\(e_i\)</span>, then scaled by a factor <span class="math inline">\(\sigma_i\)</span>.</p>
-<p>Finally, <span class="math inline">\(U\)</span> is an orthogonal matrix and corresponds to another rotation, which take <span class="math inline">\(e_i \in \mathbb{R}^m\)</span> to a vector <span class="math inline">\(u_i\)</span>.</p>
-<p><em>Corollary</em>: Define the Frobenius norm of a matrix <span class="math inline">\(A\)</span> as <span class="math display">\[
-\Vert A|_F = \sqrt{\sum_{i, j} a_{i, j}^2 }
-\]</span> Then <span class="math inline">\(\Vert A\Vert _F^2 = \Vert \Sigma\Vert ^2 = \sum_{i = 1}^r \sigma_i^2\)</span>.</p>
-<p><em>Proof:</em> Note that rotating the vectors do not change their distance from the origin. Recall that <span class="math inline">\(U^T\)</span> and <span class="math inline">\(V\)</span> are both rotations. Hence <span class="math inline">\(\Vert A\Vert _F^2 = \Vert AV\Vert _F^2 = \Vert U^T A V\Vert _F^2 = \Vert U^T U \Sigma V^T V\Vert _F^2= \Vert \Sigma\Vert _F^2\)</span>.</p>
-<p><span class="math inline">\(\square\)</span>.</p>
-<h2 id="applications">APPLICATIONS</h2>
-<p>An important property of the <span class="math inline">\(v_i\)</span> is that</p>
-<ol type="1">
-<li><span class="math inline">\(v_1 = \arg\max_{v \in \mathbb{R}^n, \Vert v\Vert = 1} \Vert Av\Vert\)</span>.</li>
-<li><span class="math inline">\(v_2 = \arg\max_{v \in \mathbb{R}^n, \Vert v\Vert = 1, v \perp v_1} \Vert Av \Vert\)</span>.</li>
-<li>...</li>
-<li><span class="math inline">\(v_r = \arg\max_{v \in \mathbb{R}^n, \Vert v\Vert = 1, v \perp v_1, v \perp v_2, ..., v \perp v_{r - 1}} \Vert Av \Vert\)</span></li>
-</ol>
-<p><em>Proof</em>: For any <span class="math inline">\(v \in \mathbb{R}^n, \Vert v\Vert = 1\)</span>, we can write <span class="math inline">\(v = \sum_{i = 1}^n a_i v_i\)</span>, where <span class="math inline">\(\sum_{i = 1}^n a_i^2 = 1\)</span>, since <span class="math inline">\(v_i\)</span>'s are an orthogonal base. Then <span class="math display">\[
-\begin{aligned}
-\Vert Av\Vert ^2 
-    &amp;= x^T A^T A x \\
-    &amp;=  x^T V \Sigma U^T U \Sigma V^T x \\
-    &amp;= \Vert \Sigma V^T x\Vert ^2 \\
-    &amp;= \sum_{i = 1}^r a_i^2 \sigma_i^2 
-\end{aligned}
-\]</span> which is maximized to <span class="math inline">\(\sigma_1^2\)</span> when <span class="math inline">\(a_1 = 1\)</span> and <span class="math inline">\(a_i = 0, i \ge 2\)</span>. Hence (1) is proved.</p>
-<p>Similarly, when <span class="math inline">\(\Vert v\Vert = 1, v \perp v_1, v_2, ..., v_k\)</span> for some <span class="math inline">\(k &lt; r\)</span>, then <span class="math inline">\(a_1 = a_2 = ... a_k = 0\)</span>, and <span class="math inline">\(v = \sum_{i = k + 1}^r a_i v_i\)</span>. <span class="math display">\[
-\begin{aligned}
-\Vert Av\Vert ^2 
-    &amp;= \sum_{i = k + 1}^r a_i^2 \sigma_i^2 
-\end{aligned}
-\]</span> which achieves maximum when <span class="math inline">\(a_{k + 1} = 1\)</span> and <span class="math inline">\(a_i = 0, i &gt; k + 1\)</span>. In this case <span class="math inline">\(v = v_{k + 1}\)</span>.</p>
-<h3 id="best-fit-k-subspace">Best Fit <span class="math inline">\(k\)</span> subspace</h3>
-<p>An implication is that, the subspace space <span class="math inline">\(V_k\)</span> spanned by <span class="math inline">\((v_1, v_2, ..., v_k)\)</span>, is the best <span class="math inline">\(k\)</span>-dimension subspace of <span class="math inline">\(\mathbb{R}^n\)</span> that fits the row vectors of <span class="math inline">\(A\)</span>, namely, <span class="math inline">\(A[1, :], A[2, :], ..., A[m, :]\)</span>. Here fits mean the sum of the square of the perpendicular distance from the row vector to their projections on the subspace is minimized. Denote <span class="math inline">\(S\)</span> any subspace of <span class="math inline">\(\mathbb{R}^n\)</span>, then for <span class="math inline">\(v \in \mathbb{R}^n\)</span>, we can decompose <span class="math inline">\(v\)</span> into two part: the part <span class="math inline">\(v_S\)</span> that is within <span class="math inline">\(S\)</span> and the part <span class="math inline">\(v_{S_\perp}\)</span> perpendicular to <span class="math inline">\(S\)</span>. Then <span class="math display">\[
-\Vert v\Vert ^2 = \Vert v_{S}\Vert ^2 + \Vert v_{S_\perp}\Vert ^2
-\]</span> Minimizing <span class="math inline">\(\Vert v_{S_\perp}\Vert ^2\)</span> is equivalent to maximizing <span class="math inline">\(\Vert v_{S}\Vert ^2\)</span>. The subspace space by <span class="math inline">\((v_1, v_2, ..., v_k)\)</span> is the subspace that maximize the sum of the squares of the projections of row vectors to the subspace.</p>
-<p>We prove this by induction. When <span class="math inline">\(k = 1\)</span>, the proof holds trivially by the definition of <span class="math inline">\(v_1\)</span>. In particular, <span class="math inline">\(A v_1\)</span> is the lengths of the projections of the row to the line that go through <span class="math inline">\(v_1\)</span>, since <span class="math inline">\(v_1\)</span> is a unit vector. Further, the corresponding projected vectors in <span class="math inline">\(\mathbb{R}^n\)</span> are <span class="math display">\[
-Av_1 v_1^T  = \sigma_1 u_1 v_1^T
-\]</span></p>
-<p>For general <span class="math inline">\(k\)</span>, by induction hypothesis <span class="math inline">\(V_{k - 1}\)</span> is the best <span class="math inline">\(k-1\)</span> dimension space that fit rows of <span class="math inline">\(A\)</span>. Denote <span class="math inline">\(N(V_{k -1})\)</span> the subspace that is perpendicular to <span class="math inline">\(V_{k - 1}\)</span>, which has dimension <span class="math inline">\(n - k + 1\)</span>. For any <span class="math inline">\(k\)</span> dimensional subspace <span class="math inline">\(S \cap N(V_{k - 1}) \neq \emptyset\)</span>, since <span class="math inline">\(dim(S) + dim(N(V_{k - 1})) = k + n - k + 1 \ge n\)</span>. Let <span class="math inline">\(s_k \in S \cap N(V_{k - 1})\)</span> be a unit vector. By the definition of <span class="math inline">\(v_k\)</span>, we have <span class="math display">\[
-\Vert Av_k\Vert ^2 \ge \Vert As_k\Vert ^2
-\]</span> Now we can extend <span class="math inline">\(s_k\)</span> to a base of <span class="math inline">\(S\)</span>, denoted as <span class="math inline">\(s_1, s_2, ..., s_k\)</span>. By induction hypothesis, it holds <span class="math display">\[
-\sum_{i = 1}^{k - 1} \Vert A v_i\Vert ^2 \ge \sum_{i = 1}^{k - 1} \Vert A s_i\Vert ^2 
-\]</span> Hence <span class="math display">\[
-\sum_{i = 1}^{k} \Vert A v_i\Vert ^2 \ge \sum_{i = 1}^{k} \Vert A s_i\Vert ^2 
-\]</span> But the former is exactly sum of the squares of the lengths of the projections to <span class="math inline">\(V_k\)</span> and the later is the one to <span class="math inline">\(S\)</span>. Finally, we mention that the projection of <span class="math inline">\(A\)</span> to <span class="math inline">\(V_k\)</span> is given by <span class="math display">\[
-A_k = \sum_{i = 1}^k \sigma_i u_i v_i ^T 
-\]</span></p>
-<p>Corollary 1. For any rank <span class="math inline">\(k\)</span> matrix <span class="math inline">\(B\)</span>, we have <span class="math display">\[
-\Vert A - A_k\Vert _F \le \Vert A - B\Vert _F
-\]</span></p>
-<p>Intuitively, if we view square root of the sum of square distance of row vectors to the origin (note that the origin can be viewed as a zero dimension subspace.)</p>
-<p>Corollary 2. Define the 2-norm of a matrix <span class="math inline">\(A\)</span> as <span class="math display">\[
-    \Vert A \Vert _2 = \sigma_1 = \max_{v \in \mathbb{R}^n, \Vert v\Vert  = 1} \Vert Av \Vert 
-\]</span> The <span class="math inline">\(2\)</span>-norm is the square root of the maximum sum of squares of the projections of the row vectors to a one dimension subspace. Then an implication of the SVD is that, for any rank <span class="math inline">\(k\)</span> matrix <span class="math inline">\(B\)</span>, we have <span class="math display">\[
-\Vert A - A_k\Vert _2 \le \Vert A - B\Vert _2
-\]</span></p>
-<p><em>Proof:</em> First note that for <span class="math inline">\(v = \sum_{i = 1}^r a_i v_i\)</span>, such that <span class="math inline">\(\sum_{i = 1}^k a_i^2 = 1\)</span>, <span class="math display">\[
-    \Vert (A - A_k) v\Vert  = \sum_{i = k + 1}^r a_i \sigma_i
-\]</span> it is maximized when <span class="math inline">\(a_{k + 1} = 1\)</span> and <span class="math inline">\(\Vert A - A_k\Vert _2 = \sigma_{k + 1}\)</span>. Now, as <span class="math inline">\(dim(A_{k + 1}) + dim(N(B^T)) = k + 1 + n - k \ge n\)</span>, <span class="math inline">\(\exists v \in \mathbb{R}^n\)</span>, such that <span class="math inline">\(Bv = 0\)</span> and <span class="math inline">\(v = \sum_{i = 1}^{k + 1} a_i v_i\)</span> and <span class="math inline">\(\Vert v\Vert = 1\)</span>. Now <span class="math display">\[
-    \Vert A - B\Vert _2 \ge \Vert (A - B)v\Vert  = \Vert Av\Vert  = \sqrt{\sum_{i = 1}^{k + 1} a_i^2 \sigma_i^2 } \ge \sigma_{k + 1}
-\]</span> which finishes our proof.</p>
-<h3 id="computing-svd">Computing SVD</h3>
-<p>If suffices to compute the eigenvectors and eigenvalues of <span class="math inline">\(A^T A\)</span>, i.e., <span class="math inline">\(\sigma_i^2\)</span>'s and <span class="math inline">\(v_i\)</span>'s. In the simplest case, <span class="math inline">\(\sigma_1 &gt; \sigma_2 \ge \sigma_3 \ge ... \ge \sigma_r\)</span>, then we can take powers of <span class="math inline">\(A^T A\)</span>, <span class="math display">\[
-    (A^T A)^k = V \Sigma^{2k} V^T = \sum_{i = 1}^r \sigma_i^{2k} v_i v_i^T
-\]</span> Dividing the matrix by <span class="math inline">\(\sigma_1^{2k}\)</span>, <span class="math display">\[
-    \frac{1}{\sigma_1^{2k} } (A^T A)^k = V \Sigma^{2k} V^T = v_1 v_1^T + \sum_{i = 2}^r \frac{\sigma_i^{2k}}{\sigma_1^{2k} }  v_i v_i^T
-\]</span> The second part converges to 0 as <span class="math inline">\(k \rightarrow \infty\)</span>. Then for any vector <span class="math inline">\(v\)</span> that is not perpendicular to <span class="math inline">\(v_1\)</span>, we have <span class="math display">\[
-    \lim_k \frac{1}{\sigma_1^{2k} } (A^T A)^k v =  v_1 (v_1^T v) = (v_1^T v) v_1
-\]</span> which is a multiple of <span class="math inline">\(v_1\)</span>. Normalizing the vector recovers <span class="math inline">\(v_1\)</span>.</p>
-<p>When there is a tie of the largest eigenvalues, that is <span class="math inline">\(\sigma_1 = \sigma_2 = ... = \sigma_t\)</span> for some <span class="math inline">\(t &lt; r\)</span>, and suppose that <span class="math inline">\(v\)</span> is not perpendicular to <span class="math inline">\(v_1, v_2, ..., v_t\)</span> simultaneously, then <span class="math display">\[
-    \lim_k \frac{1}{\sigma_1^{2k} } (A^T A)^k v =  \text{the projection of } v \text { to  }  V_t
-\]</span> Suppose we are satisfied with this result, we still need to address two problems.</p>
-<ol type="1">
-<li>We use <span class="math inline">\(\sigma_1^{2k}\)</span> to normalize the resulting vector, which is unknown.</li>
-<li>How can we find a vector <span class="math inline">\(v\)</span> that is not perpendicular to all <span class="math inline">\(v_1, .., v_t\)</span> simultaneously, i.e., its projection to <span class="math inline">\(V_t\)</span> is not zero.</li>
-</ol>
-<p>We defer the discussion of the first issue. As for the second issue, we tackle the problem for picking a vector <span class="math inline">\(v\)</span> uniformly at random from the <span class="math inline">\(n\)</span>-dimension unit ball, and then normalize it by $v / v$, in the hope that it is a "good" vector.</p>
-<p><em>Lemma:</em> With probability at least <span class="math inline">\(1 / 2\)</span>, that <span class="math inline">\(v^T v_1 \ge 1 /\sqrt{n}\)</span>.</p>
-<p><img src="https://pic2.zhimg.com/80/v2-a11c6a482d1f70b3ee0052ee132cbef9_hd.jpg" /></p>
-<p><em>Proof:</em> By symmetry of the <span class="math inline">\(n\)</span>-dimension unit ball, it suffices to show that for an arbitrary given fixed direction, the projection of <span class="math inline">\(v\)</span> to that direction is at least <span class="math inline">\(1 / 4 \sqrt n\)</span> with probability <span class="math inline">\(1 / 2\)</span>. For convenience, we choose this direction to be <span class="math inline">\(e_1\)</span>.</p>
-<p>Denote the volume of an <span class="math inline">\(n\)</span>-dimensional unit ball as <span class="math inline">\(V(n)\)</span>.</p>
-<p>Now, we would like to use two cylinders to estimate the probability of <span class="math inline">\(|e_1 ^T v| / \Vert v\Vert \le \frac{1}{4 \sqrt n}\)</span>.</p>
-<p>Note that the points <span class="math inline">\(\{v \}\)</span> inside the ball with <span class="math inline">\(e_1^T v / \Vert v\Vert \le \frac{1}{4 \sqrt n}\)</span> is completely contained in a cylinder centered in the equator, with radius one and height <span class="math inline">\(\frac{1}{4 \sqrt n}\)</span> that is parallel to <span class="math inline">\(e_1\)</span>. Its volume is given by <span class="math inline">\(\frac{1}{4 \sqrt n} V(n - 1)\)</span>. Hence: <span class="math display">\[
-    \Pr \left[ |v^T e_1| \le \frac{1}{4 \sqrt n} \right] \le \frac{2 \frac{1}{4 \sqrt n} V(n - 1)}{V(n)}
-\]</span> On the other hand, we can use a cylinder centered at the equator to lower bound the volume of <span class="math inline">\(n\)</span>-dimension unit ball. The cylinder is inside the ball, with height <span class="math inline">\(2\frac{1}{\sqrt n}\)</span> and radius <span class="math inline">\((1 - (\frac{1}{ \sqrt n})^2)^{1/ 2}\)</span> . Therefore, <span class="math display">\[
-\begin{aligned}
-    V(n) 
-    &amp; \ge 2 \frac{1}{\sqrt n} \left(1 - (\frac{1}{\sqrt n})^2 \right)^{(n - 1) / 2} V(n - 1) \\
-    &amp;\ge 2 \frac{1}{\sqrt n} \left( 1 - \frac{1}{n} \right)^{n / 2} V(n - 1)
-\end{aligned}
-\]</span> Note that <span class="math inline">\((1 - \frac{1}{n})^n\)</span> increases with <span class="math inline">\(n\)</span>, and for <span class="math inline">\(n \ge 2\)</span>, <span class="math inline">\((1 - \frac{1}{n})^n \ge \frac{1}{4}\)</span> and <span class="math inline">\(\left( 1 - \frac{1}{n} \right)^{n / 2} \ge \frac{1}{2}\)</span> <span class="math display">\[
-    \Pr \left[ v^T e_1 \le \frac{1}{4 \sqrt n} \right] \le \frac{\frac{1}{4 \sqrt n} V(n - 1)}{V(n)} \le \frac{1}{2}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<p><em>Theorem</em> After <span class="math inline">\(\frac{1}{\epsilon} \ln \frac{n}{\epsilon}\)</span> iterations, we can obtain a vector whose component that is perpendicular to <span class="math inline">\(V_t\)</span> is at most <span class="math inline">\(\epsilon\)</span> fraction of its square length, with probability at least <span class="math inline">\(\frac{1}{2}\)</span>.</p>
-<p><em>Proof:</em> If <span class="math inline">\(\sigma_i &lt; (1 - \epsilon) \sigma_1\)</span>, then <span class="math display">\[
-    \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } \le \frac{\sigma_i}{\sigma_1}^{2k} \le (1-\epsilon)^{2k}
-\]</span> Denote <span class="math inline">\(\sigma_1 = \sigma_2 = ... = \sigma_t\)</span> for some <span class="math inline">\(t &lt; r\)</span> the largest singular values. By the previous lemma, we pick a <span class="math inline">\(v\)</span> from the unit ball at random, and take $v v / v$. Denote <span class="math inline">\(v = \sum_{i = 1}^n {a_i} v_i\)</span>, then with probability at least <span class="math inline">\(1/ 2\)</span> we have <span class="math inline">\(\sqrt{ \sum_{i = 1}^t a_i^2} \ge \frac{1}{4 \sqrt n}\)</span>. On the other hand, <span class="math inline">\(v\)</span> is a unit vector, hence <span class="math inline">\(\sum_{i = 1}^n a_i^2 = 1\)</span>. Therefore, <span class="math inline">\(\sum_{i = t + 1}^n a_i^2 \le 1 - \frac{1}{16 n}\)</span></p>
-<p>Now <span class="math display">\[
-\begin{aligned}    
-\frac{1}{\Vert (A^T A)^{k} \Vert _F } (A^T A)^k v 
-    &amp;= \sum_{i = 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  v_i v_i^T v \\
-    &amp;= \sum_{i = 1}^r \frac{a_i \sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  v_i \\
-    &amp;= \sum_{i = 1}^t \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } a_i v_i  + \sum_{i = t + 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i v_i
-\end{aligned}
-\]</span></p>
-<p>For the second term <span class="math display">\[
-\begin{aligned}
-\left\Vert \sum_{i = t + 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i v_i \right\Vert ^2
-    &amp;= \sum_{i = t + 1}^r (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i)^2 \\
-    &amp;\le \sum_{i = t + 1}^r (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^t \sigma_1^{2k} }  a_i)^2 \\
-    &amp;\le \frac{ (1 - \epsilon)^{4k} }{t^2} \sum_{i = t + 1}^r a_i^2 \\
-    &amp;\le \frac{ (1 - \epsilon)^{4k} }{t^2}
-\end{aligned}
-\]</span></p>
-<p>For the first term <span class="math display">\[
-\begin{aligned}
-\left\Vert \sum_{i = 1}^t \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } a_i v_i \right\Vert^2 
-    &amp;= \sum_{i = 1}^t (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} })^2 a_i^2 \\
-    &amp;\ge \sum_{i = 1}^t (\frac{ 1 }{ t + (n - t)(1 - \epsilon)^{2k} })^2 a_i^2 \\
-    &amp;\ge (\frac{ 1 }{ t + n (1 - \epsilon)^{2k} } )^2 \sum_{i = 1}^t a_i^2 \\
-    &amp;\ge (\frac{ 1 }{ t + n (1 - \epsilon)^{2k} } )^2 \frac{1}{16n}
-\end{aligned}
-\]</span></p>
-<p>If we take <span class="math inline">\(k = O( \frac{1}{\epsilon} \ln \frac{n}{\epsilon})\)</span>, then the second term is at most <span class="math inline">\(\epsilon\)</span> fraction of the first term.</p>
-<p>Remark: picking a point uniformly at random can be done as follows: first pick a point <span class="math inline">\(v\)</span> uniformly at random from the high dimension cube: <span class="math inline">\([-1, 1]^n\)</span>, then checks whether the point is inside the ball (<span class="math inline">\(\Vert v\Vert &lt; 1\)</span>). This however, could suffers from efficiency problem as the volume of the ball approaches to <span class="math inline">\(0\)</span> as the number of dimension increases. More efficient sampling method is needed. But it is not the current focus of this article.</p>
-<h1 id="reference">Reference</h1>
-<p>[1]. GILBERT STRANG, Introduction to Linear Algebra.</p>
-<p>[2]. Venkatesan Guruswami and Ravi Kannan, Note 2, Singular Value Decomposition, 15-496/15-859X: Computer Science Theory for the Information Age, Spring 2012, CMU</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -713,7 +594,7 @@ A_k = \sum_{i = 1}^k \sigma_i u_i v_i ^T
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">145</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
