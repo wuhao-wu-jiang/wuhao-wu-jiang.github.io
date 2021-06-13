@@ -146,6 +146,167 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/22/k-Minimum-Values-for-Set-Cardinality/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/22/k-Minimum-Values-for-Set-Cardinality/" class="post-title-link" itemprop="url">k Minimum Values for Set Cardinality</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-22 13:43:29" itemprop="dateCreated datePublished" datetime="2021-02-22T13:43:29+11:00">2021-02-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-19 16:14:36" itemprop="dateModified" datetime="2021-03-19T16:14:36+11:00">2021-03-19</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<p>We study the problem of estimating the number of distinct elements in a stream <span class="math inline">\(S\)</span>. WLOG, we assume that elements in <span class="math inline">\(S\)</span> come from a domain <span class="math inline">\([d] = \{1, 2,..., d \}\)</span>, and that each element in <span class="math inline">\([d]\)</span> appears in the <span class="math inline">\(S\)</span> at least once. Hence, the problem is equivalent to the one of estimating <span class="math inline">\(d\)</span>.</p>
+<h1 id="k-minimum-values">k Minimum Values</h1>
+<p>The algorithm of <span class="math inline">\(k\)</span>-minimum values returns a <span class="math inline">\((1 \pm \epsilon)\)</span> estimate <span class="math inline">\(\hat d\)</span> of <span class="math inline">\(d\)</span>, with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
+<p>The algorithm picks a pairwise independent hash function <span class="math inline">\(g : [d] \rightarrow [m]\)</span> and uses a min heap <span class="math inline">\(h\)</span> that keeps the <span class="math inline">\(k\)</span> minimum hash values. When it stops, it outputs an estimate <span class="math display">\[
+    \hat d \doteq k \cdot m  / v, 
+\]</span> where <span class="math inline">\(v\)</span> is the maximum element in <span class="math inline">\(h\)</span>. Observe that <span class="math inline">\(v\)</span> is also the <span class="math inline">\(k\)</span>-th minimum hash value of the set <span class="math display">\[
+     \{ g(1), g(2), ..., g(d) \}.
+\]</span></p>
+<blockquote>
+<p>Algorithm: <span class="math inline">\(k\)</span>-minimum values.<br />
+1. Select a pair-wise independent hash function <span class="math inline">\(g: [d] \rightarrow [m]\)</span>, where <span class="math inline">\(m \ge d^2 / \delta\)</span>;<br />
+2. Initialize a set <span class="math inline">\(h \leftarrow \{ \}\)</span>;<br />
+3. <strong>For</strong> <span class="math inline">\(s \in S\)</span> <strong>do</strong>:<br />
+4. <span class="math inline">\(\qquad\)</span> <strong>If</strong> <span class="math inline">\(g(s) \in h\)</span> <strong>then</strong> continue; 5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(h \leftarrow h \cup \{ g(s) \}\)</span>;<br />
+6. <span class="math inline">\(\qquad\)</span> <strong>If</strong> <span class="math inline">\(|h| &gt; k\)</span> <strong>then</strong><br />
+7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> remove the max element in <span class="math inline">\(h\)</span>;<br />
+8. Let <span class="math inline">\(v \leftarrow\)</span> max element in <span class="math inline">\(h\)</span>.<br />
+9. Return <span class="math inline">\(\hat d \doteq k \cdot m / v\)</span>.</p>
+</blockquote>
+<h2 id="theorem-1.">Theorem 1.</h2>
+<p>With probability at least <span class="math inline">\(1 - \delta\)</span>, there isn't hash collision.</p>
+<p><em>Proof:</em></p>
+<p>For <span class="math inline">\(i \neq j \in [d]\)</span>, as <span class="math inline">\(g\)</span> is pair-wise independent, <span class="math inline">\(\Pr[ g(i) = g(j) ] = \frac{1}{m}\)</span>. Therefore, <span class="math display">\[
+    \mathbb{E}  \left[ \sum_{i \neq j \in [d]}  \mathbf{1} \big[ g(i) = g(j) \big] \right]  =  \sum_{i \neq j \in [d] } \mathbb{E}  \left[   \mathbf{1} \big[ g(i) = g(j) \big]  \right] \le \frac{d^2}{m} = \delta,
+\]</span> where <span class="math inline">\(\mathbf{1} \big[ g(i) = g(j) \big]\)</span> is the indicator random variable of <span class="math inline">\(g(i) = g(j)\)</span>.</p>
+<p>By Markov's inequality, <span class="math display">\[
+    \Pr \left[ \sum_{ i \neq j \in [d] } \mathbf{1} \big[ g(i) = g(j) \big] \ge 1 \right] \le \delta. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="theorem-2.">Theorem 2.</h2>
+<p>With probability at least <span class="math inline">\(1 / (k\epsilon^2)\)</span>, <span class="math display">\[
+    \hat d &lt; \frac{d}{1 - \epsilon}.
+\]</span></p>
+<p><em>Proof:</em> For <span class="math inline">\(i \in [d]\)</span>, define the indicator random variable of <span class="math inline">\(X_i = \mathbf{1}\big[ g(i) \le (1 - \epsilon) \cdot k / d \cdot m \big]\)</span>. Recall that <span class="math display">\[
+    v \doteq \text{The } k\text{-th smallest element of } \{ g(1), g(2), ..., g(d) \}.
+\]</span> The event that <span class="math display">\[
+    \left\{ v \le  (1 - \epsilon) \cdot k / d \cdot m \right\} \equiv \left\{ \frac{d}{1 - \epsilon} \le \frac{ k \cdot m }{ v } \right\} 
+\]</span> happens if only <span class="math inline">\(\sum_{i \in [d] } X_i \ge k\)</span>.</p>
+<p>By definition of <span class="math inline">\(X_i\)</span>, <span class="math display">\[
+    p \doteq \Pr \left[ X_i \right] = (1 - \epsilon) \cdot \frac{ k }{d}.
+\]</span></p>
+<p>By linearity of expectation, we have <span class="math display">\[
+    \mathbb{E}  \left[ \sum_{i \in [d] } X_i  \right] = d \cdot p = (1 - \epsilon) \cdot k.
+\]</span></p>
+<p>As <span class="math inline">\(g\)</span> is pair-wise independent, so are the <span class="math inline">\(X_i\)</span>'s. It follows that <span class="math display">\[
+    \begin{aligned}
+        \sigma^2 =\mathbb{Var}  \left[ \sum_{i \in [d] } X_i \right] &lt; d \cdot p = (1 - \epsilon) \cdot k.
+    \end{aligned}
+\]</span></p>
+<p>By monotonicity of probability and by Chebyshev's inequality, <span class="math display">\[
+\begin{aligned}
+    \Pr\left[ \sum_{i \in [d] } X_i \ge k \right] 
+    &amp;\le 
+    \Pr\left[ \left| \sum_{i \in [d] } X_i - (1 - \epsilon) \cdot k \right| \ge \epsilon k \right] 
+    &lt; 
+    \frac{ (1- \epsilon) \cdot k  }{ \epsilon^2 k^2 } 
+    &lt; \frac{1}{\epsilon^2 k}.
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="theorem-3.">Theorem 3.</h2>
+<p>With probability at least <span class="math inline">\((1 + \epsilon) / (k\epsilon^2)\)</span>, <span class="math display">\[
+    \hat d \ge \frac{d}{1 + \epsilon}.
+\]</span></p>
+<p><em>Proof:</em> For <span class="math inline">\(i \in [d]\)</span>, define the indicator random variable of <span class="math inline">\(Y_i = \left[ g(i) \le (1 + \epsilon) \cdot k / d \cdot m \right]\)</span>. Recall that <span class="math display">\[
+    v \doteq \text{The } k\text{-th smallest element of } \{ g(1), g(2), ..., g(d) \}.
+\]</span> The event that <span class="math display">\[
+    \left\{ v \ &gt; \  (1 + \epsilon) \cdot k / d \cdot m \right\} \equiv \left\{ \frac{d}{1 + \epsilon} &gt; \frac{ k \cdot m }{ v } \right\} \equiv \left\{ \frac{d}{1 + \epsilon} &gt; \hat d \right\} 
+\]</span> happens if only <span class="math inline">\(\sum_{i \in [d] } Y_i &lt; k\)</span>.</p>
+<p>By definition of <span class="math inline">\(Y_i\)</span>, <span class="math display">\[
+    q \doteq \Pr \left[ Y_i \right] = (1 + \epsilon) \cdot \frac{ k }{d}.
+\]</span></p>
+<p>By linearity of expectation, we have <span class="math display">\[
+    \mathbb{E}  \left[ \sum_{i \in [d] } Y_i  \right] = d \cdot q = (1 + \epsilon) \cdot k.
+\]</span></p>
+<p>As <span class="math inline">\(g\)</span> is pair-wise independent, so are the <span class="math inline">\(X_i\)</span>'s. It follows that <span class="math display">\[
+    \begin{aligned}
+        \sigma^2 =\mathbb{Var}  \left[ \sum_{i \in [d] } Y_i \right] 
+            &amp;=  \sum_{i \in [d] } \mathbb{Var}  \left[ Y_i \right] \\
+            &amp;= d \cdot q \cdot ( 1 - q) \\
+            &amp;= (1 + \epsilon) \cdot k \cdot (1 - q).
+    \end{aligned}
+\]</span></p>
+<p>By monotonicity of probability and by Chebyshev's inequality, <span class="math display">\[
+\begin{aligned}
+    \Pr\left[ \sum_{i \in [d] } Y_i &lt; k \right] 
+    &amp;\le 
+    \Pr\left[ \left| \sum_{i \in [d] } Y_i - (1 + \epsilon) \cdot k \right| \ge \epsilon k \cdot \sqrt{ 1 - q } \right] \\
+    &amp;\le 
+    \frac{ (1 + \epsilon) \cdot k  }{ \epsilon^2 k^2 } \\
+    &amp;\le \frac{1}{\epsilon^2 k}.
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/12/Beyond-Chebyshev-s-Inequality/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -426,255 +587,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/02/Fast-Fourier-Transform/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/02/Fast-Fourier-Transform/" class="post-title-link" itemprop="url">Fast Fourier Transform</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-02 10:31:22" itemprop="dateCreated datePublished" datetime="2021-02-02T10:31:22+11:00">2021-02-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-04 22:50:26" itemprop="dateModified" datetime="2021-02-04T22:50:26+11:00">2021-02-04</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <!-- ![](https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.npng?raw=true) -->
-<p>In the discrete Fourier transform, we want to project a vector <span class="math inline">\(v \in \mathbb{C}^n\)</span> to the orthonormal bases <span class="math display">\[
-\begin{aligned}
-    &amp;e_0 = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot 0 \cdot \pi i}{ n} }, e^{ 1 \frac{2 \cdot 0 \cdot \pi i}{ n} }, ..., e^{ (n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } ), \\
-    &amp;... \\
-    &amp;e_{k - 1} = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} }, ..., e^{ (n - 1) \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} } ), \\
-    &amp;... \\
-    &amp;e_{n - 1} = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} }, ..., e^{ (n - 1) \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} } ).
-\end{aligned}
-\]</span></p>
-<p>We use <span class="math inline">\(\mathcal{S}\)</span> to denote the linear span of <span class="math inline">\(e_0, e_1, ..., e_{n - 1}\)</span>.</p>
-<h2 id="orthonormal-bases-verification">Orthonormal bases verification</h2>
-<p>It is easy to see that <span class="math inline">\(e_k\)</span> is a unit vector, <span class="math inline">\(\forall k \in [0, n)\)</span>. The vectors in the bases are also mutually orthogonal, as for <span class="math inline">\(k, l \in [0, n), k \neq l\)</span>, <span class="math display">\[
-    \left&lt; e_k, e_l \right&gt;_H = \sum_{j = 0 }^{n - 1} e^{ j \cdot \frac{ 2 (l - k) \pi i }{ n } } = \frac{ 1 - e^{ n \cdot \frac{ 2 (l - k) \pi i }{ n } } }{ 1 - e^{ \frac{ 2 (l - k) \pi i }{ n } } } = 0.
-\]</span></p>
-<h2 id="the-projection">The projection</h2>
-<p>The projection of <span class="math inline">\(v\)</span> to the bases, is defined as the vector in the linear span of the bases that is closest to <span class="math inline">\(v\)</span>. It is given by <span class="math display">\[
-    P(v) \doteq \sum_{k \in [0, n) } a_k e_k, 
-\]</span></p>
-<p>where <span class="math inline">\(a_k = \left&lt; e_k, v\right&gt;_H \doteq \bar e_k \cdot v\)</span>.</p>
-<blockquote>
-<p>Lemma. For any vector <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span>, it holds that <span class="math display">\[
-\left&lt; u, v \right&gt;_H = \left&lt; u, P(v) \right&gt;_H.
-\]</span> Or, equivalently, <span class="math display">\[
-\left&lt; u , v - P(v) \right&gt;_H = \left&lt; v - P(v), u \right&gt;_H = 0.
-\]</span> <em>Proof:</em> Let <span class="math inline">\(u = \sum_{k \in [0, n) } c_k e_k : c_k \in \mathbb{C}, \forall k \in [0, n)\)</span> be a vector in <span class="math inline">\(\mathcal{S}\)</span>. As <span class="math inline">\(e_0, e_1, ..., e_{n - 1}\)</span> are mutually orthogonal, <span class="math display">\[
-\left&lt; u, v \right&gt;_H = \sum_{k \in [0, n) } \bar c_k \cdot a_k =\left&lt; u, P(v) \right&gt;_H.
-\]</span></p>
-</blockquote>
-<p>Next, we verify that <span class="math inline">\(P(v)\)</span> minimizes the distance to <span class="math inline">\(v\)</span>.</p>
-<blockquote>
-<p>Theorem. <span class="math display">\[
-P(v) = \argmin_{w \in \mathcal{S} } ||u - w||^2.
-\]</span> <em>Proof:</em> Let <span class="math inline">\(w = \sum_{k \in [0, n) } d_k e_k : d_k \in \mathbb{C}, \forall k \in [0, n)\)</span> and define <span class="math inline">\(u = P(v) - w\)</span>. Observe that <span class="math inline">\(u \in \mathcal{S}\)</span>. By the previous lemma, <span class="math display">\[
-\begin{aligned}
-|| v - w ||^2 
-&amp;= || v - P(v) + P(v) - w ||^2 \\
-&amp;= || v - P(v) ||^2 + ||P(v) - w||^2 + \left&lt; v - P(v), u \right&gt;_H + \left&lt; u, v - P(v) \right&gt;_H \\
-&amp;= || v - P(v) ||^2 + ||P(v) - w||^2
-\end{aligned}
-\]</span> Hence, <span class="math inline">\(|| v - w ||^2\)</span> is minimized if and only if <span class="math inline">\(w = P(v)\)</span>.</p>
-</blockquote>
-<h2 id="matrix-form">Matrix Form</h2>
-<p>The coefficients of <span class="math inline">\(a_0, a_1, ..., a_{n - 1}\)</span> can be given in matrix form: <span class="math display">\[
-\begin{bmatrix}
-    a_0 \\
-    a_1 \\
-    ... \\
-    a_{n - 1}
-\end{bmatrix} 
-=
-\begin{bmatrix}
-    - \bar e_0 - \\
-    ...\\
-    - \bar e_k - \\
-    ... \\
-    - \bar e_{n - 1} - \\
-\end{bmatrix} v 
-=
-\frac{1}{ \sqrt n }
-\begin{bmatrix}
-    e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2 \cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
-    ...\\
-    e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
-    ... \\
-    e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
-\end{bmatrix} v.
-\]</span></p>
-<p>Define the matrix <span class="math inline">\(M_n\)</span> as <span class="math display">\[
-    M_n \doteq 
-    \begin{bmatrix}
-        e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2 \cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
-        ...\\
-        e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
-        ... \\
-        e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
-    \end{bmatrix}.
-\]</span></p>
-<p>The key result of this section is the following theorem.</p>
-<blockquote>
-<p>Theorem. An <span class="math inline">\(n\)</span>-dimension discrete Fourier transform can be performed in <span class="math inline">\(O(n \log n)\)</span> time. Equivalently, given <span class="math inline">\(v \in \mathbb{C}^n\)</span>, <span class="math inline">\(M_n v\)</span> can be computed in <span class="math inline">\(O(n \log n)\)</span> time.</p>
-</blockquote>
-<p>The underlying idea of the theorem is divide-and-conquer. Let <span class="math inline">\(T(n)\)</span> be the time of performing an <span class="math inline">\(n\)</span>-dimension discrete Fourier transform. We will prove the following recursion</p>
-<blockquote>
-<p><span class="math inline">\(T(n) = 2 \cdot T(n / 2) + O(n)\)</span>.</p>
-</blockquote>
-<p>We begin by a special case where <span class="math inline">\(n = 8\)</span>. As each entry in <span class="math inline">\(M_8\)</span> is complex number with unit length, we can represent it by a unit length vector, as the figure below shows.</p>
-<p>There are some patterns in <span class="math inline">\(M_8\)</span> and it can be decomposed into 4 matrices related to <span class="math inline">\(M_4\)</span>.</p>
-<p><em>Remark: I get this visualization idea from [1].</em></p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>First, look the the first half of the rows of <span class="math inline">\(M\)</span>, denoted as <span class="math inline">\(M_U\)</span>. The even columns constitute exactly the matrix <span class="math inline">\(M_4\)</span>. The odd columns forms a <span class="math inline">\(4 \times 4\)</span> matrix that can be obtained by proper rotations of <span class="math inline">\(M_4\)</span>.</p>
-<p>Let <span class="math inline">\(v_e\)</span>, <span class="math inline">\(v_o\)</span> be the even and odd dimensions of <span class="math inline">\(v\)</span>, respectively. Then <span class="math display">\[
-    M_U v = M_4 v_e + 
-        \begin{bmatrix} 
-           e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
-           e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} } \\
-           e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} } \\
-           e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} }
-        \end{bmatrix} \times M_4 v_0, 
-\]</span></p>
-<p>where <span class="math inline">\(\times\)</span> is element-wise multiplication between two vectors. This can also be replaced by matrix multiplication. <span class="math display">\[
-    M_U v = M_4 v_e + 
-        \text{diag} \left( 
-                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_4 v_0, 
-\]</span></p>
-<p>where <span class="math inline">\(\text{diag} \left( e^{ -\frac{2 \cdot 0 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 1 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 2 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 3 \cdot \pi i}{ n} } \right)\)</span> denotes a <span class="math inline">\(4 \times 4\)</span>-diagonal matrix.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/1.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>First, look the the second half of the rows of <span class="math inline">\(M\)</span>, denoted as <span class="math inline">\(M_D\)</span>. The even columns constitute exactly the matrix <span class="math inline">\(M_4\)</span>, which is the same as the even columns of <span class="math inline">\(M_U\)</span>.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/2.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>For the odd columns of <span class="math inline">\(M_D\)</span>, they are in the opposite directions of the odds columns of <span class="math inline">\(M_U\)</span>. This can also be verified algebraically. An entry <span class="math inline">\(M_{k, l}\)</span> in the odd columns <span class="math inline">\(M_U\)</span> (<span class="math inline">\(k \in [0, n / 2)\)</span> and <span class="math inline">\(l\)</span> is odd) equals to <span class="math display">\[
-    M_{k, l} = e^{ - l \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n} }.
-\]</span></p>
-<p>Its corresponding entry in <span class="math inline">\(M_D\)</span> is <span class="math display">\[
-    M_{k + n / 2, l} = e^{ - l \cdot (k + n / 2- 1) \cdot \frac{2 \cdot \pi \cdot i}{n} } = e^{ - l \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n} } \cdot e^{ - l \cdot \pi \cdot i } = M_{k, l} \cdot (-1).
-\]</span></p>
-<p>The last equality holds since <span class="math inline">\(l\)</span> is odd.</p>
-<p><em>Remark:</em> This also explains why <span class="math inline">\(M_{k + n / 2, l} = M_{k, l}\)</span> when <span class="math inline">\(l\)</span> is even.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/3.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>In summary, we have <span class="math display">\[
-M v 
-    =   \begin{bmatrix}
-            M_U \\
-            M_D
-        \end{bmatrix} v
-    =   \begin{bmatrix}
-             M_{n / 2} v_e + 
-        \text{diag} \left( 
-                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n / 2} v_0  \\
-            M_{n / 2} v_e - 
-        \text{diag} \left( 
-                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n / 2} v_0
-        \end{bmatrix}.
-\]</span></p>
-<p>And the Fast Fourier Transform algorithm is shown as below.</p>
-<blockquote>
-<p><strong>Algorithm FFT (Fast Fourier Transform).</strong><br />
-<strong>Input.</strong> <span class="math inline">\(v \in \mathbb{C}^n\)</span>.<br />
-1. If <span class="math inline">\(n = 1\)</span>, return <span class="math inline">\(v\)</span>.<br />
-2. Compute <span class="math inline">\(r_e \leftarrow M_{n / 2} v_e\)</span> by <strong>FFT(<span class="math inline">\(v_e\)</span>)</strong>.<br />
-3. Compute <span class="math inline">\(r_o \leftarrow M_{n / 2} v_o\)</span> by <strong>FFT(<span class="math inline">\(v_o\)</span>)</strong>.<br />
-4. Return<br />
-<span class="math display">\[
-r \leftarrow  
-\begin{bmatrix}
-r_e +   
-\text{diag} \left( 
-e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o \\
-r_e -   
-\text{diag} \left( 
-e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
-\end{bmatrix}.
-\]</span></p>
-</blockquote>
-<p>Both step 2 and 3 have time <span class="math inline">\(T(n / 2)\)</span>. Step 4 aggregates the results and has time <span class="math inline">\(O(n)\)</span>, which implies that <span class="math display">\[
-    T(n) = 2 \cdot T(n / 2) + O(n). 
-\]</span></p>
-<h3 id="reference">Reference</h3>
-<p>[1] T. Roughgarden and G. Valiant, “CS168: The Modern Algorithmic Toolbox Lecture #15 and #16: The Fourier Transform and Convolution,” p. 12.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/49/">49</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/50/">50</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -740,7 +656,7 @@ e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">147</span>
+          <span class="site-state-item-count">148</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

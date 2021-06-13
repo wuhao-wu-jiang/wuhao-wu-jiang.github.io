@@ -146,6 +146,164 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/08/29/SimRank/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/08/29/SimRank/" class="post-title-link" itemprop="url">SimRank</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-08-29 20:38:54" itemprop="dateCreated datePublished" datetime="2016-08-29T20:38:54+10:00">2016-08-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-19 21:34:01" itemprop="dateModified" datetime="2020-05-19T21:34:01+10:00">2020-05-19</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>SimRank</strong><br />
+Given a directed graph <span class="math inline">\(G = \left&lt; V, E \right&gt;\)</span>, SimRank score is defined as follows <span class="math display">\[
+s(i,j) = 
+    \begin{cases}
+        \begin{array}{ll}
+        1, &amp;\text{ if } i = j \\
+        \frac{c}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} s(a,b), &amp;\text{otherwise}
+        \end{array}
+    \end{cases}
+\]</span></p>
+<p>where <span class="math inline">\(I(i)\)</span> is the set of in-neighbors of <span class="math inline">\(i \in V\)</span>, and <span class="math inline">\(c \in (0, 1)\)</span>.</p>
+<p>By the definition of <em>SimRank</em>, <span class="math inline">\(s(i,j)\)</span> can be interpreted as the value of <span class="math display">\[
+E[c^{T_{i,j} } ]
+\]</span></p>
+<p>where <span class="math inline">\(T_{i,j}\)</span> is the random variable of the first time that a reverse random walk (a random walk that travel along the incoming edges of a vertex randomly at each step) from <span class="math inline">\(i\)</span> and a reverse random walk from <span class="math inline">\(j\)</span> meets. Note that <span class="math display">\[
+T_{i,j} = 
+    \begin{cases}
+        \begin{array}{ll}
+        0, &amp;\text{ if } i = j \\
+        \frac{1}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} T_{a,b}, &amp;\text{otherwise}
+        \end{array}
+    \end{cases}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+\begin{aligned}
+E[c^{T_{i,j} } ] 
+    &amp;= c^0 \cdot \Pr[T_{i,j} = 0] + \frac{1}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} E[c^{1 + T_{a, b}} ] \\
+    &amp;= \mathfrak{1}_{i = j} +  \frac{c}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} E[c^{ T_{a, b}} ] \\
+    &amp;= \mathfrak{1}_{i = j} +  \frac{c}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} s(a, b) \\
+\end{aligned}
+\]</span></p>
+<p>However, there is another random walk interpretation as follows:</p>
+<ol type="1">
+<li><p>First, notice that when <span class="math inline">\(i \neq j\)</span>, [TX16] rewrites the SimRank as <span class="math display">\[
+s(i,j) = \frac{ \sqrt c \sqrt c} {|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} s(a,b)
+\]</span></p></li>
+<li><p>Second, [TX16] defines the <span class="math inline">\(\sqrt c\)</span>-random walk as</p>
+<ul>
+<li>In any step, the walk stops with probability <span class="math inline">\(1 - \sqrt c\)</span>.</li>
+<li>With the other <span class="math inline">\(\sqrt c\)</span> probability, the walk chose the in-neighbors of the current vertex uniformly at random.</li>
+</ul></li>
+<li><p>Finally <span class="math inline">\(s(i,j)\)</span> is interpreted as</p>
+<blockquote>
+<p>The probability of two <span class="math inline">\(\sqrt c\)</span> random walks ever meet, such that one of the random walks starts at vertex <span class="math inline">\(i\)</span> and the other starts at <span class="math inline">\(j\)</span>.</p>
+</blockquote></li>
+</ol>
+<p><strong>Monte Carlo</strong><br />
+A straightforward solution is to perform Monte Carlo simulation to calculate <span class="math inline">\(s(i,j)\)</span> -- we initialize two random walks from <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> respectively and simulate the two walks until they meet or either walk dies.</p>
+<p>We need not to worry about that this process continues forever. Since the expected number of steps of a <span class="math inline">\(\sqrt c\)</span> random walk is given by <span class="math display">\[
+\sqrt c + \sqrt c^2 + \sqrt c^3 + ...... = \frac{ \sqrt c}{ 1 - \sqrt c}
+\]</span> which is a constant number.</p>
+<p><strong>Chernoff Bound</strong><br />
+We repeat this process <span class="math inline">\(n_w\)</span> times and use <span class="math inline">\(X_k\)</span> to indicate whether the two walks meet in the k-th trial, i.e., <span class="math inline">\(X_k = 1\)</span> if the two walks meet and <span class="math inline">\(0\)</span> otherwise. It is easy to see that <span class="math inline">\(\{ X_k \}\)</span> is a set of i.i.d random variables with <span class="math inline">\(E[ X_k ] = s(i, j)\)</span>.</p>
+<p>Let <span class="math inline">\(\bar{X} \doteq \frac{1}{n_w} \sum_{k = 1}^{n_w} X_k\)</span> and <span class="math inline">\(\mu \doteq s(i,j)\)</span>, So by <em>Chernoff Bound</em>, <span class="math display">\[
+P({| \bar{X} - \mu | &gt; (1 + \lambda) \mu }) \le 2 \exp(- \frac{n_w \mu \lambda^2}{3}) = \delta
+\]</span> where <span class="math inline">\(\lambda\)</span> is relative error ratio and <span class="math inline">\(\delta\)</span> the error probability we can tolerate.</p>
+<p><strong>Time Complexity</strong><br />
+The previous section implies <span class="math inline">\(n_w = \frac{3 }{ \mu \lambda ^2}\log \frac{ 2 }{ \delta }\)</span>. By setting <span class="math inline">\(\epsilon = (1 + \lambda) \mu \Leftrightarrow \lambda = \frac{\epsilon}{\mu} - 1\)</span>, we get</p>
+<p><span class="math display">\[
+n_w = \frac{ 3 }{ \mu ( \frac{\epsilon}{\mu}^2 -  2\frac{\epsilon}{\mu}  + 1 ) }\log \frac{ 2 }{ \delta } 
+= O( \frac{ \mu }{ \epsilon^2 }\log \frac{ 1 }{ \delta })
+\]</span></p>
+<p>Notice that when <span class="math inline">\(\epsilon\)</span> is small, say <span class="math inline">\(0.01\)</span>, <span class="math inline">\(\frac{1}{\epsilon^2}\)</span> is large thus can not be neglected. The problem remains whether we could reduce the number of random walks.</p>
+<p><strong>Hitting probability</strong> Another acute observation from [TX16] is that if two walks reach the same vertex, their following behavior follows the same probability distribution (since the walks are memoryless).</p>
+<p>Motivated by this, we define <span class="math inline">\(h_i^l(k)\)</span> as the probability such that a walk begins at vertex <span class="math inline">\(i\)</span> and reaches vertex <span class="math inline">\(j\)</span> at the l-th step. <span class="math inline">\(h_i^l(k)\)</span> can be updated iteratively using <span class="math display">\[
+h_i^l(k) = \frac{ \sqrt c }{ |I(i) |  } \sum_{j \in I(i)} h_j^{l -1}(k)
+\]</span></p>
+<p><strong>SimRank and Hitting Probability</strong><br />
+Now we set about bridging the gap between SimRank score and hitting probability.</p>
+<p>Define <span class="math inline">\(E(i,j)\)</span> as the event that two random walks starting from i and j respectively ever meet. <span class="math inline">\(P(E(i,j)) = s(i,j)\)</span>.</p>
+<p><span class="math inline">\(E(i, j, k, l)\)</span> denotes the event that two random walks, starting from <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> respectively, meet at <span class="math inline">\(l\)</span>-th step at <span class="math inline">\(k\)</span> and this is the last time they meet. In other word, these two walk never meet again after <span class="math inline">\(l\)</span>-th step at <span class="math inline">\(k\)</span>. It is easy to see that for different <span class="math inline">\(k\)</span> and <span class="math inline">\(l\)</span>, the <span class="math inline">\(E(i, j, k, l)\)</span>'s are mutually exclusive and constitute a partition of <span class="math inline">\(E(i,j)\)</span>,</p>
+<p><span class="math display">\[
+E(i,j) = \bigcup_l \bigcup_l E(i, j, k, l)
+\]</span></p>
+<p>Let <span class="math inline">\(d_k\)</span> be the probability that two walks from k do not meet each other after <span class="math inline">\(0\)</span>-th step. Then <span class="math inline">\(P(E(i, j, k, l)) = h_i^l(k) h_j^l(k) d_k\)</span>. Thus</p>
+<p><span class="math display">\[
+\begin{aligned}
+P( E(i,j) ) &amp;= 
+P(\bigcup_l \bigcup_l E(i, j, k, l))  \\
+&amp;= \sum_{l = 0}^{\infty}  \sum_{k = 1}^{n} P(E(i, j, k, l)) \\
+&amp;= \sum_{l = 0}^{\infty}  \sum_{k = 1}^{n} h_i^l(k) h_j^l(k) d_k
+\end{aligned}
+\]</span></p>
+<p><strong>Computation</strong><br />
+Notice that for a given <span class="math inline">\(i\)</span>, there infinity many <span class="math inline">\(h_i^l(k)\)</span>'s we need to kept, which is unfeasible. To get around this, we only keep the <span class="math inline">\(h_i^l(k)\)</span>'s greater than <span class="math inline">\(\epsilon_h\)</span>, where <span class="math inline">\(\epsilon_h = O(\epsilon)\)</span>.</p>
+<p>The probability that the <span class="math inline">\(\sqrt c\)</span>-random walk does not to stop before <span class="math inline">\(l\)</span>-th step is <span class="math inline">\(\sqrt c ^l\)</span>, i.e., <span class="math display">\[
+\sum_{k = 1}^n h_i^l(k) = \sqrt c^l
+\]</span></p>
+<p>For a fixed <span class="math inline">\(l\)</span>, at most <span class="math inline">\(\sqrt c ^l / \epsilon_h\)</span> number of <span class="math inline">\(h_i^l(k)\)</span>'s are kept. So the total number of <span class="math inline">\(h_i^l(k)\)</span>'s kept is bounded by <span class="math display">\[
+\frac{1}{\epsilon_h} (\sqrt c + \sqrt c^2 + \sqrt c^3 + ......  )= O(\frac{1}{\epsilon_h}) = O(\frac{1}{\epsilon})
+\]</span></p>
+<p>On the other hand, estimation of <span class="math inline">\(d_k\)</span> could be done by monte carlo simulation. Similar to analysis in <strong>Chernoff Bound</strong> and <strong>Time Complexity</strong> section, we can show that with <span class="math inline">\(O \left( \frac{1}{\epsilon_d^2} \log \frac{1}{\delta_d} \right)\)</span> expected time, <span class="math inline">\(d_k\)</span> could be estimated by <span class="math inline">\(\bar{d_k}\)</span> such that <span class="math inline">\(| \bar{d_k} - d_k| &lt; \epsilon_d\)</span> holds with at least <span class="math inline">\(1 - \delta_d\)</span> probability, where <span class="math inline">\(\epsilon_d = O(\epsilon)\)</span>.</p>
+<p><strong>Reference</strong><br />
+[TX16] Boyu. Tian and Xiaokui. Xiao SLING: A Near-Optimal Index Structure for SimRank. <em>SIGMOD'16</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2015/12/01/Random%20Sampling%20and%20Cuts%20II/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -407,93 +565,10 @@ G&#39; &amp; = \Sigma_{i = 0}^{\log m} F_i&#39; \\
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2015/10/16/Connectivity%20of%20a%20Graph/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/10/16/Connectivity%20of%20a%20Graph/" class="post-title-link" itemprop="url">Connectivity of a Graph</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2015-10-16 12:33:46" itemprop="dateCreated datePublished" datetime="2015-10-16T12:33:46+11:00">2015-10-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-07-02 18:37:37" itemprop="dateModified" datetime="2018-07-02T18:37:37+10:00">2018-07-02</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Suppose the edge connectivity of a graph G is c. In the previous article we know that the number of cuts with weight up to kc is bounded by <span class="math inline">\(O((2n)^{2k})\)</span>, where k is a real number and n is the number of vertices in G.</p>
-<p>Let <span class="math inline">\(f(x)\)</span> to be the number of cut with value xc and define <span class="math inline">\(F(k) = \Sigma_{x \le k} f(x)\)</span>. From the discussion above, <span class="math inline">\(F(k) \le \lambda (2n)^{2k}\)</span> for some parameter <span class="math inline">\(\lambda\)</span>.</p>
-<p>If we remove each edge with probability p, then the graph becomes disconnected with probability at most $P[Disconnected] = _{x} f(x)p^{xc} $</p>
-<p>To maximize <span class="math inline">\(P[Disconnected]\)</span>, we take <span class="math inline">\(F(k) = \lambda (2n)^{2k}\)</span> for every k.</p>
-<p>By the definition of <span class="math inline">\(F(k)\)</span>, <span class="math inline">\(f(k) = \lambda ((2n)^{2k} - (2n)^{2(k-1)})\)</span>.</p>
-<p>Then, for <span class="math inline">\(k \ge 2\)</span>, <span class="math display">\[
-\begin{aligned}
-f(k) p^{kc} &amp; =     \lambda ((2n)^{2k} - (2n)^{2(k-1)}) p^{kc} \\\
-                  &amp;  =    \lambda (\int\_{k -1}^{k} {\partial (2n)^{2x} \over \partial x} dx) * p^{kc} \\\ 
-                  &amp; \le  \lambda \int\_{k -1}^{k} {\partial(2n)^{2x} \over \partial x} p^{xc}dx
-\end{aligned}
-\]</span></p>
-<p>Sum up this inequality over k, <span class="math display">\[
-\begin{aligned}
-P[Disconnected] &amp; \le f(1)p^c + \lambda  \int_1^\infty {\partial (2n)^{2x} \over \partial x} p^{xc} dx \\\
-                            &amp; = \lambda (2n)^2 p^c - \lambda  {2\ln 2n \over 2 \ln 2n + c \ln p} (2n)^2 p^c
-\end{aligned}
-\]</span></p>
-<p>If <span class="math inline">\(p = (2n)^{-{a \over c} }\)</span> for some parameter <span class="math inline">\(a\)</span>, then <span class="math inline">\(P[Disconnected] = O(n^2 p^c / (a - 2)) = O(n^{2 - a} / (a -2))\)</span>. When a = 3, the graph is disconnected with probability O(1/n). (p.s: for large c, $p 1 - {a 2n c} $)</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/47/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><span class="page-number current">48</span><a class="page-number" href="/page/49/">49</a><a class="extend next" rel="next" href="/page/49/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/47/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><span class="page-number current">48</span><a class="page-number" href="/page/49/">49</a><a class="page-number" href="/page/50/">50</a><a class="extend next" rel="next" href="/page/49/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -559,7 +634,7 @@ P[Disconnected] &amp; \le f(1)p^c + \lambda  \int_1^\infty {\partial (2n)^{2x} \
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">147</span>
+          <span class="site-state-item-count">148</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
