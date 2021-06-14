@@ -327,7 +327,7 @@ x_{2n} - x_{2n - 1} = \frac{1}{x_{2n - 1} } - \frac{1}{x_{2n - 2} }  = - \frac{ 
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-09 16:34:40" itemprop="dateModified" datetime="2021-03-09T16:34:40+11:00">2021-03-09</time>
+                <time title="Modified: 2021-06-14 22:13:13" itemprop="dateModified" datetime="2021-06-14T22:13:13+10:00">2021-06-14</time>
               </span>
 
           
@@ -341,32 +341,95 @@ x_{2n} - x_{2n - 1} = \frac{1}{x_{2n - 1} } - \frac{1}{x_{2n - 2} }  = - \frac{ 
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Let <span class="math inline">\(X\)</span> be a random variable such that <span class="math inline">\(X \le M\)</span> and <span class="math inline">\(\mathbb{E} [X]= \mu\)</span>. Let <span class="math inline">\(X_1, X_2, ..., X_n\)</span> be a set of <span class="math inline">\(i.i.d\)</span> copies of <span class="math inline">\(X\)</span> and <span class="math inline">\(\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i\)</span>. Then <span class="math display">\[
+          <blockquote>
+<p>Suppose <span class="math inline">\(X_1, \ldots, X_n\)</span> are independent random variables for which <span class="math inline">\(X_i \le M\)</span> and <span class="math inline">\(\mathbb{E} [ X_i ] = \mu_i\)</span> and <span class="math inline">\(\mathbb{E} [ X_i^2 ] \le v_i^2\)</span> for each <span class="math inline">\(i\)</span>, for nonnegative constants <span class="math inline">\(M\)</span> and <span class="math inline">\(v_i^2\)</span>. Let <span class="math inline">\(V \doteq \sum_{i \in [n] } v_i^2\)</span>. Then for all <span class="math inline">\(t \ge 0\)</span>, <span class="math display">\[
+\begin{aligned}
+\Pr \left[ \sum_{i \in [n ] } (X_i - \mu_i) \ge t \right] 
+&amp;\le \left(  \frac{ \exp \left( Mt / V \right)  }{ \left( 1 + Mt / V \right)^{  1 + Mt / V  } } \right)^{V / M^2} \\
+&amp;=\exp \left( - \frac{ t^2 }{ 2 V } \Phi \left( \frac{M t}{V} \right) \right),
+\end{aligned}
+\]</span> where <span class="math inline">\(\Phi\)</span> is a function defined on <span class="math inline">\([-1, \infty)\)</span> by <span class="math display">\[
+\Phi (x) \doteq \frac{ (1 + x) \ln (1 + x) - x }{ x^2 / 2 } \quad \text{for } t \neq 0, \text{ and } \Phi(0) = 1.
+\]</span></p>
+</blockquote>
+<p><strong>Remark:</strong> Let's perform a sanity check before proving it. Suppose that <span class="math inline">\(X_1, \ldots, X_n\)</span> are i.i.d. Bernoulli random variables each with mean <span class="math inline">\(\mu\)</span>. Then <span class="math inline">\(X_i \le 1\)</span>, <span class="math inline">\(\mathbb{E}[ X_i^2 ] = \mu\)</span> and <span class="math inline">\(V = n \mu\)</span>. Define <span class="math inline">\(t = \epsilon \cdot n \mu\)</span>. The Bennett's inequality states that <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ \sum_{i \in [n ] } X_i - \epsilon \cdot n \mu \ge t \right] 
+        &amp;\le \left(  \frac{ \exp \left( \epsilon  \right)  }{ \left( 1 + \epsilon  \right)^{  1 + \epsilon   } } \right)^{ n \mu },
+    \end{aligned}
+\]</span></p>
+<p>which is just the standard Chernoff Bound.</p>
+<p><strong>Proof.</strong> For all <span class="math inline">\(\lambda \ge 0\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ \exp( \lambda X_i ) ] 
+            &amp;= 1 + \lambda \mu_i + \sum_{k \ge 2} \frac{ \lambda^k \mathbb{E} [ X_i^k ] }{ k! } \\
+            &amp;= 1 + \lambda \mu_i + \sum_{k \ge 2} \frac{ \lambda^k \mathbb{E} [ X_i^2 X_i^{k - 2} ] }{ k! } \\
+            &amp;\le 1 + \lambda \mu_i + \frac{ \mathbb{E} [ X_i^2 ] }{ M^2 } \cdot \sum_{k \ge 2} \frac{ \lambda^k M^k  }{ k! } \\
+            &amp;\le 1 + \lambda \mu_i + \frac{ v_i^2 }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right) \\
+            &amp;\le \exp \left( \lambda \mu_i + \frac{ v_i^2 }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right) \right) 
+    \end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ \exp( \lambda (X_i - \mu_i) ) ] 
+            &amp;\le \exp \left( \frac{ v_i^2 }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right) \right).
+    \end{aligned}
+\]</span></p>
+<p>Via Markov's inequality, <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ \sum_{i \in [n ] } (X_i - \mu_i) \ge t \right] 
+        &amp;\le 
+        \frac{ \mathbb{E} \left[ \exp \left( \lambda \sum_{i \in [n ] } (X_i - \mu_i) \right) \right] }{ \exp( \lambda t) } \\
+        &amp;\le \exp \left( -\lambda t + \frac{ V }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right) \right) \\
+        &amp;= \exp \left( -\lambda \Big( t + \frac{V}{M} \Big) + \frac{ V }{ M^2 } \cdot \left( e^{\lambda M} - 1 \right) \right) 
+    \end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(f(\lambda) = -\lambda t + \frac{ V }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right)\)</span>. Letting <span class="math display">\[
+    \begin{aligned}
+            f&#39;(\lambda) 
+            =&amp; - \Big( t + \frac{V}{M} \Big) +  \frac{V}{M} e^{\lambda M}  = 0.
+    \end{aligned}
+\]</span></p>
+<p>We get <span class="math inline">\(\lambda = \frac{1}{M} \ln \left( \frac{M t}{V} + 1 \right)\)</span>. Hence, <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ \sum_{i \in [n ] } (X_i - \mu_i) \ge t \right] 
+        &amp;\le \exp \left( - \frac{1}{M} \Big( t + \frac{V}{M} \Big) \ln \left( \frac{M t}{V} + 1 \right) + \frac{ V }{ M^2 } \cdot \frac{M t}{V} \right) \\
+        &amp;\le \exp \left( \left\{ \frac{M t}{V} - \Big( 1 + \frac{M t}{V} \Big) \ln \left( 1 + \frac{M t}{V} \right) \right\} \cdot \frac{V}{M^2}\right).
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span>.</p>
+<!-- Let $X_1, X_2, ..., X_n$ be a set of $i.i.d$ copies of $X$ and $\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i$. Then
+$$
 \begin{aligned}
     \Pr \{ \bar{X} \ge \mu + t\} 
-    &amp;= \Pr \{ e^{ \lambda \bar{X} } \ge e^{\lambda (\mu + t)} \} \\
-    &amp;\le \frac{  \mathbb{E}  [ \exp ( \lambda \bar{ X} ) ] }{ \exp \{ \lambda(\mu + t) \} } \\
-    &amp;= \frac{ \mathbb{E} [ \exp (\lambda\sum_{i=1}^n X_i ) ]}{ \exp \{ \lambda n(\mu + t) \}  } \\
-    &amp;= \frac{ \prod_{i=1}^n  \mathbb{E} [ \exp (\lambda X ) ]}{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;= \frac{ \prod_{i=1}^n  \sum_{j=1}^\infty \frac{\lambda^j  \mathbb{E} [X^j]}{j!}  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;= \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \sum_{j=2}^\infty \frac{\lambda^j  \mathbb{E} [X^{j-2}X^2]}{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\ 
-    &amp;\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \sum_{j=2}^\infty \frac{\lambda^j M^{j-2}  \mathbb{E} [X^2]}{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} \sum_{j=2}^\infty \frac{\lambda^j M^{j} }{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M))  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &amp;= \left( \frac{  \exp \left\{\lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M ) \right\} }{ \exp( \lambda   (\mu + t) ) } \right)^n \\
-    &amp;= \left( \exp \left( -\lambda t + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M ) \right)  \right)^n \\
+    &= \Pr \{ e^{ \lambda \bar{X} } \ge e^{\lambda (\mu + t)} \} \\
+    &\le \frac{  \mathbb{E}  [ \exp ( \lambda \bar{ X} ) ] }{ \exp \{ \lambda(\mu + t) \} } \\
+    &= \frac{ \mathbb{E} [ \exp (\lambda\sum_{i=1}^n X_i ) ]}{ \exp \{ \lambda n(\mu + t) \}  } \\
+    &= \frac{ \prod_{i=1}^n  \mathbb{E} [ \exp (\lambda X ) ]}{ \exp \{ \lambda n(\mu + t) \} } \\
+    &= \frac{ \prod_{i=1}^n  \sum_{j=1}^\infty \frac{\lambda^j  \mathbb{E} [X^j]}{j!}  }{ \exp \{ \lambda n(\mu + t) \} } \\
+    &= \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \sum_{j=2}^\infty \frac{\lambda^j  \mathbb{E} [X^{j-2}X^2]}{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\ 
+    &\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \sum_{j=2}^\infty \frac{\lambda^j M^{j-2}  \mathbb{E} [X^2]}{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\
+    &\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} \sum_{j=2}^\infty \frac{\lambda^j M^{j} }{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\
+    &\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M))  }{ \exp \{ \lambda n(\mu + t) \} } \\
+    &= \left( \frac{  \exp \left\{\lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M ) \right\} }{ \exp( \lambda   (\mu + t) ) } \right)^n \\
+    &= \left( \exp \left( -\lambda t + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M ) \right)  \right)^n \\
 \end{aligned}
-\]</span></p>
-<p>By setting the derivative of <span class="math inline">\(\lambda\)</span> to 0, we get <span class="math display">\[
+$$
+
+By setting the derivative of $\lambda$ to 0, we get 
+$$
 -t + { \mathbb{E} [X^2] \over M^2} ( M e^{\lambda M} - M) = 0 \rightarrow  \lambda = {1 \over M} \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 })}
-\]</span> Therefore, <span class="math display">\[
+$$
+Therefore, 
+$$
 \begin{aligned}
     \Pr \{ \overline{X} \ge \mu + t\} 
-    &amp;\le \left( \exp \left\{ - {t \over M} \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } }) + \frac{ \mathbb{E} [X^2]}{M^2}{ {( {t M \over  \mathbb{E} [X^2] }  + 1  - 1 - \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } } ) } } ) \right\} \right)^n \\
-    &amp;=  \exp \left\{ \frac{n \mathbb{E} [X^2]}{M^2}{ {( {t M \over  \mathbb{E} [X^2] }  - ({t M \over  \mathbb{E} [X^2] }  + 1 ) \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } })} }) \right\} \\
-    &amp;= \exp \left\{ \frac{n \mathbb{E} [X^2]}{M^2} h(\frac{tM}{ \mathbb{E} [X^2]})\right\}
+    &\le \left( \exp \left\{ - {t \over M} \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } }) + \frac{ \mathbb{E} [X^2]}{M^2}{ {( {t M \over  \mathbb{E} [X^2] }  + 1  - 1 - \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } } ) } } ) \right\} \right)^n \\
+    &=  \exp \left\{ \frac{n \mathbb{E} [X^2]}{M^2}{ {( {t M \over  \mathbb{E} [X^2] }  - ({t M \over  \mathbb{E} [X^2] }  + 1 ) \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } })} }) \right\} \\
+    &= \exp \left\{ \frac{n \mathbb{E} [X^2]}{M^2} f(\frac{tM}{ \mathbb{E} [X^2]})\right\}
 \end{aligned}
-\]</span> where <span class="math inline">\(h(x) = x - (1 + x) \ln (1 + x)\)</span>.</p>
+$$
+where  $f(x) = x - (1 + x) \ln (1 + x)$. -->
 
       
     </div>
