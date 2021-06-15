@@ -146,6 +146,212 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/Bit-Guessing-Game/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/25/Bit-Guessing-Game/" class="post-title-link" itemprop="url">Bit Guessing Game</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-25 15:33:16" itemprop="dateCreated datePublished" datetime="2020-10-25T15:33:16+11:00">2020-10-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-03 10:23:55" itemprop="dateModified" datetime="2020-11-03T10:23:55+11:00">2020-11-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>The bit guessing game models two players, namely Alice and Bob, where Alice has a secret vector <span class="math inline">\(\vec x \in \{0, 1 \}^n\)</span> which Bob tries to learn. Bob is only allowed to ask Alice the value of <span class="math display">\[
+\vec c \cdot \vec x
+\]</span></p>
+<p>for bit vector <span class="math inline">\(\vec c \in \{0, 1\}^n\)</span> he comes up with. Under this setting, it is trivial for Bob to learn each bit of <span class="math inline">\(x\)</span>: he needs to just query Alice for <span class="math inline">\(\vec e_i \cdot \vec x\)</span>, where <span class="math inline">\(\vec e_i\)</span> is the indicator vector with its <span class="math inline">\(i\)</span>-th dimension equal to 1 and other dimensions equal to 0.</p>
+<p>One way for Alice to prevent information leakage is to add some bounded noise <span class="math inline">\(Z\)</span> to the query result and returns <span class="math display">\[
+r(\vec c) \doteq \vec c \cdot \vec x + Z
+\]</span></p>
+<p>For example, <span class="math inline">\(Z\)</span> could be a bounded random variable. Is is still a chance for Bob to learn the vector <span class="math inline">\(\vec x\)</span>?</p>
+<p><strong><em>Theorem 1.</em></strong> If Bob is allowed to query <span class="math inline">\(r(\vec c)\)</span> for all <span class="math inline">\(\vec c \in \{0, 1\}^n\)</span>, and suppose that <span class="math inline">\(Z\)</span> is bounded by some real number <span class="math inline">\(R\)</span>, then Bob can have an estimation <span class="math inline">\(\vec y\)</span> such that <span class="math display">\[
+|\vec x - \vec y| = \sum_{i = 1}^n | x_i - y_i | \le 4R
+\]</span></p>
+<p><strong>Remark:</strong> <em>In this case Bob queries for <span class="math inline">\(2^n\)</span> vectors. This result implies that is Bob is able to ask exponential number of questions, then it is hard to prevent information leakage. E.g., suppose <span class="math inline">\(R = n / 400\)</span>, which is a relatively large number when <span class="math inline">\(n\)</span> is large, the theorem says that Bob can recover <span class="math inline">\(99\%\)</span> of bits in <span class="math inline">\(\vec x\)</span>.</em></p>
+<p><em>Proof:</em> We say a vector <span class="math inline">\(\vec y\)</span> is consistent with a query result <span class="math inline">\(r(\vec c)\)</span> if <span class="math display">\[
+| r(\vec c) - \vec c \cdot \vec y| \le R.
+\]</span></p>
+<p>The strategy of Bob is to choose any <span class="math inline">\(\vec y\)</span> that is consistent with all <span class="math inline">\(\vec c \in \{0, 1\}^n\)</span>. Such <span class="math inline">\(\vec y\)</span> exits, a special of which is given by <span class="math inline">\(\vec y = \vec x\)</span>. It remains to prove that such an <span class="math inline">\(\vec y\)</span> satisfies the constraint.</p>
+<p>Consider the special case of <span class="math inline">\(\vec c = \vec x\)</span>, <span class="math display">\[
+|r(\vec x) - \vec x \cdot \vec y| \le R \\
+|r(\vec x) - \vec x \cdot \vec x| \le R \\
+\]</span></p>
+<p>By triangle inequality, it holds <span class="math display">\[
+|\vec x \cdot \vec y - \vec x \cdot \vec x| \le 2R.
+\]</span></p>
+<p>Observe that <span class="math inline">\(\vec x \cdot \vec x \ge \vec x \cdot \vec y\)</span>, which implies <span class="math display">\[ 
+|\vec x \cdot \vec y - \vec x \cdot \vec x| = \vec x \cdot \vec x - \vec x \cdot \vec y \le 2R
+\]</span></p>
+<p>Hence, <span class="math inline">\(\vec y\)</span> and <span class="math inline">\(\vec x\)</span> differ by at most <span class="math inline">\(2R\)</span> bits, on the non-zero dimensions of <span class="math inline">\(\vec x\)</span>.</p>
+<p>Let <span class="math inline">\(\bar x\)</span> be the bit-wise complement of <span class="math inline">\(\vec x\)</span>. By similar arguments, we get <span class="math display">\[
+|\bar x \cdot \vec y - \bar x \cdot \vec x|\le 2R.
+\]</span></p>
+<p>and <span class="math inline">\(\vec x\)</span> and <span class="math inline">\(\vec y\)</span> differ by at most <span class="math inline">\(2R\)</span> bits, on the zero dimensions of <span class="math inline">\(\vec x\)</span>. It concludes that <span class="math inline">\(|\vec x - \vec y | \le 4R\)</span>.<br />
+<!-- Define $S$ to be the set of non-zero dimensions of $\vec x$: 
+$$
+S \doteq \{ i \in [n]: x_i > 0 \}
+$$
+
+Let $\vec e_S \in \{0, 1\}^n$ ($\vec e_{\bar S} \in \{0, 1\}^n$) be the indicator vector that takes $1$ on dimensions belonging to $S$ ($\bar S$).  It follows that 
+$$
+|r(\vec e_S) - \vec e_S \cdot \vec y| \le R \\
+|r(\vec e_S) - \vec e_S \cdot \vec x| \le R \\
+$$ --></p>
+<!-- By triangle inequality, it holds 
+$$
+|\vec e_S \cdot \vec y - \vec e_S \cdot \vec x|\le 2R.
+$$   -->
+<!-- Similarly, $|\vec e_{\bar S} \cdot \vec y - \vec e_{\bar S} \cdot \vec x| \le 2R$. As $S$ and $\bar S$ is a partition of $[n]$, 
+$$
+| \vec x - \vec y| = |\vec e_S \cdot \vec y - \vec e_S \cdot \vec x| + |\vec e_{\bar S} \cdot \vec y - \vec e_{\bar S} \cdot \vec x| \le 4R
+$$ -->
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>What if Bob asks <span class="math inline">\(O(n)\)</span> questions? The following theorem states that if <span class="math inline">\(Z\)</span> is bounded by <span class="math inline">\(O(\sqrt n)\)</span>, then Bob is able to have a good estimation of <span class="math inline">\(\vec x\)</span>.</p>
+<p><strong><em>Theorem 2.</em></strong> If Bob is able to ask <span class="math inline">\(\frac{n \log 2 + \ln n}{\log \frac{3}{2} - \log \lambda }\)</span> queries, and <span class="math inline">\(Z\)</span> is bounded by <span class="math inline">\(\alpha \sqrt n\)</span>, then Bob can obtains an estimation <span class="math inline">\(\vec y\)</span>, such that <span class="math display">\[
+|\vec x - \vec y| \le (3e \frac{\alpha}{\lambda } )^2 \cdot n
+\]</span></p>
+<p><em>Proof:</em> As before, a vector <span class="math inline">\(\vec y\)</span> is said to be consistent with a query result <span class="math inline">\(r(\vec c)\)</span> if <span class="math display">\[
+| r(\vec c) - \vec c \cdot \vec y| \le \alpha \sqrt n.
+\]</span></p>
+<p>It suffices to find a sequence of vectors <span class="math inline">\(\vec c_1, \vec c_2, ..., \vec c_k\)</span> (<span class="math inline">\(k\)</span> is a value to be determined), such that</p>
+<ol type="1">
+<li><span class="math inline">\(k = O(n)\)</span>,</li>
+<li>For any <span class="math inline">\(\vec y\)</span> with <span class="math inline">\(|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n\)</span>, there exists at least one <span class="math inline">\(\vec c_i\)</span>, such that <span class="math inline">\(\vec y\)</span> is not consistent with <span class="math inline">\(r(\vec c_i)\)</span>, with high probability.</li>
+</ol>
+<p>If Bob can find a sequence of query vectors with the specified properties, he can rule out any <span class="math inline">\(\vec y\)</span> such that <span class="math inline">\(|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n\)</span>. Note that not every vector in <span class="math inline">\(\{0, 1\}^n\)</span> will be ruled out. At least <span class="math inline">\(\vec x\)</span> will remain. Bob can output any <span class="math inline">\(\vec y\)</span> that is not ruled out as his guess of <span class="math inline">\(\vec x\)</span>.</p>
+<p>It turns out that fining <span class="math inline">\(\vec c_i\)</span>'s is simple: each <span class="math inline">\(\vec c_i\)</span> is sampled independently and uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>. It remains to prove that any <span class="math inline">\(\vec y\)</span> with <span class="math inline">\(|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n\)</span> will be ruled out with high probability.</p>
+<p>For a fix <span class="math inline">\(i\)</span>, consider the probability of <span class="math display">\[
+\Pr[ | r(\vec c_i) - \vec c_i \cdot \vec y| &gt; \alpha \sqrt n ] = \Pr[ |\vec c_i \cdot (\vec x - \vec y) | &gt; \alpha \sqrt n ].
+\]</span></p>
+<p>Lower bounding this probability is equivalent to upper bounding the probability <span class="math display">\[
+\Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ].
+\]</span></p>
+<p><em>Lemma.</em> <strong>For a value <span class="math inline">\(l \in \mathbb{N}\)</span></strong>, <span class="math display">\[
+\Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] \le \frac{e }{\sqrt {|\vec x - \vec y| } }
+\]</span></p>
+<p>We leave the proof of the lemma at the end of our discussion. It following by union bound that <span class="math display">\[
+\begin{aligned}
+    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ] 
+        &amp;= \sum_{l = -\alpha \sqrt n}^{\alpha \sqrt n} \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] \\
+        &amp;\le \frac{2 e \cdot \alpha \sqrt n}{\sqrt {|\vec x - \vec y| } }
+\end{aligned}
+\]</span></p>
+<p>Conditioning on that <span class="math inline">\(|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n\)</span>, this probability is at most <span class="math display">\[
+\begin{aligned}
+    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ] 
+        &amp;\le \frac{2}{3} \lambda
+\end{aligned}
+\]</span></p>
+<p>The probability that this holds simultaneously for all <span class="math inline">\(\vec c_i\)</span> is therefore <span class="math inline">\((\frac{2\lambda }{3})^k\)</span>. Applying union bound over all <span class="math inline">\(\vec y\)</span> such that <span class="math inline">\(|\vec x - \vec y| &gt; (3e\alpha)^2 \cdot n\)</span>, we have an upper bound of failure probability <span class="math display">\[
+(\frac{2 \lambda }{3})^k 2^n = \exp( k \log \frac{2 \lambda }{3} + n \log 2)
+\]</span></p>
+<p>If we take <span class="math inline">\(k = \frac{n \log 2 + \ln n}{\log \frac{3}{2} - \log \lambda }\)</span>, this probability becomes <span class="math inline">\(\frac{1}{n}\)</span>.</p>
+<p><em>Proof of the lemma:</em> Without lose of generality, suppose that <span class="math inline">\(l \ge 0\)</span>. Observe that <span class="math inline">\(\vec x - \vec y\)</span> is a vector in <span class="math inline">\(\{-1, 0, 1 \}^n\)</span>. Denote <span class="math inline">\(v = |\vec x - \vec y|\)</span> be the number of non-zero dimensions in <span class="math inline">\(\vec x - \vec y\)</span>. Further, let <span class="math inline">\(v_+\)</span> (<span class="math inline">\(v_-\)</span>) be the number of positive (negative) dimensions in <span class="math inline">\(\vec x - \vec y\)</span>. Hence, <span class="math inline">\(v = v_+ + v_-\)</span>. As <span class="math inline">\(\vec c_i\)</span> is sampled uniformly from <span class="math inline">\(\{0, 1\}^n\)</span>, we have <span class="math display">\[
+\begin{aligned}
+    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] 
+    &amp;= \frac{1}{2^{v} } \sum_{j = 0}^{ \min \{ v_+ - l, v_- \} } \binom{v_+}{l + j} \binom{v_-}{j} \\
+    &amp;= \frac{1}{2^{v} } \sum_{j = 0}^{ \min \{ v_+ - l, v_- \} } \binom{v_+}{l + j} \binom{v_-}{v_- - j} \\
+    &amp;\le \frac{1}{2^{v} } \binom{v_+ + v_- }{l + v_-} \\
+    &amp;\le \frac{1}{2^{v} } \binom{v }{ \lfloor v / 2 \rfloor } \\
+\end{aligned}
+\]</span></p>
+<p>By Stirling's approximation, <span class="math display">\[
+v! \le e \sqrt v (\frac{v}{e} )^v  \\
+\lfloor v / 2 \rfloor! \ge \sqrt{2 \pi v} (\frac{ \lfloor v / 2 \rfloor }{e} )^{\lfloor v / 2 \rfloor }  \\
+\lceil v / 2 \rceil ! \ge \sqrt{2 \pi v} ( \frac{ \lceil v / 2 \rceil }{ e } )^{\lceil v / 2 \rceil }   \\
+\]</span></p>
+<p>Assuming that <span class="math inline">\(\lfloor v / 2\rfloor \ge 1\)</span>, we get <span class="math display">\[
+\begin{aligned}
+    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] 
+    &amp;\le \frac{1}{2^{v} } \binom{v }{ \lfloor v / 2 \rfloor } \\
+    &amp;\le \frac{1}{2^{v} } \frac{e}{2 \pi} \frac{v^{ v + 0.5 } }{ (v / 2)^{ v + 1 } } (\frac{ v / 2 }{ \lfloor v / 2 \rfloor })^{ \lfloor v / 2 \rfloor + 0.5 } (\frac{ v / 2 }{ \lceil v / 2 \rceil })^{ \lceil v / 2 \rceil + 0.5 } \\
+    &amp;\le \frac{ 1 }{ \sqrt v } ( \frac{ v / 2 }{ \lfloor v / 2 \rfloor })^{ \lfloor v / 2 \rfloor + 0.5 } \\
+    &amp;\le \frac{ 1 }{ \sqrt v } \exp( \frac{ 1 }{ 2 \lfloor v / 2 \rfloor } ( \lfloor v / 2 \rfloor + 0.5 )  ) \\
+    &amp;\le \frac{ e }{ \sqrt v }  \\
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>The idea behind Theorem 2 is more obvious if we study the scenario where <span class="math inline">\(\vec x \in \{-1, 1\}^n\)</span>. For any estimation <span class="math inline">\(\vec y \in \{-1, 1\}^n\)</span>, if <span class="math inline">\(\vec c\)</span> is sampled uniformly at random from <span class="math inline">\(\{-1, 1\}^n\)</span>, then <span class="math display">\[
+\mathbb{E}[ \vec c (\vec x - \vec y)] = 0
+\]</span></p>
+<p>If <span class="math inline">\(|\vec x - \vec y| = O(\alpha^2 n)\)</span>, by anti-concentration property, the probability <span class="math display">\[
+\Pr[ |\vec c (\vec x - \vec y) | \ge \alpha \sqrt n] 
+\]</span></p>
+<p>equals to some constant. Equivalently, <span class="math inline">\(\Pr[ |\vec c (\vec x - \vec y) | &lt; \alpha \sqrt n]\)</span> is some constant. By sampling <span class="math inline">\(\vec c\)</span> repeatedly, the probability that <span class="math inline">\(|\vec c (\vec x - \vec y) | &lt; \alpha \sqrt n\)</span> holds for all sampled <span class="math inline">\(\vec c\)</span> decreases exponentially. That is why we can rule out any <span class="math inline">\(\vec y\)</span> such that <span class="math inline">\(|\vec x - \vec y| = O(\alpha^2 n)\)</span> with high probability.</p>
+<!-- First, observe that 
+$$
+\mathbb{E}[ \vec c_i \cdot ( \vec x - \vec y) ] = \mathbb{E}[ \vec c_i \cdot ( \vec x - \vec y) ] \ge 0.
+$$ -->
+<!-- We re-write the event of $\vec c_i$ not consistent with $\vec y$ as 
+$$
+\begin{array}{ll}
+\{ | r(\vec c_i) - \vec c_i \cdot \vec y| > \alpha \sqrt n \} \\
+= \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] + \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n \} \\
+= \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | + |\mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n \} \\
+\supset \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n  \} 
+\end{array}
+$$
+
+and 
+$$
+\Pr[ \vec c \cdot (\vec x - \vec y) - \mathbb{E}[ \vec c \cdot ( \vec x - \vec y) ] \ge \sqrt n] ] \le \binom{\alpha n}{ \alpha n / 2} \frac{1}{2^{\alpha n} } 
+$$ -->
+<h3 id="reference">Reference</h3>
+<p>[1] C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,” Foundations and Trends in Theoretical Computer Science, vol. 9, no. 3–4, pp. 211–407, 2013</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/24/Littlewood%E2%80%93Offord-Problem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -387,228 +593,6 @@ p(a) = |S(a) | = \frac{n!}{ \lfloor n / 2 \rfloor ! (n - \lfloor n / 2 \rfloor)!
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/15/Stochastic-Multi-Armed-Bandits/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/15/Stochastic-Multi-Armed-Bandits/" class="post-title-link" itemprop="url">Stochastic Multi-Armed Bandits</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-15 23:26:43" itemprop="dateCreated datePublished" datetime="2020-10-15T23:26:43+11:00">2020-10-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-10-21 15:15:01" itemprop="dateModified" datetime="2020-10-21T15:15:01+11:00">2020-10-21</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>The multi-arm bandit problem (MAB) models a casino with <span class="math inline">\(k\)</span> machines, where the reward of each machine is controlled by a fixed and unknown distribution. The player (agent) observes independent random rewards from generated from the distribution of a machine each time it pulls its arm. Because of limited budget, the player can only play the machines <span class="math inline">\(T\)</span> times. The goal of the player is to maximize its expected gain.</p>
-<p>There is an inherent exploration-exploitation nature of the problem. The player has to explore what is a good machine while simultaneously exploits what seems to be a good machine.</p>
-<div style="text-align:center">
-<img src="https://jmichaux.github.io/assets/week6/octopus-bandit.jpeg" />
-</div>
-<h3 id="formulation">Formulation</h3>
-<p>We study the restricted case where the reward distribution of each machine is bounded on <span class="math inline">\([0, 1]\)</span>. Define</p>
-<ol type="1">
-<li><span class="math inline">\(D_i:\)</span> the reward distribution on <span class="math inline">\([0, 1]\)</span> of the <span class="math inline">\(i\)</span>-th machine, where <span class="math inline">\(i \in [k]\)</span>,</li>
-<li><span class="math inline">\(\mu_i:\)</span> the expected reward of the <span class="math inline">\(i\)</span>-th machine, where <span class="math inline">\(i \in [k]\)</span>,</li>
-<li><span class="math inline">\(\mu^* = \max_{i \in [k]} \mu_i\)</span>,</li>
-<li><span class="math inline">\(i^*:\)</span> the index of the machine with highest expected reward,</li>
-<li><span class="math inline">\(\Delta_i = \mu^* - \mu_i\)</span>.</li>
-</ol>
-<p>Let <span class="math inline">\(\vec Y_i\)</span> be the random reward vector whose elements are i.i.d. random variables from <span class="math inline">\(D_i\)</span>:</p>
-<ol start="6" type="1">
-<li><span class="math inline">\(\vec Y_i = (Y_{i, 1}, Y_{i, 2}, ..., Y_{i, T})\)</span></li>
-</ol>
-<p>Denote <span class="math inline">\(Y\)</span> be the matrix of the random variables</p>
-<ol start="7" type="1">
-<li><span class="math display">\[
- Y = \begin{bmatrix}
-     \vec Y_1 \\
-     \vec Y_2 \\
-     ... \\
-     \vec Y_k
- \end{bmatrix}
-\]</span></li>
-</ol>
-<p>Each time the player pulls the arm, it observes one random variable from the matrix. Specially, let</p>
-<ol start="8" type="1">
-<li><span class="math inline">\(I_t:\)</span> the machine played at the <span class="math inline">\(t\)</span>-th trial,</li>
-<li><span class="math inline">\(N_i(t):\)</span> the number of times the machine <span class="math inline">\(i\)</span> is played up to trial <span class="math inline">\(t\)</span>.</li>
-</ol>
-<p>Before trial <span class="math inline">\(t\)</span>, the number of random variables observed in <span class="math inline">\(\vec Y_{I_t}\)</span> is <span class="math inline">\(N_{I_t} (t - 1)\)</span>. At trial <span class="math inline">\(t\)</span>, a new random variable in <span class="math inline">\(\vec Y_{I_t}\)</span> is observed, and <span class="math inline">\(N_{I_t} (t) = N_{I_t} (t - 1) + 1\)</span>. Hence, the newly observed random variable is <span class="math inline">\(Y_{I_t, N_{I_t} (t)}\)</span>. For convenience, we define</p>
-<ol start="11" type="1">
-<li><span class="math inline">\(X_{t} \doteq Y_{I_t, N_{I_t} (t)}:\)</span> the rewards obtained at the <span class="math inline">\(t\)</span>-th trial.</li>
-</ol>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StochasticMultiArmBandit.png" width="500" height="250" /></p>
-</div>
-<p>When the player chooses a machine <span class="math inline">\(I_t\)</span> on trial <span class="math inline">\(t\)</span>, it is based on the history of his play, which consists of his past decisions, and the corresponding observed rewards:</p>
-<ol type="1">
-<li><span class="math inline">\(H_t: \{ (I_1, X_1), (I_2, X_2), ..., (I_{t -1}, X_{t - 1}) \}\)</span> the history up to trial <span class="math inline">\(t\)</span>.</li>
-</ol>
-<p>The strategy the player uses at trial <span class="math inline">\(t\)</span> is considered as a functions from <span class="math inline">\(H_t\)</span> to <span class="math inline">\([k]\)</span>:</p>
-<ol start="11" type="1">
-<li><span class="math inline">\(\phi_t: H_t \rightarrow [k]\)</span> a function that chooses a machine based on the history at trial <span class="math inline">\(t\)</span></li>
-</ol>
-<p>We define the policy as the strategies the player uses over all trials:</p>
-<ol start="12" type="1">
-<li><span class="math inline">\(\phi = (\phi_1, \phi_2, ..., \phi_T):\)</span> policy, the strategy for the pulling arms by the player</li>
-</ol>
-<p>The goal is to find a policy that maximizes the expected rewards, or equivalently, the one that minimizes the expected regret <span class="math display">\[ \small
-\mathbb{R}(\phi) = T \cdot \mu^* - \mathbb{E}[\sum_{t = 1}^T X_t ]
-\]</span></p>
-<p>By definition of <span class="math inline">\(N_i(t)\)</span>'s, we have <span class="math inline">\(\sum_{i = 1}^k N_i(T) = T\)</span>. Then the regret can be written as <span class="math display">\[
-\mathbb{R}(\phi) = \mathbb{E}[\sum_{i = 1}^k N_i(T)] \cdot \mu^* - \sum_{i = 1}^k \mathbb{E}[N_i(T) ] \cdot \mu_i = \sum_{i : \Delta_i &gt; 0} \mathbb{E}[N_i(T) ] \cdot \Delta_i
-\]</span></p>
-<h3 id="the-upper-confidence-bound-ucb-algorithm">The Upper Confidence Bound (UCB) Algorithm</h3>
-<p>When making decision at trial <span class="math inline">\(t\)</span>, a good indicator of a machine's performance is its empirical reward: <span class="math display">\[ 
-\hat \mu_{i, N_i(t - 1)} \doteq  \sum_{\tau = 1}^{N_i(t - 1) } \frac{1}{ N_i(t - 1) } Y_{i, \tau}
-\]</span></p>
-<p>But this might not reflect the true value of its expectation <span class="math inline">\(\mu_i\)</span> because of sampling variation. The UCB algorithm takes the variation into consideration.</p>
-<p><strong><em>Fact.</em></strong> <em>Hoeffding Inequality.</em> <em>Let <span class="math inline">\(Z_1, Z_2, ..., Z_s\)</span> be i.i.d. copies of random variable <span class="math inline">\(Z\)</span> on <span class="math inline">\([a, b]\)</span>. Then</em> <span class="math display">\[
-\Pr[ \frac{1}{s} \sum_{\tau = 1}^s Z_\tau - E[Z] \ge r] \le \exp(- \frac{2 s r^2}{(b - a)^2 } )
-\]</span> <em>where r &gt; 0</em>.</p>
-<p>Now, consider a <strong>fixed</strong> <span class="math inline">\(s\)</span> (<span class="math inline">\(1 \le s \le T\)</span>) and a failure probability <span class="math inline">\(\delta &gt; 0\)</span>. Applying Hoeffding inequality with <span class="math inline">\(Z_1 = Y_{i, 1}, Z_2 = Y_{i, 2}, ..., Z_s = Y_{i, s}\)</span>, <span class="math inline">\(a = 0, b = 1\)</span> and <span class="math inline">\(r = \sqrt { \log \frac{1}{\delta} \over 2 s }\)</span>, we get <span class="math display">\[ \small
-\Pr \left[ \hat \mu_{i, s} - \mu_i \ge \sqrt { \log \frac{1}{\delta} \over 2  s } \right] \le \delta
-\]</span></p>
-<p>Similarly, by applying Hoeffding inequality with <span class="math inline">\(Z_1 = -Y_{i, 1}, Z_2 = -Y_{i, 2}, ..., Z_s = -Y_{i, s}\)</span>, <span class="math inline">\(a = -1, b = 0\)</span> and <span class="math inline">\(r = \sqrt { \log \frac{1}{\delta} \over 2 s }\)</span>, we have <span class="math display">\[ \small
-\Pr \left[ \mu_i - \hat \mu_{i, s} \ge \sqrt { \log \frac{1}{\delta} \over 2  s } \right] \le \delta
-\]</span></p>
-<p>Inspired by this, the UCB defines the upper and lower bounds for the expected reward of the <span class="math inline">\(i\)</span>-th machine as follows: <span class="math display">\[ \small
-UB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} + \sqrt { \log t^\alpha \over 2  N_i(t - 1) } \\
-LB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} - \sqrt { \log t^\alpha \over 2  N_i(t - 1) } \\
-\]</span> where <span class="math inline">\(\alpha &gt; 0\)</span> is a parameter to be set. By convention here that if <span class="math inline">\(N_i(t - 1) = 0\)</span>, <span class="math inline">\(\sqrt { \log t^\alpha \over 2 N_i(t - 1) } = \infty\)</span>.</p>
-<p>The UCB algorithms chooses just the machine with highest upper bound. The lower bound is needed for its analysis.</p>
-<blockquote>
-<p><strong><em>UCB algorithm</em></strong><br />
-1. For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span> do<br />
-2. <span class="math inline">\(\qquad\)</span> Choose <span class="math inline">\(I_t = \arg \max_{i \in [k] } UB_i ( t )\)</span><br />
-3. <span class="math inline">\(\qquad\)</span> Observe a reward <span class="math inline">\(X_t\)</span></p>
-</blockquote>
-<p>Intuitively, there are two cases when <span class="math inline">\(UB_i ( t )\)</span> is high:</p>
-<ol type="1">
-<li>The value <span class="math inline">\(\mu_i\)</span> is high;</li>
-<li>The <span class="math inline">\(i\)</span>-th machine is under-explored.</li>
-</ol>
-<p><strong><em>Caveat:</em> <em>The reader might start to think that at trial <span class="math inline">\(t\)</span>, it holds that <span class="math inline">\(\Pr[\mu_i \ge UB_i(t) ]\)</span> (or <span class="math inline">\(\Pr[\mu_i \le LB_i(t) ]\)</span>) is bounded by <span class="math inline">\(\frac{1}{t^\alpha}\)</span>, according to Hoeffding inequality. It is not. Hoeffding inequality requires the number of samples to be a fixed number. On the other hand, <span class="math inline">\(N_i(t - 1)\)</span> is a random variable that depends on the history of the game. We will discuss this later.</em></strong></p>
-<p>The following theorem states that the expected regret of UCB algorithm grows logarithmically with <span class="math inline">\(T\)</span>.</p>
-<p><strong><em>Theorem.</em></strong> <em>If <span class="math inline">\(\alpha &gt; 2\)</span>, the regret of the UCB algorithm is bounded by</em> <span class="math display">\[ \small
-\mathbb{R}(\phi) \le  \log T \cdot ( \sum_{i : \Delta_i &gt; 0 } \frac{2 \alpha }{\Delta_i } ) + \frac{\alpha}{ \alpha - 2 } \sum_{i : \Delta_i &gt; 0 } \Delta_i
-\]</span></p>
-<p><em>Proof:</em></p>
-<p>We will show that for <span class="math inline">\(i : \Delta_i &gt; 0\)</span>, <span class="math display">\[ \small
-\mathbb{E} [n_{i, T}] \le \frac{ \alpha \log T }{ \Delta_i^2} + \frac{\alpha}{\alpha - 2} 
-\]</span></p>
-<p>The key for the proof relies on a sufficient condition that the <span class="math inline">\(i\)</span>-th machine will not be chosen at trial <span class="math inline">\(t\)</span>:</p>
-<blockquote>
-<p>if the following events happen at trial <span class="math inline">\(t\)</span>, machine <span class="math inline">\(i\)</span> will not be chosen: 1. <span class="math inline">\(A_t: 2 \sqrt { \alpha \log t \over 2 N_i(t - 1) } \le \Delta_i\)</span><br />
-2. <span class="math inline">\(B_t: UB_{ i^* } ( t ) &gt; \mu^*\)</span><br />
-3. <span class="math inline">\(C_t: \mu_i &gt; LB_i ( t )\)</span></p>
-</blockquote>
-<p>This condition essentially prevents <span class="math inline">\(UB_i(t)\)</span> from exceeding <span class="math inline">\(\mu^*\)</span> while assures <span class="math inline">\(UB_{i^*}(t)\)</span> is higher than <span class="math inline">\(\mu^*\)</span>.</p>
-<p><span class="math display">\[ \small
-UB_i ( t ) = LB_i ( t ) + 2 \sqrt { \alpha \log t \over 2  N_i(t - 1) } &lt; \mu_i + \Delta_i = \mu^* &lt; UB_{ i^* } ( t )
-\]</span></p>
-<p>Let <span class="math inline">\(\beta = \lceil \frac{2 \alpha \log T}{\Delta_i^2} \rceil\)</span>. Note that <span class="math inline">\(A_t = \{ N_i(t - 1) \ge \frac{2 \alpha \log t}{\Delta_i^2} \} \subset \{ N_i(t - 1) \ge \beta \}\)</span>. Now, <span class="math display">\[
-\{I_t = i \} \subset \overline{ A_t \cap B_t \cap C_t } = \bar A_t \cup \bar B_t \cup \bar C_t
-\]</span></p>
-<p>and <span class="math display">\[
-\begin{array}{ll} 
-    \mathbb{E}[n_{i, T}]    &amp;=  \mathbb{E}[ \sum_{t = 1}^T \mathfrak{1} \{I_t = i\} ]  \\
-                            &amp;=  \mathbb{E} [ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, \bar A_t \}+ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, A_t \} ]  \\
-                            &amp;\le  \mathbb{E} [ \sum_{t = 1}^T \mathfrak{1} \{I_t = i, \  N_i(t) &lt; \beta \} ] + \sum_{t = 1}^T \mathbb{E} [\mathfrak{1} \{I_t = i, A_t \} ]  \\
-                            &amp;\le \beta + \sum_{t = \beta + 1}^T \Pr[ \{I_t = i\} \cap A_t ] \\
-                            &amp;\le \beta + \sum_{t = \beta + 1}^T ( \Pr[ \bar B_t \cap A_t ] + \Pr[ \bar C_t \cap A_t ] ) \\
-                            &amp;\le \beta + \sum_{t = \beta + 1}^T ( \Pr[ \bar B_t ] + \Pr[ \bar C_t ] ) \\
-\end{array}
-\]</span></p>
-<p>It is non-trivial to bound <span class="math inline">\(\Pr[\bar B_t]\)</span>. For a fixed <span class="math inline">\(1 \le s \le t - 1\)</span>, define the event <span class="math display">\[
-M_s : \frac{1}{s} \sum_{\tau = 1}^s Y_{i^*, \tau} + \sqrt{ \frac{\alpha \log t}{2 s} } \le \mu^*
-\]</span></p>
-<p>Since <span class="math inline">\(s\)</span> is fixed, by Hoeffding inequality, <span class="math inline">\(\Pr[M_s] \le \frac{1}{t^\alpha}\)</span>. Then <span class="math display">\[ \small
-\begin{aligned}
-    \bar B_t = \left\{ \mu_{ {i^*}, N_{i^*} (t - 1)} + \sqrt { \alpha \log t \over 2  N_{i^*} (t - 1) }  \le \mu^* \right\} \subset \cup_{s = 1}^{t - 1} M_s
-\end{aligned}
-\]</span></p>
-<p>and <span class="math display">\[
-\Pr[ \bar B_t ] \le \Pr[ \cup_{s = 1}^{t - 1} M_s ] \le \sum_{s = 1}^{t - 1} \Pr[M_s] &lt; t^{\alpha - 1}
-\]</span></p>
-<p>and <span class="math display">\[
-\sum_{t = \beta + 1}^T \Pr[ \bar B_t ] &lt; \sum_{t = \beta + 1}^T t^{\alpha - 1} &lt; \int_{t = 1}^\infty \frac{1}{ x^{\alpha - 1} } dx  = \frac{1}{\alpha - 2} x^{-(\alpha - 2)} \mid_{t = 1}^\infty  = \frac{1}{\alpha - 2}
-\]</span></p>
-<p>Similarly, we have <span class="math display">\[ 
-\sum_{t = \beta + 1}^T \Pr[ \bar C_t ] &lt; \frac{1}{\alpha - 2}
-\]</span></p>
-<p>Finally, <span class="math display">\[
-\begin{aligned} \small
-    \mathbb{E} [n_{i, T}] 
-                &amp;\le \beta + \frac{2}{\alpha - 2} \\
-                &amp;\le \frac{2 \alpha \log T}{\Delta_i^2} + 1 + \frac{2}{\alpha - 2} \\
-                &amp;= \frac{2 \alpha \log T}{\Delta_i^2} + \frac{\alpha }{\alpha - 2} 
-\end{aligned}
-\]</span></p>
-<p><strong><em>Remark:</em></strong> <em>Can we bound <span class="math inline">\(\Pr[ \bar B_t ]\)</span> as follows:</em> <span class="math display">\[
-\begin{array}{ll} 
-    \Pr[\bar B_t] &amp;= \sum_{\tau = 1}^{t - 1} \Pr[UB_{ i^* } ( t ) &lt; \mu^* \mid n_{i^*, t} = \tau] \cdot \Pr[n_{i^*, t} = \tau]\\
-    &amp;= \sum_{\tau = 1}^{t - 1} \frac{1}{t^\alpha} \cdot \Pr[n_{i^*, t} = \tau] \\
-    &amp;= \frac{1}{t^\alpha} 
-\end{array}
-\]</span></p>
-<p>When we know <span class="math inline">\(n_{i^*, t} = \tau\)</span> for some <span class="math inline">\(\tau\)</span>, the <span class="math inline">\(n_{i^*, t}\)</span> rewards from machine <span class="math inline">\(i^*\)</span> can't be viewed as independent samples. E.g., if <span class="math inline">\(t\)</span> is large, the best machines has much larger expected reward than others, and <span class="math inline">\(n_{i^*, t}\)</span> is very small compared to <span class="math inline">\(t\)</span>. Then it is likely machine <span class="math inline">\(i^*\)</span> generates bad rewards in the history. The reward sequence of <span class="math inline">\(i^*\)</span> can't be viewed as a sequence of independent samples from distribution <span class="math inline">\(D_{i^*}\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h2 id="reference">Reference</h2>
-<p>[1] D. Katselis, B. Miranda, and H. Hu, “Lecture 8: Multi-Armed Bandits”, ECE586 MDPs and Reinforcement Learning, Spring 2019, University of Illinois at Urbana-Champaign.<br />
-[2] S. Bubeck and N. Cesa-Bianchi, “Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,” arXiv:1204.5721 [cs, stat], Nov. 2012, Accessed: Oct. 19, 2020.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -678,7 +662,7 @@ M_s : \frac{1}{s} \sum_{\tau = 1}^s Y_{i^*, \tau} + \sqrt{ \frac{\alpha \log t}{
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-count">149</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

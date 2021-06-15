@@ -146,6 +146,115 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/21/RSA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/11/21/RSA/" class="post-title-link" itemprop="url">RSA</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-11-21 21:52:18" itemprop="dateCreated datePublished" datetime="2018-11-21T21:52:18+11:00">2018-11-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-04 20:52:46" itemprop="dateModified" datetime="2019-12-04T20:52:46+11:00">2019-12-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence <span class="math inline">\(x\)</span>, the encrypt message is <span class="math inline">\(y\)</span>.</p>
+<p>One solution is to perform XOR operation. Suppose there is a key <span class="math inline">\((k)_2\)</span> that is known both to the sender the receiver. Then the sender encrypt the message by <span class="math display">\[
+(y)_2 = (x)_2 \oplus k
+\]</span> The receiver can decrypt the message by <span class="math display">\[
+(x)_2 = (y)_2 \oplus k
+\]</span> Given <span class="math inline">\(x\)</span> with length <span class="math inline">\(n\)</span>, if <span class="math inline">\(k\)</span> is chosen uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, then <span class="math inline">\((y)_2\)</span> is a sequence uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>. If the message is sent only one time, the eavesdropper can't get more information about <span class="math inline">\(x\)</span> after seeing <span class="math inline">\(y\)</span>.</p>
+<p>Two drawbacks exists. First, how can the sender exchange the key <span class="math inline">\(k\)</span> with the receiver without meeting each other. Second, if the many messages are sent, there are frequency pattern associated with <span class="math inline">\(y\)</span>, making it breakable.</p>
+<p>RSA encryption algorithm overcomes the first issue by generating two keys for the receiver: the secrete key and the public key. The public key is distributed across the internet. The sender encrypts the message <span class="math inline">\(x\)</span> with the public key. Only the receiver who has the secret key can decrypt the message. The mathematics behind is explained as follows.</p>
+<p>Question to ponder: can we attack RSA by the frequency pattern?</p>
+<p>First generate two prime number <span class="math inline">\(p, q\)</span> and let <span class="math inline">\(N = pq\)</span>. Further, we find a integer <span class="math inline">\(e\)</span>, such that</p>
+<ol type="1">
+<li><span class="math inline">\(e\)</span> is coprime to <span class="math inline">\((p - 1)(q - 1)\)</span>, i.e., <span class="math inline">\(\exists d\)</span>, such that <span class="math inline">\(ed \equiv 1 \mod (p - 1)(q - 1)\)</span>.</li>
+<li><span class="math inline">\(e \neq p\)</span>, <span class="math inline">\(e \neq q\)</span>.</li>
+</ol>
+<p>Question to ponder: does such <span class="math inline">\(e\)</span> exists?</p>
+<p>Answer: YES. There are <span class="math inline">\(O(\frac{(p - 1)(q - 1) }{ \log (p - 1)(q - 1) } - \frac{ \sqrt{ (p - 1)(q - 1) } }{ \log \sqrt { (p - 1)(q - 1) } } )\)</span> prime numbers in <span class="math inline">\((\sqrt{(p - 1)(q - 1)}, (p - 1)(q - 1))\)</span>, which can not be prime factors of <span class="math inline">\((q - 1)(p - 1)\)</span>.</p>
+<p>Then we give out the pair as <em>public key</em>: <span class="math display">\[
+(n, e)
+\]</span></p>
+<p>And keep in secrete the triple as <em>private key</em>: <span class="math display">\[
+(p, q, d)
+\]</span></p>
+<p>The algorithm for encryption and decryption is as follows:</p>
+<p>Encryption: <span class="math display">\[
+y = f(x) = x^e \pmod N
+\]</span></p>
+<p>Decryption: <span class="math display">\[
+g(y) = y^d \pmod N
+\]</span></p>
+<p>The key theorem states:</p>
+<p><em>Theorem</em>: <span class="math display">\[
+g(y) = x
+\]</span></p>
+<p><em>Proof 1:</em> the first proof relies on a result derived from the Chinese Reminder Theorem, which i that for any integer <span class="math inline">\(a &lt; b\)</span>, we have <span class="math display">\[
+a \equiv b \mod p \vee a \equiv b \mod q
+\]</span> Then, <span class="math inline">\(p | (b - a)\)</span> and <span class="math inline">\(q | (b - a)\)</span>. If follows that <span class="math inline">\(N | (b - a)\)</span>, since <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> are primes and <span class="math inline">\(N\)</span> is their least common multiple.</p>
+<p>Now define <span class="math inline">\(m = x^{ed} = x^{k(p - 1)(q - 1) + 1}\)</span>. By Fermat's Little Theorem, <span class="math display">\[
+m \equiv x  \mod p \wedge m \equiv x \mod q
+\]</span></p>
+<p>Hence <span class="math inline">\(N | (m - x)\)</span> and <span class="math inline">\(m \equiv x \mod N\)</span>.</p>
+<p><em>Proof 2:</em> <span class="math display">\[
+y^d = x^{ed} = x^{k(p - 1)(q - 1) + 1} \pmod N
+\]</span></p>
+<p>Case 1: this is the easy case in which <span class="math inline">\(x\)</span> is coprime to <span class="math inline">\(N\)</span>. Then by Fermat-Euler theorem, <span class="math inline">\(x^{\varphi(N)} = 1 \pmod N\)</span>. It follows immediately that <span class="math inline">\(x^{ed} = x \pmod N\)</span>.</p>
+<p>Case 2: otherwise, <span class="math inline">\(x = lp\)</span> for some <span class="math inline">\(1 \le l \le q\)</span> or <span class="math inline">\(x = lq\)</span> for some <span class="math inline">\(1\le l \le p\)</span>. WLOG, we just consider the former case. Now <span class="math inline">\(y^d = (lp)^{k(p - 1)(q - 1) + 1} \pmod N\)</span>. On the other hand, as <span class="math inline">\((lp)^{k(p - 1)}\)</span> is relative prime to <span class="math inline">\(q\)</span>, we conclude that <span class="math inline">\(((lp)^{k(p-1)})^{q- 1} = mq + 1\)</span> for some integer <span class="math inline">\(m\)</span>, by Fermat's little theorem. Therefore, <span class="math inline">\(y^d = (mq + 1) x = (mq + 1) (lp) = mlpq + lp = lp = x \pmod N\)</span> , which finishes our proof.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/20/Fermat-s-Little-Theorem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -430,90 +539,6 @@ Suppose <span class="math inline">\(x = k d\)</span> and <span class="math inlin
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/10/26/Bellman-Ford/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/10/26/Bellman-Ford/" class="post-title-link" itemprop="url">Bellman Ford</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-10-26 22:13:41" itemprop="dateCreated datePublished" datetime="2018-10-26T22:13:41+11:00">2018-10-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-10-27 02:06:16" itemprop="dateModified" datetime="2018-10-27T02:06:16+11:00">2018-10-27</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Here we discuss the Bellman Ford algorithm for computing shortest path or negative cycle in an undirected weighted graph <span class="math inline">\(G = (V, E, W)\)</span> that contains negative edges.</p>
-<p>Recall the Dijkstra algorithm bases on the induction of the number of vertices. The Bellman Ford algorithm, on the other hand, bases on the induction of the number of edges of the shortest path.</p>
-<p>Let <span class="math inline">\(P_k = (s, v_1, v_2, .., v_k, t)\)</span> be the shortest path between <span class="math inline">\(s\)</span> and <span class="math inline">\(t\)</span>. If we finds the shortest <span class="math inline">\(P_{k - 1} = (s, v_1, v_2, ..., v_{k - 1})\)</span>, then we can easily find the path <span class="math inline">\(P_k\)</span>. To this end, we define dist[v] the distance from source node <span class="math inline">\(s\)</span> to vertex <span class="math inline">\(v\)</span>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">std::vector&lt;int&gt; dist(n, INT_MAX); </span><br><span class="line">std::vector&lt;int&gt; pred(n, 0);</span><br><span class="line">dist[s] &#x3D; 0;</span><br><span class="line">for(int i &#x3D; 0; i &lt; n - 1; ++i) &#123;</span><br><span class="line">    for each edge (u, v) &#123;</span><br><span class="line">        if(dist[u] + w(u, v) &lt; dist[v]) &#123;</span><br><span class="line">            dist[v] &#x3D; dist[u] + w(u, v);</span><br><span class="line">            pred[v] &#x3D; u;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>If the graph does not contain a negative cycle, the above code compute the shortest path correctly. On the other hand, to check the existence of a negative, we could execute an additional iteration after the above code</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">bool check_negative_cycle() &#123;</span><br><span class="line">     for each edge (u, v) &#123;</span><br><span class="line">        if(dist[u] + w(u, v) &lt; dist[v]) &#123;</span><br><span class="line">            dist[v] &#x3D; dist[u] + w(u, v);</span><br><span class="line">            pred[v] &#x3D; u;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;    </span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>The correctness can be verified as follows: if the graph does not contain negative cycle, the any shortest path contains at most <span class="math inline">\((n - 1)\)</span>-th edges. The value of <span class="math inline">\(dist[v]\)</span> should not change in this <span class="math inline">\(n\)</span>-th iteration.</p>
-<p>To return a negative cycle, when we find an edge <span class="math inline">\((u, v)\)</span> such that <span class="math inline">\(dist[u] + w(u, v) &lt; dist[v]\)</span> (in this <span class="math inline">\(n\)</span>-th iteration), we can trace the predecessor of <span class="math inline">\(v\)</span> until we encounter a cycle. Notice that this cycle may not necessarily contains <span class="math inline">\(v\)</span>. But we claim that this cycle must be negative.</p>
-<h4 id="theorem">Theorem</h4>
-<p>Let <span class="math inline">\(C = (v_1, v_2, ..., v_j)\)</span> be the cycle we found, such that <span class="math inline">\(pred[v_i] = pred[v_{i - 1}], \forall 2 \le i \le j\)</span> and <span class="math inline">\(pred[v_1] = v_j\)</span>. WLOG, let <span class="math inline">\(v_1\)</span> be the vertex whose value <span class="math inline">\(pred[v_1]\)</span> is updated latest among <span class="math inline">\(pred[v_1], pred[v_2], ..., pred[v_j]\)</span>. It holds that</p>
-<p><span class="math display">\[
-\begin{aligned}
-dist[v_2] &gt; dist[v_1] + w(v_1, v_2) \\
-\text{this holds with strict inequality since we update } pred[v_1] \text{ lastly }\\
-dist[v_3] \ge dist[v_2] + w(v_1, v_2) \\
-... \\
-dist[v_1] = dist[v_j] + w(v_1, v_2) \\
-\end{aligned}
-\]</span></p>
-<p>It follows that <span class="math inline">\(\sum_{i = 1}^j dist[v_i] &gt; \sum_{i = 1}^j dist[v_i] dist[v_i] + \sum_{i = 2}^j w(v_{i - 1}, v_i) + w(v_j, v_1)\)</span>, which implies that <span class="math inline">\(\sum_{i = 2}^j w(v_{i - 1}, v_i) + w(v_j, v_1) &lt; 0\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -583,7 +608,7 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-count">149</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

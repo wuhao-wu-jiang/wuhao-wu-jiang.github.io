@@ -146,6 +146,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/09/10/Nonuniform%20Sampling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/09/10/Nonuniform%20Sampling/" class="post-title-link" itemprop="url">Nonuniform Sampling</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-09-10 20:38:54" itemprop="dateCreated datePublished" datetime="2016-09-10T20:38:54+10:00">2016-09-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2016-09-11 19:59:33" itemprop="dateModified" datetime="2016-09-11T19:59:33+10:00">2016-09-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose <span class="math inline">\(S = \{ s_1, s_2, ..., s_m\}\)</span> is a set of samples, with weight <span class="math inline">\(W = \{ w_1, w_2, ..., w_m\}\)</span> and probability <span class="math inline">\(P = \{ p_1, p_2, ..., p_m\}\)</span>.</p>
+<p>Now we randomly select an element <span class="math inline">\(X\)</span> from <span class="math inline">\(S\)</span> according to probability <span class="math inline">\(P\)</span>. Define <span class="math inline">\(Y\)</span> the index <span class="math inline">\(X\)</span>. For example, if <span class="math inline">\(X = s_i\)</span>, then <span class="math inline">\(Y = i\)</span>. The expected weight of <span class="math inline">\(X\)</span> is given by</p>
+<p><span class="math display">\[
+E[w_Y] = \sum_{i \in [1,m]} w_i P( Y = i) = \sum_{i \in [1,m]} w_i p_i
+\]</span></p>
+<p>If <span class="math inline">\(P\)</span> is a uniform distribution, i.e., <span class="math inline">\(p_i = 1/m, \ \forall i \in [1,m]\)</span>, then <span class="math display">\[
+E[w_Y] = 1 / m * \sum_{i \in [1,m]} w_i
+\]</span></p>
+<p>Then <span class="math inline">\(m E[w_Y]\)</span> equals just the sum of <span class="math inline">\(W\)</span>. We say that it is an <strong>unbiased estimator</strong> of the sum of <span class="math inline">\(W\)</span>. But what if <span class="math inline">\(P\)</span> is not uniform, i.e., <span class="math inline">\(\exists i,j \ s.t., p_i \neq p_j\)</span>.</p>
+<p>One technique to remedy this is to construct a new variable <span class="math inline">\(Z_Y = w_Y / p_Y\)</span>.</p>
+<p><span class="math display">\[
+E[Z_Y] =  \sum_{i \in [1,m]} w_i / p_i * P(Y = i) = \sum_{i \in [1,m]} w_i
+\]</span></p>
+<p>The strange thing is that how we could know <span class="math inline">\(P = \{ p_1, p_2, ..., p_m\}\)</span>. If we know it in advance, we need not to do sampling to estimate $ _{i } w_i$.</p>
+<p>But in some circumstance, it is possible. To get a random sample <span class="math inline">\(X\)</span> from <span class="math inline">\(S\)</span>, we need to go through some sampling process. Once <span class="math inline">\(X\)</span> is returned, we can calculate the probability of <span class="math inline">\(X\)</span> by examining the sampling process.</p>
+<p>[FBKZ16] gives such an example. Consider two relations <span class="math inline">\(R_1 = (A_1, F)\)</span> and <span class="math inline">\(R_2 = (F, A_2)\)</span>, where <span class="math inline">\(R_1.F\)</span> and <span class="math inline">\(R_2.F\)</span> shares the same domain. Let <span class="math inline">\(R = R_1 \bowtie_{R_1.F = R_2.F} R_2\)</span> be the natural join result based on <span class="math inline">\(R_1.F\)</span> and <span class="math inline">\(R_2.F\)</span>. The object is to calculate the sum of attribute <span class="math inline">\(A_2\)</span> on <span class="math inline">\(R = (A_1, F, A_2)\)</span>.</p>
+<p>The natural join can be expensive. Is there any way to estimate the join result? Indeed we have.</p>
+<p>First sample uniformly at random a tuple <span class="math inline">\((a_1, f)\)</span> from <span class="math inline">\(R_1\)</span>. The probability of a particular tuple chosen is <span class="math inline">\(1/|R_1|\)</span>, where <span class="math inline">\(|R_1|\)</span> is the number of tuples in <span class="math inline">\(R_1\)</span>.</p>
+<p>We further assume that there is an index on <span class="math inline">\(R_2.F\)</span>. So we immediately know the size of the set <span class="math inline">\(R_2[f] \doteq \{ (f, a_2) | (f, a_2) \in R_2 \}\)</span>. We choose uniformly at random a tuple <span class="math inline">\((f, a_2)\)</span> from <span class="math inline">\(R_2[f]\)</span> and get the join result <span class="math inline">\((a_1, f, a_2)\)</span>. The probability corresponding to <span class="math inline">\((a_1, f, a_2)\)</span> is <span class="math inline">\(1/ |R_1| * 1 / R_2[f]\)</span>. So <span class="math inline">\(\frac{a_2}{|R_1| |R_2[f]|}\)</span> is an unbiased estimator of <span class="math inline">\(sum(R.A2)\)</span></p>
+<p><strong>Reference</strong><br />
+[FBKZ16] Feifei. Li, Bin. Wu, Ke. Yi, Zhuoyue. Zhao, Wander Join: Online Aggregation via Random Walks. <em>SIGMOD'16</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2016/08/29/SimRank/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -453,118 +538,6 @@ G&#39; &amp; = \Sigma_{i = 0}^{\log m} F_i&#39; \\
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2015/11/23/K-Connected%20Spanning%20Subgraph/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/11/23/K-Connected%20Spanning%20Subgraph/" class="post-title-link" itemprop="url">K-Connected Spanning Subgraph</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2015-11-23 16:35:39" itemprop="dateCreated datePublished" datetime="2015-11-23T16:35:39+11:00">2015-11-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2015-12-01 19:39:19" itemprop="dateModified" datetime="2015-12-01T19:39:19+11:00">2015-12-01</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>K-Connected Spanning Subgraph</p>
-<h4 id="background">Background</h4>
-<p>Consider that you are given a transportation network, which is a graph. Now you are asked to find out a sub-graph that the transportation capacity between any two sites in the sub-graph is above some threshold k.</p>
-<p>This sub-graph could be viewed as kind of a backbone. Its importance is as follows: even if some lines in the transportation network break down, so long as the lines of this sub-graph operates, we can guarantee that the network is able to transport k capacity cargo between any two sites.</p>
-<p>If we examine this problem deeply, we may ask the following questions: 1. Does such a sub-graph exist? 2. If such a sub-graph exist, how to find one with the minimum number of edges?</p>
-<h4 id="solution">Solution</h4>
-<p>Existence could be answered right now. If the minimum cut of the graph is no less than k, then we could find such a sub-graph. A trivial case is the graph itself. But the second one is difficult. It is believed that this is a NP hard problem.</p>
-<p>Approximation algorithms are proposed. One of them was given by Hiroshi Nagamochi and Toshihide ibaraki [A Linear-Time Algorithm for Finding a Sparse k-Connected Spanning Subgraph of a k-Connected Graph] in 1992.</p>
-<p>We firstly formalize the notions. To simplify the problem, we focus on graphs that are undirected and consist of no multiple edges and self loops.</p>
-<p><strong>k-Connected Graph</strong>: A graph is k-Connected if the minimum cut of the graph is no less than k.</p>
-<p><strong>Nagamoci-Ibaraki Algorithm</strong> Given a graph <span class="math inline">\(G=&lt;V,E&gt;\)</span>, if <span class="math inline">\(F_i = &lt;V, E_i&gt;\)</span> is the maximal spanning forest of <span class="math inline">\(G = &lt;V, E - E_1 - E_2 - .. - E_{i - 1}&gt;\)</span>, the <span class="math inline">\(G_i = &lt;V, E_1 \cup E_2 \cup ... \cup E_{i - 1}&gt;\)</span> is a k-Connected Sub-graph with <span class="math inline">\(k|V| - k(k + 1)\)</span> edges if <span class="math inline">\(k \le \lambda(G)\)</span>, where <span class="math inline">\(\lambda(G)\)</span> is the minimum cut of G.</p>
-<p>Here only a scratch of proof is given. Consider a particular cut C in G, whose value <span class="math inline">\(\lambda(C)\)</span> is no less than <span class="math inline">\(\lambda(G)\)</span>. For any <span class="math inline">\(G_i\)</span> with <span class="math inline">\(i &lt;= \lambda(G)\)</span>, it must consist of at least one edge of C. Otherwise we could add an arbitrary edge in<span class="math inline">\(C-E_1-E_2-...-E_{i - 1}\)</span> to <span class="math inline">\(F_i\)</span> such that <span class="math inline">\(F_i\)</span> is still a forest, contradicting <span class="math inline">\(F_i\)</span> is maximal.</p>
-<p>Finding a maximal forest in <span class="math inline">\(G=&lt;V,E&gt;\)</span> requires <span class="math inline">\(O(|V| + |E|)\)</span> time. So <span class="math inline">\(O(k(|V| + |E|))\)</span> is required for k-Connected Graph. Nagamochi and Ibaraki did it in <span class="math inline">\(O(|V| + |E|)\)</span> time. They scaned all nodes and edges once and classify edges into different <span class="math inline">\(E_i\)</span>, here <span class="math inline">\(i \in [1...|E|]\)</span>.</p>
-<h4 id="pseudo-code"><em>Pseudo Code</em>:</h4>
-<ol type="1">
-<li>h(v) = 0, <span class="math inline">\(\forall v \in V\)</span></li>
-<li>$E_i = , i $</li>
-<li>while <span class="math inline">\(\exists u\)</span> that has not been scanned
-<ul>
-<li>find u with maximum h(u)</li>
-<li>marked u as scanned</li>
-<li>for all <span class="math inline">\((u,v) \in E\)</span> that has not been scanned
-<ul>
-<li>marked (u,v) as scanned.</li>
-<li>if h(u) == h(v) then
-<ul>
-<li>++h(u)</li>
-</ul></li>
-<li>end if</li>
-<li>++h(v)</li>
-<li><span class="math inline">\(E_{h(v)} = E_{h(v)} \cup {(u,v)}\)</span></li>
-</ul></li>
-<li>end for</li>
-</ul></li>
-</ol>
-<p>end while</p>
-<h4 id="analysis">Analysis</h4>
-<p>To see that the algorithm indeed works, we have to check two things:</p>
-<ol type="1">
-<li><span class="math inline">\(F_i=&lt;V, E_i&gt;\)</span> is a forest, i.e., <span class="math inline">\(F_i\)</span> does not contain a cycle.</li>
-<li><span class="math inline">\(F_i=&lt;V, E_i&gt;\)</span> is maximal.</li>
-</ol>
-<p><strong><span class="math inline">\(F_i\)</span> doesn't contain a cycle:</strong> suppose that when u is being scanned and (u,v) is added to <span class="math inline">\(E_i\)</span>, a cycle is created. Then some edge incident to v belongs to <span class="math inline">\(F_i\)</span>. Thus h(v) &gt;= i before (u, v) is added to <span class="math inline">\(E_i\)</span>. But (u,v) is added to <span class="math inline">\(E_{h(v)}\)</span> after <strong><span class="math inline">\(&#39;++h(v)&#39;\)</span></strong>. So <span class="math inline">\((u,v) \notin E_i\)</span>. A contradiction.</p>
-<p><strong><span class="math inline">\(F_i\)</span> is maximal</strong>. If <span class="math inline">\(F_i\)</span> is not maximal, there is some edge <span class="math inline">\((u,v) \in E_j\)</span> for some <span class="math inline">\(j &gt; i\)</span> such that <span class="math inline">\(&lt;V, E_i \cup \{(u,v)\}&gt;\)</span> is a forest. Denote the tree containing u in <span class="math inline">\(F_i\)</span> by <span class="math inline">\(T_u\)</span> and the one containing v in <span class="math inline">\(F_i\)</span> by <span class="math inline">\(T_v\)</span>. Further, denote the order of nodes in <span class="math inline">\(T_u\)</span> and <span class="math inline">\(T_v\)</span> being scanned by <span class="math inline">\([x_1, x_2,..., u,...]\)</span> <span class="math inline">\([y_1,y_2,...v,...]\)</span> respectively. Without losing generality, suppose <span class="math inline">\(x_1\)</span> is scanned before <span class="math inline">\(y_1\)</span>. When <span class="math inline">\(x_1\)</span> is scanned, we must have <span class="math inline">\(h(x_1) == i - 1\)</span> and <span class="math inline">\(h(y_1) \le i - 1\)</span>. After <span class="math inline">\(x_1\)</span> is scanned, <span class="math inline">\(h(x_1) == h(x_2) ==i\)</span>. For any other node <span class="math inline">\(z \ne {x_1}\)</span> such that <span class="math inline">\(h(z) == i\)</span>, we guarantee that <span class="math inline">\(h(z) == i -1\)</span> before <span class="math inline">\(x_1\)</span> is scanned and <span class="math inline">\(z \in [x_2, x_3,...]\)</span>, otherwise z is scanned before <span class="math inline">\(x_1\)</span>. Now <span class="math inline">\(h(x_2) =i &gt; h(y_1)\)</span>, it's scanned before <span class="math inline">\(y_1\)</span>. Following this way, u is scanned before <span class="math inline">\(y_1\)</span>. When u is scanned, <span class="math inline">\(h(v) \le i - 1\)</span>. So (u, v) is add to some <span class="math inline">\(E_j\)</span> for <span class="math inline">\(j \le i\)</span>. A contradiction.</p>
-<p>The number of edges in <span class="math inline">\(G_i\)</span></p>
-<p>Suppose the order of nodes being scanned in V is <span class="math inline">\(v_1, v_2, ..\)</span>. The value of <span class="math inline">\(h(v_i)\)</span> could not exceed i, since there are at most one edge <span class="math inline">\((v_j, v_i)\)</span> incident to <span class="math inline">\(v_i\)</span> for some j less than i. So <span class="math inline">\(v_i\)</span> does not appear in forest <span class="math inline">\(F_k\)</span> for <span class="math inline">\(k &gt; i\)</span>. Then <span class="math inline">\(F_k\)</span> contains at most |V| - 1 - (k - 1) = |V| - k edges. Thus the number of edges in <span class="math inline">\(G_i\)</span> is at most <span class="math display">\[
-\Sigma_{i = 1}^{k} (|V| - i) = k|V| - k(k + 1) /2
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -634,7 +607,7 @@ G&#39; &amp; = \Sigma_{i = 0}^{\log m} F_i&#39; \\
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">148</span>
+          <span class="site-state-item-count">149</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
