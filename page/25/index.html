@@ -146,6 +146,348 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/20/Ellipsoid/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/20/Ellipsoid/" class="post-title-link" itemprop="url">Ellipsoid method</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-02-20 21:19:42" itemprop="dateCreated datePublished" datetime="2020-02-20T21:19:42+11:00">2020-02-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-02-22 22:39:05" itemprop="dateModified" datetime="2020-02-22T22:39:05+11:00">2020-02-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Ellipsoid method is a weakly polynomial algorithm for solving linear programming. The preliminary version was introduced by the Russian mathematician Shor in 1977 for general convex optimization problems. Then it was applied to linear programming by Khachyan in 1979 [1]. Before interior point method, it was the first polynomial time algorithm for LP.</p>
+<h2 id="feasibility-implies-optimality">Feasibility implies Optimality</h2>
+<p>Now, consider the primal LP: <span class="math display">\[
+\mathcal{P}:  \qquad
+\begin{aligned}
+  &amp;\max   &amp;c^T x    &amp; \\
+  &amp;s.t.   &amp;Ax \le b &amp; \\
+  &amp;       &amp; x \ge 0 &amp;
+\end{aligned}
+\]</span></p>
+<p>whose dual is given by <span class="math display">\[
+\mathcal{D}:  \qquad
+\begin{aligned}
+  &amp;\min   &amp;y^Tb    \ \  &amp; \\
+  &amp;s.t.   &amp;y^TA \ge c^T &amp; \\
+  &amp;       &amp;y \ge 0 \ \  &amp;
+\end{aligned}
+\]</span></p>
+<p>The ellipsoid does not optimize the primal directly. Instead, it try to return a feasible point <span class="math inline">\((x, y)\)</span> that satisfies the following constraints: <span class="math display">\[
+\begin{aligned}
+         c^T x &amp;= y^Tb  &amp; \\
+         Ax    &amp;\le b   &amp; \\
+          x    &amp;\ge 0       &amp; \\
+         y^TA  &amp;\ge c^T &amp; \\
+         y     &amp;\ge 0 \ \  &amp;
+\end{aligned}
+\]</span></p>
+<p>By weak duality, if such point exists, then <span class="math inline">\(x\)</span> is the optimal solution for the primal program. (Note that, if there is no feasible point for the third program, the primal could be either infeasible or unbounded.)</p>
+<h2 id="ellipsoid">Ellipsoid</h2>
+<p>Ellipsoid is a unit ball that has been squashed or stretched along orthogonal directions. We illustrate this by an example in two dimension. The following picture shows an ellipse obtained by enlarging the unit ball by a facto of <span class="math inline">\(2\)</span> along the <span class="math inline">\(v_1\)</span> direction and squashing it ball by half along the <span class="math inline">\(v_2\)</span> direction, where <span class="math inline">\(v_1\)</span> and <span class="math inline">\(v_2\)</span> constitute an orthogonal base.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod1.jpg" /></p>
+<p>It is equivalent to first squash or stretch the ball along the directions of <span class="math inline">\(e_1, e_2\)</span>,</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod2.jpg" /></p>
+<p>then rotate the resulting ellipsoid to corresponding orthogonal directions.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod3.jpg" /></p>
+<p>The rotation can be done by left multiplying an orthogonal matrix <span class="math display">\[
+V = [v_1, v_2]
+\]</span></p>
+<p>where <span class="math inline">\(v_1, v_2\)</span> are the orthogonal base for which the squash and stretch are performed.</p>
+<p>To recover the unit ball, we can first perform the reverse rotation: <span class="math display">\[
+x \leftarrow V^T x
+\]</span></p>
+<p>followed by a reverse scaling: <span class="math display">\[
+x \leftarrow  
+  \begin{bmatrix}
+    1/2  &amp; \\
+    &amp;  2
+  \end{bmatrix} 
+  x
+\]</span></p>
+<p>Note that the reverse rotation is represented by matrix <span class="math inline">\(V^T\)</span> as <span class="math inline">\(V V^T = I\)</span>. Therefore, the ellipsoid is denoted as <span class="math display">\[
+  \left( 
+  \begin{bmatrix}
+    1/2  &amp; \\
+    &amp;  2
+  \end{bmatrix} 
+  V^T x \right)^T
+  \left( 
+  \begin{bmatrix}
+    1/2  &amp; \\
+    &amp;  2
+  \end{bmatrix} 
+  V^T x \right) \le 1
+\]</span></p>
+<p>That is <span class="math display">\[
+  x^T \left( V
+  \begin{bmatrix}
+    1/2  &amp; \\
+    &amp;  2
+  \end{bmatrix}^2 
+  V^T \right) x  \le 1
+\]</span></p>
+<p>In general, an ellipsoid is represented by <span class="math display">\[
+E(s, P) = \{ x : (x - s)^T P^{-1} (x - s) \le 1\}
+\]</span></p>
+<p>where <span class="math inline">\(s \in \mathcal{R}^n\)</span> is the center of the ellipsoid and <span class="math inline">\(P\)</span> is a positive semi-definite matrix.</p>
+<p>Recall that a positive semi-definite matrix <span class="math inline">\(P\)</span> can be rewritten as <span class="math display">\[
+P = V \Sigma V^T
+\]</span> and <span class="math display">\[
+P^{-1} = V \Sigma^{-1} V^T
+\]</span></p>
+<p>where <span class="math inline">\(V\)</span> is an orthogonal matrix and <span class="math inline">\(\Sigma\)</span> is a diagonal matrix. Geometrically, <span class="math inline">\(V\)</span> are the directions and <span class="math inline">\(\sqrt \Sigma\)</span> are the ratios of the squashes or stretches. If we define <span class="math inline">\(B = V \sqrt \Sigma\)</span>, then <span class="math inline">\(B^T = \sqrt \Sigma V^T\)</span>, <span class="math inline">\(B^{-1} = \sqrt \Sigma^{-1} V^T\)</span> and <span class="math inline">\(P = B B^T\)</span>, <span class="math inline">\(P^{-1} = (B^{-1} )^T B^{-1}\)</span>.</p>
+<p>The representation can be viewed as merely a recipe for converting the ellipsoid back to the unit ball:</p>
+<ol type="1">
+<li>First perform a translation <span class="math inline">\(x \leftarrow (x - s)\)</span> so that the center of the ellipsoid is now the center.</li>
+<li>Rotate the ellipsoid, such that its axes are aligned with <span class="math inline">\(e_1, e_2, ..., e_n\)</span>. This is done by multiplying the matrix <span class="math inline">\(V^T\)</span>: <span class="math inline">\(x \leftarrow V^T x\)</span>.</li>
+<li>Squash or stretch along the axes <span class="math inline">\(e_1, e_2, ..., e_n\)</span>: <span class="math inline">\(x \leftarrow \sqrt \Sigma^{-1} x\)</span>.</li>
+<li>Therefore, the linear transformation for the recovery is <span class="math display">\[
+x \leftarrow B^{-1} (x - s)
+\]</span></li>
+</ol>
+<p>Conversely, <span class="math inline">\(E(s, P) = E(s, V \sqrt \Sigma \sqrt \Sigma V^T)\)</span> tells us how to get the ellipsoid from the unit ball:</p>
+<ol type="1">
+<li>Scale unit ball along the axes <span class="math inline">\(e_1, e_2, .., e_n\)</span> by factors that <span class="math inline">\(\sqrt \Sigma_{1, 1}, \sqrt \Sigma_{2, 2}, ..., \sqrt \Sigma_{n, n}\)</span>.</li>
+<li>Rotate the ellipsoid by matrix <span class="math inline">\(V\)</span>.</li>
+<li>Move the ellipsoid by <span class="math inline">\(s\)</span>.</li>
+</ol>
+<p>That is, <span class="math inline">\(x \leftarrow V \sqrt \Sigma y + s\)</span> takes the unit ball <span class="math inline">\(\{ y : y^T y \le 1 \}\)</span> to the corresponding ellipsoid <span class="math inline">\(\{ x : (x - s)^T V \Sigma^{-1} V^T (x - s) \le 1 \}\)</span>.</p>
+<h2 id="goal">Goal</h2>
+<p>Now return to our discussion of ellipsoid method. Without lose of generality, we consider only the following problem:</p>
+<p><em>Given <span class="math inline">\(F = \{x : Ax \le b\}\)</span>, output any <span class="math inline">\(x \in F\)</span> or report <span class="math inline">\(F = \emptyset\)</span>, where <span class="math inline">\(A \in \mathcal{R}^{m \times n}, x \in \mathcal{R}^n, b \in \mathcal{R}^m\)</span></em>.</p>
+<p>We assume further that</p>
+<ol type="1">
+<li><p><span class="math inline">\(\exists R \in \mathcal{R}\)</span>, <span class="math inline">\(F \subset B(0, R)\)</span>. Besides, if <span class="math inline">\(F \neq \emptyset\)</span>, <span class="math inline">\(\exists r \in \mathcal{R}\)</span>, and <span class="math inline">\(t \in \mathcal{R}^n\)</span>, s.t., <span class="math inline">\(B(t, r) \subset F\)</span>. Here <span class="math inline">\(B(0, R) = \{ x : ||x||_2 \le R \}\)</span> and <span class="math inline">\(B(t, r) = \{ x : ||x - t||_2 \le r \}\)</span>.</p></li>
+<li><p><em>Separation Oracle:</em> Given a vertex <span class="math inline">\(s \in \mathcal{R}^n\)</span>, the separation oracle is a mechanism that asserts</p>
+<ul>
+<li>either <span class="math inline">\(s \in F\)</span></li>
+<li>or <span class="math inline">\(s \notin F\)</span> and returns a direction (which is a unit vector) <span class="math inline">\(d \in \mathcal{R}^n\)</span>, such that <span class="math inline">\(d^T s \ge d^T x\)</span> for <span class="math inline">\(\forall x \in F\)</span>.</li>
+</ul></li>
+</ol>
+<p>The first assumption says that <span class="math inline">\(F\)</span> is neither too "large" nor too "small". Note that <span class="math inline">\(B(t, r) \subset F\)</span> also implies that <span class="math inline">\(F\)</span> has full dimension.</p>
+<p>For LP, the separation is straightforward to implement: we just check whether <span class="math inline">\(Ac \ge b\)</span>. If so, then <span class="math inline">\(c \in F\)</span>. Otherwise, <span class="math inline">\(\exists i \in [m]\)</span>, such that the <span class="math inline">\(i\)</span>-th constraint is violated: <span class="math inline">\(A_{i,\cdot} c &gt; b_i\)</span>. Just return <span class="math inline">\(d^T = A_{i, \cdot}\)</span>.</p>
+<p><strong><em>Question to ponder: the feasible region of an LP may not satisfy the first assumption? It is possible to reduce it to one satisfying the first assumption?</em></strong></p>
+<h2 id="the-algorithm">The Algorithm</h2>
+<p>The algorithm begins with a special ellipsoid <span class="math inline">\(E_0 = B(0, R)\)</span>. At each step, it queries the <em>separation oracle</em> and generates a smaller ellipsoid (with reduced volume). If <span class="math inline">\(F\)</span> is not empty, the ellipsoid at each step is guaranteed to contain it. The algorithm stops before the volume of the ellipsoid decreases below <span class="math inline">\(vol(B(t, r))\)</span>.</p>
+<p>The algorithmic flow is shown below:</p>
+<table style="width:53%;">
+<colgroup>
+<col style="width: 52%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1. <span class="math inline">\(i = 0\)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2. <span class="math inline">\(E_0 = B(0, R)\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3. <em>While</em> <span class="math inline">\(vol(E_i(s_i, P_i)) \ge vol(B(t, r))\)</span>:</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4. <span class="math inline">\(\qquad\)</span> <em>if</em> <span class="math inline">\(s_i \in F\)</span>, output <span class="math inline">\(s_i\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5. <span class="math inline">\(\qquad\)</span> <em>else</em>,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> Obtain a direction <span class="math inline">\(d_i\)</span>, s.t., <span class="math inline">\(d_i^T s_i \ge d_i^T x\)</span> for <span class="math inline">\(x \in F\)</span>*.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> Calculate a ellipsoid <span class="math inline">\(E_{i + 1} \supset E_{i} \cap \{x : d_i^T s_i \ge d_i^T x \}\)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(i \leftarrow i + 1\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">9. Output <span class="math inline">\(F = \emptyset\)</span>.</td>
+</tr>
+</tbody>
+</table>
+<p>For the one dimension case, it is nothing more than a variant of binary search.</p>
+<h2 id="bounding-the-number-of-iterations">Bounding the Number of Iterations</h2>
+<p>The main result that characterizes the running time is</p>
+<p><strong><em>Theorem: It is guaranteed that for <span class="math inline">\(\forall i\)</span></em></strong>, <span class="math display">\[
+\frac{vol( E_{i + 1} ) } {vol(E_i) } \le \exp \left( -\frac{1}{2 (n + 1) } \right) 
+\]</span> <span class="math inline">\(\square\)</span>.</p>
+<p><em>Corollary: the number of iterations of the ellipsoid method is bounded by</em> <span class="math display">\[
+2n(n + 1) \ln \frac{R}{r}
+\]</span> <span class="math inline">\(\square\)</span>.</p>
+<p>To simplify the notation further, we write <span class="math inline">\(E_i = E(s, P)\)</span>, <span class="math inline">\(d_i = d\)</span> and <span class="math inline">\(E_{i + 1} = E(s&#39;, P&#39;)\)</span>. The key lemma for the theorem is:</p>
+<p><em>Lemma: Given an ellipsoid <span class="math inline">\(E(s, P) = \{ x \in \mathcal{R}^n : (x - s)^T P^{-1} (x - s) \le 1\}\)</span> and the half space <span class="math inline">\(H(s, d) = \{ x \in \mathcal{R}^n : d^T (x - s)\le 0 \}\)</span>, we can find an ellipsoid <span class="math inline">\(E(s&#39;, P&#39;)\)</span>, such that</em></p>
+<ol type="1">
+<li><em><span class="math inline">\(E(s&#39;, P&#39;)\)</span> contains the intersection of <span class="math inline">\(E(s, P)\)</span> and <span class="math inline">\(H(s, d)\)</span> : <span class="math inline">\(E(c, P) \cap \{ x \in \mathcal{R}^n : d^T (x - s)\le 0 \}\)</span></em>.<br />
+</li>
+<li><em>The volume of <span class="math inline">\(E(s&#39;, P&#39;)\)</span> is at most <span class="math inline">\(\exp \left( -\frac{1}{2 (n + 1) } \right)\)</span> times that of <span class="math inline">\(E(s, P)\)</span></em>.</li>
+</ol>
+<p>In particular, <span class="math inline">\(s&#39;\)</span> and <span class="math inline">\(P&#39;\)</span> is given by <span class="math display">\[
+\begin{aligned}
+s&#39; &amp;= s - \frac{1}{n + 1} \frac{P d}{\sqrt{d^T P d} } \\
+P&#39; &amp;= \frac{n^2}{n^2 - 1} \left( P - \frac{2}{n + 1} \frac{Pd}{\sqrt{d^T P d} } (\frac{Pd}{\sqrt{d^T P d} } )^T \right)
+\end{aligned}
+\]</span></p>
+<p><em>Proof.</em></p>
+<p>The transformation <span class="math inline">\(y = B^{-1} (x - s)\)</span> maps <span class="math inline">\(E(s, P)\)</span> to <span class="math inline">\(E(0， I)\)</span>, and <span class="math inline">\(\{x \in R^n: d^T B (B^{-1} (x - s)) \le 0\}\)</span> to <span class="math inline">\(H(0, B^T d) = \{y \in R^n: d^T B y \le 0\}\)</span>. Let <span class="math inline">\(e&#39; = \frac{B^T d}{\sqrt{d^T B B^T d} } = \frac{B^T d}{\sqrt{d^T P d} }\)</span> so that <span class="math inline">\(H(0, B^Td)\)</span> is equivalent to <span class="math inline">\(H(0, e&#39;)\)</span>.</p>
+<p>It suffices to find an ellipsoid that contains <span class="math inline">\(E(0, I) \cap H(0, e&#39;)\)</span>. Then applying the reverse transformation <span class="math inline">\(x = By + s\)</span> will give us an ellipsoid that contains <span class="math inline">\(E(s, P) \cap H(s, d)\)</span>.</p>
+<p>We can further reduce the problem to finding an ellipsoid that covers <span class="math inline">\(E(0, I) \cap H(0, e_1)\)</span> as we can recover the ellipsoid by rotating <span class="math inline">\(e_1\)</span> to <span class="math inline">\(e&#39;\)</span>.</p>
+<p><strong><em>Claim.</em></strong> The ellipsoid that covers <span class="math inline">\(E(0,I) \cap H(0, e_1)\)</span> is given by <span class="math display">\[
+E \left( -\frac{1}{n + 1}e_1, \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T) \right)
+\]</span> and has minimum volume <span class="math inline">\(\exp ( -\frac{1}{2(n + 1)} )\)</span>.</p>
+<p>To under the ellipsoid, we check how it transforms the unit ball to an ellipsoid:</p>
+<ol type="1">
+<li>It squashes the ball along the <span class="math inline">\(e_1\)</span> axis, by a factor of <span class="math inline">\(\sqrt{ \frac{n^2} {n^2 - 1} \frac{n - 1} {n + 1} } = \frac{n}{ n + 1 }\)</span>.</li>
+<li>Then it stretches all other directions <span class="math inline">\(e_2, e_3, ..., e_n\)</span> by a factor of <span class="math inline">\(\sqrt \frac{n^2}{n^2 - 1}\)</span>.</li>
+<li>Finally, move the center of the ellipsoid to <span class="math inline">\(-\frac{1}{n + 1}e_1\)</span>.</li>
+</ol>
+<p>Note that the ellipsoid has volume <span class="math inline">\((1 - \frac{1}{n + 1}) (1 + \frac{1}{n^2 -1} )^{(n - 1) / 2} \le e^{- \frac{1}{n + 1} + \frac{1}{n^2 -1} (n - 1) / 2} = e^{- \frac{1}{2(n + 1)} }\)</span>. This is also the ratio of the ellipsoid over that of the unit ball, whose value is 1.</p>
+<p>Before we prove the claim, we show how to transform the ellipsoid back to <span class="math inline">\(E(s&#39;, P&#39;)\)</span> that covers <span class="math inline">\(E(s, P) \cap H(s, d)\)</span>. First, by symmetry, the ellipsoid that covers <span class="math inline">\(E(0, I) \cap H(0, e&#39;)\)</span> is given by <span class="math display">\[
+ E(-\frac{1}{n + 1}e&#39;, \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e&#39; (e&#39;)^T) )
+\]</span></p>
+<p>Applying the mapping <span class="math inline">\(B y + s = x\)</span>: <span class="math display">\[
+E(-\frac{1}{n + 1} e&#39;, \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e&#39; (e&#39;)^T) ) \rightarrow E(s - \frac{1}{n + 1} B^T e&#39;, \frac{n^2}{n^2 - 1} B (I - \frac{2}{n + 1}e&#39; (e&#39;)^T) B^T )
+\]</span></p>
+<p><strong>As linear transformation preserves the ratio of volumes, the ratio of the volume of the final ellipsoid over that of <span class="math inline">\(E(s, P)\)</span> is also <span class="math inline">\(\exp(- \frac{1}{2 (n + 1)} )\)</span>.</strong></p>
+<p><strong><em>Question to ponder:</em></strong> 1. Show that <span class="math inline">\(\frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T)\)</span> is positive definite. 2. Show that <span class="math inline">\(\left( \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T) \right)^{-1} = \frac{n^2 - 1}{n^2} I + \frac{2n + 2}{n^2} e_1 e_1^T\)</span>. 3. Show that <span class="math inline">\(\frac{n^2}{n^2 - 1} B (I - \frac{2}{n + 1}e&#39; (e&#39;)^T) B^T\)</span> is positive definite.</p>
+<p><em>Proof of the claim</em>.</p>
+<p>As both <span class="math inline">\(E(0,I)\)</span> and <span class="math inline">\(H(0, e_1)\)</span> are symmetric to <span class="math inline">\(e_1\)</span>, so should the ellipsoid covering the intersection of them. Therefore it should be of the form <span class="math display">\[
+a_1 (x_1 - \lambda) + \sum_{i = 2}^n a_i x_i^2 \le 1
+\]</span></p>
+<p>where <span class="math inline">\(a_i\)</span>'s and <span class="math inline">\(\lambda\)</span> (<span class="math inline">\(0 &lt; \lambda &lt; 1\)</span>) are the parameters to be determined. The goal is to minimize its volume:</p>
+<p><span class="math display">\[
+\sqrt{\frac{1}{a_1} \prod_{i = 2}^n \frac{1}{a_i} } vol[ E(0, I) ]
+\]</span></p>
+<p>where <span class="math inline">\(vol[ E(0, I) ] = 1\)</span> is the volume of unit ball in <span class="math inline">\(R^n\)</span>. It is equivalent to maximize <span class="math display">\[
+a_1 \prod_{i = 2}^n a_i
+\]</span></p>
+<p>As the ellipsoid covers <span class="math inline">\(E(0,I) \cap H(0, e_1)\)</span> and should has as small volume as possible, the points <span class="math inline">\(e_i\)</span> (<span class="math inline">\(i = 1, 2, ..., n\)</span>) should be on its boundary. Therefore,</p>
+<p><span class="math display">\[
+\begin{aligned}
+a_1 (1 - \lambda)^2 + \sum_{i = 2}^n a_i 0^2 &amp;= 1 &amp;\rightarrow a_1(1 - \lambda)^2 = 1 &amp;\\
+a_1 (0 - \lambda)^2 + a_i 1^2 &amp;= 1  &amp;\rightarrow a_i = 1 - a_1 \lambda^2  &amp;\quad  \forall i = 2, 3, ..., n  \\
+\end{aligned}
+\]</span></p>
+<p>Replacing <span class="math inline">\(a_i\)</span> with <span class="math inline">\(1 - a_1 \lambda^2\)</span> and then <span class="math inline">\(a_1\)</span> with <span class="math inline">\(\frac{1}{(1 - \lambda)^2}\)</span>, the goal becomes</p>
+<p><span class="math display">\[
+\max \quad \frac{1}{(1 - \lambda)^2} \left[ 1 - \frac{\lambda^2}{(1 - \lambda)^2} \right]^{n - 1} 
+\]</span></p>
+<p>Substitute <span class="math inline">\(\frac{1}{1 - \lambda}\)</span> by a variable <span class="math inline">\(x &gt; 1\)</span>, and let <span class="math display">\[
+f \doteq x^2 [1 - (x - 1)^2]^{n - 1}
+\]</span></p>
+<p>Its derivative is <span class="math display">\[
+f&#39; = 2x [1 - (x - 1)^2]^{n - 1} - 2 (n - 1)(x - 1) x^2 [1 - (x - 1)^2]^{n - 2}
+\]</span></p>
+<p>Setting the derivative to zero, we obtain</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;[1 - (x - 1)^2] - (n - 1)(x - 1)x = 0 \\
+&amp;\Rightarrow 1 - x^2 + 2x - 1- (n -1 )x^2 + (n -1 )x = 0 \\
+&amp;\Rightarrow - n x^2 + (n + 1) x = 0 \\
+&amp;\Rightarrow x = \frac{n + 1}{n}
+\end{aligned}
+\]</span></p>
+<p>It follows that <span class="math inline">\(a_1 = (\frac{n + 1}{n})^2\)</span>, <span class="math inline">\(\lambda = \frac{1}{n + 1}\)</span> and <span class="math inline">\(a_i = \frac{n^2 - 1}{n^2}\)</span> for <span class="math inline">\(\forall i = 2, 3, ..., n\)</span>.</p>
+<!-- Therefore, 
+$$
+c_1 = \left[ 
+    \begin{matrix}
+\frac{1}{n + 1} \\
+ 0 \\
+  ...\\
+0
+\end{matrix}
+\right] 
+= \frac{1}{n + 1} e_1
+$$
+and 
+$$
+P_1^{-1} = \left[ 
+\begin{matrix}
+(\frac{n + 1}{n} )^2 &                       &   ...     \\
+                    &   \frac{n^2 - 1}{n^2}  &   ...     \\
+                    &                        &   ...     \\
+                    &                        &   &\frac{n^2 - 1}{n^2}
+\end{matrix}
+\right] = \frac{n^2 - 1}{n^2} I + 2\frac{n + 1}{n^2} e_1 e_1^T \\
+P_1 = \left[ 
+\begin{matrix}
+(\frac{n}{n + 1} )^2 &                       &   ...     \\
+                    &   \frac{n^2}{n^2 - 1}  &   ...     \\
+                    &                        &   ...     \\
+                    &                        &   &\frac{n^2}{n^2 - 1}
+\end{matrix}
+\right] = \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T)
+$$
+
+The volume ratio between $E(c_1, P_1)$ and $E(0, I)$ is 
+
+$$
+\begin{aligned}
+\sqrt{\frac{1}{a_1} \prod_{i = 2}^n \frac{1}{a_i} } 
+&= \frac{n}{n + 1} \left[ \frac{n^2 }{n^2 - 1} \right]^{(n - 1) / 2} \\
+&\le \exp \left( -\frac{1}{n + 1} + \frac{1}{2}\frac{n - 1}{n^2 - 1} \right) \\
+&= \exp \left( -\frac{1}{2} \frac{1}{n + 1} \right)
+\end{aligned}
+$$ -->
+<h2 id="reference">Reference</h2>
+<ol type="1">
+<li>Michel X. Goemans, 7. Lecture notes on the ellipsoid algorithm, 18.433: Combinatorial Optimization, MIT,</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/18/Determinant,%20Cross%20Product%20and%20Cramer's-Rule/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -739,272 +1081,10 @@ c_e&#39; = c_e + y^T A_N[:, e]
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/30/LP%20-%20Weak%20duality,%20Complementary%20Slackness,%20Strong%20Duality/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/30/LP%20-%20Weak%20duality,%20Complementary%20Slackness,%20Strong%20Duality/" class="post-title-link" itemprop="url">LP - Dual Program, Weak Duality, Complementary Slackness, Strong Duality</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-01-30 11:47:54" itemprop="dateCreated datePublished" datetime="2020-01-30T11:47:54+11:00">2020-01-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-02-01 11:26:59" itemprop="dateModified" datetime="2020-02-01T11:26:59+11:00">2020-02-01</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="dual-program-and-weak-duality">Dual Program and Weak Duality</h1>
-<p>Linear programming studies the optimization problems in which both its objective function and feasible region are represented by linear relationship.</p>
-<p>Every linear program can be converted into Canonical form</p>
-<p><span class="math display">\[
-\begin{aligned}
-&amp; \max &amp; c^T x \\
-&amp; s.t., &amp; Ax \le b \\
-&amp;&amp; x \ge 0
-\end{aligned}
-\]</span></p>
-<p>where <span class="math inline">\(c, x \in \mathcal{R}^n\)</span>, <span class="math inline">\(A \in \mathcal{R}^{m \times n}\)</span> and <span class="math inline">\(b \in \mathcal{R}^m\)</span>.</p>
-<p>Suppose we have a conic combination (<span class="math inline">\(y \in \mathcal{R}^m\)</span> and <span class="math inline">\(y \ge 0\)</span>) of the linear constraints: <span class="math display">\[
-y^T (Ax) \le y^T b
-\]</span></p>
-<p>Such that <span class="math inline">\(y^T A \ge c^T\)</span>, then <span class="math inline">\(y^T b\)</span> gives an upper bound of the original program. We want to find a <span class="math inline">\(y\)</span>, such that the bound is as tight as possible. This gives rise to another linear program: <span class="math display">\[
-\begin{aligned}
-&amp; \min &amp; y^T b \\
-&amp; s.t., &amp; y^T A \ge c^T \\
-&amp;&amp; y \ge 0
-\end{aligned}
-\]</span></p>
-<p>We call the original program the primal and the derived program its dual.</p>
-<p>The philosophy of dual program is to use the combination of primal constraints to construct a bound of its objective function. More formally, the goal is that the <em>weak duality</em> holds:</p>
-<p><span class="math display">\[
-c^T x \le (y^T A) x = y^T A x = y^T (Ax) \le y^T b 
-\]</span></p>
-<p>Note that <span class="math inline">\(c^T x \le (A^T y)^T x\)</span> is true because <span class="math inline">\(y^T A \ge c\)</span> and <span class="math inline">\(x \ge 0\)</span>. And <span class="math inline">\(y^T (Ax) \le y^T b\)</span> follows from <span class="math inline">\(Ax \le b\)</span> and <span class="math inline">\(y^T \ge 0\)</span>.</p>
-<p><em>Corollary 1:</em> If the primal is unbounded, then the dual is infeasible. If the dual is unbounded, then the primal is infeasible.</p>
-<p>In general, the primal may not be given in Canonical form and can be formulated as</p>
-<p><span class="math display">\[
-\begin{aligned}
-&amp; \max &amp; c^T x + \bar c^T \bar x + \hat c^T \hat x \\
-&amp; s.t., &amp; Ax + \bar A \bar x + \hat A \hat x \le b \\
-&amp;&amp; Bx + \bar B \bar x + \hat B \hat x =  \bar b \\ 
-&amp;&amp; Cx + \bar C \bar x + \hat C \hat x \ge \hat b \\
-&amp;&amp; x \ge 0 \\
-&amp;&amp; \hat x \le 0
-\end{aligned}
-\]</span></p>
-<p>Note that the <span class="math inline">\(\bar x\)</span>'s are unconstrained variables. Guided by similar philosophy, we hope to derive an upper bound by using the constraints: <span class="math display">\[
-\begin{aligned}
-    c^T x + \bar c^T \bar x + \hat c^T \hat x 
-        &amp; \le y^T (Ax + \bar A \bar x + \hat A \hat x) \\
-        &amp; + \bar y^T (Bx + \bar B \bar x + \hat B \hat x) \\
-        &amp; + \hat y^T (Cx + \bar C \bar x + \hat C \hat x) \\
-        &amp;\le y^T b + \bar y^T \bar b + \hat y^T \hat b
-\end{aligned}
-\]</span></p>
-<ol type="1">
-<li><p>The first inequality implies that (by proper rearranging): <span class="math display">\[
- \begin{aligned}
-     c^T x + \bar c^T \bar x + \hat c^T \hat x 
-         &amp; \le (y^T A + \bar y^T B + \hat y^T C)x \\
-         &amp; + (y^T \bar A + \bar y^T \bar B + \hat y^T \bar C) \bar x \\
-         &amp; + (y^T \hat A + \bar y^T \hat B + \hat y^T \hat C) \hat x
- \end{aligned}
- \]</span></p>
-<p>As <span class="math inline">\(x \ge 0\)</span>, <span class="math inline">\(\bar x\)</span> unconstrained and <span class="math inline">\(\hat x \le 0\)</span>, a sufficient condition for the inequality to become true is <span class="math display">\[
- \begin{aligned}
-     c^T      &amp; \le (y^T A + \bar y^T B + \hat y^T C) \\
-     \bar c^T &amp; =   (y^T \bar A + \bar y^T \bar B + \hat y^T \bar C) \\
-     \hat c^T &amp; \ge (y^T \hat A + \bar y^T \hat B + \hat y^T \hat C) \\
- \end{aligned}
- \]</span></p>
-<p>That gives the first set of constraints the dual variables <span class="math inline">\(y\)</span>, <span class="math inline">\(\bar y\)</span> and <span class="math inline">\(\hat y\)</span> need to satisfies. We have just seen that the sign of the primal variable determines the type of constraint in the dual.</p>
-<p>Of particular interest is the inequality constraint, which we will dive into details in the next section.</p></li>
-<li><p>By similar argument, the second inequality is true if <span class="math inline">\(y^T \ge 0\)</span>, <span class="math inline">\(\bar y^T\)</span> unconstrained, <span class="math inline">\(\hat y^T \le 0\)</span>. That is, the type of constraint in the primal determines the sign of variable in the dual.</p></li>
-</ol>
-<p>Finally, the rules of obtaining dual are summarized as follows:</p>
-<p><span class="math display">\[
-\begin{aligned}    
-\hline
-&amp;&amp;&amp; \text{Primal}       &amp;&amp;&amp;                    \max   \quad                      &amp;&amp;&amp; \qquad \qquad                      \min                    &amp;&amp;&amp;  \text{Dual}        &amp;&amp;&amp; \\
-\hline
-&amp;&amp;&amp; Constraints     &amp;&amp;&amp;      \begin{matrix} \le b_i \\ \ge b_i \\ = b_i  \end{matrix} \quad     &amp;&amp;&amp; \qquad \quad \begin{matrix} \ge 0 \\ \le 0 \\ \text{Both sides} \end{matrix}    &amp;&amp;&amp;  Variables      &amp;&amp;&amp; \\
-\hline
-&amp;&amp;&amp;  Variables      &amp;&amp;&amp;\qquad \begin{matrix} \ge 0 \\ \le 0 \\ \text{Both sides} \end{matrix}   &amp;&amp;&amp; \qquad \qquad  \begin{matrix}   \ge c_j \\ \le c_i \\ = c_j   \end{matrix}  &amp;&amp;&amp; Constraints     &amp;&amp;&amp; \\
-\hline
-\end{aligned}
-\]</span></p>
-<h1 id="complementary-slackness">Complementary Slackness</h1>
-<p>The strong duality states that, if both primal and dual are feasible, then the objective function values of their optimal solutions equal.</p>
-<p>If we expand the weak duality expression for the standard form, we get <span class="math display">\[
-\sum_{i = 1}^n c_i x_i \le \sum_{i = 1}^n \left( \sum_{j = 1}^m y_j A_{i, j} \right) x_i =  \sum_{j = 1}^m  y_j \left( \sum_{i = 1}^n A_{i, j} x_i \right) \le \sum_{j = 1}^m y_j b_j 
-\]</span></p>
-<p>Then <span class="math inline">\(c^T x= y^T b\)</span> implies <span class="math display">\[
-\sum_{i = 1}^n c_i x_i = \sum_{i = 1}^n \left( \sum_{j = 1}^m y_j A_{i, j}  \right) x_i \\  
-\sum_{j = 1}^m  y_j \left( \sum_{i = 1}^n A_{i, j} x_i \right)  = \sum_{j = 1}^m b_j y_j
-\]</span></p>
-<p>i.e., <span class="math display">\[
-\sum_{i = 1}^n \left( \sum_{j = 1}^m y_j A_{i, j} - c_i \right) x_i  = 0\\  
-\sum_{j = 1}^m  y_j \left( b_j - \sum_{i = 1}^n A_{i, j} x_i \right) = 0
-\]</span></p>
-<p>As <span class="math inline">\(\sum_{j = 1}^m A_{i, j} y_j - c_i \ge 0\)</span>, <span class="math inline">\(x_i \ge 0\)</span> for all <span class="math inline">\(i\)</span> and <span class="math inline">\(b_j - \sum_{i = 1}^n A_{i, j} x_i \ge 0\)</span> and <span class="math inline">\(y_j \ge 0\)</span> for all <span class="math inline">\(j\)</span>, we conclude that</p>
-<p><span class="math display">\[
-\begin{aligned}
-&amp;\sum_{j = 1}^m y_j A_{i, j}  - c_i = 0 &amp;\vee &amp;&amp;    x_i = 0 &amp; \forall i \\ 
-&amp;b_j - \sum_{i = 1}^n A_{i, j} x_i = 0 &amp;\vee &amp;&amp;     y_j  = 0, &amp; \forall j
-\end{aligned}
-\]</span></p>
-<p>Or more compactly <span class="math display">\[
-(y^T A - c^T) x = 0 \\y^T (b - Ax) = 0
-\]</span></p>
-<p>If the primal is in canonical form, then the fact that <span class="math inline">\(A^T \ge c, x \ge 0, y \ge 0, b - Ax \ge 0\)</span> implies that <span class="math display">\[
-\begin{aligned}
-&amp;(y^T A - c^T)_i = 0  &amp;&amp;\vee &amp;&amp; x_i = 0         &amp;&amp;&amp;\forall \ i \\
-&amp;y_j = 0            &amp;&amp;\vee   &amp;&amp; (b - Ax)_j = 0  &amp;&amp;&amp;\forall \ j
-\end{aligned}
-\]</span> where <span class="math inline">\((y^T A - c^T)\)</span> is a vector and <span class="math inline">\((y^T A - c^T)_i\)</span> is its <span class="math inline">\(i\)</span>-th coordinate.</p>
-<p>This is known as complementary slackness.</p>
-<h1 id="strong-duality">Strong Duality</h1>
-<p>Question to ponder: what is the geometric interpretation of complementary slackness?</p>
-<h2 id="special-case">Special Case</h2>
-<p>To illustrate its underlying meaning, first consider the special case <span class="math display">\[
-\begin{aligned}
-&amp; \min &amp; y^T b \\
-&amp; s.t., &amp; y^T A = c^T 
-\end{aligned}
-\]</span></p>
-<p>whose dual form is given by <span class="math display">\[
-\begin{aligned}
-&amp; \max &amp; c^T x \\
-&amp; s.t., &amp; Ax = b 
-\end{aligned}
-\]</span></p>
-<p>First note that <span class="math inline">\(y^T A = c^T\)</span> means that <span class="math inline">\(c^T\)</span> is a linear combination of rows of <span class="math inline">\(A\)</span>. The primal is feasible if <span class="math inline">\(c\)</span> is in the row space of <span class="math inline">\(A\)</span>.</p>
-<p>In this special case, if both primal and dual are feasible, then for any feasible solutions <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, strong duality holds, since <span class="math inline">\(c^T x = (y^T A) x = y^T (Ax) = y^T b\)</span>.</p>
-<p>The dual search for some <span class="math inline">\(x\)</span> such that <span class="math display">\[
-Ax = b
-\]</span></p>
-<p>If we can find such <span class="math inline">\(x\)</span>, it implies that <span class="math inline">\(b\)</span> lies in the column space of <span class="math inline">\(A\)</span>, denoted as <span class="math inline">\(C(A)\)</span> (the subspace in <span class="math inline">\(\mathcal{R}^n\)</span> spanned by the row vectors of <span class="math inline">\(A\)</span>). What if not? We can decompose <span class="math inline">\(b\)</span> into two part: <span class="math inline">\(b = b_1 + b_2\)</span>, such that <span class="math inline">\(b_1 \in C(A)\)</span> and <span class="math inline">\(0 \neq b_2 \in N(A^T)\)</span> (the subspace orthogonal to <span class="math inline">\(C(A)\)</span>). Here is the problem: if <span class="math inline">\(y\)</span> is a feasible solution for the primal, then we can decrease <span class="math inline">\(y\)</span> by arbitrary amount along the direction orthogonal to <span class="math inline">\(C(A)\)</span>, while maintaining its feasibility. In particular, if we add <span class="math inline">\(k \cdot b_2\)</span> to <span class="math inline">\(y\)</span> (<span class="math inline">\(k &gt; 0\)</span>), then <span class="math inline">\((y - k b_2)\)</span> is still feasible as <span class="math inline">\((y - k b_2)^T A = y^T A - k b_2^T A = c^T\)</span>. But now <span class="math inline">\((y - k \cdot b_2)^T b = y^T b - k b_2^T b_2 &lt; y^T b\)</span>, which implies that the primal is unbounded.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StrongDualitySpecialCase.jpg" /></p>
-<h2 id="general-case">General Case</h2>
-<p>Now we return our discussion to the more general form: <span class="math display">\[
-\begin{aligned}
-&amp; \min &amp; y^T b \\
-&amp; s.t., &amp; y^T A \ge c^T
-\end{aligned}
-\]</span></p>
-<p>Its dual is given by <span class="math display">\[
-\begin{aligned}
-&amp; \max &amp; c^T x \\
-&amp; s.t., &amp; Ax = b \\
-&amp;&amp; x \ge 0
-\end{aligned}
-\]</span></p>
-<p>Every LP can be converted into standard form.</p>
-<p>The weak duality states that <span class="math display">\[
-c^T x \le y^T A x = y^T b
-\]</span></p>
-<p>If both primal and dual are feasible, then strong duality reduce to show that the first inequality holds with equality, that is, <span class="math inline">\(\exists\)</span> feasible <span class="math inline">\(x, y\)</span>, s.t., <span class="math inline">\(c^T x = y^T A x\)</span>. In particular, complementary slackness, this is equivalent to proving that <span class="math display">\[
-\begin{aligned}
-&amp;(y^T A - c^T)_i = 0  &amp;&amp;\vee &amp;&amp;x_i = 0      &amp;&amp;\forall \ i \\
-\end{aligned}
-\]</span></p>
-<p>We begin by assuming that <span class="math inline">\(y\)</span> is the optimal solution for the dual. We claim that <span class="math inline">\(y\)</span> can not be an interior point of the feasible region. Otherwise, <span class="math inline">\(y\)</span> can move along arbitrary direction by a little while maintaining feasibility. If it moves along the direction pointed by <span class="math inline">\(-b\)</span>, then the objective function value decreases, contradicting <span class="math inline">\(y\)</span> being optimal.</p>
-<p>Therefore, <span class="math inline">\(y\)</span> must be on the boundary of the feasible region.</p>
-<h4 id="question-to-ponder-prove-the-existence-of-optimal-solution-of-the-primal-assuming-feasibility-of-the-dual."><em>Question to ponder: prove the existence of optimal solution of the primal, assuming feasibility of the dual.</em></h4>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/MinimizeYB.jpg" /></p>
-<p>The boundary <span class="math inline">\(y\)</span> touches are specified by tight constraints. The intuition behind is that, <span class="math inline">\(b\)</span> must be the positive combination of the normal vector of the tight constraints. Otherwise, we can find some direction that decreases objective function value while maintaining feasibility.</p>
-<p>Denote <span class="math inline">\(S \subset [m]\)</span> the set of indexes, such that <span class="math inline">\(\forall i \in S\)</span>, <span class="math inline">\(y^T A_i = c_i\)</span>, where <span class="math inline">\(A_i\)</span> is the <span class="math inline">\(i\)</span>-th column of matrix <span class="math inline">\(A\)</span> and <span class="math inline">\(c_i\)</span> is the <span class="math inline">\(i\)</span>-th coordinator of vector <span class="math inline">\(c\)</span>. In other words, <span class="math inline">\(S\)</span> is the set of indexes for which the inequality is tight.</p>
-<p>We claim that <span class="math inline">\(b\)</span> is in the conic hull of columns of <span class="math inline">\(A_s\)</span>. That is, <span class="math inline">\(\exists x_S \in R^{|S|}\)</span>, such that 1. <span class="math inline">\(A_S x_S = b\)</span>. 2. <span class="math inline">\(x_S \ge 0\)</span>.</p>
-<p>Such <span class="math inline">\(x_S\)</span> gives a feasible solution to the primal, by setting <span class="math inline">\(x_{\bar S} = 0\)</span> and <span class="math inline">\(x = x_S \cup x_{\bar S}\)</span>. Further, strong duality holds as <span class="math inline">\(c^T x = y^T A x = y^T b\)</span>.</p>
-<p><em>Proof:</em></p>
-<p>It suffices to show that <span class="math inline">\(b\)</span> is a conic combination of columns of <span class="math inline">\(A_S\)</span>. Suppose not. Then by <a target="_blank" rel="noopener" href="https://wuhao-wu-jiang.github.io/2019/01/17/Farkas-Lemma/">Farkas' Lemma</a>, <span class="math inline">\(\exists v \in \R^m\)</span>, such that</p>
-<ol type="1">
-<li><span class="math inline">\(v^T A_S \ge 0\)</span>.</li>
-<li><span class="math inline">\(v^T b &lt; 0\)</span>.</li>
-</ol>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FarkasLemma3.jpg" /></p>
-<p>Then we can move the vector <span class="math inline">\(y\)</span> along the direction of <span class="math inline">\(v\)</span>. But this time we need to be careful, in order not to violate the constraints.</p>
-<p>For each inequality constraint <span class="math inline">\(y^T A_i &gt; c_i\)</span> (<span class="math inline">\(i \in \bar S\)</span>), <span class="math inline">\(\exists t_i &gt; 0\)</span>, such that <span class="math inline">\((y + t_i v)^T A_i &gt; c_i\)</span>. Denote <span class="math inline">\(t = \min_{i \in \bar S} t_i\)</span>.</p>
-<p>As <span class="math inline">\((y + t v)^T A_S = c_S + t v^T A_S \ge c_S\)</span>, <span class="math inline">\((y + t v)\)</span> is still feasible. But <span class="math inline">\((y + t v)^T b &lt; y^T b\)</span>. A contradiction.</p>
-<h4 id="question-to-ponder-relate-the-above-discussion-to-lagrange-multiplier-and-k.k.t-condition.">Question to ponder: relate the above discussion to Lagrange multiplier and <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions">K.K.T condition</a>.</h4>
-<h1 id="reference.">Reference.</h1>
-<ol type="1">
-<li>David P. Williamson, ORIE 6300 Mathematical Programming I, <a target="_blank" rel="noopener" href="https://people.orie.cornell.edu/dpw/orie6300/Lectures/lec08.pdf">Lecture 8</a><br />
-</li>
-<li>Boyd, S. and Vandenberghe, L., 2004. Convex optimization. Cambridge university press.</li>
-</ol>
-<!-- 1. $A_S x_S = b$:   
-   We first show $b$ in the linear hull of $A_S$, i.e., $\exists x_S$, s.t., $A_S x_S = b$. Otherwise, the case is similar to the first example we have just discussed. We decompose $b = b_1 + b_2$, where $b_2$ is orthogonal to $C(A_S)$. Then we can move the vector $y$ along the reverse direction of $b_2$. But this time we need to be careful, in order not to violate the inequality constraints. 
-
-    For each inequality constraint $y^T A_i > c_i$ ($i \in \bar S$), $\exists t_i > 0$, such that $(y - t_i b_2)^T A_i > c_i$. Denote $t = \min_{i \in \bar S} t_i$. 
-    
-    As $(y - tb_2)^T A_S = c_S$, $(y - tb_2)$ is still feasible. But $(y - tb_2)^T b < y^T b$. A contradiction.
-
-1. $x_S \ge 0$. 
-   
-    For simplicity, consider just the case where the columns of $A_S$ are linearly independent. If $\exists i \in S$, such that $x_i < 0$, then we can find a better solution as follows. Let $u$ be the projection of $A_i$ to $C(A_{S \setminus [i]})$, the subspace spanned by columns of $A_{S \setminus [i]}$. Define $v = A_i - u$. We have $v \neq 0$ since $A_i$ is not inside $C(A_{S \setminus [i]})$. Further $v$ is orthogonal to columns of $A_{S \setminus [i]}$ and $v^T A_i > 0$. 
-
-    Moreover, $v^T b = v^T A_S x_S = (v^T A_i) x_i < 0$. 
-
-    We can move $y$ along the direction of $v$, before some constraint in $\bar S$ becomes tight. But this decreases the value of the objective function, contradicting $y$ being optimal. 
-
-    Remark: when the columns of $A_S$ are linearly dependent, there are few cases.
-    1. If $A_i$ is outside $C(A_{S \setminus [i]})$, then the proof still holds. 
-    2. Otherwise, $A_i$ can be expressed by a linear combination by columns in $A_{S \setminus [i]}$.  -->
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/24/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><span class="page-number current">25</span><a class="page-number" href="/page/26/">26</a><span class="space">&hellip;</span><a class="page-number" href="/page/50/">50</a><a class="extend next" rel="next" href="/page/26/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/24/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/24/">24</a><span class="page-number current">25</span><a class="page-number" href="/page/26/">26</a><span class="space">&hellip;</span><a class="page-number" href="/page/51/">51</a><a class="extend next" rel="next" href="/page/26/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1070,7 +1150,7 @@ c^T x \le y^T A x = y^T b
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">150</span>
+          <span class="site-state-item-count">151</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
