@@ -146,6 +146,417 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/05/21/SVD-Computation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/05/21/SVD-Computation/" class="post-title-link" itemprop="url">SVD Computation</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-21 10:49:11" itemprop="dateCreated datePublished" datetime="2018-05-21T10:49:11+10:00">2018-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-30 13:41:10" itemprop="dateModified" datetime="2021-04-30T13:41:10+10:00">2021-04-30</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Singular vector decomposition is one of the highlights of linear algebra.</p>
+<h1 id="review-of-linear-transformation">Review of Linear Transformation</h1>
+<p>Before diving into the topic, we have a brief review of linear transformation. Given a matrix <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> with rank <span class="math inline">\(r\)</span>, we can view it as a linear transformation from <span class="math inline">\(f: \mathbb{R}^n \rightarrow \mathbb{R}^m\)</span> defined as <span class="math display">\[
+    f(x) = Ax,  \forall x \in \mathbb{R}^n.
+\]</span> It maps a vector in the row space, i.e., the subspace spanned by row vectors of <span class="math inline">\(A\)</span>, to a vector in the column space, the subspace spanned by column vectors of <span class="math inline">\(A\)</span>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Linear%20Mapping.jpg" /></p>
+<p>Define</p>
+<ol type="1">
+<li><p><span class="math inline">\(S(A^T) = \{ \sum_{i = 1}^n \lambda_i A[i,:] : \lambda_i \in \mathbb{R}, \forall i \in [n] \}\)</span>, which we call the row space of <span class="math inline">\(A\)</span>.</p></li>
+<li><p><span class="math inline">\(N(A^T) = \{ x \in \mathbb{R}^m, s.t., Ax = 0\}\)</span>, the subspace perpendicular to <span class="math inline">\(S(A^T)\)</span>.</p></li>
+<li><p><span class="math inline">\(S(A) = \{ \sum_{i = 1}^m \lambda_i A[:,i] : \lambda_i \in \mathbb{R}, \forall i \in [m] \}\)</span>, the columns space of <span class="math inline">\(A\)</span>.</p></li>
+<li><p><span class="math inline">\(N(A)\)</span> the space perpendicular to <span class="math inline">\(S(A)\)</span>.</p></li>
+</ol>
+<p>Note that <span class="math inline">\(S(A^T)\)</span> and <span class="math inline">\(S(A)\)</span> has the same dimension <span class="math inline">\(r\)</span>. For any <span class="math inline">\(x \in \mathbb{R}^n\)</span>, we can write <span class="math inline">\(x = y + z\)</span>, such that <span class="math inline">\(y \in S(A^T)\)</span> and <span class="math inline">\(z \in N(A^T)\)</span>. The operation <span class="math inline">\(Ax = Ay + Az\)</span>, takes the <span class="math inline">\(y\)</span> component to a vector in <span class="math inline">\(S(A)\)</span> and the <span class="math inline">\(z\)</span> component to point <span class="math inline">\(0\)</span>, as illustrated by the figure.</p>
+<h1 id="singular-vector-decomposition">Singular Vector Decomposition</h1>
+<p>Singular vector decomposition aims to find</p>
+<ol type="1">
+<li>an orthonormal basis <span class="math inline">\(\{ v_1, v_2, ..., v_r \}\)</span> for <span class="math inline">\(S(A^T)\)</span>,</li>
+<li>and an orthogonal base <span class="math inline">\(\{ u_1, u_2, ..., u_r \}\)</span> for <span class="math inline">\(S(A)\)</span>,</li>
+<li>such that <span class="math inline">\(f(v_i) = A v_i = \sigma_i u_i\)</span> for all <span class="math inline">\(i \in [r]\)</span> and <span class="math inline">\(\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r &gt; 0\)</span>.</li>
+</ol>
+<p>When restricted to the sets <span class="math inline">\(\{ v_1, v_2, ..., v_r \}\)</span> and <span class="math inline">\(\{ u_1, u_2, ..., u_r \}\)</span>, <span class="math inline">\(f\)</span> is a bijection.</p>
+<p>If we write <span class="math inline">\(V = [v_1, v_2, ..., v_r]\)</span>, <span class="math display">\[
+    \Sigma = 
+        \begin{bmatrix} 
+            &amp;\sigma_1 \\ 
+            &amp;&amp;\sigma_2 \\ 
+            &amp;&amp;&amp; ... \\ 
+            &amp;&amp;&amp;&amp;\sigma_r 
+        \end{bmatrix}
+\]</span> and <span class="math inline">\(U = [u_1, u_2, ..., u_r]\)</span>, then <span class="math display">\[
+    A V = U \Sigma. 
+\]</span></p>
+<p>As the columns of <span class="math inline">\(V\)</span> are orthonormal vectors, it is invertible and <span class="math inline">\(V^{-1} = V^T\)</span>. Hence <span class="math display">\[
+    A = U \Sigma V^{-1} = U \Sigma V^T
+\]</span></p>
+<p>Equivalently, it holds that <span class="math display">\[
+    A = \sigma_1 u_1 v_1^T + \sigma_2 u_2 v_2^T + ... + \sigma_r u_r v_r^T. 
+\]</span></p>
+<p>Further, <span class="math display">\[
+    A^T A = V \Sigma^2 V^T, A A^T = U \Sigma^2 U^T.
+\]</span> which implies that <span class="math display">\[
+    A^T A V = V \Sigma^2, A A^T U = U \Sigma^2.
+\]</span> The <span class="math inline">\(v_i\)</span>'s and <span class="math inline">\(u_i\)</span>'s are eigenvectors of <span class="math inline">\(A^T A\)</span> and <span class="math inline">\(A A^T\)</span> respectively.</p>
+<h2 id="existence">EXISTENCE</h2>
+<p>The key is <span class="math inline">\(A^T A\)</span>, which is semi-positive. Since <span class="math display">\[
+    A^T A x = 0 \Leftrightarrow x A^T A x = 0 \Leftrightarrow Ax = 0,
+\]</span></p>
+<p><span class="math inline">\(A^T A\)</span> and <span class="math inline">\(A\)</span> has the rank <span class="math inline">\(r\)</span>, the same null space and hence the same row space. Further, as <span class="math inline">\(A^T A\)</span> is semi-positive, it has <span class="math inline">\(r\)</span> positive eigenvalue. Denote the eigenvalues of <span class="math inline">\(A^TA\)</span> in decreasing order as <span class="math inline">\(\lambda_1 \ge \lambda_2 \ge ... \ge \lambda_r &gt; 0\)</span> and the corresponding (unit length) eigenvectors as <span class="math inline">\(v_1, v_2, ..., v_r\)</span>. The <span class="math inline">\(v_i\)</span>'s are orthogonal, as</p>
+<ul>
+<li>For <span class="math inline">\(i \neq j\)</span>, <span class="math inline">\(v_i^T A^T A v_j = \lambda_i v_i^T v_j = \lambda_j v_i^T v_j\)</span>. As <span class="math inline">\(\lambda_i \neq \lambda_j\)</span>, <span class="math inline">\(v_i^T v_j = 0\)</span>.</li>
+</ul>
+<p>They constitute an orthogonal base of the row space of <span class="math inline">\(A^T A\)</span> and the row space <span class="math inline">\(A\)</span>.</p>
+<p>Now we use the <span class="math inline">\(v_i\)</span>'s to search for <span class="math inline">\(u_i\)</span>'s as follows: let <span class="math inline">\(\sigma = \sqrt{\lambda_i}\)</span>, we claim that <span class="math display">\[
+    u_i \doteq \frac{1}{\sigma_i} A v_i, \forall i \in [r]
+\]</span> are orthonormal.</p>
+<ol type="1">
+<li>The <span class="math inline">\(u_i\)</span>'s are orthogonal: <span class="math inline">\(u_i^T u_j = \frac{1}{\sigma_i \sigma_j} v_i^T A^T A v_j = \frac{\sigma_j^2 }{\sigma_i \sigma_j} v_i^T v_j = 0\)</span></li>
+<li>The <span class="math inline">\(u_i\)</span>'s are unite vectors: <span class="math inline">\(u_i^T u_i = \frac{1}{\sigma_i^2} v_i^T A^T A v_i = 1\)</span></li>
+</ol>
+<p>Hence <span class="math inline">\(u_i\)</span>'s constitutes an orthonormal basis. As the columns of <span class="math inline">\(A\)</span> has dimension <span class="math inline">\(r\)</span>, the <span class="math inline">\(u_i\)</span>'s covers the entire columns space. This completes the proof.<br />
+<span class="math inline">\(\blacksquare\)</span></p>
+<h2 id="geometric-interpretation">GEOMETRIC INTERPRETATION</h2>
+<p>To understand the geometry of SVD, we first extend the matrix <span class="math inline">\(V\)</span> to an orthogonal base in <span class="math inline">\(\mathbb{R}^n\)</span> and <span class="math inline">\(U\)</span> to an orthogonal base in <span class="math inline">\(\mathbb{R}^m\)</span>. By adding proper zero rows and columns to <span class="math inline">\(\Sigma\)</span>, we still have <span class="math inline">\(A = U \Sigma V^T\)</span>.</p>
+<p>Now, the transformation <span class="math inline">\(f(x)\)</span> is decomposed into three steps: <span class="math display">\[
+x \rightarrow V^Tx \rightarrow \Sigma (V^T x) \rightarrow U(\Sigma V^T x)
+\]</span></p>
+<p>It suffices to under the effect of multiplying an orthogonal matrix <span class="math inline">\(V\)</span>. It is indeed a rotation. To see this, multiply <span class="math inline">\(V\)</span> by <span class="math inline">\(e_i\)</span> gives <span class="math inline">\(v_i\)</span>, i.e., <span class="math inline">\(V e_i = v_i\)</span>, for all for <span class="math inline">\(i \in [n]\)</span>. Therefore, <span class="math inline">\(V\)</span> takes the orthogonal base <span class="math inline">\(I = [e_1, e_2, ..., e_n]\)</span> to the orthogonal base <span class="math inline">\(V = [v_1, v_2, ..., v_n]\)</span>.</p>
+<p>Note that the inverse <span class="math inline">\(V^{-1}\)</span> of <span class="math inline">\(V\)</span> is also an orthogonal matrix and hence a rotation. Indeed it rotates the orthogonal base <span class="math inline">\(V = [v_1, v_2, ..., v_n]\)</span> back to <span class="math inline">\(I = [e_1, e_2, ..., e_n]\)</span>. To understand this, observe that <span class="math inline">\(V^{-1} = V^T\)</span>. For arbitrary <span class="math inline">\(v_i\)</span>, we have <span class="math inline">\(V^T v_i = e_i\)</span>.</p>
+<p>Therefore, <span class="math inline">\(V^T x\)</span> corresponds to a rotation, in the reverse direction to the one defined by <span class="math inline">\(V\)</span>.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Rotation.jpg" /></p>
+<p>Next, the matrix <span class="math inline">\(\Sigma\)</span> scales the <span class="math inline">\(i\)</span>-th dimension of <span class="math inline">\(V^T x\)</span> by <span class="math inline">\(\sigma_i\)</span>, for all <span class="math inline">\(i \in [n]\)</span>. Combined with the first step, if <span class="math inline">\(x = v_i\)</span>, then it is first rotation to the direction <span class="math inline">\(e_i\)</span>, then scaled by a factor <span class="math inline">\(\sigma_i\)</span>.</p>
+<p>Finally, <span class="math inline">\(U\)</span> is an orthogonal matrix and corresponds to another rotation, which take <span class="math inline">\(e_i \in \mathbb{R}^m\)</span> to a vector <span class="math inline">\(u_i\)</span>.</p>
+<p><em>Corollary</em>: Define the Frobenius norm of a matrix <span class="math inline">\(A\)</span> as <span class="math display">\[
+\Vert A|_F = \sqrt{\sum_{i, j} a_{i, j}^2 }
+\]</span> Then <span class="math inline">\(\Vert A\Vert _F^2 = \Vert \Sigma\Vert ^2 = \sum_{i = 1}^r \sigma_i^2\)</span>.</p>
+<p><em>Proof:</em> Note that rotating the vectors do not change their distance from the origin. Recall that <span class="math inline">\(U^T\)</span> and <span class="math inline">\(V\)</span> are both rotations. Hence <span class="math inline">\(\Vert A\Vert _F^2 = \Vert AV\Vert _F^2 = \Vert U^T A V\Vert _F^2 = \Vert U^T U \Sigma V^T V\Vert _F^2= \Vert \Sigma\Vert _F^2\)</span>.</p>
+<p><span class="math inline">\(\square\)</span>.</p>
+<h2 id="applications">APPLICATIONS</h2>
+<p>An important property of the <span class="math inline">\(v_i\)</span> is that</p>
+<ol type="1">
+<li><span class="math inline">\(v_1 = \arg\max_{v \in \mathbb{R}^n, \Vert v\Vert = 1} \Vert Av\Vert\)</span>.</li>
+<li><span class="math inline">\(v_2 = \arg\max_{v \in \mathbb{R}^n, \Vert v\Vert = 1, v \perp v_1} \Vert Av \Vert\)</span>.</li>
+<li>...</li>
+<li><span class="math inline">\(v_r = \arg\max_{v \in \mathbb{R}^n, \Vert v\Vert = 1, v \perp v_1, v \perp v_2, ..., v \perp v_{r - 1}} \Vert Av \Vert\)</span></li>
+</ol>
+<p><em>Proof</em>: For any <span class="math inline">\(v \in \mathbb{R}^n, \Vert v\Vert = 1\)</span>, we can write <span class="math inline">\(v = \sum_{i = 1}^n a_i v_i\)</span>, where <span class="math inline">\(\sum_{i = 1}^n a_i^2 = 1\)</span>, since <span class="math inline">\(v_i\)</span>'s are an orthogonal base. Then <span class="math display">\[
+\begin{aligned}
+\Vert Av\Vert ^2 
+    &amp;= x^T A^T A x \\
+    &amp;=  x^T V \Sigma U^T U \Sigma V^T x \\
+    &amp;= \Vert \Sigma V^T x\Vert ^2 \\
+    &amp;= \sum_{i = 1}^r a_i^2 \sigma_i^2 
+\end{aligned}
+\]</span> which is maximized to <span class="math inline">\(\sigma_1^2\)</span> when <span class="math inline">\(a_1 = 1\)</span> and <span class="math inline">\(a_i = 0, i \ge 2\)</span>. Hence (1) is proved.</p>
+<p>Similarly, when <span class="math inline">\(\Vert v\Vert = 1, v \perp v_1, v_2, ..., v_k\)</span> for some <span class="math inline">\(k &lt; r\)</span>, then <span class="math inline">\(a_1 = a_2 = ... a_k = 0\)</span>, and <span class="math inline">\(v = \sum_{i = k + 1}^r a_i v_i\)</span>. <span class="math display">\[
+\begin{aligned}
+\Vert Av\Vert ^2 
+    &amp;= \sum_{i = k + 1}^r a_i^2 \sigma_i^2 
+\end{aligned}
+\]</span> which achieves maximum when <span class="math inline">\(a_{k + 1} = 1\)</span> and <span class="math inline">\(a_i = 0, i &gt; k + 1\)</span>. In this case <span class="math inline">\(v = v_{k + 1}\)</span>.</p>
+<h3 id="best-fit-k-subspace">Best Fit <span class="math inline">\(k\)</span> subspace</h3>
+<p>An implication is that, the subspace space <span class="math inline">\(V_k\)</span> spanned by <span class="math inline">\((v_1, v_2, ..., v_k)\)</span>, is the best <span class="math inline">\(k\)</span>-dimension subspace of <span class="math inline">\(\mathbb{R}^n\)</span> that fits the row vectors of <span class="math inline">\(A\)</span>, namely, <span class="math inline">\(A[1, :], A[2, :], ..., A[m, :]\)</span>. Here fits mean the sum of the square of the perpendicular distance from the row vector to their projections on the subspace is minimized. Denote <span class="math inline">\(S\)</span> any subspace of <span class="math inline">\(\mathbb{R}^n\)</span>, then for <span class="math inline">\(v \in \mathbb{R}^n\)</span>, we can decompose <span class="math inline">\(v\)</span> into two part: the part <span class="math inline">\(v_S\)</span> that is within <span class="math inline">\(S\)</span> and the part <span class="math inline">\(v_{S_\perp}\)</span> perpendicular to <span class="math inline">\(S\)</span>. Then <span class="math display">\[
+\Vert v\Vert ^2 = \Vert v_{S}\Vert ^2 + \Vert v_{S_\perp}\Vert ^2
+\]</span> Minimizing <span class="math inline">\(\Vert v_{S_\perp}\Vert ^2\)</span> is equivalent to maximizing <span class="math inline">\(\Vert v_{S}\Vert ^2\)</span>. The subspace space by <span class="math inline">\((v_1, v_2, ..., v_k)\)</span> is the subspace that maximize the sum of the squares of the projections of row vectors to the subspace.</p>
+<p>We prove this by induction. When <span class="math inline">\(k = 1\)</span>, the proof holds trivially by the definition of <span class="math inline">\(v_1\)</span>. In particular, <span class="math inline">\(A v_1\)</span> is the lengths of the projections of the row to the line that go through <span class="math inline">\(v_1\)</span>, since <span class="math inline">\(v_1\)</span> is a unit vector. Further, the corresponding projected vectors in <span class="math inline">\(\mathbb{R}^n\)</span> are <span class="math display">\[
+Av_1 v_1^T  = \sigma_1 u_1 v_1^T
+\]</span></p>
+<p>For general <span class="math inline">\(k\)</span>, by induction hypothesis <span class="math inline">\(V_{k - 1}\)</span> is the best <span class="math inline">\(k-1\)</span> dimension space that fit rows of <span class="math inline">\(A\)</span>. Denote <span class="math inline">\(N(V_{k -1})\)</span> the subspace that is perpendicular to <span class="math inline">\(V_{k - 1}\)</span>, which has dimension <span class="math inline">\(n - k + 1\)</span>. For any <span class="math inline">\(k\)</span> dimensional subspace <span class="math inline">\(S \cap N(V_{k - 1}) \neq \emptyset\)</span>, since <span class="math inline">\(dim(S) + dim(N(V_{k - 1})) = k + n - k + 1 \ge n\)</span>. Let <span class="math inline">\(s_k \in S \cap N(V_{k - 1})\)</span> be a unit vector. By the definition of <span class="math inline">\(v_k\)</span>, we have <span class="math display">\[
+\Vert Av_k\Vert ^2 \ge \Vert As_k\Vert ^2
+\]</span> Now we can extend <span class="math inline">\(s_k\)</span> to a base of <span class="math inline">\(S\)</span>, denoted as <span class="math inline">\(s_1, s_2, ..., s_k\)</span>. By induction hypothesis, it holds <span class="math display">\[
+\sum_{i = 1}^{k - 1} \Vert A v_i\Vert ^2 \ge \sum_{i = 1}^{k - 1} \Vert A s_i\Vert ^2 
+\]</span> Hence <span class="math display">\[
+\sum_{i = 1}^{k} \Vert A v_i\Vert ^2 \ge \sum_{i = 1}^{k} \Vert A s_i\Vert ^2 
+\]</span> But the former is exactly sum of the squares of the lengths of the projections to <span class="math inline">\(V_k\)</span> and the later is the one to <span class="math inline">\(S\)</span>. Finally, we mention that the projection of <span class="math inline">\(A\)</span> to <span class="math inline">\(V_k\)</span> is given by <span class="math display">\[
+A_k = \sum_{i = 1}^k \sigma_i u_i v_i ^T 
+\]</span></p>
+<p>Corollary 1. For any rank <span class="math inline">\(k\)</span> matrix <span class="math inline">\(B\)</span>, we have <span class="math display">\[
+\Vert A - A_k\Vert _F \le \Vert A - B\Vert _F
+\]</span></p>
+<p>Intuitively, if we view square root of the sum of square distance of row vectors to the origin (note that the origin can be viewed as a zero dimension subspace.)</p>
+<p>Corollary 2. Define the 2-norm of a matrix <span class="math inline">\(A\)</span> as <span class="math display">\[
+    \Vert A \Vert _2 = \sigma_1 = \max_{v \in \mathbb{R}^n, \Vert v\Vert  = 1} \Vert Av \Vert 
+\]</span> The <span class="math inline">\(2\)</span>-norm is the square root of the maximum sum of squares of the projections of the row vectors to a one dimension subspace. Then an implication of the SVD is that, for any rank <span class="math inline">\(k\)</span> matrix <span class="math inline">\(B\)</span>, we have <span class="math display">\[
+\Vert A - A_k\Vert _2 \le \Vert A - B\Vert _2
+\]</span></p>
+<p><em>Proof:</em> First note that for <span class="math inline">\(v = \sum_{i = 1}^r a_i v_i\)</span>, such that <span class="math inline">\(\sum_{i = 1}^k a_i^2 = 1\)</span>, <span class="math display">\[
+    \Vert (A - A_k) v\Vert  = \sum_{i = k + 1}^r a_i \sigma_i
+\]</span> it is maximized when <span class="math inline">\(a_{k + 1} = 1\)</span> and <span class="math inline">\(\Vert A - A_k\Vert _2 = \sigma_{k + 1}\)</span>. Now, as <span class="math inline">\(dim(A_{k + 1}) + dim(N(B^T)) = k + 1 + n - k \ge n\)</span>, <span class="math inline">\(\exists v \in \mathbb{R}^n\)</span>, such that <span class="math inline">\(Bv = 0\)</span> and <span class="math inline">\(v = \sum_{i = 1}^{k + 1} a_i v_i\)</span> and <span class="math inline">\(\Vert v\Vert = 1\)</span>. Now <span class="math display">\[
+    \Vert A - B\Vert _2 \ge \Vert (A - B)v\Vert  = \Vert Av\Vert  = \sqrt{\sum_{i = 1}^{k + 1} a_i^2 \sigma_i^2 } \ge \sigma_{k + 1}
+\]</span> which finishes our proof.</p>
+<h3 id="computing-svd">Computing SVD</h3>
+<p>If suffices to compute the eigenvectors and eigenvalues of <span class="math inline">\(A^T A\)</span>, i.e., <span class="math inline">\(\sigma_i^2\)</span>'s and <span class="math inline">\(v_i\)</span>'s. In the simplest case, <span class="math inline">\(\sigma_1 &gt; \sigma_2 \ge \sigma_3 \ge ... \ge \sigma_r\)</span>, then we can take powers of <span class="math inline">\(A^T A\)</span>, <span class="math display">\[
+    (A^T A)^k = V \Sigma^{2k} V^T = \sum_{i = 1}^r \sigma_i^{2k} v_i v_i^T
+\]</span> Dividing the matrix by <span class="math inline">\(\sigma_1^{2k}\)</span>, <span class="math display">\[
+    \frac{1}{\sigma_1^{2k} } (A^T A)^k = V \Sigma^{2k} V^T = v_1 v_1^T + \sum_{i = 2}^r \frac{\sigma_i^{2k}}{\sigma_1^{2k} }  v_i v_i^T
+\]</span> The second part converges to 0 as <span class="math inline">\(k \rightarrow \infty\)</span>. Then for any vector <span class="math inline">\(v\)</span> that is not perpendicular to <span class="math inline">\(v_1\)</span>, we have <span class="math display">\[
+    \lim_k \frac{1}{\sigma_1^{2k} } (A^T A)^k v =  v_1 (v_1^T v) = (v_1^T v) v_1
+\]</span> which is a multiple of <span class="math inline">\(v_1\)</span>. Normalizing the vector recovers <span class="math inline">\(v_1\)</span>.</p>
+<p>When there is a tie of the largest eigenvalues, that is <span class="math inline">\(\sigma_1 = \sigma_2 = ... = \sigma_t\)</span> for some <span class="math inline">\(t &lt; r\)</span>, and suppose that <span class="math inline">\(v\)</span> is not perpendicular to <span class="math inline">\(v_1, v_2, ..., v_t\)</span> simultaneously, then <span class="math display">\[
+    \lim_k \frac{1}{\sigma_1^{2k} } (A^T A)^k v =  \text{the projection of } v \text { to  }  V_t
+\]</span> Suppose we are satisfied with this result, we still need to address two problems.</p>
+<ol type="1">
+<li>We use <span class="math inline">\(\sigma_1^{2k}\)</span> to normalize the resulting vector, which is unknown.</li>
+<li>How can we find a vector <span class="math inline">\(v\)</span> that is not perpendicular to all <span class="math inline">\(v_1, .., v_t\)</span> simultaneously, i.e., its projection to <span class="math inline">\(V_t\)</span> is not zero.</li>
+</ol>
+<p>We defer the discussion of the first issue. As for the second issue, we tackle the problem for picking a vector <span class="math inline">\(v\)</span> uniformly at random from the <span class="math inline">\(n\)</span>-dimension unit ball, and then normalize it by $v / v$, in the hope that it is a "good" vector.</p>
+<p><em>Lemma:</em> With probability at least <span class="math inline">\(1 / 2\)</span>, that <span class="math inline">\(v^T v_1 \ge 1 /\sqrt{n}\)</span>.</p>
+<p><img src="https://pic2.zhimg.com/80/v2-a11c6a482d1f70b3ee0052ee132cbef9_hd.jpg" /></p>
+<p><em>Proof:</em> By symmetry of the <span class="math inline">\(n\)</span>-dimension unit ball, it suffices to show that for an arbitrary given fixed direction, the projection of <span class="math inline">\(v\)</span> to that direction is at least <span class="math inline">\(1 / 4 \sqrt n\)</span> with probability <span class="math inline">\(1 / 2\)</span>. For convenience, we choose this direction to be <span class="math inline">\(e_1\)</span>.</p>
+<p>Denote the volume of an <span class="math inline">\(n\)</span>-dimensional unit ball as <span class="math inline">\(V(n)\)</span>.</p>
+<p>Now, we would like to use two cylinders to estimate the probability of <span class="math inline">\(|e_1 ^T v| / \Vert v\Vert \le \frac{1}{4 \sqrt n}\)</span>.</p>
+<p>Note that the points <span class="math inline">\(\{v \}\)</span> inside the ball with <span class="math inline">\(e_1^T v / \Vert v\Vert \le \frac{1}{4 \sqrt n}\)</span> is completely contained in a cylinder centered in the equator, with radius one and height <span class="math inline">\(\frac{1}{4 \sqrt n}\)</span> that is parallel to <span class="math inline">\(e_1\)</span>. Its volume is given by <span class="math inline">\(\frac{1}{4 \sqrt n} V(n - 1)\)</span>. Hence: <span class="math display">\[
+    \Pr \left[ |v^T e_1| \le \frac{1}{4 \sqrt n} \right] \le \frac{2 \frac{1}{4 \sqrt n} V(n - 1)}{V(n)}
+\]</span> On the other hand, we can use a cylinder centered at the equator to lower bound the volume of <span class="math inline">\(n\)</span>-dimension unit ball. The cylinder is inside the ball, with height <span class="math inline">\(2\frac{1}{\sqrt n}\)</span> and radius <span class="math inline">\((1 - (\frac{1}{ \sqrt n})^2)^{1/ 2}\)</span> . Therefore, <span class="math display">\[
+\begin{aligned}
+    V(n) 
+    &amp; \ge 2 \frac{1}{\sqrt n} \left(1 - (\frac{1}{\sqrt n})^2 \right)^{(n - 1) / 2} V(n - 1) \\
+    &amp;\ge 2 \frac{1}{\sqrt n} \left( 1 - \frac{1}{n} \right)^{n / 2} V(n - 1)
+\end{aligned}
+\]</span> Note that <span class="math inline">\((1 - \frac{1}{n})^n\)</span> increases with <span class="math inline">\(n\)</span>, and for <span class="math inline">\(n \ge 2\)</span>, <span class="math inline">\((1 - \frac{1}{n})^n \ge \frac{1}{4}\)</span> and <span class="math inline">\(\left( 1 - \frac{1}{n} \right)^{n / 2} \ge \frac{1}{2}\)</span> <span class="math display">\[
+    \Pr \left[ v^T e_1 \le \frac{1}{4 \sqrt n} \right] \le \frac{\frac{1}{4 \sqrt n} V(n - 1)}{V(n)} \le \frac{1}{2}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><em>Theorem</em> After <span class="math inline">\(\frac{1}{\epsilon} \ln \frac{n}{\epsilon}\)</span> iterations, we can obtain a vector whose component that is perpendicular to <span class="math inline">\(V_t\)</span> is at most <span class="math inline">\(\epsilon\)</span> fraction of its square length, with probability at least <span class="math inline">\(\frac{1}{2}\)</span>.</p>
+<p><em>Proof:</em> If <span class="math inline">\(\sigma_i &lt; (1 - \epsilon) \sigma_1\)</span>, then <span class="math display">\[
+    \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } \le \frac{\sigma_i}{\sigma_1}^{2k} \le (1-\epsilon)^{2k}
+\]</span> Denote <span class="math inline">\(\sigma_1 = \sigma_2 = ... = \sigma_t\)</span> for some <span class="math inline">\(t &lt; r\)</span> the largest singular values. By the previous lemma, we pick a <span class="math inline">\(v\)</span> from the unit ball at random, and take $v v / v$. Denote <span class="math inline">\(v = \sum_{i = 1}^n {a_i} v_i\)</span>, then with probability at least <span class="math inline">\(1/ 2\)</span> we have <span class="math inline">\(\sqrt{ \sum_{i = 1}^t a_i^2} \ge \frac{1}{4 \sqrt n}\)</span>. On the other hand, <span class="math inline">\(v\)</span> is a unit vector, hence <span class="math inline">\(\sum_{i = 1}^n a_i^2 = 1\)</span>. Therefore, <span class="math inline">\(\sum_{i = t + 1}^n a_i^2 \le 1 - \frac{1}{16 n}\)</span></p>
+<p>Now <span class="math display">\[
+\begin{aligned}    
+\frac{1}{\Vert (A^T A)^{k} \Vert _F } (A^T A)^k v 
+    &amp;= \sum_{i = 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  v_i v_i^T v \\
+    &amp;= \sum_{i = 1}^r \frac{a_i \sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  v_i \\
+    &amp;= \sum_{i = 1}^t \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } a_i v_i  + \sum_{i = t + 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i v_i
+\end{aligned}
+\]</span></p>
+<p>For the second term <span class="math display">\[
+\begin{aligned}
+\left\Vert \sum_{i = t + 1}^r \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i v_i \right\Vert ^2
+    &amp;= \sum_{i = t + 1}^r (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} }  a_i)^2 \\
+    &amp;\le \sum_{i = t + 1}^r (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^t \sigma_1^{2k} }  a_i)^2 \\
+    &amp;\le \frac{ (1 - \epsilon)^{4k} }{t^2} \sum_{i = t + 1}^r a_i^2 \\
+    &amp;\le \frac{ (1 - \epsilon)^{4k} }{t^2}
+\end{aligned}
+\]</span></p>
+<p>For the first term <span class="math display">\[
+\begin{aligned}
+\left\Vert \sum_{i = 1}^t \frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} } a_i v_i \right\Vert^2 
+    &amp;= \sum_{i = 1}^t (\frac{\sigma_i^{2k}}{ \sum_{j = 1}^k \sigma_1^{2k} })^2 a_i^2 \\
+    &amp;\ge \sum_{i = 1}^t (\frac{ 1 }{ t + (n - t)(1 - \epsilon)^{2k} })^2 a_i^2 \\
+    &amp;\ge (\frac{ 1 }{ t + n (1 - \epsilon)^{2k} } )^2 \sum_{i = 1}^t a_i^2 \\
+    &amp;\ge (\frac{ 1 }{ t + n (1 - \epsilon)^{2k} } )^2 \frac{1}{16n}
+\end{aligned}
+\]</span></p>
+<p>If we take <span class="math inline">\(k = O( \frac{1}{\epsilon} \ln \frac{n}{\epsilon})\)</span>, then the second term is at most <span class="math inline">\(\epsilon\)</span> fraction of the first term.</p>
+<p>Remark: picking a point uniformly at random can be done as follows: first pick a point <span class="math inline">\(v\)</span> uniformly at random from the high dimension cube: <span class="math inline">\([-1, 1]^n\)</span>, then checks whether the point is inside the ball (<span class="math inline">\(\Vert v\Vert &lt; 1\)</span>). This however, could suffers from efficiency problem as the volume of the ball approaches to <span class="math inline">\(0\)</span> as the number of dimension increases. More efficient sampling method is needed. But it is not the current focus of this article.</p>
+<h1 id="reference">Reference</h1>
+<p>[1]. GILBERT STRANG, Introduction to Linear Algebra.</p>
+<p>[2]. Venkatesan Guruswami and Ravi Kannan, Note 2, Singular Value Decomposition, 15-496/15-859X: Computer Science Theory for the Information Age, Spring 2012, CMU</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/04/18/FORA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/04/18/FORA/" class="post-title-link" itemprop="url">FORA [1]</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-04-18 22:51:54" itemprop="dateCreated datePublished" datetime="2018-04-18T22:51:54+10:00">2018-04-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-07-02 18:57:47" itemprop="dateModified" datetime="2018-07-02T18:57:47+10:00">2018-07-02</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose that we know the values of <span class="math inline">\(\pi^o(s, t)\)</span> for all <span class="math inline">\(t \in V\)</span> and <span class="math inline">\(r(s, v_i)\)</span> for all <span class="math inline">\(v_i \in V\)</span>. We would like to evaluate the value of <span class="math display">\[
+\pi(s, t) = \pi^o(s, t) + \sum_{i = 1}^n r(s, v_i) \pi(v_i, t)
+\]</span></p>
+<p>where <span class="math inline">\(\pi(v_i, t)\)</span> denotes the probability of a random starts from <span class="math inline">\(v_i\)</span> and terminate at <span class="math inline">\(t\)</span>. Let <span class="math inline">\(\tilde \pi(v_i, t)\)</span> be our estimation of <span class="math inline">\(\pi(v_i,t)\)</span>, then we have an estimation of <span class="math inline">\(\pi(s, t)\)</span>: <span class="math display">\[
+\tilde\pi(s, t) = \pi^o(s, t) + \sum_{i = 1}^n r(s, v_i) \tilde\pi(v_i, t)
+\]</span> To get <span class="math inline">\(\tilde\pi(v_i, t)\)</span>, we perform <span class="math inline">\(w_i\)</span> (a value to be determined latter) random walks that start from <span class="math inline">\(v_i\)</span> and count the fraction of walks that terminate at <span class="math inline">\(t\)</span>. Formally, let <span class="math inline">\(X_{i, j}\)</span> be a Bernoulli random variable that takes value 1 if the <span class="math inline">\(j\)</span>-th walk from <span class="math inline">\(v_i\)</span> terminates at <span class="math inline">\(t\)</span>. Then <span class="math display">\[
+E[X_{i,j}] = \pi(v_i, t)
+\]</span> Let <span class="math inline">\(\tilde \pi(v_i, t) = \frac{1}{w_i} \sum_{j = 1}^{w_i} X_{i,j}\)</span> , so <span class="math display">\[
+E[r(s, v_i) \tilde \pi(v_i, t)] = \frac{r(s, v_i)}{w_i} \sum_{j = 1}^{w_i} E[X_{i,j}] = r(s, v_i) \pi(v_i, t)
+\]</span> A naïve use of Chenoff bound to us <span class="math inline">\(w_i = \Omega(\frac{\log (1 / p_{fail} ) }{\epsilon^2 \pi(v_i, t)} )\)</span> (which is even worse than evaluating <span class="math inline">\(\pi(s, t)\)</span> by Monte Carlo directly), such that <span class="math inline">\(r(s, v_i) \tilde \pi(v_i, t)\)</span> takes value within <span class="math inline">\(\big[(1 - \epsilon) r(s, v_i) \pi(v_i, t), (1 + \epsilon) r(s, v_i) \pi(v_i, t)\big]\)</span>with probability <span class="math inline">\(1 - p_{fail}\)</span>. The problem here is that when <span class="math inline">\(\pi(v_i, t)\)</span> is small, we need large number of random walks to get a good approximation of it. On the other hand, when <span class="math inline">\(\pi(v_i, t)\)</span> is small, the contribution of <span class="math inline">\(r(s, v_i)\pi(v_i, t)\)</span> to <span class="math inline">\(\sum_{i = 1}^n r(s, v_i) \pi(v_i, t)\)</span> is small, which means that more deviation is allowed on the estimation of <span class="math inline">\(\pi(v_i, t)\)</span>.</p>
+<blockquote>
+<p>What if the amount of deviation on the estimation of <span class="math inline">\(r(s, v_i) \pi(v_i, t)\)</span> we allow is <span class="math inline">\(\pi(s, t)\)</span>? How about <span class="math inline">\(\pi(s, t) / n\)</span>? More clever way of allocating deviation? Better Chernoff bound?</p>
+</blockquote>
+<p>[1] solves this by bounding the cumulative deviation of <span class="math inline">\(\sum_{i = 1}^n r(s, v_i) \tilde \pi(v_i, t)\)</span> as a whole. The statistical tool it turns to is a special Chernoff bound:</p>
+<h4 id="theorem">Theorem</h4>
+<blockquote>
+<p>Let <span class="math inline">\(Y_1, Y_2, ..., Y_w\)</span> be independent random variables with <span class="math display">\[
+Pr[Y_i = 1] = p_i \qquad Pr[Y_i = 0 ]  = 1 - p_i.
+\]</span> Let <span class="math inline">\(Y = \frac{1}{w} \sum_{i = 1}^w b_i Y_i\)</span> with <span class="math inline">\(b_i &gt; 0\)</span>, and <span class="math inline">\(v = \frac{1}{w} \sum_{i = 1}^w b_i^2 p_i\)</span>. Then <span class="math display">\[
+Pr[|Y - E[Y]| \ge \lambda ] \le 2 \exp \big(-\frac{\lambda^2 w} {2 v + 2 b \lambda / 3} \big)
+\]</span> where <span class="math inline">\(b = \max\{ b_1, b_2, ..., b_w\}\)</span></p>
+</blockquote>
+<p>To apply this bound, we perform in total <span class="math inline">\(w = \sum_{i = 1}^n w_i\)</span> random walks. The first <span class="math inline">\(w_1\)</span> walks starts from <span class="math inline">\(v_1\)</span> , the next <span class="math inline">\(w_2\)</span> walks starts from <span class="math inline">\(v_2\)</span>, and so on. Let <span class="math display">\[
+\{ Y_{1}, ..., Y_{w_1}, Y_{w_1 + 1}, ..., Y_{w_1 + w_2}, ..., Y_{\sum_{i = 1}^{n -1}w_i + 1}, ..., Y_{w} \}
+\]</span> be the corresponding independent indicator random variables that take value 1 if the walks terminate at <span class="math inline">\(t\)</span> and</p>
+<p><span class="math display">\[
+b_j = \frac{w}{w_i} r(s, v_i)
+\]</span> if the <span class="math inline">\(j\)</span>-th walk starts from vertex <span class="math inline">\(v_i\)</span>. So <span class="math display">\[
+b = \max \{b_1, b_2, ..., b_w\} = \max_{1 \le i \le n} \frac{w}{w_i} r(s, v_i)
+\]</span> It can be verified that <span class="math display">\[
+E[Y] = \frac{1}{w} \sum_{i = 1}^w E[Y_i] = \frac{1}{w} \sum_{i = 1}^n \sum_{j = 1}^{w_i} \frac{w}{w_i} r(s, v_i) \pi(v_i, t) = \sum_{i = 1}^n r(s, v_i) \pi(v_i, t)
+\]</span> To bound the deviation of <span class="math inline">\(\tilde \pi(s, t)\)</span> from <span class="math inline">\(\pi(s, t)\)</span>, we notice that <span class="math display">\[
+|\tilde \pi(s, t) - \pi(s, t)| = | \sum_{i = 1}^n r(s, v_i) \tilde \pi(v_i, t)  -  \sum_{i = 1}^n r(s, v_i) \pi(v_i, t)| = |Y - E[Y]|
+\]</span> So <span class="math display">\[
+Pr[|Y - E[Y]| \ge \epsilon \pi(s, t)] \le 2 \exp ( - \frac{ \epsilon^2 \pi^2(s, t) \ w}{2 v + 2 b \epsilon \pi(s, t) / 3})
+\]</span> But notice that <span class="math display">\[
+v = \frac{1}{w} \sum_{i = 1}^w b_i^2 p_i \le  \big( \frac{b}{w}  \sum_{i = 1}^w b_i p_i \big) = b \ E[Y] \le b \ \pi(s, t)
+\]</span> Thus <span class="math display">\[
+\begin{align}
+Pr[|Y - E[Y]| \ge \epsilon \pi(s, t)] 
+&amp;\le 2 \exp ( - \frac{ \epsilon^2 \pi^2(s, t) \ w}{2 v + 2 b \epsilon \pi(s, t) / 3}) \\\\
+&amp;\le 2 \exp ( - \frac{ \epsilon^2 \pi^2(s, t) \ w}{2 b \pi(s, t) + 2 b \epsilon \pi(s, t) / 3}) \\\\
+&amp;\le 2 \exp ( - \frac{ \epsilon^2 \pi (s, t) \ w}{b (2   + 2\epsilon  / 3)}) \\\\
+&amp;\le p_{fail}
+\end{align}
+\]</span> So <span class="math display">\[
+w \ge b  \frac{2 + 2\epsilon / 3}{\epsilon^2 \delta} \log \frac{2}{p_{fail} }
+\]</span> We would like to minimize <span class="math inline">\(b\)</span> in order to minimize <span class="math inline">\(w\)</span>, which can be formulated as an convex optimization problem:</p>
+<p><span class="math display">\[
+\begin{align} 
+\min \quad &amp;b \\\\
+s.t.   \quad &amp;b \ge r(s, v_i) / k_i \\\\
+&amp;\sum_i k_i = 1 \\\\
+&amp;k_i \ge 0
+\end{align}
+\]</span></p>
+<p>Here we rewrite <span class="math inline">\(\frac{w_i}{w} = k_i\)</span>. One simple way to solve this is to guess that <span class="math inline">\(b\)</span> is minimized when all <span class="math inline">\({r(s, v_i)}/{k_i}\)</span> equals. This gives <span class="math inline">\(k_i = r(s, v_i) / r_{sum}\)</span>. We can prove this is indeed optimal: if this is not the case, there must be some <span class="math inline">\(k_i &lt; r(s, v_i) / r_{sum}\)</span>. Then <span class="math inline">\(b \ge r(s, v_i) / k_i &gt; r_{sum}\)</span> .</p>
+<p>We can also solve this problem by a heavy mechanism: KKT conditions. First, define <span class="math display">\[
+L(b, k, \lambda, \beta, , \mu) = b + \sum_{i = 1}^n \lambda_i (r(s, v_i) / k_i - b) + \sum_{i = 1}^n \beta_i (0 - k_i) + \mu (\sum_{i = 1}^n k_i - 1)
+\]</span> Thus, the KKT conditions are <span class="math display">\[
+\begin{align}
+    &amp; r(s, v_i) / k_i - b \le 0 &amp;\forall i \in [1, n] \\\\
+    &amp; -k_i \le 0 &amp;\forall i \in [1, n] \\\\
+    &amp; \sum_i k_i  - 1 = 0 \\\\
+    &amp; \lambda_i \ge 0, \beta_i \ge 0 &amp;\forall i \in [1, n] \\\\
+    &amp; \lambda_i (r(s, v_i) / k_i - b) = 0 &amp;\forall i \in [1, n] \\\\
+    &amp;\beta_i (0 - k_i) = 0 &amp;\forall i \in [1, n] \\\\
+    &amp; \frac{\partial L}{\partial b}  = 1 - \sum_{i = 1}^n \lambda_i = 0 \\\\
+    &amp; \frac{\partial L}{\partial k_i} = -\lambda_i r(s, v_i) / k_i^2 - \beta_i + \mu = 0 &amp;\forall i \in [1, n]\\\\
+\end{align}
+\]</span> So one solution is given by <span class="math display">\[
+\begin{align}
+&amp;b = r_{sum} \\\\
+&amp;k_i = r(s, v_i) / r_{sum} &amp; \forall i \in [1, n] \\\\
+&amp;\lambda_i = r(s, v_i) / r_{sum}^2 &amp; \forall i \in [1, n] \\\\
+&amp;\beta_i = 0 &amp; \forall i \in [1, n] \\\\
+&amp;\mu = 1
+\end{align}
+\]</span></p>
+<p>which implies <span class="math display">\[
+w \ge b  \frac{2 + 2\epsilon / 3}{\epsilon^2 \delta} \log \frac{2}{p_{fail} } \\\\
+w_i = w k_i = \frac{w r(s, v_i)}{r_{sum} }
+\]</span></p>
+<h4 id="citations">Citations</h4>
+<p>[1] Wang, Sibo, et al. "FORA: Simple and Effective Approximate Single-Source Personalized PageRank." <em>Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>. ACM, 2017.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2017/11/05/Lebesgue%20Measure/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -299,449 +710,10 @@ m^*(A)  \ge m^*(A \cap F) + m^*(A \cap \overline{F})
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2017/02/15/VC%20Dimension/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/02/15/VC%20Dimension/" class="post-title-link" itemprop="url">VC Dimension</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2017-02-15 16:20:33" itemprop="dateCreated datePublished" datetime="2017-02-15T16:20:33+11:00">2017-02-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-07-18 18:31:54" itemprop="dateModified" datetime="2018-07-18T18:31:54+10:00">2018-07-18</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Definition</p>
-<p>A set system is a tuple <span class="math inline">\((S, R)\)</span>, where <span class="math inline">\(S\)</span> is a set and <span class="math inline">\(R\)</span> is a collection of subsets of <span class="math inline">\(S\)</span>.</p>
-<h4 id="definition">Definition</h4>
-<p>Given <span class="math inline">\((S, R)\)</span>, <span class="math inline">\(X \subset S\)</span> is shattered by <span class="math inline">\(R\)</span> if <span class="math inline">\(\forall X&#39; \subset X\)</span>, <span class="math inline">\(\exists R&#39; \in R\)</span>, such that <span class="math inline">\(X&#39; = S \cap R&#39;\)</span>.</p>
-<h4 id="definition-1">Definition</h4>
-<p>The <strong>VC</strong> dimension of <span class="math inline">\((S, R)\)</span> is the maximum cardinality of some <span class="math inline">\(X \subset S\)</span> that is shatterred by <span class="math inline">\(R\)</span>.</p>
-<p>Note: If we view <span class="math inline">\((S, R)\)</span> as a classifaction problem, i.e., <span class="math inline">\(S\)</span> is a set of points and <span class="math inline">\(R\)</span> a set of functions, the <strong>VC</strong> dimension d is the maximum size of a subset <span class="math inline">\(X\)</span> in which R could separate arbitrary set points from the rest. In some sense, it measures how complex a separation plane <span class="math inline">\(R\)</span> could form.</p>
-<h4 id="definition-2">Definition</h4>
-<p>Given a nonegative integer <span class="math inline">\(n\)</span> and <span class="math inline">\(d\)</span>, we define <span class="math inline">\(\binom{n}{\le d} = \sum_{i = 0}^{d} \binom{n}{i}\)</span></p>
-<h4 id="lemma">Lemma</h4>
-<p>If <span class="math inline">\((S, R)\)</span> has <span class="math inline">\(VC\)</span> dimension <span class="math inline">\(d\)</span>, then <span class="math inline">\(|R| \le \binom{n}{\le d}\)</span>, where <span class="math inline">\(|S| = n\)</span>.</p>
-<p>Proof: Let <span class="math inline">\(X \subset S\)</span> be the set that has size <span class="math inline">\(d\)</span> and is shatterred by <span class="math inline">\(R\)</span>. Define <span class="math inline">\(R|X\)</span> as <span class="math inline">\(\{R&#39; \cap X | R&#39; \in R \}\)</span>. It is obvious that <span class="math inline">\((X, R|X)\)</span> has <strong>VC</strong> dimension <span class="math inline">\(d\)</span>. Also, the number of subset of <span class="math inline">\(X\)</span> is given by <span class="math display">\[
-2^d = \binom{d}{\le d} = |\ R|X\ |
-\]</span></p>
-<p>Now we will show this lemma by induction. Label the elements in <span class="math inline">\(S - X\)</span> in arbitrary order as <span class="math inline">\(\{ x_{d + 1}, x_{d + 2}, ..., x_{n} \}\)</span>. Define <span class="math inline">\(X_i\)</span> = <span class="math inline">\(X \cup \{x_{d+1}, x_{d + 2}, ..., x_{d+i} \}\)</span> for <span class="math inline">\(0 \le i \le n - d\)</span>, where <span class="math inline">\(X_0 = X\)</span>. So <span class="math inline">\(|X_i| = d + i\)</span>. We will show that <span class="math inline">\(|R | X_i| \le \binom{d + i} {\le d}\)</span> holds.</p>
-<p>Suppose the assumption holds for <span class="math inline">\(R|X_i\)</span>, now consider <span class="math inline">\(R|X_{i + 1}\)</span>. The elements <span class="math inline">\(r\)</span> in <span class="math inline">\(R|X_{i}\)</span> can be divided into</p>
-<ol type="1">
-<li><span class="math inline">\(D_1 = \{ r | r \in R | X_{i + 1}, r \cup x_{d + 1} \in R|X_{i + 1} \}\)</span>.</li>
-<li><span class="math inline">\(D_2 = \{ r | r \notin R | X_{i + 1}, r \cup x_{d + 1} \in R|X_{i + 1} \}\)</span>.</li>
-<li><span class="math inline">\(D_2 = \{ r | r \in R | X_{i + 1}, r \cup x_{d + 1} \notin R|X_{i + 1} \}\)</span>.</li>
-</ol>
-<p>We can verify that <span class="math inline">\(|R|X_i | = |D_1| + |D_2| + |D_3|\)</span>, <span class="math inline">\(|R|X_{i + 1}| = 2|D_1| + |D_2| + |D_3|\)</span>.</p>
-<p>We show that <span class="math inline">\(|D_1| \le \binom{d + i}{\le d - 1}\)</span>. This is because the <strong>VC</strong> dimension of <span class="math inline">\((X_i, D_1)\)</span> is at most <span class="math inline">\(d - 1\)</span>. Otherwize, suppose <span class="math inline">\(Y \subset X_i\)</span> is shatterred by <span class="math inline">\(D_1\)</span> and <span class="math inline">\(|Y| = d\)</span>. It is apparent <span class="math inline">\(Y \cup x_{d + 1}\)</span> is shattered by <span class="math inline">\(R|X_{i + 1}\)</span> in <span class="math inline">\(X_{i + 1}\)</span>. A contradition.</p>
-<p>So <span class="math display">\[
-\begin{aligned}
-|R | X_{i + 1}| 
-&amp; = |D_1| + |R | X_{i}| \\\\
-&amp; \le \binom{d + i}{\le d - 1} + \binom{d + i}{\le d} \\\\
-&amp; = \sum_{j = 0}^{d - 1} \binom{d + i}{j} + \sum_{j = 0}^{d}\binom{d +i}{j} \\\\ 
-&amp; = \sum_{j = 1}^{d} \binom{d + i}{j - 1} + \sum_{j = 1}^{d}\binom{d +i}{j} + \binom{d + i}{0} \\\\
-&amp; = \sum_{j = 1}^d \binom{d + i + 1}{j} + \binom{d + i +1}{0} \\\\
-&amp; = \sum_{j = 0}^d \binom{d + i + 1}{j} \\\\
-&amp; = \binom{d + i + 1}{\le d} 
-\end{aligned}
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2017/02/02/Johnson-Lindenstrauss%20Lemma/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/02/02/Johnson-Lindenstrauss%20Lemma/" class="post-title-link" itemprop="url">Johnson-Lindenstrauss Lemma</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2017-02-02 20:38:54" itemprop="dateCreated datePublished" datetime="2017-02-02T20:38:54+11:00">2017-02-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-13 16:41:50" itemprop="dateModified" datetime="2021-03-13T16:41:50+11:00">2021-03-13</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>Last modified date 19-Jan-2021.</p>
-</blockquote>
-<h1 id="problem">Problem</h1>
-<p>Let <span class="math inline">\(\mathcal{U} \subset \mathbb{R}^d\)</span> be a set of <span class="math inline">\(n\)</span> points. We want to find a linear transformation <span class="math inline">\(A \in \mathbb{R}^{k \times d}\)</span> that embeds the points in <span class="math inline">\(\mathcal{U}\)</span> to <span class="math inline">\(\mathbb{R}^k\)</span> while preserving the pair-wise Euclidean distances.</p>
-<p>If <span class="math inline">\(k \ge d\)</span>, the problem is trivial. There is an isomorphic mapping between <span class="math inline">\(\mathbb{R}^d\)</span> and a <span class="math inline">\(d\)</span>-dimensional subspace in <span class="math inline">\(\mathbb{R}^k\)</span>. Let <span class="math inline">\(u_1, ..., u_d \in \mathbb{R}^k\)</span> and <span class="math inline">\(e_1, ..., e_d \in \mathbb{R}^d\)</span> be unit vectors, such that for <span class="math inline">\(i \in [d]\)</span>, <span class="math inline">\(u_i\)</span> (<span class="math inline">\(e_i\)</span>) has the <span class="math inline">\(i\)</span>-th entry equal to 1 and other entries equal to 0. Then one possible isomorphic mapping is</p>
-<p><span class="math display">\[
-A = u_1 e_1^T + ... + u_d e_d^T.
-\]</span></p>
-<p>If <span class="math inline">\(k &lt; d\)</span>, then such an isomorphic embedding is impossible. However, it is feasible if we aim to preserve the pair-wise distance up to a multiplicative error <span class="math inline">\(\epsilon \in (0, 1)\)</span> with high probability: <span class="math inline">\(\forall x, y \in \mathcal{U}\)</span>, <span class="math display">\[
-||A x - A y ||^2 \in (1 \pm \epsilon) || x - y ||^2.
-\]</span></p>
-<p>The smaller <span class="math inline">\(k\)</span> is, the less space we need to store the embedded vectors <span class="math inline">\(A \mathcal{U} = \{ Ax : x \in \mathcal{U} \}\)</span>. It remains to study how small <span class="math inline">\(k\)</span> can be?</p>
-<blockquote>
-<p>Theorem. For any set <span class="math inline">\(\mathcal{U} \subset \mathbb{R}^d\)</span> of <span class="math inline">\(n\)</span>-points, there is a matrix <span class="math inline">\(A \in \mathbb{R}^{k \times d}\)</span>, such that with probability at least <span class="math inline">\(1 - \frac{1}{n}\)</span>, <span class="math display">\[
-\forall x, y \in \mathcal{U}, ||A x - A y ||^2 \in (1 \pm \epsilon) || x - y ||^2, 
-\]</span> where <span class="math inline">\(k = O\left( \frac{ \log n }{ \epsilon^2} \right)\)</span>.</p>
-</blockquote>
-<p>The value of <span class="math inline">\(k\)</span> depends only on <span class="math inline">\(n\)</span> but not <span class="math inline">\(d\)</span>.</p>
-<h1 id="properties">Properties</h1>
-<h2 id="column-perspective">Column Perspective</h2>
-<p>On the high level, we try to squeeze <span class="math inline">\(d\)</span> (in expectation) orthonormal vectors into a smaller space <span class="math inline">\(\mathbb{R}^k\)</span>. We do this by generating a set of <span class="math inline">\(d\)</span> random vectors <span class="math inline">\(u_1, u_2, ..., u_d \in \mathbb{R}^k\)</span>, such that:</p>
-<ol type="1">
-<li>Each coordinate of <span class="math inline">\(u_i\)</span> is generated independently for <span class="math inline">\(i \in [d]\)</span>;</li>
-</ol>
-<p>and in expectation, they are orthonormal:</p>
-<ol start="2" type="1">
-<li><span class="math inline">\(\mathbb{E} \big[ ||u_i ||^2 \big] = 1\)</span> for <span class="math inline">\(i \in [d]\)</span>;<br />
-</li>
-<li><span class="math inline">\(\mathbb{E} \big[ \left&lt; u_i, u_j \right&gt; \big] = 0\)</span> for <span class="math inline">\(i, j \in [d], i \neq j\)</span>.</li>
-</ol>
-<p>Let <span class="math inline">\(e_1, ..., e_d \in \mathbb{R}^d\)</span> be unit vectors in <span class="math inline">\(\mathbb{R}^d\)</span> and <span class="math inline">\(e_i\)</span> (<span class="math inline">\(i \in [d]\)</span>) has the <span class="math inline">\(i\)</span>-th entry equal to 1. Define <span class="math display">\[
-A = \begin{bmatrix}
-    u_1, u_2, ..., u_d
-\end{bmatrix} = u_1 e_1^T + ... + u_d e_d^T.
-\]</span></p>
-<p>For a fixed pair <span class="math inline">\(x, y \in \mathcal{U}\)</span>, define <span class="math inline">\(z = x - y\)</span>. Then <span class="math display">\[
-    \begin{aligned}
-        || A x - A y ||^2 
-            &amp;= || A z ||^2 \\
-            &amp;= || \sum_{ i \in [d] } z[i] \cdot u_i||^2 \\
-            &amp;= \sum_{i \in [d] } (z[i])^2 ||u_i||^2 + \sum_{ i, j \in [d], i \neq j} (z[i] \cdot z[j]) \cdot \left&lt; u_i, u_j \right&gt;.
-    \end{aligned}
-\]</span></p>
-<p>Taking expectation of both side, and by assumption of <span class="math inline">\(v_t, t \in [d]\)</span>, it holds that <span class="math display">\[
-\mathbb{ E } \big[ ||z||^2 \big] = ||z||^2. 
-\]</span></p>
-<h2 id="row-perspective">Row Perspective</h2>
-<p>We can also characterize <span class="math inline">\(A\)</span> by the properties of its rows. Let <span class="math inline">\(\tilde A\)</span> be a scaled version of <span class="math inline">\(A\)</span>, such that <span class="math display">\[
-A = \frac{1}{ \sqrt k} \tilde{A}.
-\]</span></p>
-<p>Denote <span class="math inline">\(v_1, v_2, ..., v_k \in \mathbb{R}^d\)</span> the row vectors of <span class="math inline">\(\tilde A\)</span>. They are generated randomly and independently. Each vector <span class="math inline">\(v_i\)</span> (<span class="math inline">\(i \in [k]\)</span>) satisfies</p>
-<ol type="1">
-<li>Each entry of <span class="math inline">\(v_i\)</span> is generated independently;</li>
-<li><span class="math inline">\(\mathbb{E} \big[v_i [j] \big] = 0, \forall j \in [d]\)</span>, i.e., each entry has mean zero;<br />
-</li>
-<li><span class="math inline">\(\mathbb{Var} \big[ v_i [j] \big] = 1, \forall j \in [d]\)</span>, i.e., each entry has variance one.</li>
-</ol>
-<p>For a fixed pair <span class="math inline">\(x, y \in \mathcal{U}\)</span>, define <span class="math inline">\(z = x - y\)</span>. Consider <span class="math display">\[
-||A z||^2 = \frac{1}{k} ||\tilde{A } z||^2 = \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2.
-\]</span></p>
-<p>Our assumption on <span class="math inline">\(v_i : i \in [k]\)</span> show that the <span class="math inline">\(\left&lt; v_i, z \right&gt;^2: i \in [k]\)</span> are independent random variables. We will verify that each of them has expectation <span class="math inline">\(||z||^2\)</span>. For fixed <span class="math inline">\(i \in [k]\)</span>, <span class="math display">\[
-\left&lt; v_i, z \right&gt; = \sum_{j \in [d] } v_i [j] \cdot z[j]
-\]</span></p>
-<p>can be view as the sum of <span class="math inline">\(d\)</span> independently random variables. Hence, by our assumption on <span class="math inline">\(v_i\)</span>, we have <!-- $$
-\mathbb{E} [ \left< v_i, z \right> ] = \sum_{j \in [d] } z[j] \cdot  \mathbb{E}[ v_i [j] ] = 0, \\
-$$ --></p>
-<p><span class="math display">\[
-    \mathbb{Var} \big[ \left&lt; v_i, z \right&gt; \big] = \sum_{j \in [d] } \mathbb{Var}\big[ v_i [j] \cdot z[j] \big] = \sum_{j \in [d] } (z[j])^2 \cdot \mathbb{Var} \big[ v_i [j] \big] = ||z||^2.
-\]</span></p>
-<p>By linearity of expectation, <span class="math display">\[
-    \mathbb{E} \big[ \left&lt; v_i, z \right&gt; \big] = \sum_{j \in [d] } \mathbb{E}\big[ v_i [j] \cdot z[j] \big] = \sum_{j \in [d] } z[j] \cdot \mathbb{E} \big[ v_i [j] \big] = 0.
-\]</span></p>
-<p>It concludes that <span class="math inline">\(\mathbb{E} \big[ \left&lt; v_i, z \right&gt;^2 \big] = \mathbb{Var} \big[ \left&lt; v_i, z \right&gt; \big] - \big( \mathbb{E} \big[ \left&lt; v_i, z \right&gt; \big] \big)^2 = ||z||^2\)</span>.</p>
-<p><strong>At this point, <span class="math inline">\(||A z||^2\)</span> is viewed as the average of <span class="math inline">\(k\)</span> independent, mean <span class="math inline">\(||z||^2\)</span> random variables.</strong> By the law of large numbers, the average should concentrate around <span class="math inline">\(||z||^2\)</span>. The detailed analysis of the concentration phenomenon depends on the implementation of <span class="math inline">\(\tilde A\)</span>.</p>
-<h1 id="implementation">Implementation</h1>
-<p>In this section, we discuss two implementations that fullfil the properties discussed above, in terms of both column and row perspectives.</p>
-<h2 id="gaussian">Gaussian</h2>
-<p>In the first implementation, each entry of <span class="math inline">\(\tilde A\)</span> is generated independently from standard normal distribution. Let <span class="math inline">\(u_1, ..., u_d\)</span> be the column vectors of <span class="math inline">\(\tilde A\)</span> and <span class="math inline">\(v_1, ..., v_k\)</span> be its row vectors. Hence, <span class="math inline">\(\frac{1}{\sqrt k} u_1, ..., \frac{1}{\sqrt k} u_d\)</span> and <span class="math inline">\(\frac{1}{\sqrt k} v_1, ..., \frac{1}{\sqrt k} v_k\)</span> are the column and row vectors of <span class="math inline">\(A\)</span>, respectively. It satisfies that</p>
-<ol type="1">
-<li><p><span class="math inline">\(\mathbb{E} \big[ || \frac{1}{\sqrt k} u_i||^2 \big] = \frac{1}{k} \mathbb{Var} \big[ ||u_i||^2 \big] = \frac{k}{k} = 1, \forall i \in [d]\)</span>;</p></li>
-<li><p><span class="math inline">\(\mathbb{E} \big[ \left&lt; \frac{1}{\sqrt k} u_i, \frac{1}{\sqrt k} u_j \right&gt; \big] = \frac{1}{k} \sum_{t \in [k] } \mathbb{E} \big[ u_i [t] \big] \cdot \mathbb{E} \big[ u_j[t] \big] = 0, \forall i, j \in [d], i \neq j\)</span>.</p></li>
-</ol>
-<p>Clearly, by definition, we have <span class="math inline">\(v_i[t] \sim N(0, 1), \forall i \in [k], t \in [d]\)</span>. Hence <span class="math inline">\(A\)</span> satisfies both the required column and row properties.</p>
-<p>It is left to analysis the concentration of <span class="math display">\[
-    ||A z||^2 = \frac{1}{k} ||\tilde{A } z||^2 = \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2
-\]</span> for a given <span class="math inline">\(z \in \mathbb{R}^d\)</span>.</p>
-<blockquote>
-<p>Theorem. (Chernoff bound for the chi-square distribution). Let <span class="math inline">\(X_i \sim N(0, \sigma^2): i \in [k]\)</span> be independent random variables. Then <span class="math display">\[
-\Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \ge (1 + \epsilon) \cdot  \sigma^2 \right] \le \exp \left( - \frac{k}{4} (\epsilon^2 - \epsilon^3) \right), \\
-\Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \le (1 - \epsilon) \cdot  \sigma^2 \right] \le \exp \left( - \frac{k}{4} \epsilon^2 \right). \\
-\]</span></p>
-</blockquote>
-<!-- #### Lemma One
-Let $t \in R^d$ be a random vector s.t. $t_i \overset{i.i.d}{\thicksim} N(0,1)$ and $x \in R^d$ be any fixed vector. Then 
-
- 1.  $t^T x \thicksim N(0, ||x||^2)$, where $||x||^2 = \sum_{i = 1}^d x_i^2$.
- 2.  $\mathbb{E}[(t^Tx)^2] = \mathbb{E}[(\sum_{i = 1}^d t_i x_i)^2]$ = $\sum_{1 \le i, j\le d} x_i x_j \mathbb{E}[t_i t_j]$ =$\sum_{i = 1}^d x_i^2 = ||x||^2$ -->
-<p>The proof of the theorem relies on the following lemmas.</p>
-<blockquote>
-<p>Lemma 1. (Moment Generating Function of Normal Distribution). Let <span class="math inline">\(X \thicksim N(0,\sigma^2)\)</span>, then for <span class="math inline">\(\lambda &lt; \frac{1}{2 \sigma^2}\)</span>, we have <span class="math display">\[
-\mathbb{E} \big[ \exp(\lambda X^2) \big] = \frac{1}{ \sqrt{ 1 - 2 \sigma^2 \lambda} }.
-\]</span></p>
-</blockquote>
-<p><em>Proof:</em> <span class="math display">\[
-    \begin{aligned}
-    \mathbb{E} [ \exp( \lambda X^2 ) ] &amp;= \frac{1}{ \sqrt{2 \pi \sigma } } \int \exp( \lambda X^2 ) \exp(-X^2 / 2 \sigma^2 ) \ dX \\
-    &amp;=  \frac{1}{ \sqrt{2 \pi \sigma } } \int \exp \left(- \frac{ (1 - 2 \sigma^2 \lambda ) X^2}{2 \sigma^2 } \right) \ dX  \\
-    &amp;= \frac{1}{ \sqrt{1 - 2 \sigma^2 \lambda } }.
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p>Lemma 2. Let <span class="math inline">\(\sigma^2 = ||z||^2\)</span>. It holds that <span class="math display">\[
-\Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) \le \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
-\]</span></p>
-</blockquote>
-<p>As <span class="math display">\[
-    \ln(1 + \epsilon) = \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3} - \left( \frac{\epsilon^4}{4} - \frac{\epsilon^5}{5} \right) - \left( \frac{\epsilon^6}{6} + \frac{\epsilon^7}{7} \right) - ...\le \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3}, 
-\]</span></p>
-<p>we get <span class="math display">\[
-    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) 
-        \le \exp \left( - \frac{k \cdot ( \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} ) }{2} \right) 
-        \le \exp \left( - \frac{k}{4} (\epsilon^2 - \epsilon^3) \right).
-\]</span></p>
-<p><em>Proof:</em> Define <span class="math inline">\(X \sim N(0, \sigma^2)\)</span> be a standard Gaussian random variable and let <span class="math inline">\(X_i = \left&lt; v_i, z \right&gt;, \forall i \in [k]\)</span>. Then, <span class="math inline">\(X_i \sim N(0, \sigma^2) : \forall i \in [k]\)</span> can be viewed as i.i.d copies of <span class="math inline">\(X\)</span>. By lemma 1, for any <span class="math inline">\(\lambda \in (0, \frac{1}{2 \sigma^2} )\)</span>, it holds that</p>
-<p><span class="math display">\[
-\begin{aligned}
-    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right)  
-    &amp; = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2 \ge (1 + \epsilon) \cdot \sigma^2 \right) \\
-    &amp; = \Pr \left( \sum_{i \in [k] } X_i^2 \ge k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \\
-    &amp; = \Pr \left( \exp \left( \lambda \sum_{i \in [k] } X_i^2 \right)\ge \exp \left( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \right) \\
-    &amp;\le \frac{\mathbb{E} [ \exp(\lambda X^2 ) ]^k}{ \exp( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 ) } \\
-    &amp;= \left( \frac{1}{ \exp( \lambda \cdot (1 + \epsilon) \cdot \sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \lambda} } \right)^k.
-\end{aligned}
-\]</span></p>
-<p>We want to find a <span class="math inline">\(\lambda\)</span> that minimizes the RHS. Let <span class="math display">\[
-f = \lambda \cdot (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \ln (1 - 2 \cdot \sigma^2 \cdot  \lambda).
-\]</span></p>
-<p>Taking the derivative with respect to <span class="math inline">\(\lambda\)</span>, <span class="math display">\[
-\begin{aligned}
-    \frac{ \partial f }{ \partial \lambda} 
-        &amp;= (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \cdot \frac{1}{1 - 2  \cdot \sigma^2 \cdot \lambda} \cdot (-2  \cdot \sigma^2 ) \\
-        &amp;= \sigma^2 \cdot \left( (1 + \epsilon) - \frac{1}{ 1 - 2 \cdot \sigma^2 \cdot \lambda } \right). 
-\end{aligned}
-\]</span></p>
-<p>Hence <span class="math inline">\(f\)</span> increases when <span class="math inline">\(\lambda &lt; \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) }\)</span> and decreases afterwards. It follows that <span class="math display">\[
-\begin{aligned}
-    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) 
-        &amp;\le \left( \frac{1}{ \exp( \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } \cdot (1 + \epsilon) \cdot \sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } } } \right)^k \\
-        &amp;= \left( \frac{ \sqrt{1 + \epsilon} }{ \exp( \epsilon / 2) } \right)^k \\
-        &amp;= \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p>Lemma 3. Let <span class="math inline">\(\sigma^2 = ||z||^2\)</span>. It holds that <span class="math display">\[
-\Pr \left( ||A z||^2 \le (1 - \epsilon) \sigma^2 \right) \le \exp\left( \frac{k \cdot (\epsilon + \ln (1 - \epsilon) ) }{2} \right).
-\]</span></p>
-</blockquote>
-<p>As <span class="math display">\[
-    \ln(1 - \epsilon) = -\epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} - \frac{\epsilon^4}{4} - ...\le - \epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3}, 
-\]</span></p>
-<p>we have <span class="math display">\[
-    \Pr \left( ||A z||^2 \le (1 - \epsilon) \sigma^2 \right) \le \exp\left( \frac{k \cdot (\epsilon - \epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} ) }{2} \right) \le \exp \left( - \frac{k }{4} \epsilon^2 \right).
-\]</span></p>
-<p><em>Proof:</em> Similar to the proof of lemma 2, we have <span class="math display">\[
-\begin{aligned}
-    \Pr \left( ||A z||^2 \le (1 - \epsilon) \sigma^2 \right) 
-        &amp; = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2 \le (1 - \epsilon) \cdot \sigma^2 \right) \\
-        &amp; = \Pr \left( \sum_{i \in [k] } X_i^2 \le k \cdot (1 - \epsilon) \cdot \sigma^2 \right) \\
-        &amp; = \Pr \left( \exp \left( - \lambda \sum_{i \in [k] } X_i^2 \right) \ge \exp \left( - \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 \right) \right) \\
-        &amp;\le \frac{\mathbb{E} [ \exp( -\lambda X^2 ) ]^k}{ \exp( - \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 ) } \\
-        &amp;= \left( \frac{1}{ \exp( -\lambda \cdot (1 - \epsilon) \cdot \sigma^2 ) \cdot \sqrt{ 1 + 2 \cdot \sigma^2 \cdot \lambda} } \right)^k. 
-\end{aligned}
-\]</span></p>
-<p>Taking <span class="math inline">\(\lambda = \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) }\)</span>, we get <span class="math display">\[
-\begin{aligned}
-    \Pr \left( ||A z||^2 \le (1 - \epsilon) \sigma^2 \right) 
-        &amp;\le \left( \frac{1}{ \exp( - \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) } \cdot (1 - \epsilon) \cdot \sigma^2 ) \cdot \sqrt{ 1 + 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) } } } \right)^k \\
-        &amp;= \left( \sqrt{1 - \epsilon} \exp( \epsilon / 2) \right)^k \\
-        &amp;= \exp\left( \frac{k \cdot (\epsilon + \ln (1 - \epsilon) ) }{2} \right).
-\end{aligned} 
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<!-- Thus, 
-$$
-\begin{aligned}
-\Pr (\frac{||Ax||^2}{k} \ge (1 + \epsilon) ||x||^2)  
-& \le (\frac{1}{e^{s(1 + \epsilon)} \sqrt{1 - 2s}})^k \\\\
-& \le (\frac{1 + \epsilon}{e^{\epsilon}})^{k / 2} \\\\
-& \le e^{(\ln (1 + \epsilon) - \epsilon) (k  / 2)}  \\\\
-& \le e^{(\epsilon - \epsilon^2 / 2 + \epsilon^3 / 3 - \epsilon) ( k / 2)} \\\\
-& \le e^{(- \epsilon^2 / 2 + \epsilon^3 / 3) ( k / 2)}  
-\end{aligned}
-$$ -->
-<!-- When $k$ = $4 \ln n \over (\epsilon^2 / 2- \epsilon^3/ 3)$, we get 
-$$
-\Pr (\frac{||Ax||^2}{k} \notin [ (1 - \epsilon) ||x||^2, (1 + \epsilon) ||x||^2])   \le 2 / n^2
-$$
-
-Given lemma three, by union bound $||f(x_i) - f(x_j)||^2 \notin (1 \pm \epsilon) ||x_i - x_j||^2$ occurs with less than $\frac{2}{n^2} * \frac{n (n -1)}{2} = 1 - \frac{1}{n}$ probability. Repeating generating $A$ will boost the success probability to a desired level.  -->
-<h2 id="rademacher">Rademacher</h2>
-<p>In this implementation, the entries of <span class="math inline">\(\tilde A\)</span> are simply independent Rademacher random variables which equal to <span class="math inline">\(1\)</span> and <span class="math inline">\(-1\)</span> with the same probability <span class="math inline">\(1/2\)</span>. Let <span class="math inline">\(u_1, ..., u_d\)</span> be the column vectors of <span class="math inline">\(\tilde A\)</span> and <span class="math inline">\(v_1, ..., v_k\)</span> be its row vectors. Hence, <span class="math inline">\(\frac{1}{\sqrt k} u_1, ..., \frac{1}{\sqrt k} u_d\)</span> and <span class="math inline">\(\frac{1}{\sqrt k} v_1, ..., \frac{1}{\sqrt k} v_k\)</span> are the column and row vectors of <span class="math inline">\(A\)</span>, respectively. It satisfies that</p>
-<ol type="1">
-<li><p><span class="math inline">\(\mathbb{E} \big[ || \frac{1}{\sqrt k} u_i||^2 \big] = \frac{1}{k} \mathbb{Var} \big[ ||u_i||^2 \big] = \frac{k}{k} = 1, \forall i \in [d]\)</span>;</p></li>
-<li><p><span class="math inline">\(\mathbb{E} \big[ \left&lt; \frac{1}{\sqrt k} u_i, \frac{1}{\sqrt k} u_j \right&gt; \big] = \frac{1}{k} \sum_{t \in [k] } \mathbb{E} \big[ u_i [t] \big] \cdot \mathbb{E} \big[ u_j[t] \big] = 0, \forall i, j \in [d], i \neq j\)</span>.</p></li>
-</ol>
-<p>Clearly, by definition, we have <span class="math inline">\(v_i[t]\)</span> has mean <span class="math inline">\(0\)</span> and variance <span class="math inline">\(1\)</span>, <span class="math inline">\(\forall i \in [k], t \in [d]\)</span>. Hence <span class="math inline">\(A\)</span> satisfies both the required column and row properties.</p>
-<p>The proof of the theorem relies on the following lemmas.</p>
-<blockquote>
-<p>Lemma 1. (Moment Generating Function of Rademacher random variable). Let <span class="math inline">\(X\)</span> be a random variable such that <span class="math display">\[
-X = \begin{cases}
-\begin{aligned}
-&amp; 1,    &amp;\text{w.p.} 0.5,    \\
-&amp;-1,    &amp;\text{w.p.} 0.5,    
-\end{aligned}
-\end{cases}
-\]</span> then for <span class="math inline">\(\lambda \in \mathbb{R}\)</span>, we have <span class="math display">\[
-\mathbb{E} \big[ \exp(\lambda X^2) \big] = \exp(\lambda ).
-\]</span></p>
-</blockquote>
-<p><em>Proof:</em> <span class="math display">\[
-    \begin{aligned}
-    \mathbb{E} [ \exp( \lambda X^2 ) ] &amp;= \frac{1}{2} \exp( \lambda ) + \frac{1}{2} \exp(\lambda) = \exp(\lambda)
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<p><span class="math display">\[
-\frac{1}{2} \exp( - \sigma \lambda ) + \frac{1}{2} \exp( \sigma \lambda) = \frac{1}{2} \left( \sum_{i = 0}^\infty \frac{ (- \sigma \lambda)^i }{ i! } + \sum_{i = 0}^\infty \frac{ ( \sigma \lambda)^i }{ i! } \right) \\
-=  \sum_{i = 0}^\infty \frac{ (\sigma \lambda)^{2i}  }{ (2i)! } 
-\le \exp( \sigma^2 \lambda^2 )
-\]</span></p>
-<blockquote>
-<p>Lemma 2. Let <span class="math inline">\(\sigma^2 = ||z||^2\)</span>. It holds that <span class="math display">\[
-\Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) \le \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
-\]</span></p>
-</blockquote>
-<p>As <span class="math display">\[
-    \ln(1 + \epsilon) = \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3} - \left( \frac{\epsilon^4}{4} - \frac{\epsilon^5}{5} \right) - \left( \frac{\epsilon^6}{6} + \frac{\epsilon^7}{7} \right) - ...\le \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3}, 
-\]</span></p>
-<p>we get <span class="math display">\[
-    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) 
-        \le \exp \left( - \frac{k \cdot ( \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} ) }{2} \right) 
-        \le \exp \left( - \frac{k}{4} (\epsilon^2 - \epsilon^3) \right).
-\]</span></p>
-<p><em>Proof:</em> Define <span class="math inline">\(X\)</span> be a Rademacher random variable and let <span class="math inline">\(X_i = \left&lt; v_i, z \right&gt;, \forall i \in [k]\)</span>. Then, <span class="math inline">\(X_i: \forall i \in [k]\)</span> can be viewed as i.i.d copies of <span class="math inline">\(X\)</span>. By lemma 1, for any <span class="math inline">\(\lambda \in (0, \frac{1}{2 \sigma^2} )\)</span>, it holds that</p>
-<p><span class="math display">\[
-\begin{aligned}
-    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right)  
-    &amp; = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \left&lt; v_i, z \right&gt;^2 \ge (1 + \epsilon) \cdot \sigma^2 \right) \\
-    &amp; = \Pr \left( \sum_{i \in [k] } X_i^2 \ge k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \\
-    &amp; = \Pr \left( \exp \left( \lambda \sum_{i \in [k] } X_i^2 \right)\ge \exp \left( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \right) \\
-    &amp;\le \frac{\mathbb{E} [ \exp(\lambda X^2 ) ]^k}{ \exp( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 ) } \\
-    &amp;= \left( \frac{ \exp(\lambda^2 \sigma^2 ) }{ \exp( \lambda \cdot (1 + \epsilon) \cdot \sigma^2 )  } \right)^k \\
-    &amp;= \exp(- \lambda \cdot \epsilon \cdot \sigma^2 \cdot k)
-\end{aligned}
-\]</span></p>
-<p>We want to find a <span class="math inline">\(\lambda\)</span> that minimizes the RHS. Let <span class="math display">\[
-f = \lambda \cdot (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \ln (1 - 2 \cdot \sigma^2 \cdot  \lambda).
-\]</span></p>
-<p>Taking the derivative with respect to <span class="math inline">\(\lambda\)</span>, <span class="math display">\[
-\begin{aligned}
-    \frac{ \partial f }{ \partial \lambda} 
-        &amp;= (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \cdot \frac{1}{1 - 2  \cdot \sigma^2 \cdot \lambda} \cdot (-2  \cdot \sigma^2 ) \\
-        &amp;= \sigma^2 \cdot \left( (1 + \epsilon) - \frac{1}{ 1 - 2 \cdot \sigma^2 \cdot \lambda } \right). 
-\end{aligned}
-\]</span></p>
-<p>Hence <span class="math inline">\(f\)</span> increases when <span class="math inline">\(\lambda &lt; \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) }\)</span> and decreases afterwards. It follows that <span class="math display">\[
-\begin{aligned}
-    \Pr \left( ||A z||^2 \ge (1 + \epsilon) \sigma^2 \right) 
-        &amp;\le \left( \frac{1}{ \exp( \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } \cdot (1 + \epsilon) \cdot \sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } } } \right)^k \\
-        &amp;= \left( \frac{ \sqrt{1 + \epsilon} }{ \exp( \epsilon / 2) } \right)^k \\
-        &amp;= \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/47/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><span class="page-number current">48</span><a class="page-number" href="/page/49/">49</a><span class="space">&hellip;</span><a class="page-number" href="/page/51/">51</a><a class="extend next" rel="next" href="/page/49/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/47/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><span class="page-number current">48</span><a class="page-number" href="/page/49/">49</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><a class="extend next" rel="next" href="/page/49/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -807,7 +779,7 @@ f = \lambda \cdot (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \ln (1 - 2 \cdot \
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-count">155</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

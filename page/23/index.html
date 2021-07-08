@@ -146,6 +146,323 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/30/LSH/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/30/LSH/" class="post-title-link" itemprop="url">LSH</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-30 16:14:46" itemprop="dateCreated datePublished" datetime="2020-03-30T16:14:46+11:00">2020-03-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-03 22:17:23" itemprop="dateModified" datetime="2020-05-03T22:17:23+10:00">2020-05-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong><em>Given a set <span class="math inline">\(S \subset U\)</span> of <span class="math inline">\(n\)</span> points, a metric <span class="math inline">\(d\)</span> defined on <span class="math inline">\(U\)</span>, and a query point <span class="math inline">\(v\)</span>, the nearest neighbor search (NNS) problem finds <span class="math inline">\(v\)</span>'s nearest point in <span class="math inline">\(S\)</span>:</em></strong> <span class="math display">\[
+u = \arg\min_{s \in S} d(v, s)
+\]</span> Potential applications include web search and clustering.</p>
+<p>If <span class="math inline">\(U\)</span> is a Euclidean space <span class="math inline">\(\mathcal{R}^d\)</span> for some <span class="math inline">\(d\)</span>, the hardness of NNS depends largely on the value of <span class="math inline">\(d\)</span>. Suppose <span class="math inline">\(d = 1\)</span>, then we can pre-process the points by building a balanced binary search tree on <span class="math inline">\(S\)</span>. Finding the nearest point to <span class="math inline">\(v \notin S\)</span> reduces to searching for its predecessor and successor, which takes <span class="math inline">\(O(\log n)\)</span> time. For <span class="math inline">\(d = 2\)</span>, we can construct a Voronoi diagram.</p>
+<p>For higher dimensions <span class="math inline">\(d\)</span> it is not easy to extend the index structures. A naïve search loops over all points and takes <span class="math inline">\(O(nd)\)</span> time. It is natural to ask whether we can do better. If we are willing to sacrifice accuracy for efficiency, this is possible. Instead of finding the exact nearest neighbor, we relax our goal to finding an approximate nearest neighbor whose distance is within <span class="math inline">\(1 + \epsilon\)</span> of the minimum one.</p>
+<p>One possible solution is Johnson–Lindenstrauss decomposition. We can generate a matrix <span class="math inline">\(A \in R^{ O( \frac{ \log n }{ \epsilon^2 } )\times d}\)</span> and multiply it with every element in <span class="math inline">\(S\)</span>. The mapping <span class="math inline">\(u \rightarrow Au\)</span> preserves pair-wise distance up to a relative error of <span class="math inline">\(\epsilon\)</span>. The pre-processing takes <span class="math inline">\(O( \frac{n d \log n}{\epsilon^2} )\)</span> time. To answer an query, we map <span class="math inline">\(v\)</span> to <span class="math inline">\(Av\)</span>, which takes <span class="math inline">\(O(\frac{ d\log n }{ \epsilon^2 } )\)</span> time. Then we perform a loop over all elements of <span class="math inline">\(\{ Au : u \in S\}\)</span>, which takes <span class="math inline">\(O(\frac{ n \log n }{ \epsilon^2 } )\)</span> time. Therefore, the total time complexity is <span class="math inline">\(O(\frac{ (n + d) \log n }{ \epsilon^2 } )\)</span>.</p>
+<h3 id="hashing">Hashing</h3>
+<p>[1] solves the problem by hashing. We call the pair of points that are close to each other the <em>similar pair</em> and the pair that are far from each other the <em>dissimilar pair</em>. Intuitively, we want similar pairs to be hashed to the same bucket and that dissimilar pairs to be hashed to different buckets.</p>
+<p>Instead of finding the <span class="math inline">\((1 + \epsilon)\)</span> approximate nearest neighbor directly, [1] further reduces it to the <span class="math inline">\((c, r)\)</span>-approximate neighbor search (ANNS<span class="math inline">\((c, r)\)</span>) problem, which is defined as follows:</p>
+<p><strong><em>Given a query point <span class="math inline">\(v\)</span>, if <span class="math inline">\(\exists s \in S\)</span>, then return a point <span class="math inline">\(u\)</span>, such that</em></strong> <span class="math display">\[
+d(v, u) \le c \cdot r
+\]</span></p>
+<p>The reduction from <span class="math inline">\(1 + \epsilon\)</span> to ANNS(<span class="math inline">\(c, r\)</span>) is not easy. Here we show one that returns the <span class="math inline">\((1 + \epsilon)^2\)</span> approximate nearest neighbor. Let <span class="math inline">\(d_{\max} = \max_{s, s&#39;} d(s, s&#39;)\)</span> and <span class="math inline">\(d_{\min} = \min_{s, s&#39;} d(s, s&#39;)\)</span>. We build a set of structures that answers ANNS(<span class="math inline">\(1 + \epsilon\)</span>, r) queries for the values of <span class="math inline">\(r\)</span>: <span class="math display">\[
+d_{\min}, \ d_{\min} (1 + \epsilon ), \ d_{min} (1 + \epsilon)^2,\ ...,\ d_{\max}
+\]</span></p>
+<p>Then given the query point <span class="math inline">\(v\)</span>, we do a binary search to find the smallest <span class="math inline">\(r\)</span> that returns a point. This imposes an additional cost of <span class="math inline">\(\ln {\ln \frac{d_{\max} }{d_{\min} } \over \ln (1 + \epsilon) }\)</span>.</p>
+<table>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\text{NNS} \longrightarrow (1+\epsilon) \text{NNS} \longrightarrow \text{ANNS}(c, r) \longrightarrow (r, cr, p_1, p_2)\text{-LSH} \longrightarrow \text{Boosting Probability}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">The Problem Reduction Chain</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="r-cr-p_1-p_2-locality-sensitive-hashing-family"><span class="math inline">\((r, cr, p_1, p_2)\)</span>-Locality Sensitive Hashing Family</h3>
+<p>Now we show how to solve the ANNS<span class="math inline">\((c, r)\)</span> problem with hashing. Designing a perfecting hashing that solves the problem directly is not easy. It is desirable to have some hashing which successes with some probability and then boost its probability systematically. To achieve this, we introduce the idea of <span class="math inline">\((r, cr, p_1, p_2)\)</span>-locality sensitive hashing family.</p>
+<p><strong><em>Given a set of point <span class="math inline">\(V\)</span>, a metric <span class="math inline">\(d(\cdot , \cdot)\)</span> defined on <span class="math inline">\(V\)</span>, a collection of hash function <span class="math inline">\(\mathcal{H} = \{ h: V \rightarrow Z\}\)</span> is called <span class="math inline">\((r, cr, p_1, p_2)\)</span> locality sensitive if for any <span class="math inline">\(v, u \in V\)</span> and an <span class="math inline">\(h\)</span> sampled uniformly from <span class="math inline">\(\mathcal{H}\)</span>, it holds that</em></strong></p>
+<ol type="1">
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge p_1\)</span>.</li>
+<li>If <span class="math inline">\(d(v, u) \ge cr\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le p_2\)</span></li>
+</ol>
+<p>where <span class="math inline">\(p_2 &lt; p_1 \le 1\)</span>. Intuitively, pairs near to each other should be more likely to collide. Hence <span class="math inline">\(p_1 = p_2^{\rho}\)</span> for some <span class="math inline">\(\rho = \log p_1 / \log p_2 &lt; 1\)</span>.</p>
+<p>Ideally, we have <span class="math inline">\(p_1 \approx 1\)</span> and <span class="math inline">\(p_2 \approx 0\)</span>. For other cases we can magnify the gap between <span class="math inline">\(p_1\)</span> and <span class="math inline">\(p_2\)</span> and boost <span class="math inline">\(p_1\)</span> to approximate <span class="math inline">\(1\)</span> and <span class="math inline">\(p_2\)</span> to approximate <span class="math inline">\(0\)</span>. The hardness of the boosting highly depends on the value of <span class="math inline">\(c\)</span>.</p>
+<h4 id="example">Example</h4>
+<p>Suppose that <span class="math inline">\(U = \{0, 1\}^d\)</span>, <span class="math inline">\(d(u, v) = u \oplus v = |u - v|_1\)</span> and <span class="math inline">\(\mathcal{H} = \{ h_i (u) = u_i \}_{i \in [d]}\)</span>, where <span class="math inline">\(h_i\)</span> selects the <span class="math inline">\(i\)</span>th bit of <span class="math inline">\(u\)</span>. Picking an <span class="math inline">\(h\)</span> uniformly from <span class="math inline">\(\mathcal{H}\)</span> and applying <span class="math inline">\(h\)</span> to <span class="math inline">\(u\)</span> is equivalent to selecting a bit uniformly from <span class="math inline">\(u\)</span>. Therefore,</p>
+<ol type="1">
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span> (<span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> has less then <span class="math inline">\(r\)</span> common bits), then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge \frac{d - r}{d} = 1 - \frac{r}{d} = p_1\)</span>.</li>
+<li>If <span class="math inline">\(d(v, u) \ge cr\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le \frac{d - cr}{d} = 1 - \frac{cr}{d} = p_2\)</span></li>
+</ol>
+<p>Now <span class="math inline">\(p_1 \approx \exp(- r / d)\)</span> and <span class="math inline">\(p_2 \approx \exp(- cr / d)\)</span>. Hence <span class="math inline">\(\rho \approx \frac{1}{c}\)</span>. Indeed it can be proven rigorously that <span class="math display">\[
+\rho = \frac{\ln (1 - \frac{r}{d}) }{ \ln (1 - \frac{cr}{d}) } \le \frac{1}{c}
+\]</span></p>
+<p>as <span class="math inline">\(( 1 - \frac{r}{d})^c \ge 1 - \frac{cr}{d}\)</span>. There are many ways to prove this. Since we are dealing with probability, we give a probabilistic interpretation of this inequality. Suppose that are <span class="math inline">\(c\)</span> independent events each happening with probability <span class="math inline">\(\frac{r}{d}\)</span>. Then the probability that at least one of them happens is given by <span class="math display">\[
+1 - \Pr[\textbf{none of them happens } ] = 1 - (1 - \frac{r}{d})^c
+\]</span></p>
+<p>On the other hand, by union bound, this is upper bounded by <span class="math inline">\(\frac{cr}{d}\)</span>.</p>
+<h3 id="boosting-the-probabilities">Boosting the Probabilities</h3>
+<p>We would like the boost the probability such that <span class="math inline">\(p_1 \approx 1\)</span> and <span class="math inline">\(p_2 \approx 0\)</span>. We follow a two-step approach. First we sample <span class="math inline">\(k\)</span> (to be determined) hash functions independently from <span class="math inline">\(\mathcal{H}\)</span> can concatenate them as a single hash function <span class="math inline">\(g\)</span>: <span class="math display">\[
+g(v) = [h_1(v),  h_2(v), ... ,h_k(v)]
+\]</span></p>
+<p>Here <span class="math inline">\(g\)</span> hash a point <span class="math inline">\(v\)</span> to a <span class="math inline">\(k\)</span> dimensional vector. After this, <span class="math inline">\(g(v) = g(u)\)</span> happens only if <span class="math inline">\(h_i(v) = h_i(u)\)</span> for all <span class="math inline">\(i \in [k]\)</span>. By independence of <span class="math inline">\(h_i\)</span>'s,</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(d(v, u) \ge cr\)</span>, the collision probability of <span class="math inline">\(u\)</span> with <span class="math inline">\(v\)</span> drops to <span class="math inline">\(p_2^k\)</span>: <span class="math display">\[
+ \Pr [ g(v) = g(u) ] \le p_2^k
+ \]</span></p></li>
+<li><p>On the other hand, if <span class="math inline">\(d(v, u) &lt; r\)</span>, the collision probability also drops to <span class="math inline">\(p_1^k = (p_2^k)^\rho\)</span> <span class="math display">\[
+ \Pr [ g(v) = g(u) ] \ge  p_1^k = p_2^{\rho k} = (p_2^{k})^\rho
+ \]</span> which is relatively small and not desirable.</p></li>
+</ol>
+<p>We need a second level of boosting to increase the collision probability of similar pairs. Instead of using only one function <span class="math inline">\(g\)</span>, we use a collection of independent copies: <span class="math display">\[
+g_1, g_2, ..., g_l
+\]</span></p>
+<p>where <span class="math inline">\(l\)</span> is the number to be determined. Now,</p>
+<ul>
+<li>If <span class="math inline">\(d(v, u) &lt; r\)</span>, the probability that at least one of the <span class="math inline">\(g_i(u)\)</span> equals to <span class="math inline">\(g_i(v)\)</span> is given by <span class="math display">\[
+  \begin{aligned}
+      \Pr \left[ \exists i \in [l], \ s.t., \ g_i(u) = g_i(v) \right] 
+          &amp;= 1 - (1 - p_1^k)^l  \\
+          &amp;= 1 - (1 - (p_2^k)^\rho)^l \\
+          &amp;\ge 1 - \exp( - (p_2^k)^\rho l )
+  \end{aligned}
+  \]</span></li>
+</ul>
+<p>We can take</p>
+<ol type="1">
+<li><p><span class="math inline">\(p_2^k = \frac{1}{n}\)</span>, i.e., <span class="math inline">\(k = \frac{\log n }{ \log 1 / p_2 }\)</span>.</p></li>
+<li><p><span class="math inline">\(\exp( - (p_2^k)^\rho l ) = \frac{1}{n}\)</span>, i.e., <span class="math inline">\(l = \frac{1}{(p_2^k)^\rho } \ln n = n^\rho \ln n\)</span>.</p></li>
+</ol>
+<p>For a fixed query point <span class="math inline">\(q\)</span> and for any fixed <span class="math inline">\(i \in [l]\)</span>, by linearity of expectation, the expected number of dissimilar collision is given by</p>
+<p><span class="math display">\[
+\begin{aligned}
+    E \left[ |\{ u \in S: d(q, u) \ge cr \wedge g_i(q) = g_i(u)  \}| \right] 
+        &amp;= \sum_{ u \in S : \  d(q, u) \ge cr } \Pr[g_i(v)= g_i(u)] \\
+        &amp;\le n \cdot \frac{1}{n} = 1
+\end{aligned}
+\]</span></p>
+<p>Therefore, there are <span class="math inline">\(l\)</span> of dissimilar collisions over all <span class="math inline">\(i \in [l]\)</span>. This implies an expected overhead of <span class="math inline">\(l\)</span> examinations of dissimilar points. However, by Markov inequality, the number of such points is less than <span class="math inline">\(2l\)</span> with probability at least <span class="math inline">\(1 / 2\)</span>. The time for examination of dissimilar point is <span class="math inline">\(O(ld) = O(d n^\rho \ln n)\)</span>.</p>
+<h3 id="time-and-space">Time and Space</h3>
+<p>Now, given a query point <span class="math inline">\(q\)</span>, computing <span class="math inline">\(g_i(q)\)</span> for a fixed <span class="math inline">\(i\)</span> takes <span class="math inline">\(O(k)\)</span> time. Computing <span class="math inline">\(l\)</span> of them takes <span class="math inline">\(O(kl)\)</span> time. In expectation, there are <span class="math inline">\(l\)</span> dissimilar collision points with <span class="math inline">\(q\)</span>. Checking one collision point takes <span class="math inline">\(O(d)\)</span> time. Therefore, the expected query time is given by (note that we stop upon finding the first ANN of <span class="math inline">\(q\)</span>):</p>
+<p><span class="math display">\[
+\begin{aligned}
+    O(kl + dl) 
+    &amp;= O(\frac{\ln n}{\ln \frac{1}{p_2}} n^\rho \ln n + d n^\rho \ln n) \\
+    &amp;= O(n^{ \rho} \ln^2 n / \ln \frac{1}{p_2} + d n^\rho \ln n) \\
+    &amp;= \tilde{O}( n^\rho )
+\end{aligned}
+\]</span></p>
+<p>As for the space usage, for each point <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span>, we need to compute <span class="math inline">\(g_i(u)\)</span> and store this value (we need to store this, because <span class="math inline">\(g_i(u)\)</span> is self could be a large number and when putting <span class="math inline">\(\{ g_i(u) : u \in S\}\)</span> into a hash table, we need to treat <span class="math inline">\(g_i(u)\)</span> as the key and store it for later collision comparison. But is it possible that when there is a collision, we re-compute this value again to avoid storing it ?). We need to repeat this for <span class="math inline">\(l\)</span> hash functions. Therefore, the space usage is given by <span class="math display">\[
+O(nkl) = O(n^{1 + \rho} \ln^2 n / \ln \frac{1}{p_2})
+\]</span></p>
+<h3 id="another-boosting-scheme">Another Boosting Scheme</h3>
+<p>In last section, we have a scheme that checks <span class="math inline">\(O(n^\rho \ln n)\)</span> dissimilar points in expectation. In this section we achieve it with high probability.</p>
+<ol type="1">
+<li>First, to reduce the collision probability of dis-similar pairs, we concatenate <span class="math inline">\(k\)</span> functions from <span class="math inline">\(\mathcal{H}\)</span>. This gives a <span class="math display">\[
+     (r, cr, p_1^k, p_2^k)
+\]</span> locative sensitive hash function. We determine the value of <span class="math inline">\(k\)</span> later. <!-- We pick $k = \frac{\ln n}{\ln \frac{1}{p_2} }$, such that $p_2^k = 1 / n$. In expectation, at most $1$ dis-similar collision occurs.  --></li>
+<li>Second, to boost the collision probability of similar pairs, we use <span class="math inline">\(l\)</span> concatenated hash functions independently. The probability at least one collision occurs is given by <span class="math display">\[
+     1 - (1 - p_1^k)^l \ge 1 - e^{-p_1^k \cdot l} 
+\]</span> We require this to happen with constant probability <span class="math inline">\(1 - \frac{1}{e}\)</span>, hence we need to set <span class="math inline">\(l = \frac{1}{p_1^k} = (\frac{1}{p_2^k})^\rho\)</span>. <!-- where $l = n^\rho$. The final equality holds since $p_1^k \cdot l = p_2^{k \cdot \rho} \cdot l = n^{-\rho} \cdot l = 1$ --></li>
+<li>Now consider a query point <span class="math inline">\(q\)</span>. We compute <span class="math inline">\(g_1(q), g_2(q), ..., g_l(q)\)</span> and check the points <span class="math inline">\(u\)</span>'s such that <span class="math inline">\(g_i(u) = g_i(q)\)</span> for some <span class="math inline">\(i \in [l]\)</span>. Note that we check at most the first <span class="math inline">\(4 n p_2^k l + 1\)</span> points we found. Why <span class="math inline">\(4 n p_2^k l + 1\)</span>? In expectation, there are <span class="math inline">\(n p_2^k l\)</span> dissimilar collisions. By Markov inequality, the probability of dissimilar collisions is no more than <span class="math inline">\(4l\)</span> is at most <span class="math inline">\(1 / 4\)</span>. By union bound, <span class="math display">\[
+ \begin{aligned}
+     &amp;\Pr[\exists \text{ more than } 4l \text{ bad collision } \vee \nexists \text{ good collision }] \\
+     &amp;\le \frac{1}{e} + \frac{1}{4} \\
+     &amp;\le \frac{1}{2.5} + \frac{1}{4} \\
+     &amp;= \frac{5}{16}
+ \end{aligned}
+ \]</span></li>
+</ol>
+<p>Therefore, the boosting strategy successes with constant probability. Now consider the running time of such boosting strategy. When a query point <span class="math inline">\(q\)</span> comes, we need to compute <span class="math inline">\(g_1(q), g_2(q), ..., g_l(q)\)</span>, which takes time <span class="math inline">\(kl\)</span>. Further, the strategy checks at most <span class="math inline">\(4 n p_2^k l + 1\)</span> points and checking each point takes <span class="math inline">\(O(d)\)</span> time. The overall time used is <span class="math display">\[
+O(kl + (4 n p_2^k l + 1)d)
+\]</span></p>
+<p>To minimize the running time, we need to choose proper value of <span class="math inline">\(k\)</span>, such that <span class="math display">\[
+k = 4np_2^k d \rightarrow \ln k + k \ln \frac{1}{p_2} = \ln (4nd) 
+\]</span></p>
+<p>It suffice to take <span class="math inline">\(k = \frac{\ln 4nd}{ \ln \frac{1}{p_2} }\)</span>. It follows that <span class="math display">\[
+p_2^k = \frac{1}{4nd} \\
+l = \left( \frac{1}{p_2^k} \right)^\rho = (4nd)^\rho 
+\]</span></p>
+<p>and the running time is given by <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln (4nd)}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<p>As <span class="math inline">\(n \succ d\)</span>, this is equivalent to <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln n}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<p>We can repeat the above steps by <span class="math inline">\(\ln n / \ln \frac{16}{5}\)</span> times, to boost the success probability to <span class="math inline">\(1 - \frac{1}{n}\)</span>. The overall running time is given by <span class="math display">\[
+O\left( (4nd)^\rho \frac{\ln^2 n}{\ln \frac{1}{p_2} } \right)
+\]</span></p>
+<h3 id="reference">Reference</h3>
+<ol type="1">
+<li>Indyk, P. and Motwani, R., 1998, May. Approximate nearest neighbors: towards removing the curse of dimensionality. In Proceedings of the thirtieth annual ACM symposium on Theory of computing (pp. 604-613).</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/23/Working-Set-BST/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/23/Working-Set-BST/" class="post-title-link" itemprop="url">Working Set BST</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-23 23:59:24" itemprop="dateCreated datePublished" datetime="2020-03-23T23:59:24+11:00">2020-03-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-29 22:14:08" itemprop="dateModified" datetime="2020-03-29T22:14:08+11:00">2020-03-29</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Various implementations of Balanced Binary Search Tree (BST) guaranteed membership queries in <span class="math inline">\(O(\log n)\)</span> time, where <span class="math inline">\(n\)</span> is the number of elements in some set <span class="math inline">\(S\)</span>. The working set property is a stronger requirement than <span class="math inline">\(O(\log n)\)</span> time complexity. Suppose that an item <span class="math inline">\(x \in S\)</span> is accessed <span class="math inline">\(t\)</span> queries before, then we want to perform <span class="math inline">\(\text{find} (x)\)</span> in <span class="math inline">\(O(\log t)\)</span> time.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/WorkingSetBSForest.jpg" /></p>
+<p>The idea is to maintain a sequence of Balanced BST's, denoted as <span class="math inline">\(T_0, T_1, T_2, ...\)</span>. Denote the size of <span class="math inline">\(T_i\)</span> for some <span class="math inline">\(i \ge 0\)</span> as <span class="math inline">\(n_i\)</span>. Then the <span class="math inline">\(i\)</span>-th tree maintains the latest <span class="math inline">\(n_i\)</span> accessed items. The sizes of <span class="math inline">\(n_i\)</span>'s satisfy</p>
+<p><span class="math display">\[
+\begin{aligned}
+    &amp;   n_0 = 1 \\
+    &amp;   n_1 = 2 \\
+    &amp;   n_2 = 4 \\
+    &amp;   n_3 = 16 \\
+    &amp;   ...     \\
+    &amp;   n_i = 2^{2^{i - 1} }  \\
+    &amp;   n_{i + 1} = n_i^2 = 2^{2^i } \\
+    &amp;   ... \\
+    &amp;   n_k = 2^{2^{k - 1} }  
+\end{aligned}
+\]</span></p>
+<p>The largest tree has an index that equals to the smallest <span class="math inline">\(k\)</span> with <span class="math inline">\(2^{k - 1} \ge \log n\)</span> (assuming that <span class="math inline">\(n \ge 1\)</span>). It implies that <span class="math inline">\(k = O (\log \log n)\)</span>. The complexities for searching an element on these trees are <span class="math display">\[
+\begin{aligned}
+    &amp;   c_0 = 1 + \log 1    \\
+    &amp;   c_1 = 1 + \log 2    \\
+    &amp;   c_2 = 1 + \log 4    \\
+    &amp;   c_3 = 1 + \log 16   \\
+    &amp;   ...     \\
+    &amp;   c_k = 1 + \log 2^{2^{k - 1}}\\
+\end{aligned}
+\]</span></p>
+<p>When a query <span class="math inline">\(\text{find} (x)\)</span> is invoked, we first search it on <span class="math inline">\(T_0\)</span>. If we find it successfully, we stop. Otherwise we search it on <span class="math inline">\(T_1\)</span> and so on. If <span class="math inline">\(x\)</span> is accessed <span class="math inline">\(t\)</span> queries before (and is not accessed in the latest <span class="math inline">\(t - 1\)</span> queries if <span class="math inline">\(t \ge 1\)</span>), then it is contained in the tree <span class="math inline">\(T_{i_x}\)</span>, where <span class="math display">\[
+i_x \doteq \text{ the smallest non-negative integer, } s.t. \ 2^{i_x - 1} \ge t
+\]</span></p>
+<p>As a sanity check, note that when <span class="math inline">\(t = 0\)</span> (<span class="math inline">\(x\)</span> is the latest accessed item), we have <span class="math inline">\(i_x = 0\)</span> as <span class="math inline">\(2^{-1} \ge 0\)</span>. By definition of definition of <span class="math inline">\(i_x\)</span>, <span class="math inline">\(x\)</span> is not contained in any <span class="math inline">\(T_i\)</span> with <span class="math inline">\(i &lt; i_x\)</span>. The time to search <span class="math inline">\(x\)</span> is <span class="math display">\[
+\begin{aligned}
+    &amp;(1 + \log 1) + (1 + \log 2) + (1 + \log 4) + (1 + \log 16) + ... + (1 + \log 2^{2^{i_x - 1} }) \\
+    &amp;=i_x + 1  + \sum_{i = 0}^{i_x - 1} 2^{i} \\
+    &amp;=i_x + 1  + 2^{i_x} - 1 \\
+    &amp;=O(\log \log t) + O(\log t) \\
+    &amp;=O(\log t)    
+\end{aligned}
+\]</span></p>
+<p>Finally, we need to update the trees <span class="math inline">\(T_0\)</span>, <span class="math inline">\(T_1\)</span>, ... <span class="math inline">\(T_{i_x}\)</span> to reflect the last access of <span class="math inline">\(x\)</span>. In particular, we 1) insert <span class="math inline">\(x\)</span> into <span class="math inline">\(T_0\)</span>, <span class="math inline">\(T_1\)</span>, ... <span class="math inline">\(T_{i_x - 1}\)</span>; 2) for each <span class="math inline">\(i &lt; i_x\)</span>, we delete the least recently accessed item; 3) update the access time of <span class="math inline">\(x\)</span> in <span class="math inline">\(T_{i_x}\)</span>.</p>
+<p>Step 1) takes <span class="math inline">\(O(\log t)\)</span> time. To implement steps 2) and 3) in <span class="math inline">\(O(\log t)\)</span> time, we create a min-heap <span class="math inline">\(H_i\)</span> for each tree <span class="math inline">\(T_i\)</span> that keeps the the access time of items in <span class="math inline">\(T_i\)</span>. Both fetching least recently accessed item and updating access time can be performed in <span class="math inline">\(O(\log n_i)\)</span> time. Therefore, steps 2) and 3) take <span class="math inline">\(O(\log t)\)</span> time in total.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/09/Hessian/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -250,288 +567,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/08/Norm-with-PSD-Matrix/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/08/Norm-with-PSD-Matrix/" class="post-title-link" itemprop="url">Norm with PSD Matrix</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-08 11:42:32" itemprop="dateCreated datePublished" datetime="2020-03-08T11:42:32+11:00">2020-03-08</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 15:28:01" itemprop="dateModified" datetime="2020-03-09T15:28:01+11:00">2020-03-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(A \in \mathbb{ R } ^{n \times n}\)</span> be positive semi-definite matrix. Then <span class="math inline">\(f (x) \doteq \sqrt {x^T A x}: \mathbb{ R } ^{n \times n} \rightarrow \mathbb{ R }\)</span> is a norm.</p>
-<p><em>Proof.</em> We only check that it satisfies triangle inequality, i.e., <span class="math inline">\(\forall x, y \in \mathbb{R}^n\)</span> <span class="math display">\[
-\begin{aligned}
-    f(x + y) 
-        &amp;\le f(x) + f(y)
-        \\
-    &amp;\longleftrightarrow
-        \\
-    \sqrt{ (x + y)^T A (x + y)^T } 
-        &amp;\le \sqrt{ x^T A x} + \sqrt{y^T A y} 
-        \\
-    &amp;\longleftrightarrow
-        \\
-    y^T A x
-        &amp;\le \sqrt{ x^T A x}  \sqrt{y^T A y} 
-\end{aligned}
-\]</span> Since <span class="math inline">\(A\)</span> is PSD, then <span class="math inline">\(\exists B \in \mathbb{ R } ^{n \times n}\)</span>, s.t., <span class="math inline">\(A = B^T B\)</span>. Define <span class="math inline">\(\bar y = B y\)</span> and <span class="math inline">\(\bar x = B x\)</span>, we need to prove <span class="math display">\[
-\bar y^T \bar x \le \| \bar x\| \cdot \| \bar y \|
-\]</span> But this is just Cauchy-Schwarz inequality.</p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/06/Gradient-Descent/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/06/Gradient-Descent/" class="post-title-link" itemprop="url">Gradient Descent</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-06 10:10:45" itemprop="dateCreated datePublished" datetime="2020-03-06T10:10:45+11:00">2020-03-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 00:46:03" itemprop="dateModified" datetime="2020-03-09T00:46:03+11:00">2020-03-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Gradient descent is a greedy search method for optimization. It approximates a function locally by a linear function. Its analysis varies depending on the what kinds of constraints you place on it.</p>
-<p>We study a baby version of the method. The problem at hand is given by: <span class="math display">\[
-\min_{x \in \mathbb{R }^n} f(x)
-\]</span> where <span class="math inline">\(f\)</span> is twice continuous differentiable and convex. The convexity of <span class="math inline">\(f\)</span> implies that it has a unique minimum value <span class="math inline">\(\min_{x \in \mathbb{R }^n} f(x)\)</span>. Assume that <span class="math inline">\(f\)</span> indeed achieves minimum at some point and denote the optimal point as <span class="math inline">\(x^*\)</span>. Note that is some case, <span class="math inline">\(f\)</span> can not achieve minimum value at any point. Consider <span class="math inline">\(f(x) = e^x\)</span>. Then <span class="math inline">\(\min_{x \in \mathbb{R } } e^x = 0\)</span>. <span class="math inline">\(f\)</span> can approach arbitrary close to <span class="math inline">\(0\)</span> but never achieve that value.</p>
-<p>Before we delve into the details, we need to define some frequently used notations.</p>
-<ul>
-<li><p>The gradient <span class="math inline">\(\nabla f(x):\mathbb{R }^n \rightarrow \mathbb{R }^n\)</span> is the vector of partial derivatives of <span class="math inline">\(f\)</span> at point <span class="math inline">\(x\)</span>: <span class="math display">\[
-\nabla f(x) = \left[ \frac{\partial f (x) }{\partial x_1}, \frac{\partial f (x)}{\partial x_2}, .., \frac{\partial f (x) }{\partial x_n} \right]
-\]</span></p></li>
-<li><p>The Hessian <span class="math inline">\(\nabla^2 f(x) : \mathbb{R }^n \rightarrow \mathbb{R }^{n \times n}\)</span> is the matrix of second order derivatives of <span class="math inline">\(f\)</span> at <span class="math inline">\(x\)</span>: <span class="math display">\[
-  \nabla f(x) = 
-      \left[
-      \begin{aligned}
-          \frac{\partial^2 f (x)}{\partial x_1 \partial x_1}, \frac{\partial^2 f (x)}{\partial x_1 \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_1 \partial x_n} \\
-          \frac{\partial^2 f (x)}{\partial x_2 \partial x_1}, \frac{\partial^2 f (x)}{\partial x_2 \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_2 \partial x_n} \\
-          &amp;...\\
-          \frac{\partial^2 f (x)}{\partial x_n \partial x_1}, \frac{\partial^2 f (x)}{\partial x_n \partial x_2}, &amp;..., \frac{\partial^2 f (x)}{\partial x_n \partial x_n} \\
-      \end{aligned}
-      \right]
-  \]</span> Since <span class="math inline">\(f\)</span> is twice continuous differentiable, the Hessian is symmetric.</p></li>
-</ul>
-<p>The algorithm is itself very simple.</p>
-<h3 id="algorithm"><strong>Algorithm</strong></h3>
-<p><strong><em>Gradient Descent</em></strong></p>
-<ol type="1">
-<li>Begin from some <span class="math inline">\(x_0 \in \mathbb{R }^n\)</span>.</li>
-<li><span class="math inline">\(x^{t + 1} \leftarrow x^t - \eta \nabla f(x^t)\)</span>.</li>
-</ol>
-<p>where <span class="math inline">\(\eta &gt; 0\)</span> is called step size. Below is an example that show how <span class="math inline">\(f\)</span> decreases as the algorithm iterates.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/GradientDescent.jpg" /></p>
-<h2 id="convergence"><strong>Convergence</strong></h2>
-<p>To analyze the convergence behavior, we need additional assumptions on <span class="math inline">\(f\)</span>. We analyze a baby version of gradient descent with strong assumptions:</p>
-<ol type="1">
-<li><span class="math inline">\(f\)</span> is <span class="math inline">\(\beta\)</span> smooth, i.e., <span class="math inline">\(v^T \nabla^2 f(z) v \le \beta \| v \|^2\)</span> for <span class="math inline">\(\forall z, v \in \mathbb{R }^n\)</span>.</li>
-<li><span class="math inline">\(f\)</span> is <span class="math inline">\(\alpha\)</span> strongly convex, i.e., <span class="math inline">\(v^T \nabla^2 f(z) v \ge \alpha \| v \|^2\)</span> for <span class="math inline">\(\forall z, v \in \mathbb{R }^n\)</span>.</li>
-</ol>
-<p>The interpretation is that, <span class="math inline">\(\beta\)</span> is the upper bound of the largest possible eigenvalue of the Hessian at any point and <span class="math inline">\(\alpha\)</span> is the lower bound. By definition we have <span class="math inline">\(\beta \ge \alpha\)</span>.</p>
-<p>Now define <span class="math display">\[
-\Delta_t = f(x^t) - f(x^*)
-\]</span> and <span class="math inline">\(\kappa = \frac{\beta}{\alpha}\)</span>. The following theorem characterize the convergence speed of the algorithm:</p>
-<p><strong><em>Theorem.</em></strong> <em>If we set <span class="math inline">\(\eta = \frac{1}{\beta}\)</span>, then it holds that</em> <span class="math display">\[
-\Delta_t \le \Delta_0 \left( 1 - \frac{1}{4 \kappa } \right)^t.
-\]</span></p>
-<p>By the theorem, given any <span class="math inline">\(\epsilon &gt; 0\)</span>, after <span class="math display">\[
-O \left( \kappa \log \frac{\Delta_0}{\epsilon} \right) 
-\]</span></p>
-<p>iteration, the error <span class="math inline">\(\Delta_t\)</span> will be smaller than <span class="math inline">\(\epsilon\)</span>.</p>
-<p><em>Proof:</em></p>
-<p>The proof consists of two parts. <span class="math inline">\(\beta\)</span>-Smooth and <span class="math inline">\(\alpha\)</span>-Convexity play a role in each part separately.</p>
-<h4 id="beta-smoothness."><span class="math inline">\(\beta\)</span>-Smoothness.</h4>
-<p>The property guarantees that <span class="math inline">\(\epsilon_{t + 1} \le \epsilon_t - \frac{1}{2 \beta} \| f(x_t) \|^2\)</span>.</p>
-<p>First, by Taylor series expansion, we have for <span class="math inline">\(x, y \in \mathbb{R }^n\)</span>:</p>
-<p><span class="math display">\[
-\begin{aligned}
-    f(y)    &amp;= f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} (y - x)^T \nabla^2 f(z) (y - x) \\
-            &amp;\le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \|y - x \|^2
-\end{aligned}
-\]</span> where <span class="math inline">\(z = \lambda x + (1 - \lambda) y\)</span> for <span class="math inline">\(\lambda \in [0, 1]\)</span>. The second inequality comes from the <span class="math inline">\(\beta\)</span>-smoothness.</p>
-<p>Replacing <span class="math inline">\((y - x)\)</span> as <span class="math inline">\(-\eta \nabla f(x)\)</span>, we get <span class="math display">\[
-\begin{aligned}
-    f(y)  
-        &amp;\le f( x ) - \eta \| \nabla f(x) \|^2 + \frac{1}{2} \beta \eta^2 \| \nabla f( x ) \|^2 \\
-        &amp;\le f( x ) + (\frac{1}{2} \beta \eta^2 -\eta) \| \nabla f(x ) \|^2  \\ 
-\end{aligned}
-\]</span></p>
-<p>The second coefficient <span class="math inline">\((\frac{1}{2} \beta \eta^2 -\eta)\)</span> is minimized when <span class="math inline">\(\beta \eta - 1 = 0\)</span>, i.e., <span class="math inline">\(\eta = \frac{1}{\beta}\)</span>. It follows <span class="math display">\[
-\begin{aligned}
-    f(y ) 
-        &amp;\le f( x ) + (\frac{1}{2} \beta \eta^2 -\eta) \| \nabla f(x ) \|^2  \\ 
-        &amp;\le f( x  ) - \frac{1}{2 \beta}  \| \nabla f(x ) \|^2  \\ 
-\end{aligned}
-\]</span></p>
-<p>Finally, substituting <span class="math inline">\(y\)</span> with <span class="math inline">\(x^{t + 1}\)</span> and <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span>, it becomes <span class="math display">\[
-\begin{aligned}
-    f(x^{t + 1}) 
-        &amp;\le f(x^t) - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2 \\
-        &amp;\longleftrightarrow    \\
-    \Delta_{t + 1} 
-        &amp;\le \Delta_t - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2 
-\end{aligned}
-\]</span></p>
-<h4 id="alpha-convexity."><span class="math inline">\(\alpha\)</span> Convexity.</h4>
-<p>We might still have a problem, if when <span class="math inline">\(x^t\)</span> approaches <span class="math inline">\(x^*\)</span>, <span class="math inline">\(\| \nabla f(x^t) \|\)</span> decreases too fast. That where <span class="math inline">\(\alpha\)</span> convexity comes into play. We will show that <span class="math display">\[
-\| \nabla f(x^t) \|^2 \ge \Delta_t \cdot\frac{1}{2} \alpha
-\]</span></p>
-<ol type="1">
-<li><p>Proof 1. By <span class="math inline">\(\alpha\)</span> convexity, we have for all <span class="math inline">\(y \in \mathbb{R}^n\)</span>,<br />
-<span class="math display">\[
-f(y) \ge f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2
-\]</span> Taking minimum of both sides, <span class="math display">\[
-\min_{y \in \R^n} f(y) \ge \min_{y \in \R^n} \left( f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2\right)
-\]</span> The left hand side equals to <span class="math inline">\(f(x^*)\)</span> while the right hand side minimized to <span class="math inline">\(f(x) - \frac{1}{2 \alpha} \| \nabla f(x) \|^2\)</span> when <span class="math inline">\(y - x = -\frac{1}{\alpha} \nabla f(x)\)</span>.</p>
-<p>Substituting <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span>, we get <span class="math display">\[
-\| \nabla f(x^t) \|^2 \ge 2 \alpha \left( f(x^t) - f(x^*) \right) = 2\alpha \Delta_t
-\]</span></p></li>
-<li><p>Proof 2. By convexity, we have</p>
-<p><span class="math display">\[
- \begin{aligned}
-     \nabla f(x)^T (x - x^*) 
-         &amp;\ge f(x) - f(x^*) 
- \end{aligned}
- \]</span></p>
-<p>Then by Taylor expansion and <span class="math inline">\(\alpha\)</span> convexity, <span class="math display">\[
- \begin{aligned}
-     f(x) - f(x^*) 
-         &amp;\ge \nabla f(x^*)^T (x - x^*) +  \frac{1}{2} \alpha \| x - x^* \|^2\\
-         &amp;=\frac{1}{2} \alpha \| x - x^* \|^2
- \end{aligned}
- \]</span></p>
-<p>Concatenating the inequalities, we get <span class="math display">\[
- \| \nabla f(x) \| \| x - x^* \| \ge \nabla f(x)^T (x - x^*) \ge f(x) - f(x^*) \ge \frac{1}{2} \alpha \| x - x^* \|^2
- \]</span> where the first inequality is Cauchy-Schwartz inequality. Multiplying the inequalities we get</p>
-<p><span class="math display">\[
- \| \nabla f(x) \|^2 \| x - x^* \|^2 \ge (f(x) - f(x^*)) \cdot\frac{1}{2} \alpha \| x - x^* \|^2
- \]</span></p>
-<p>which implies that <span class="math display">\[
- \| \nabla f(x) \|^2 \ge (f(x) - f(x^*)) \cdot\frac{1}{2} \alpha 
- \]</span></p>
-<p>Replacing <span class="math inline">\(x\)</span> with <span class="math inline">\(x^t\)</span> and <span class="math inline">\(f(x) - f(x^*)\)</span> with <span class="math inline">\(\Delta_t\)</span>, we have <span class="math display">\[
- \| \nabla f(x^t) \|^2 \ge \Delta_t \cdot\frac{1}{2} \alpha 
- \]</span></p></li>
-</ol>
-<p>In combination, we conclude that <span class="math display">\[
-\begin{aligned}
-    \Delta_{t + 1}
-        &amp;\le \Delta_t \left( 1- \frac{\alpha }{4 \beta} \right)
-\end{aligned}
-\]</span></p>
-<p>which finishes the proof.</p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/22/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><span class="page-number current">23</span><a class="page-number" href="/page/24/">24</a><span class="space">&hellip;</span><a class="page-number" href="/page/51/">51</a><a class="extend next" rel="next" href="/page/24/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/22/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><span class="page-number current">23</span><a class="page-number" href="/page/24/">24</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><a class="extend next" rel="next" href="/page/24/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -597,7 +636,7 @@ f(y) \ge f(x) + \nabla f(x)^T (y - x) + \frac{\alpha}{2} \| y - x \|^2
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-count">155</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
