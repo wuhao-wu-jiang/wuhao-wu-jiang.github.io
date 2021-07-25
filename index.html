@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/08/Q-Digest/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/18/Cauchy-Riemann-Equations/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/08/Q-Digest/" class="post-title-link" itemprop="url">Q-Digest</a>
+            <a href="/2021/07/18/Cauchy-Riemann-Equations/" class="post-title-link" itemprop="url">Cauchy-Riemann Equations</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-07-08 15:35:51" itemprop="dateCreated datePublished" datetime="2021-07-08T15:35:51+10:00">2021-07-08</time>
+              <time title="Created: 2021-07-18 23:14:47" itemprop="dateCreated datePublished" datetime="2021-07-18T23:14:47+10:00">2021-07-18</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-09 15:46:55" itemprop="dateModified" datetime="2021-07-09T15:46:55+10:00">2021-07-09</time>
+                <time title="Modified: 2021-07-24 00:11:48" itemprop="dateModified" datetime="2021-07-24T00:11:48+10:00">2021-07-24</time>
               </span>
 
           
@@ -191,398 +191,58 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><p>Let $d \in \mathbb{N}^+$ be a positive integer and $f = (0, \ldots, 0) \in \mathbb{R}^d$ be an all-zero vector.<br>There is a sequence $S$ of updates, each of which consists of a pair $(x, w) \in [d] \times \mathbb{R}^+$, increasing $f[x]$ by $w$.     </p>
-<blockquote>
-<p><strong>Model Description</strong>  </p>
-<ol>
-<li>$f \leftarrow (0, \ldots, 0) \in \mathbb{R}^d$;    </li>
-<li>For $(x, w) \in S$ do    </li>
-<li>$\qquad$ $f[x] \leftarrow f[x] + w$;     </li>
-</ol>
-</blockquote>
-<p>After witnessing the stream $S$, we call $f$ the frequency vector.<br>We are interested in answering the following query. </p>
-<blockquote>
-<p><strong>Rank Query</strong><br><strong>Input：</strong> $x \in [d]$<br><strong>Returen:</strong> $r[x] \leftarrow \sum_{i = 1}^{x - 1} f[i]$.</p>
-</blockquote>
-<p>We formally define the problem of approximate rank estimation. </p>
-<blockquote>
-<p><strong>Problem.</strong> Let $\epsilon$ be an error parameter.<br>Design an algorithm, such that<br>for a rank query with a given element $x \in [d]$,<br>the summary will return an approximate rank $\hat r [x]$, such that </p>
-<script type="math/tex; mode=display">
-    r[x] − \epsilon \cdot W  \le \hat r [x] \le r[x] + \epsilon \cdot W.</script></blockquote>
-<h1 id="Q-Digest"><a href="#Q-Digest" class="headerlink" title="$Q$-Digest"></a>$Q$-Digest</h1><p>The naive solution maintain the vector $f \in \mathbb{R}^d$ explicitly.<br>Assuming that each entry of $f$ can always be stored in one word, the space usage of the is $O(d)$.   </p>
-<blockquote>
-<p><strong>Theorem.</strong> There exists an algorithm, <strong><em>$Q$-digest</em></strong>, that has space usage of $O( \frac{1}{\epsilon} \log d)$ words, insertion time $O(\log d)$ and query time of $O(\log d)$. </p>
-</blockquote>
-<p>We first study a prototype which requires $O(d)$ words. </p>
-<h2 id="Prototype"><a href="#Prototype" class="headerlink" title="Prototype"></a>Prototype</h2><p>The algorithm maintains an array of size $d$ to keep all values of $f$.<br>Further, it construct a binary tree on the array, such that </p>
-<ol>
-<li>Each node $v$ keeps the sum of frequencies of leaves in its subtree, denote as $s[v]$.  </li>
-</ol>
-<p>By definition, if $v$ is a leaf node, then $s[v]$ equals the frequency of the node.<br>For each node $v$, denote $L[v]$ and $R[v]$ its left and right children respectively.  </p>
-<p>The figure below is an example with $d = 8$ and $f = (0, 1, 1, 0, 2, 1, 0, 1)$. </p>
-<div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Q-Digest/Q-Digest.png" width="300" height="350" />
-</div>
-
-<!-- ![](https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Q-Digest/Q-Digest.png) -->
-<h3 id="Insertion"><a href="#Insertion" class="headerlink" title="Insertion"></a><strong>Insertion</strong></h3><p>To construct the tree, we can initialize a tree built on the domain $[d]$ with all counters $s[v]$ equal to $0$.<br>Then on each pair of update $(x, w) \in S$, we invoke the following algorithm. </p>
-<blockquote>
-<p><strong>Update:</strong> $(x, w)$         </p>
-<ol>
-<li>$v \leftarrow$ root;   </li>
-<li><strong>while</strong> $v$ is not a leaf <strong>do</strong>     </li>
-<li>$\qquad$ $s[v] \leftarrow s[v] + w$;    </li>
-<li>$\qquad$ <strong>if</strong> $x$ is in the left tree of $v$ <strong>then</strong>    </li>
-<li>$\qquad$ $\qquad$ $v \leftarrow L[v]$      </li>
-<li>$\qquad$ <strong>else</strong>        </li>
-<li>$\qquad$ $\qquad$ $v \leftarrow R[v]$    </li>
-<li>$s[v] \leftarrow s[v] + w$; </li>
-</ol>
-</blockquote>
-<p>The update takes time $O(\log d)$. </p>
-<h3 id="Query"><a href="#Query" class="headerlink" title="Query"></a><strong>Query</strong></h3><p>The query algorithm is also very simple.<br>Given an input $x$, the algorithm walks down the path from the root to the leaf that contains $x$.<br>The rank of $x$ equals the sum of of $s[v]$ for the $v$ such that </p>
-<ol>
-<li>it is a left child of some node on the path;</li>
-<li>it is not on the path. </li>
-</ol>
-<div style="text-align:center">
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Q-Digest/Query.png" width="400" height="350" />
-</div>
-
-<!-- ![](https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Q-Digest/Query.png) -->
-<blockquote>
-<p><strong>Rank Query</strong><br><strong>Input：</strong> $x \in [d]$</p>
-<ol>
-<li>$v \leftarrow root$;    </li>
-<li>$\hat r \leftarrow 0$;   </li>
-<li><strong>while</strong> $v$ is not a leaf node <strong>do</strong>   </li>
-<li>$\qquad$ <strong>if</strong> $x$ is in left subtree of $v$ <strong>then</strong>   </li>
-<li>$\qquad$ $\qquad$ $v \leftarrow L[v]$   </li>
-<li>$\qquad$<strong>else</strong>    </li>
-<li>$\qquad$ $\qquad$ $\hat r \leftarrow \hat r + s[ L[v] ]$;    </li>
-<li>$\qquad$ $\qquad$ $v \leftarrow R[v]$    </li>
-<li><strong>return</strong> $\hat r$    </li>
-</ol>
-</blockquote>
-<p>The query algorithm has time complexity $O(\log d)$. </p>
-<h2 id="Q-Digest-1"><a href="#Q-Digest-1" class="headerlink" title="$Q$-Digest"></a>$Q$-Digest</h2><p>In this section, we show how to reduce the space usage to $O(\frac{1}{\epsilon} \log d)$. </p>
-<p>In the previous section, when the algorithm perform a rank query for $x \in [d]$, it walks down a path $(v_1, \ldots, v_{\log d} )$, where $v_1$ is the root of the tree, and $v_{\log d}$ is the leaf node that contains $x$. </p>
-<p>There are $\log d$ nodes in the path in total.<br>If each node introduces an error of $O(\epsilon W / \log d)$ to the estimation of $r[x]$, then the final estimation has error bounded by $O(\epsilon W)$. </p>
-<p>This motivates to associate each node $v$ in the tree with an error counter $c[v]$, which is interpreted as the maximum error it can introduce to the rank estimation to a given element $x$.<br>It is initialized with $0$ and is guaranteed to be bounded by some threshold $C$ (except the leaf node).<br>The threshold $C$ is updated along with the insertion of elements into the tree.<br>The algorithm maintains the invariant that </p>
-<script type="math/tex; mode=display">
-    \frac{\epsilon \cdot W}{2 \log d} \le C \le \frac{\epsilon \cdot W}{\log d}.</script><p>Under this invariant, the estimation of $r[x]$ is always bounded by $\epsilon \cdot W$. </p>
-<h3 id="Insertion-1"><a href="#Insertion-1" class="headerlink" title="Insertion"></a><strong>Insertion</strong></h3><p>The insertion algorithm is very simple.<br>When an update $(x, w)$ arrives, the algorithm walks through the path from the root to the leaf that contains $x$.<br>For each internal node $v$ in the path, the amount of additional error it can make is $C - c[v]$.<br>If this amount is greater than $w$, then we just increase $c[v]$ by $w$, and stops the algorithm.<br>Intuitively, we insert $x$ into this node.<br>On the other hand, if $C - c[v]$ is less than $w$, then we can still partial insert $x$ into $v$, detailed by the pseudo-code below.<br>Doing so increase the rank estimation error only for the element greater than $x$, but not for the elements less than or equal to $x$.<br>Finally, if the invariant of $C$ does not hold, we need to update $C$ and the tree. </p>
-<blockquote>
-<p><strong>Update:</strong> $(x, w)$       </p>
-<ol>
-<li>$W \leftarrow W + w$;          </li>
-<li>$v \leftarrow$ root;     </li>
-<li><strong>while</strong> $w &gt; 0$ and $v$ is not a leaf <strong>do</strong>       </li>
-<li>$\qquad$ $s[v] \leftarrow s[v] + w$;    </li>
-<li>$\qquad$ $t \leftarrow \min\{ C - c[v], w\}$;    </li>
-<li>$\qquad$ $c[v] \leftarrow c[v] + t$;    </li>
-<li>$\qquad$ $w \leftarrow w - t$;    </li>
-<li>$\qquad$ <strong>if</strong> $x$ is in the left tree of $v$   <strong>then</strong>      </li>
-<li>$\qquad$ $\qquad$ $v \leftarrow L[v]$       </li>
-<li>$\qquad$ <strong>else</strong>         </li>
-<li>$\qquad$ $\qquad$ $v \leftarrow R[v]$      </li>
-<li>$s[v] \leftarrow s[v] + w$;      </li>
-<li>$c[v] \leftarrow c[v] + w$;       </li>
-<li><strong>if</strong> $C \le \frac{\epsilon \cdot W}{2 \log d}$ <strong>then</strong>       </li>
-<li>$\qquad$ $C \leftarrow \frac{\epsilon \cdot W}{\log d}$;     </li>
-<li>$\qquad$ <strong>Compress</strong>(root, 0) // update the tree    </li>
-</ol>
-</blockquote>
-<h3 id="Query-1"><a href="#Query-1" class="headerlink" title="Query"></a><strong>Query</strong></h3><p>The query algorithm is the same as the one in the previous section, except that if algorithm encounters a node $v$ with $c[v] = 0$, then the algorithm can terminate earlier.</p>
-<!-- > **Rank Query**     
-> **Input：** $x \in [d]$
-> 1. $v \leftarrow root$;
-> 2. $\hat r \leftarrow 0$;
-> 3. **while** $c[v] > 0$ and $v$ is not a leaf node **do**
-> 5. $\qquad$ **if** $x$ is in left subtree of $v$ **then**
-> 6. $\qquad$ $\qquad$ $v \leftarrow L[v]$ 
-> 7. $\qquad$**else**
-> 8. $\qquad$ $\qquad$ $\hat r \leftarrow \hat r + s[ L[v] ]$; 
-> 9. $\qquad$ $\qquad$ $v \leftarrow R[v]$
-> 10. **return** $\hat r$ -->
-<h3 id="Maintenance"><a href="#Maintenance" class="headerlink" title="Maintenance"></a><strong>Maintenance</strong></h3><p>Finally, we discuss how to update the tree in a top-down approach.<br>For a node $v$, we try to increase $c[v]$ to $C$, by borrowing weights from the its descendent.<br>There are two possible cases.<br>First, if $s[v] \le C$, then we can set $c[v] = C$ and delete all descendants of $v$.<br>Otherwise, setting $c[v] = C$ incurs a “debt” of $d \doteq C - c[v]$ that $v$’s descendants need to pay.<br>We assign as much debt as possible to the left child.</p>
-<blockquote>
-<p><strong>Compress</strong> $(v,d)$     </p>
-<ol>
-<li><strong>if</strong> $c[v] = 0$ <strong>then</strong> <strong>return</strong>;    </li>
-<li><strong>if</strong> v is a leaf node <strong>then</strong>     </li>
-<li>$\qquad$ $c[v] \leftarrow c[v] − d$      </li>
-<li><strong>else</strong>    </li>
-<li>$\qquad$ <strong>if</strong> $s[v] &gt; C + d$ <strong>then</strong>     </li>
-<li>$\qquad$ $\qquad$ $d \leftarrow d + C - c[v]$;     </li>
-<li>$\qquad$ $\qquad$ $c[v] \leftarrow C$;     </li>
-<li>$\qquad$ $\qquad$ $u \leftarrow L[v]$;     </li>
-<li>$\qquad$ $\qquad$ <strong>Compress</strong> $(L[v], \min(d , s[u] ) )$;     </li>
-<li>$\qquad$ $\qquad$ <strong>Compress</strong> $(R[v], \max(d − s[u] , 0 ) )$;     </li>
-<li>$\qquad$ <strong>else</strong>    </li>
-<li>$\qquad$ $\qquad$ $c[v] \leftarrow s[v] − d$;    </li>
-<li>$\qquad$ $\qquad$ Set weight of all descendants of $v$  to $0$;     </li>
-</ol>
-</blockquote>
-<p>By induction, we can show that $d \le s[v]$.  </p>
-<h3 id="Space-Usage"><a href="#Space-Usage" class="headerlink" title="Space Usage"></a><strong>Space Usage</strong></h3><p>A node is called “saturated” if $c[v] = C$.<br>By the invariant of $C$, there are at most $W / C = O((1 / \epsilon ) \log d)$ “saturated” nodes.<br>By the algorithm, each node $v$ in the tree with nonzero $c[v]$, either “saturated”, or has a “saturated” parent.<br>However, each “saturated” can have at most two children.<br>Therefore, the total number of nodes with nonzero $c[v]$ is bounded by $O((1 / \epsilon ) \log d)$.</p>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] <em>G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</em></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/07/Entropy-Inequalities/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/07/Entropy-Inequalities/" class="post-title-link" itemprop="url">Entropy Inequalities</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-07 11:08:27" itemprop="dateCreated datePublished" datetime="2021-07-07T11:08:27+10:00">2021-07-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-09 11:20:46" itemprop="dateModified" datetime="2021-07-09T11:20:46+10:00">2021-07-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> be two discrete random variables.</p>
-<h1 id="joint-entropy">Joint Entropy</h1>
-<blockquote>
-<p><strong>Definition.</strong> The joint entropy of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is <span class="math display">\[
-H(X, Y) = \sum_{x, y} p(x, y) \log \frac{1}{ p(x, y) }
+          <p>Let <span class="math inline">\(\Omega \subseteq \mathcal{C}\)</span> be a open set and <span class="math inline">\(f : \Omega \rightarrow \mathcal{C}\)</span> be a complex function. <span class="math inline">\(f\)</span> is <strong>holomorphic</strong> at <span class="math inline">\(z \in \Omega\)</span>, if the following limit exits: <span class="math display">\[
+    \begin{array}{lr}
+        \lim_{z + h \in \Omega, h \rightarrow 0} \frac{ f(z + h) - f(z) }{ h }. &amp; (1)
+    \end{array}
 \]</span></p>
-</blockquote>
-<p>If <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent, then <span class="math display">\[
-    H(X, Y) = H(X) + H(Y). 
+<p>The limit is denoted as <span class="math inline">\(f&#39;(z)\)</span> and is called the derivative of <span class="math inline">\(f\)</span> at <span class="math inline">\(z\)</span>. Note that <span class="math inline">\(h\)</span> can approach <span class="math inline">\(0\)</span> from any direction.</p>
+<p>Define <span class="math display">\[
+{ 
+    \frac{\partial f}{ \partial x} (z) \doteq \lim_{x \in \R, z + x \in     \Omega, x \rightarrow 0} \frac{ f(z + x) - f(z) }{ x },
+}
+\]</span> which is the limit of <span class="math inline">\((1)\)</span> when <span class="math inline">\(h\)</span> approaches to <span class="math inline">\(0\)</span> from the real axis.</p>
+<p>Similarly, define when limit when <span class="math inline">\(h\)</span> is purely imaginary: <span class="math display">\[
+\small
+    \frac{\partial f}{ \partial y} (z) \doteq \lim_{y \in \R, z + y \in \Omega, y \rightarrow 0} \frac{ f(z + i \cdot y) - f(z) }{ i \cdot y }. 
 \]</span></p>
-<h1 id="conditional-entropy">Conditional Entropy</h1>
+<p>If the derivate of <span class="math inline">\(f\)</span> exists at <span class="math inline">\(z\)</span>, we have shown that <span class="math display">\[
+    \begin{aligned}
+        \frac{\partial f}{ \partial x} = \frac{\partial f}{ \partial y}.    &amp;\qquad (2)
+    \end{aligned}
+\]</span> Writing <span class="math inline">\(f = u + iv\)</span>, we get <span class="math display">\[
+    \begin{aligned}
+        \frac{\partial f}{ \partial x} 
+            &amp;= \frac{\partial u}{ \partial x} + i \cdot \frac{\partial v}{ \partial x}, \\
+        \frac{\partial f}{ \partial y} 
+            &amp;= \frac{1}{i} \cdot \left( \frac{\partial u}{ \partial y} + i \cdot \frac{\partial v}{ \partial y} \right) = -i \cdot  \frac{\partial u}{ \partial y} + \frac{\partial v}{ \partial y}.
+    \end{aligned}
+\]</span></p>
+<p>Equation (2) implies that <span class="math display">\[
+    \frac{\partial u}{ \partial x} = \frac{\partial v}{ \partial y}, \qquad \frac{\partial v}{ \partial x} = - \frac{\partial u}{ \partial y}. 
+\]</span></p>
+<p>These are the <strong>Cauchy-Riemann</strong> equations. The next theorem states that the converse is also true, i.e., when the equations are satisfies at some point <span class="math inline">\(z\)</span>, then the derivative of <span class="math inline">\(f = u + iv\)</span> exists.</p>
 <blockquote>
-<p><strong>Definition.</strong> The conditional entropy of <span class="math inline">\(X\)</span> given <span class="math inline">\(Y = y\)</span> is the entropy of the probability distribution <span class="math inline">\(p(X \mid Y = y)\)</span> <span class="math display">\[
-H(X \mid Y = y) = \sum_x p(x \mid y) \log \frac{1}{ p(x \mid y) }
-\]</span></p>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(u, v : \Omega \rightarrow \R\)</span> and <span class="math inline">\(f = u + iv\)</span>. If <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> are continuously differentiable at <span class="math inline">\(z \in \Omega\)</span> and satisfy Cauchy-Riemann equations, then the derivative of <span class="math inline">\(f\)</span> exits.</p>
 </blockquote>
-<blockquote>
-<p><strong>Definition.</strong> The conditional entropy of <span class="math inline">\(X\)</span> given <span class="math inline">\(Y\)</span>, is the average, over <span class="math inline">\(y\)</span>, the conditional entropy of <span class="math inline">\(X\)</span> given <span class="math inline">\(y\)</span> <span class="math display">\[
-H(X \mid Y) = \sum_y p(y) H(X \mid Y = y) = \sum_{x, y} p(x , y) \log \frac{1}{ p(x \mid y) }.
+<p><strong>Proof.</strong> Since <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> are continuously differentiable at <span class="math inline">\(z = (x, y)\)</span>, for small <span class="math inline">\(\Delta z = (\Delta x, \Delta y) \in \R^2\)</span>, <span class="math display">\[
+    u( x + \Delta x , y + \Delta y ) - u(x, y) = \frac{\partial u}{ \partial x}(z) \cdot \Delta x + \frac{\partial u}{ \partial y}(z) \cdot \Delta y + \Vert \Delta z \Vert_1 \cdot \Phi_u( \Delta z), \\
+    \begin{aligned}
+        v( x + \Delta x , y + \Delta y ) - u(x, y) 
+            &amp;= \frac{\partial v}{ \partial x}(z) \cdot \Delta x + \frac{\partial v}{ \partial y}(z) \cdot \Delta y + \Vert \Delta z \Vert_1 \cdot \Phi_v( \Delta z) 
+    \end{aligned}
 \]</span></p>
-</blockquote>
-<h1 id="relative-entropy">Relative Entropy</h1>
-<p>Given a distribution <span class="math inline">\(p\)</span>, if we encode it with a distribution <span class="math inline">\(q\)</span> (with the same support), the expected coding length is roughly <span class="math display">\[
-    \sum_i p_i \log \frac{1}{q_i}
+<p>where <span class="math inline">\(\Phi_u( \Delta z) \rightarrow 0\)</span> and <span class="math inline">\(\Phi_v( \Delta z) \rightarrow 0\)</span> as <span class="math inline">\(\Vert \Delta z \Vert_1 \rightarrow 0\)</span>.</p>
+<p>Therefore, <span class="math display">\[
+    \small
+    \begin{aligned}
+        f( z + \Delta z ) - f( z ) 
+            &amp;= u( x + \Delta x , y + \Delta y ) - u(x, y) + i \Big( v( x + \Delta x , y + \Delta y ) - u(x, y) \Big) \\
+            &amp;= \frac{\partial u}{ \partial x}(z) \cdot \big( \Delta x + i \Delta y \big) + \frac{\partial u}{ \partial y}(z) \cdot \big( \Delta y - i \Delta x \big) + \Vert \Delta z \Vert_1 \cdot \Big( \Phi_u( \Delta z) +  \Phi_v( \Delta z) \Big) \\
+            &amp;= \Big( \frac{\partial u}{ \partial x}(z) - i \frac{\partial u}{ \partial y}(z) \Big) \cdot \big( \Delta x + i \Delta y \big) + \Vert \Delta z \Vert_1 \cdot \Big( \Phi_u( \Delta z) +  \Phi_v( \Delta z) \Big),
+    \end{aligned}
 \]</span></p>
-<p>The cost over the optimal coding is given by <span class="math display">\[
-    D(p || q) \doteq \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i} = \sum_i p_i \log \frac{p_i}{q_i}
-\]</span></p>
-<p>By definition, we know that this gap is always non-negative. We can prove it rigorously algebraically. We show two different approaches here.</p>
-<ol type="1">
-<li>By that <span class="math inline">\(f(x) = x \log x\)</span> is convex for <span class="math inline">\(x \ge 0\)</span>, we have <span class="math display">\[
-\begin{aligned}
-    D(p || q) &amp;= \sum_i p_i \log \frac{p_i}{q_i} \\
-    &amp;= \sum_i q_i \cdot \frac{p_i}{q_i} \log \frac{p_i}{q_i} \\
-    &amp;\ge \left( \sum_i q_i \cdot \frac{p_i}{q_i} \right) \log \left( \sum_i q_i \cdot \frac{p_i}{q_i} \right) \\
-    &amp;= 0
-\end{aligned}
-\]</span></li>
-<li>By that <span class="math inline">\(f(x) = -\log x\)</span> is convex (for <span class="math inline">\(x \ge 0\)</span> ), we have <span class="math display">\[
-\begin{aligned}
-    D(p || q) &amp;= \sum_i - p_i \log \frac{q_i}{p_i} \\
-    &amp;\ge  -\log \left( \sum_i p_i \cdot \frac{q_i}{p_i} \right) \\
-    &amp;= 0
-\end{aligned}
-\]</span></li>
-</ol>
-<h1 id="mutual-information">Mutual Information</h1>
-<blockquote>
-<p><strong>Definition.</strong> The mutual information between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is <span class="math display">\[
-I(X; Y) = \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(x, y)}{p(x) p(y) } \right] = D( p(x, y) \Vert p(x) p(y) ).
-\]</span></p>
-</blockquote>
-<p>The definition is symmetric and it holds that <span class="math inline">\(I(X; Y) = I(Y; X)\)</span>. If we know <span class="math inline">\(p(x,y)\)</span>, we use in expectation <span class="math inline">\(\mathbb{E}_{p(x, y) } \left[ \log \frac{1} { p(x, y)} \right]\)</span> bits to describe them. If we know only <span class="math inline">\(p(x)\)</span> and <span class="math inline">\(p(y)\)</span>, the mutual information measures the bits we waste.</p>
-<p><span class="math display">\[ \small
-\begin{aligned}
-    &amp;\sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } \\
-    =&amp;  \sum p(x, y) \left( \log \frac{ 1 }{p(x)} 
-    +  \log \frac{ 1 }{p(y)} 
-    -  \log \frac{ 1 }{p(x, y)}  \right) \\
-    =&amp; \mathbf{H} ( X ) + \mathbf{H} ( Y ) - \mathbf{H} ( X, Y )
-\end{aligned}
-\]</span></p>
-<p>Further, mutual information measures the average reduction of randomness of <span class="math inline">\(X\)</span> that results from learning the value of <span class="math inline">\(Y\)</span>. <span class="math display">\[ \small
-\begin{aligned}
-    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } 
-    &amp;=\sum p(x, y) \log \frac{ p(x | y)}{p(x)  } \\
-    &amp;= \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y).
-\end{aligned}
-\]</span></p>
-<p>Similarly, we can prove that <span class="math display">\[ \small
-\begin{aligned}
-    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } 
-    &amp;=\sum p(x, y) \log \frac{ p(x | y)}{ p(x) }  \\
-    &amp;=\mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y). 
-\end{aligned}
-\]</span></p>
-<blockquote>
-<p><span class="math inline">\(\mathbf{I}(X; Y) \ge 0\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \mathbf{I}(X; Y) = D( p(x, y) \mid p(x) p(y) ) \ge 0
-\]</span></p>
-<p>Or <span class="math display">\[
-\begin{aligned}
-    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } 
-    &amp;= -\sum p(x, y) \log \frac{p(x) p(y) }{ p(x, y)} \\
-    &amp;\ge - \log \sum p(x, y) \frac{p(x) p(y) }{ p(x, y)} \\
-    &amp;=0   
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary.</strong> <span class="math inline">\(\mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y) = \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y) \ge 0\)</span>.</p>
-</blockquote>
-<h2 id="conditional-mutual-information">Conditional Mutual Information</h2>
-<blockquote>
-<p><strong>Definition.</strong> The <strong><em>conditional mutual information</em></strong> between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> given <span class="math inline">\(Z = z\)</span> is the mutual information between the random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> in the joint ensemble <span class="math inline">\(\Pr (X, Y | Z = z)\)</span>, <span class="math display">\[
-I(X ; Y \mid Z = z) = H(X \mid Z = z) - H(X \mid Y, Z = z)
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Definition.</strong> The <strong><em>conditional mutual information</em></strong> between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> given <span class="math inline">\(Z\)</span> is average over <span class="math inline">\(z\)</span> of <span class="math inline">\(I(X; Y \mid Z = z)\)</span>, <span class="math display">\[
-I(X; Y \mid Z) = H(X \mid Z) - H(X \mid Y, Z).
-\]</span></p>
-</blockquote>
-<h1 id="conditional-relative-entropy"><strong>Conditional Relative Entropy</strong></h1>
-<blockquote>
-<p><strong>Definition</strong> (Conditional Relative Entropy). <span class="math display">\[
-\begin{aligned}
-\mathbf{D}( p(y \mid x) || q(y \mid x) ) &amp;\doteq  \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(Y \mid X) }{ q(Y \mid X) }  \right]\\
-&amp;=\sum_{x}  \sum_{ y } p(y \mid x) \log \frac{ p(y \mid x) }{ q(y \mid x) }
-\end{aligned}
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Lemma.</strong> Relative entropy <span class="math inline">\(\mathbf{D}( p || q )\)</span> is convex in the pair <span class="math inline">\((p, q)\)</span>: if there are two distribution pairs <span class="math inline">\((p_1, q_1)\)</span> and <span class="math inline">\((p_2, q_2)\)</span>, then for <span class="math inline">\(\alpha_1, \alpha_2 \in [0, 1]\)</span>, s.t., <span class="math inline">\(\alpha_1 + \alpha_2 = 1\)</span>, it holds that <span class="math display">\[
-\mathbf{D}( \alpha_1 p_1 + \alpha_2 p_2 || \alpha_1 q_1 + \alpha_2 q_2 ) \le \alpha_1 \mathbf{D}( p_1 ||  q_1 ) + \alpha_2 \mathbf{D}( p_2 ||  q_2 )
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> For any fix value <span class="math inline">\(x\)</span>, let <span class="math inline">\(s(x)\)</span> be a shorthand for <span class="math inline">\(\alpha_1 p_1(x) + \alpha_2 p_2(x)\)</span>. It holds that <span class="math display">\[ \small
-\begin{aligned}
-    s(x) \log \frac{ s(x) }{ \alpha_1 q_1(x) + \alpha_2 q_2(x) } 
-    &amp;=-s(x) \log \frac { \alpha_1 q_1(x) + \alpha_2 q_2(x) } { s(x) } \\
-    &amp;= -s(x) \log \left( \frac { \alpha_1 p_1(x)  } { s(x) } \frac { \alpha_1 q_1(x) } { \alpha_1 p_1(x)  } + \frac { \alpha_2 p_2(x)  } { s(x) } \frac { \alpha_2 q_2(x) } { \alpha_2 p_2(x)  } \right) \\
-    &amp;\le -\alpha_1 p_1(x) \log   \frac {  q_1(x) } {  p_1(x)  } - \alpha_2 p_2(x) \log \frac {  q_2(x) } {  p_2(x)  }
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="chain-rules"><strong>Chain Rules</strong></h1>
-<h2 id="chain-rule-for-information-content">Chain Rule for Information Content</h2>
-<blockquote>
-<p><span class="math inline">\(\log \frac{1}{ p(x, y) } = \log \frac{1}{p(x) } + \log \frac{1}{p(y | x) }\)</span>.</p>
-</blockquote>
-<h2 id="chain-rule-for-entropy">Chain Rule for Entropy</h2>
-<p>Let <span class="math inline">\(X_1, \ldots, X_n\)</span> be random variables whose density function is <span class="math inline">\(p(x_1 \ldots, x_n)\)</span>.</p>
-<blockquote>
-<p><span class="math inline">\(\mathbf{H}(X_1, \ldots, X_n) = \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, \ldots, X_{i - 1})\)</span></p>
-</blockquote>
-<p><strong>Proof.</strong><br />
-<span class="math display">\[ \small
-\begin{aligned}
-    \mathbf{H}(X_1, \ldots, X_n) 
-        &amp;= \sum_{x_1 \ldots, x_n} p(x_1 \ldots, x_n)  \log \frac{1}{\prod_{i = 1}^n p(x_i \mid x_1, \ldots, x_{i - 1})  }  \\
-        &amp;= \sum_{x_1 \ldots, x_n} p(x_1 \ldots, x_n) \sum_{i = 1}^n \log \frac{1}{ p(x_i \mid x_1, \ldots, x_{i - 1})  }  \\
-        &amp;=\sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, \ldots, X_{i - 1}) \\
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary</strong>. $  ( X_1, , X_n) _{i = 1}^n (X_i). $</p>
-</blockquote>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><span class="math inline">\(\mathbf{I}(X_1, \ldots, X_n; Y) = \sum_{i = 1}^n \mathbf{I}(X_i ; Y\mid X_1, \ldots, X_{i - 1})\)</span></p>
-</blockquote>
-<p><strong>Proof 1.</strong><br />
-<span class="math display">\[ \small
-\begin{aligned}
-    \mathbf{I}(X_1, \ldots, X_n; Y)
-    &amp;=  \mathbf{H}(X_1, \ldots, X_n) -  \mathbf{H}(X_1, \ldots, X_n \mid Y) \\
-    &amp;= \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, \ldots, X_{i - 1})  - \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, \ldots, X_{i - 1}, Y) \\
-    &amp;= \sum_{i = 1}^n \mathbf{I}(X_i ; Y\mid X_1, \ldots, X_{i - 1}) 
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Proof 2.</strong><br />
-<span class="math display">\[ \small
-\begin{aligned}
-    \mathbf{I}(X_1,  \ldots, X_n; Y )
-        &amp;=  \mathbf{D} ( p(x_1, \ldots, x_n, y) \Vert p(x_1, \ldots, x_n) p(y)) \\
-        &amp;= \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y) \log \frac{ p( x_1, \ldots, x_n, y) }{ p( x_1, \ldots, x_n ) p(y)  } \\
-        &amp;= \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y) \left( \log \frac{1}{ p(x_1, \ldots, x_n) }  - \log \frac{1}{ p(x_1, \ldots, x_n \mid y ) } \right) \\
-        &amp;= \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y) \log \frac{1}{ p(x_1) \cdot p(x_2 \mid x_1) \cdot \ldots \cdot p(x_n \mid x_1, \ldots, x_{n - 1} ) } \\
-        &amp; - \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y)  \log \frac{1}{ p(x_1 \mid y) \cdot p(x_2 \mid x_1, y) \cdot \ldots \cdot p(x_n \mid x_1, \ldots, x_{n - 1}, y ) } \\
-        &amp;= \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y) \left( \sum_{i \in [n] } \log \frac{ p(x_i \mid x_1, \ldots, x_{i - 1}, y) }{ p(x_i \mid x_1, \ldots, x_{i - 1}) } \right) \\
-        &amp;= \sum_{i = 1}^n \mathbf{I}(X_i ; Y \mid X_1, \ldots, X_{i - 1})
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><span class="math inline">\(\mathbf{D}( p(x, y) || q(x, y) ) = \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) )\)</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-\begin{aligned}
-    \mathbf{D}( p(x, y) || q(x, y) ) 
-        &amp;= \sum_{x, y} p(x, y) \log \frac{ p(x) p(y \mid x) }{q(x) q (y \mid x) }
-        \\
-        &amp;= \sum_{x, y} p(x, y) \log \frac{ p(x)  }{q(x) } + \sum_{x, y} p(x, y) \log \frac{  p(y \mid x) }{  q (y \mid x) }
-        \\
-        &amp;= \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) )
-\end{aligned}
-\]</span></p>
+<p>which finishes the proof.</p>
 <p><span class="math inline">\(\square\)</span></p>
 
       
@@ -603,7 +263,7 @@ I(X; Y \mid Z) = H(X \mid Z) - H(X \mid Y, Z).
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/05/Amplificatoin-by-Sampling/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/17/Power-Series-Radius-of-Convergence/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -617,7 +277,7 @@ I(X; Y \mid Z) = H(X \mid Z) - H(X \mid Y, Z).
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/05/Amplificatoin-by-Sampling/" class="post-title-link" itemprop="url">Amplificatoin by Sampling</a>
+            <a href="/2021/07/17/Power-Series-Radius-of-Convergence/" class="post-title-link" itemprop="url">Power Series--Radius of Convergence</a>
         </h2>
 
         <div class="post-meta">
@@ -626,16 +286,10 @@ I(X; Y \mid Z) = H(X \mid Z) - H(X \mid Y, Z).
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-07-05 23:51:25" itemprop="dateCreated datePublished" datetime="2021-07-05T23:51:25+10:00">2021-07-05</time>
+              <time title="Created: 2021-07-17 16:36:53 / Modified: 21:28:38" itemprop="dateCreated datePublished" datetime="2021-07-17T16:36:53+10:00">2021-07-17</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-06 00:27:12" itemprop="dateModified" datetime="2021-07-06T00:27:12+10:00">2021-07-06</time>
-              </span>
 
           
 
@@ -649,44 +303,201 @@ I(X; Y \mid Z) = H(X \mid Z) - H(X \mid Y, Z).
 
       
           <blockquote>
-<p><strong>Definition.</strong> Two distribution <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\mu&#39;\)</span> are <span class="math inline">\((\epsilon, \delta)\)</span> close, denoted as <span class="math inline">\(\mu \simeq_{(\epsilon, \delta) } \mu&#39;\)</span>, if for all measurable set <span class="math inline">\(A\)</span>, we have <span class="math display">\[
-\begin{aligned}
-\mu(A) &amp;\le e^\epsilon \mu&#39;(A) + \delta, \\
-\mu&#39;(A) &amp;\le e^\epsilon \mu(A) + \delta. 
-\end{aligned}
-\]</span></p>
+<p><strong>Theorem (Hadamard's Formula).</strong> Let <span class="math inline">\(f : \mathbb{C} \rightarrow \mathbb{C}\)</span> be a power series defined as <span class="math inline">\(f(z) = \sum_{n \ge 1} a_n z^n\)</span>. The <strong>radius of convergence</strong> of <span class="math inline">\(f\)</span>, denoted as <span class="math inline">\(R \in [0, \infty]\)</span>, is given by <span class="math display">\[ \small
+1 / R = L \doteq \limsup_{k \ge 1} |a_k|^{1 / k}.
+\]</span> where we adopt the convention that <span class="math inline">\(1 / 0 = \infty\)</span> and <span class="math inline">\(1 / \infty = 0\)</span>.</p>
+<p>It is guaranteed that 1. If <span class="math inline">\(|z| &lt; R\)</span>, then <span class="math inline">\(f\)</span> converges absolutely. 2. If <span class="math inline">\(|z| &gt; R\)</span>, then <span class="math inline">\(f\)</span> diverges.</p>
 </blockquote>
+<p><strong>Remark:</strong> The region <span class="math inline">\(|z| &lt; R\)</span> is called the <strong>disc of convergence</strong> of <span class="math inline">\(f\)</span>.</p>
+<p><strong>Proof.</strong><br />
+If <span class="math inline">\(|z| &lt; R\)</span>, then <span class="math inline">\(L \cdot |z| &lt; 1\)</span>. Hence, <span class="math display">\[ \small
+    \exists \epsilon &gt; 0, \, r &lt; 1,  \, \text{ s.t. } \, (L + \epsilon) \cdot |z| &lt; r.
+\]</span></p>
+<p>Since <span class="math inline">\(\sup_{k \ge n} | a_k |^{1 / k} \rightarrow L\)</span>, for large enough <span class="math inline">\(n\)</span>, we have <span class="math display">\[ \small
+    L + \epsilon \ge \sup_{k \ge n} | a_k |^{1 / k} \ge |a_n|^{1 / n}.
+\]</span></p>
+<p>Therefore, <span class="math display">\[ \small
+    | a_n z^n | = \big( |a_n|^{1 / n} \cdot  |z| \big)^n \le \big( (L + \epsilon) \cdot |z| \big)^n \le r^n.
+\]</span></p>
+<p>It follows that <span class="math inline">\(f\)</span> converges absolutely.</p>
+<p>If <span class="math inline">\(|z| &gt; R\)</span>, then <span class="math inline">\(L \cdot |z| &gt; 1\)</span>. Hence, <span class="math display">\[ \small
+    \exists \epsilon &gt; 0, \, r &gt; 1,  \, \text{ s.t. } \, (L - \epsilon) \cdot |z| &gt; r.
+\]</span></p>
+<p>Since <span class="math inline">\(\sup_{k \ge n} | a_k |^{1 / k}\)</span> decreases to <span class="math inline">\(L\)</span>, for each <span class="math inline">\(n \in \N^+\)</span>, <span class="math display">\[ \small
+    \exists k \ge n,  \, \text{ s.t. } \, |a_k|^{1 / k} \ge (L - \epsilon).
+\]</span></p>
+<p>For such <span class="math inline">\(k\)</span>, <span class="math display">\[ \small
+    | a_k z^k | = \big( |a_k|^{1 / k} \cdot  |z| \big)^k \ge \big( (L - \epsilon) \cdot |z| \big)^k \ge r^k.
+\]</span></p>
+<p>Since the terms of <span class="math inline">\(f\)</span> are unbounded, the series is consequently divergent.</p>
+<p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><strong>Theorem.</strong> Let <span class="math inline">\(q \in (0, 1)\)</span> and let <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\mu&#39;\)</span> be two distributions such that <span class="math inline">\(\mu \simeq_{(\epsilon, \delta)} \mu&#39;\)</span>. For <span class="math inline">\(\nu = (1 - q) \mu + q \mu&#39;\)</span>, it holds that <span class="math display">\[
-\nu \simeq_{ (\epsilon&#39;, q \delta) } \mu, 
-\]</span> where <span class="math inline">\(\epsilon&#39; = \ln ( q (e^\epsilon - 1) + 1 )\)</span>.</p>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(f : \mathbb{C} \rightarrow \mathbb{C}\)</span> be a power series defined as <span class="math inline">\(f(z) = \sum_{n \ge 1} a_n z^n\)</span>. Then it is holomorphic in its disc of convergence. Its derivative is given by <span class="math display">\[
+f&#39;(z) = \sum_{n \ge 1} n a_n z_n^{n - 1}. 
+\]</span> Moreover, <span class="math inline">\(f&#39;(z)\)</span> has the same disc of convergence.</p>
 </blockquote>
-<p><strong>Proof.</strong> For each measurable set <span class="math inline">\(A\)</span> <span class="math display">\[
+<p><strong>Proof.</strong> Let <span class="math inline">\(b_n = n a_n\)</span>. Define <span class="math display">\[ \small
+    g(z) = \sum_{n \ge 1} b_n z_n^{n - 1} = \sum_{n \ge 1} n a_n z_n^{n - 1}.
+\]</span> Observe that <span class="math display">\[ 
+    \begin{array}{rl}
+        \limsup_n | b_n |^{ 1 / n} 
+            &amp;= \limsup_n | n a_n |^{ 1 / n} \\
+            &amp;= \lim_n | n |^{ 1 / n} \cdot \limsup_n | a_n |^{ 1 / n} \\
+            &amp;= \limsup_n | a_n |^{ 1 / n}.
+    \end{array}
+\]</span></p>
+<p>It follows that <span class="math inline">\(g(z)\)</span> has the same disc of convergence as <span class="math inline">\(f(z)\)</span>.</p>
+<p>It is left to prove that <span class="math inline">\(g(z)\)</span> is the derivative of <span class="math inline">\(f(z)\)</span>. For <span class="math inline">\(k \in \N_+\)</span>, write <span class="math inline">\(f(z) = p_k (z) + r_k(z)\)</span>, where <span class="math display">\[
+    p_k(z) = \sum_{n \in [k] } a_n z^n,\quad r_k(z) = \sum_{n &gt; k} a_n z^n.
+\]</span></p>
+<p>Denote <span class="math inline">\(R\)</span> the radius of convergence of <span class="math inline">\(f(z)\)</span>. and suppose <span class="math inline">\(0 \le |z_0| &lt; r &lt; R\)</span>. Then for <span class="math inline">\(h \in \mathbb{C}\)</span>, such that <span class="math inline">\(|z_0 + h| &lt; r\)</span>, we have <span class="math display">\[ \small
     \begin{aligned}
-        \nu(A) 
-            &amp;= (1 - q) \mu(A) + q \mu&#39; (A) \\
-            &amp;\le (1 - q) \mu(A) + q (e^\epsilon \mu (A) + \delta) \\
-            &amp;= ( q (e^\epsilon - 1) + 1 ) \mu(A) + q \delta. 
+        \frac{ f(z_0 + h) - f(z_0) }{ h }
+            &amp;= \frac{ p_k(z_0 + h) - p_k(z_0) }{ h } +  \frac{ r_k(z_0 + h) - r_k(z_0) }{ h }  \\
+            &amp;= \frac{ r_k(z_0 + h) - r_k(z_0) }{ h } + \left( \frac{ p_k(z_0 + h) - p_k(z_0) }{ h }  - p_k&#39;(z_0) \right) + p_k&#39;(z_0).
     \end{aligned}
 \]</span></p>
-<p>Next we prove the other direction. Denote <span class="math inline">\(t = e^{\epsilon} - 1\)</span>. Then <span class="math display">\[
-    e^{\epsilon&#39;} = 1 + qt, 
+<p>We will prove that as <span class="math inline">\(k \rightarrow \infty\)</span>, <span class="math display">\[
+    p_k&#39;(z_0) \rightarrow g(z_0),\, \quad  \frac{ r_k(z_0 + h) - r_k(z_0) }{ h } \rightarrow 0. 
 \]</span></p>
-<p>and <span class="math display">\[
+<p>Moreover a fixed <span class="math inline">\(k\)</span>, as <span class="math inline">\(h \rightarrow 0\)</span>, <span class="math display">\[
+    \left( \frac{ p_k(z_0 + h) - p_k(z_0) }{ h }  - p_k&#39;(z_0) \right) \rightarrow 0. 
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\lim_{h \rightarrow 0} \frac{ f(z_0 + h) - f(z_0) }{ h } = g(z_0)\)</span>.</p>
+<p>To finish the proof, we see that</p>
+<p><span class="math display">\[ \small
     \begin{aligned}
-        \nu(A)  
-            &amp;=  (1 - q) \mu(A) + q \mu&#39; (A)   \\
-            &amp;\ge  (1 - q) \mu(A) + q e^{-\epsilon} (\mu (A) - \delta)   \\
-            &amp;=  (1 - q) \mu(A) + \frac{q}{1 + t} (\mu (A) - \delta)   \\
-            &amp;=  \mu(A) - \frac{qt}{1 + t} \mu (A) - \frac{q}{1 + t} \delta   \\
-            &amp;= \left( 1 - \frac{qt}{1 + t} \right) \mu (A) - \frac{1}{1 + t} q \delta \\
-            &amp;\ge \left( 1 - \frac{qt}{1 + qt} \right) \mu (A) - \frac{1}{1 + qt} q \delta \\
-            &amp;= \frac{1}{1 + qt} \left( \mu (A) - q \delta \right). 
+        \left| \frac{ f(z_0 + h) - f(z_0) }{ h } - g(z_0) \right|
+            &amp;= \left| \frac{ p_k(z_0 + h) - p_k(z_0) }{ h } +  \frac{ r_k(z_0 + h) - r_k(z_0) }{ h } - g(z_0) \right|\\
+            &amp;\le 
+            \left| \frac{ p_k(z_0 + h) - p_k(z_0) }{ h } - p_k&#39;(z_0) \right| \\
+            &amp;+ \left| p_k&#39;(z_0) - g(z_0 ) \right| \\
+            &amp;+ \left| \frac{ r_k(z_0 + h) - r_k(z_0) }{ h } \right|.
     \end{aligned}
+\]</span></p>
+<p>Since <span class="math inline">\(g(z_0)\)</span> converges absolutely, for large enough <span class="math inline">\(k\)</span>, <span class="math display">\[ \small
+    \left| p_k&#39;(z_0) - g(z_0 ) \right| \le \epsilon. 
+\]</span></p>
+<p>Since <span class="math display">\[
+    a^n - b^n = (a - b) \left( a^{n - 1} + a^{n - 2} b^2 + \ldots + b^{n - 1} \right), 
+\]</span></p>
+<p>and using that <span class="math inline">\(|z_0 + h| &lt; r\)</span>, <span class="math inline">\(|z_0 | &lt; r\)</span>, <span class="math display">\[ \small
+    \begin{aligned}
+        \left| \frac{ r_k(z_0 + h) - r_k(z_0) }{ h } \right|    
+            &amp;= \left| \frac{ \sum_{n &gt; k} a_n [ (z_0 + h)^n - z ^n ] }{ h } \right| 
+            &amp;\le \sum_{n &gt; k} a_n n r^{n - 1}. 
+    \end{aligned}
+\]</span></p>
+<p>Since <span class="math inline">\(g(r)\)</span> converges absolutely, for large enough <span class="math inline">\(k\)</span>, <span class="math display">\[
+    \left| \frac{ r_k(z_0 + h) - r_k(z_0) }{ h } \right| \le \sum_{n &gt; k} a_n n r^{n - 1} \le  \epsilon.
+\]</span></p>
+<p>Finally, for a fixed <span class="math inline">\(k\)</span>, when <span class="math inline">\(h \rightarrow 0\)</span>, <span class="math display">\[
+    \left| \frac{ p_k(z_0 + h) - p_k(z_0) }{ h } - p_k&#39;(z_0) \right| \rightarrow 0.
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1] <em>Ú. Erlingsson, V. Feldman, I. Mironov, A. Raghunathan, K. Talwar, and A. Thakurta, “Amplification by Shuffling: From Local to Central Differential Privacy via Anonymity,”</em></p>
+<p>[1] L. V. Ahlfors, Complex analysis: an introduction to the theory of analytic functions of one complex variable, 3d ed. New York: McGraw-Hill, 1979.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/16/Complex-Mapping/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/16/Complex-Mapping/" class="post-title-link" itemprop="url">Complex Mapping</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-16 23:40:14" itemprop="dateCreated datePublished" datetime="2021-07-16T23:40:14+10:00">2021-07-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-23 23:18:16" itemprop="dateModified" datetime="2021-07-23T23:18:16+10:00">2021-07-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose we have complex mapping <span class="math inline">\(f : X \rightarrow Y\)</span>, where <span class="math inline">\(X, Y \subset \mathbb{C}\)</span>. How do we visualize it? As, we can't visualize four dimension data in a single plot, we split it into two, one for the domain and one for the codomain.</p>
+<p>For example, consider the unit cycle centered at <span class="math inline">\(2\)</span> <span class="math display">\[
+    S_1 \doteq \{ z \in \mathbb{C} : | z - 2 | &lt; 1 \}.
+\]</span></p>
+<p>Let <span class="math inline">\(f(z) \doteq \frac{2}{z - 1}\)</span>. Then <span class="math inline">\(S_1\)</span> is mapped to the set <span class="math display">\[
+    S_2 \doteq \{ z \in \mathbb{C} : \text{Re}(z) &gt; 1 \}.
+\]</span></p>
+<p>This is shown by the picture below.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Complex-Mapping.png?raw=true" /></p>
+<p>We verify this algebraically.</p>
+<p><strong>Proof 1.</strong> Let <span class="math inline">\(w = \frac{2}{z - 1}\)</span>. As <span class="math inline">\(w \neq 0\)</span>, we have <span class="math display">\[
+{\small
+    z - 1 = \frac{2}{w} \implies z = \frac{2}{w} + 1.
+}
+\]</span> Hence, <span class="math display">\[
+\begin{aligned} \small
+        |z - 2 |  &lt; 1 
+            &amp;\implies \left| \frac{2}{w} - 1 \right| &lt; 1 \\
+            &amp;\implies \left| \frac{2 - w}{w} \right|^2 &lt; 1 \\
+            &amp;\implies \left| 2 - w \right|^2 &lt; |w|^2 \\
+            &amp;\implies \Vert (2 - x, y) \Vert_2^2 &lt; \Vert (x, y) \Vert_2^2   &amp;\text{let } w = (x, y) \\
+            &amp;\implies 4 - 4 x &lt; 0 \\
+            &amp;\implies 1 &lt; x. 
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><strong>Proof 2.</strong> Denote the border of <span class="math inline">\(S_1\)</span> as <span class="math inline">\(z = 2 + e^{i \theta}\)</span>, where <span class="math inline">\(\theta \in [-\pi, \pi)\)</span>. Then <span class="math display">\[
+    \begin{aligned}
+        w 
+            &amp;= \frac{2}{z - 1} \\
+            &amp;= \frac{2}{1 + e^{i \theta } } \\
+            &amp;= \frac{2}{1 + e^{i \theta } } \cdot \frac{e^{- i\theta / 2 } }{ e^{ - i \theta / 2 } } \\
+            &amp;= \frac{2 e^{ - i \theta / 2} }{ e^{ - i \theta / 2 } + e^{i \theta / 2} } \\
+            &amp;= 2 \cdot \frac{ \cos (\theta / 2) + i \sin (\theta / 2) }{ 2 \cos (\theta  / 2) } \\
+            &amp;= 1 + i \tan (\theta / 2).
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
 
       
     </div>
@@ -705,7 +516,7 @@ I(X; Y \mid Z) = H(X \mid Z) - H(X \mid Y, Z).
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -771,7 +582,7 @@ I(X; Y \mid Z) = H(X \mid Z) - H(X \mid Y, Z).
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">155</span>
+          <span class="site-state-item-count">160</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

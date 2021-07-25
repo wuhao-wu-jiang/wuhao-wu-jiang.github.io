@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/10/26/Bellman-Ford/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/12/13/Complex-Integration/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/10/26/Bellman-Ford/" class="post-title-link" itemprop="url">Bellman Ford</a>
+            <a href="/2018/12/13/Complex-Integration/" class="post-title-link" itemprop="url">Complex Integral</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-10-26 22:13:41" itemprop="dateCreated datePublished" datetime="2018-10-26T22:13:41+11:00">2018-10-26</time>
+              <time title="Created: 2018-12-13 22:26:11" itemprop="dateCreated datePublished" datetime="2018-12-13T22:26:11+11:00">2018-12-13</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-10-27 02:06:16" itemprop="dateModified" datetime="2018-10-27T02:06:16+11:00">2018-10-27</time>
+                <time title="Modified: 2019-12-13 16:24:32" itemprop="dateModified" datetime="2019-12-13T16:24:32+11:00">2019-12-13</time>
               </span>
 
           
@@ -191,26 +191,157 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Here we discuss the Bellman Ford algorithm for computing shortest path or negative cycle in an undirected weighted graph <span class="math inline">\(G = (V, E, W)\)</span> that contains negative edges.</p>
-<p>Recall the Dijkstra algorithm bases on the induction of the number of vertices. The Bellman Ford algorithm, on the other hand, bases on the induction of the number of edges of the shortest path.</p>
-<p>Let <span class="math inline">\(P_k = (s, v_1, v_2, .., v_k, t)\)</span> be the shortest path between <span class="math inline">\(s\)</span> and <span class="math inline">\(t\)</span>. If we finds the shortest <span class="math inline">\(P_{k - 1} = (s, v_1, v_2, ..., v_{k - 1})\)</span>, then we can easily find the path <span class="math inline">\(P_k\)</span>. To this end, we define dist[v] the distance from source node <span class="math inline">\(s\)</span> to vertex <span class="math inline">\(v\)</span>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">std::vector&lt;int&gt; dist(n, INT_MAX); </span><br><span class="line">std::vector&lt;int&gt; pred(n, 0);</span><br><span class="line">dist[s] &#x3D; 0;</span><br><span class="line">for(int i &#x3D; 0; i &lt; n - 1; ++i) &#123;</span><br><span class="line">    for each edge (u, v) &#123;</span><br><span class="line">        if(dist[u] + w(u, v) &lt; dist[v]) &#123;</span><br><span class="line">            dist[v] &#x3D; dist[u] + w(u, v);</span><br><span class="line">            pred[v] &#x3D; u;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>If the graph does not contain a negative cycle, the above code compute the shortest path correctly. On the other hand, to check the existence of a negative, we could execute an additional iteration after the above code</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">bool check_negative_cycle() &#123;</span><br><span class="line">     for each edge (u, v) &#123;</span><br><span class="line">        if(dist[u] + w(u, v) &lt; dist[v]) &#123;</span><br><span class="line">            dist[v] &#x3D; dist[u] + w(u, v);</span><br><span class="line">            pred[v] &#x3D; u;</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;    </span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>The correctness can be verified as follows: if the graph does not contain negative cycle, the any shortest path contains at most <span class="math inline">\((n - 1)\)</span>-th edges. The value of <span class="math inline">\(dist[v]\)</span> should not change in this <span class="math inline">\(n\)</span>-th iteration.</p>
-<p>To return a negative cycle, when we find an edge <span class="math inline">\((u, v)\)</span> such that <span class="math inline">\(dist[u] + w(u, v) &lt; dist[v]\)</span> (in this <span class="math inline">\(n\)</span>-th iteration), we can trace the predecessor of <span class="math inline">\(v\)</span> until we encounter a cycle. Notice that this cycle may not necessarily contains <span class="math inline">\(v\)</span>. But we claim that this cycle must be negative.</p>
-<h4 id="theorem">Theorem</h4>
-<p>Let <span class="math inline">\(C = (v_1, v_2, ..., v_j)\)</span> be the cycle we found, such that <span class="math inline">\(pred[v_i] = pred[v_{i - 1}], \forall 2 \le i \le j\)</span> and <span class="math inline">\(pred[v_1] = v_j\)</span>. WLOG, let <span class="math inline">\(v_1\)</span> be the vertex whose value <span class="math inline">\(pred[v_1]\)</span> is updated latest among <span class="math inline">\(pred[v_1], pred[v_2], ..., pred[v_j]\)</span>. It holds that</p>
+          <p>In this article are going to walk through complex integral and establish it step by step. First, we review the classical Riemann integral and see how this motivates complex integral.</p>
+<h1 id="riemann-sums">Riemann Sums</h1>
+<p>Intuitively, given a interval <span class="math inline">\([a, b]\)</span> and a function <span class="math inline">\(f\)</span> defined on that, the Riemann integral is obtained by dividing <span class="math inline">\([a, b]\)</span> into many small intervals and summing over the product of the length of each interval and function value at a arbitrary chosen point on the interval. Such a sum is well-defined if it converges to some fixed value when the partition chosen is "refined" enough.</p>
+<p><em>DEFINITION.</em><br />
+Let <span class="math inline">\(f(x)\)</span> be a function defined on a closed interval <span class="math inline">\([a, b]\)</span>. We say a number <span class="math inline">\(J\)</span> is the definite integral of <span class="math inline">\(f\)</span> over <span class="math inline">\([a, b]\)</span> and that <span class="math inline">\(J\)</span> is the limit of the Riemann sums <span class="math inline">\(\sum_{k = 1}^n f(c_k) \Delta_{k}\)</span> if the following condition is satisfied:</p>
+<p>Given any number <span class="math inline">\(\epsilon &gt; 0\)</span>, there is a corresponding number <span class="math inline">\(\delta &gt; 0\)</span> such that for every partition <span class="math inline">\(P = \{x_0, x_1, ..., x_n \}\)</span> of <span class="math inline">\([a, b]\)</span> with <span class="math inline">\(||P|| &lt; \delta\)</span> （where <span class="math inline">\(||P|| \doteq \max_{1 \le i \le n} \Delta_i\)</span> and <span class="math inline">\(\Delta_i \doteq x_i - x_{i - 1}\)</span>) and any choice of <span class="math inline">\(c_k\)</span> in <span class="math inline">\([x_{k - 1}, x_k]\)</span>, we have<br />
+<span class="math display">\[
+\left| \sum_{k = 1}^n f(c_k) \Delta_k - J \right| &lt; \epsilon
+\]</span> When the limit exists we write it as the definite integral<br />
+<span class="math display">\[
+J = \lim_{||P|| \rightarrow 0} \sum_{k = 1}^n f(c_k) \Delta_{k}
+\]</span> There is a specified notation for this limit of Riemann sums <span class="math display">\[
+\int_a^b f(x) dx = \lim_{||P|| \rightarrow 0} \sum_{k = 1}^n f(c_k) \Delta_{k}
+\]</span></p>
+<h1 id="complex-integral">Complex Integral</h1>
+<h2 id="real-to-complex-function">Real to complex function</h2>
+<p>How do we extend integral in real line to complex plane. The most simplest extension is of a real to complex function <span class="math inline">\(\gamma(t) = x(t) + i y(t)\)</span>, whose integral on a interval is obtained by integrating its real part and imaginary part respectively.</p>
+<p><em>DEFINITION</em> If <span class="math inline">\(\gamma : D \rightarrow C\)</span> is simply a function on a real interval <span class="math inline">\(D = [a, b]\)</span>, then the integral <span class="math inline">\(\int_a^b \gamma(t) dt\)</span> is defined as <span class="math display">\[
+\int_a^b \gamma(t) dt = \int_a^b x(t) dt + i\int_a^b y(t) dt,
+\]</span> where <span class="math inline">\(\gamma(t) = x(t) + i y(t)\)</span>.</p>
+<h2 id="complex-to-complex-function">Complex to complex function</h2>
+<p>Another natural idea is to consider a smooth path <span class="math inline">\(C\)</span> with endpoints <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> on the complex plane and a complex function <span class="math inline">\(f\)</span> whose domain contains the path.</p>
+<p>Note we do not even require <span class="math inline">\(a \neq b\)</span>; but in case <span class="math inline">\(a = b\)</span>, we must specify an orientation for the closed path <span class="math inline">\(C\)</span>.</p>
+<p>Next, we repeat the partition and product idea: let <span class="math inline">\(P = \{z_0, z_1, ..., z_n\}\)</span> be a partition of the curve such that <span class="math inline">\(z_0 = a\)</span> and <span class="math inline">\(z_n = b\)</span>. A Riemann sum associated with <span class="math inline">\(P\)</span> is just what it is in the real case: <span class="math inline">\(J\)</span> is the limit of the <span class="math inline">\(\sum_{k = 1}^n f(z_k) \Delta_{k}\)</span> (where <span class="math inline">\(\Delta \doteq |z_k - z_{k - 1}| = \sqrt{Re(z_k - z_{k - 1})^2 + Im(z_k - z_{k - 1})^2}\)</span>) if the following condition is satisfied</p>
+<p>Given any number <span class="math inline">\(\epsilon &gt; 0\)</span>, there is a corresponding number <span class="math inline">\(\delta &gt; 0\)</span> such that for every partition <span class="math inline">\(P = \{z_0, z_1, ..., z_n\}\)</span> of <span class="math inline">\([a, b]\)</span> with <span class="math inline">\(||P|| &lt; \delta\)</span> and any choice of <span class="math inline">\(d_k\)</span> in <span class="math inline">\([z_{k - 1}, z_k]\)</span>, we have<br />
+<span class="math display">\[
+|\sum_{k = 1}^n f(d_k) \Delta_{k} - J| &lt; \epsilon
+\]</span> When the limit exists we write it as the definite integral<br />
+<span class="math display">\[
+J = \lim_{||P|| \rightarrow 0} \sum_{k = 1}^n f(d_k) \Delta_{k}
+\]</span> There is a specified notation for this limit of Riemann sums <span class="math display">\[
+\int_C f(x) dx = \lim_{||P|| \rightarrow 0} \sum_{k = 1}^n f(d_k) \Delta_{k}
+\]</span></p>
+<h2 id="rules-satisfied-by-the-integrals">Rules satisfied by the integrals</h2>
+<ol type="1">
+<li>Constant Multiple: <span class="math inline">\(\int_C k f(x) dx = k \int_C f(x) dx\)</span>.</li>
+<li>Sum: <span class="math inline">\(\int_C f(x) + g(x) dx = \int_C f(x) dx + \int_C g(x) dx\)</span></li>
+</ol>
+<p><em>Proof:</em> For any partition <span class="math inline">\(P\)</span> of <span class="math inline">\(C\)</span> and for every choice of the points <span class="math inline">\(z_k\)</span>,<br />
+<span class="math display">\[
+\sum_{j = 1}^n kf(z_j) \Delta_{z_j} = k \sum_{j = 1}^n f(z_j) \Delta_{z_j} \\
+\sum_{j = 1}^n (f(z_j) + g(z_j))\Delta_{z_j} = \sum_{j = 1}^n f(z_j) \Delta_{z_j} + \sum_{j = 1}^n g(z_j) \Delta_{z_j}
+\]</span> Taking limit of both side, we get the desired answer. Remark: given two sequence <span class="math inline">\(\{ a_1, a_2, ..., \}\)</span> and <span class="math inline">\(\{b_1, b_2, ..., \}\)</span>, if <span class="math inline">\(a_i = b_i\)</span> for arbitrary <span class="math inline">\(i \ge 0\)</span> and <span class="math inline">\(\lim_i b_i = S\)</span>, then <span class="math inline">\(\lim_i a_i\)</span> exits and <span class="math inline">\(\lim_i a_i = S\)</span>.</p>
+<h2 id="evaluation">Evaluation</h2>
+<p>To evaluate such integral, we can choose a description <span class="math inline">\(\gamma(t) = x(t) + i y(t) : [a, b] \rightarrow C\)</span> of curve <span class="math inline">\(C\)</span>. We partition <span class="math inline">\(C\)</span> by partitioning the interval <span class="math inline">\([a, b]\)</span> in usual way <span class="math inline">\(P_t = \{ a = t_0 &lt; t_1&lt; ... &lt; t_n = b \}\)</span>. Then <span class="math inline">\(\gamma(P_t) \doteq \{ \gamma(t_0), \gamma(t_1), ..., \gamma(t_n) \}\)</span> is a partition of <span class="math inline">\(C\)</span>.</p>
+<p>If <span class="math inline">\(\gamma\)</span> is continuous, it is uniformly continuous on <span class="math inline">\([a, b]\)</span>. Therefore, as <span class="math inline">\(||P_t|| \rightarrow 0\)</span>, <span class="math inline">\(||\gamma(P_t)|| \rightarrow 0\)</span>. If <span class="math inline">\(\int_C f(z) dz\)</span> exists, then</p>
 <p><span class="math display">\[
+\int_C f(z) dz = \lim_{||P_t|| \rightarrow 0} \sum_{j = 1}^n f(\gamma(e_j)) \big(\gamma(t_j) - \gamma(t_{j - 1}) \big)
+\]</span></p>
+<p>for arbitrary choice <span class="math inline">\(e_j \in [t_{j - 1}, t_j]\)</span>.</p>
+<p>When the derivative of <span class="math inline">\(\gamma\)</span> exists and is continuous, it is uniformly continuous on the closed bounded interval <span class="math inline">\([a, b]\)</span>. We now can rewrite the Riemann sum as</p>
+<p><span class="math display">\[
+\sum_{j = 1}^n f(\gamma(e_j)) \frac{\gamma(t_j) - \gamma(t_{j - 1})}{t_j - t_{j - 1} }(t_j - t_{j - 1})  
+= \sum_{j = 1}^n f(\gamma(e_j)) \frac{x(t_j) - x(t_{j - 1})+ i (y(t_j) - y_(t_{j - 1}))}{t_j - t_{j - 1} }(t_j - t_{j - 1})
+\]</span></p>
+<p>By intermediate value theorem, as <span class="math inline">\(x&#39;(t)\)</span> and <span class="math inline">\(y&#39;(t)\)</span> exist, there are some <span class="math inline">\(e_j&#39; \in [t_{j - 1}, t_j]\)</span> and <span class="math inline">\(e_j&#39;&#39; \in [t_{j - 1}, t_j]\)</span>, such that</p>
+<p><span class="math display">\[
+\frac{x(t_j) - x(t_{j - 1})}{t_j - t_{j - 1} } = x&#39;(e_j&#39;) \quad \wedge \frac{y(t_j) - y(t_{j - 1})}{t_j - t_{j - 1} } = x&#39;(e_j&#39;&#39;)
+\]</span></p>
+<p>On the other hand, as <span class="math inline">\(x&#39;(t)\)</span> and <span class="math inline">\(y&#39;(t)\)</span> are uniformly continuous, for arbitrary <span class="math inline">\(\epsilon &gt; 0\)</span>, there is a <span class="math inline">\(\delta\)</span> such that if <span class="math inline">\(||P_t|| &lt; \delta\)</span>, <span class="math inline">\(|x&#39;(e_j&#39;) - x&#39;(e_j)| &lt; \epsilon\)</span> and <span class="math inline">\(|y&#39;(e_j&#39;&#39;) - y&#39;(e_j)| &lt; \epsilon\)</span>. It follows that</p>
+<p><span class="math display">\[
+ \frac{x(t_j) - x(t_{j - 1})+ i (y(t_j) - y_(t_{j - 1}))}{t_j - t_{j - 1} } = x&#39;(e_j) + i y&#39;(e_j) \pm \epsilon(1 + i)\\
+ \sum_{j = 1}^n f(\gamma(e_j)) \frac{\gamma(t_j) - \gamma(t_{j - 1})}{t_j - t_{j - 1} }(t_j - t_{j - 1})  
+ = \sum_{j = 1}^n f(\gamma(e_j)) \gamma&#39;(e_j) (t_j - t_{j - 1}) \pm \epsilon (1 + i)|C|
+\]</span></p>
+<p>where <span class="math inline">\(|C|\)</span> is the length of the path <span class="math inline">\(C\)</span>.</p>
+<p>Taking the limit of <span class="math inline">\(||P_t|| \rightarrow 0\)</span>, we get<br />
+<span class="math display">\[
+\int_C f(z) dz = \int_a^b f(\gamma(t))\gamma&#39;(t) dt
+\]</span></p>
+<p><strong>Remark 1:</strong> <em>Can we relax the condition that <span class="math inline">\(\gamma&#39;(t)\)</span> is continuous and that <span class="math inline">\([a, b]\)</span> is a closed interval?</em></p>
+<p><strong>Remark 2:</strong> <em>We have also showed that the integration is independent of the choice of <span class="math inline">\(\gamma\)</span>, i.e., any representation of <span class="math inline">\(C\)</span> that is continuously differentiable gives the same integration value</em>.</p>
+<h2 id="anti-derivative">Anti-derivative</h2>
+<p>Now suppose that <span class="math inline">\(F(z) = u(x, y) + i v(x, y)\)</span> and <span class="math inline">\(F&#39;(z) = f(z)\)</span>. We claim that <span class="math inline">\(\int_C f(z) dz = F(b) - F(a)\)</span>.</p>
+<p>First, <span class="math inline">\(F&#39;(\gamma(t)) = \frac{\partial u}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial u}{\partial y} \frac{\partial y}{\partial t} + i ( \frac{\partial v}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial v}{\partial y} \frac{\partial y}{\partial t} )\)</span>. Therefore,<br />
+<span class="math display">\[
+\int_C f(z) dz = \int_a^b (\frac{\partial u}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial u}{\partial y} \frac{\partial y}{\partial t}) dt + i \int_a^b (  \frac{\partial v}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial v}{\partial y} \frac{\partial y}{\partial t}  ) dt
+\]</span></p>
+<p>But<br />
+<span class="math display">\[
 \begin{aligned}
-dist[v_2] &gt; dist[v_1] + w(v_1, v_2) \\
-\text{this holds with strict inequality since we update } pred[v_1] \text{ lastly }\\
-dist[v_3] \ge dist[v_2] + w(v_1, v_2) \\
-... \\
-dist[v_1] = dist[v_j] + w(v_1, v_2) \\
+u(x(b), y(b)) - u(x(a), y(a)) 
+&amp;= \sum_{j = 1}^n [u(x(t_j), y(t_j)) - u(x(t_{j - 1}), y(t_{j - 1}))] \\
+&amp;= \sum_{j = 1}^n [u(x(t_j), y(t_j)) - u(x(t_j), y(t_{j - 1})) + u(x(t_j), y(t_{j - 1})) - u(x(t_{j - 1}), y(t_{j - 1}))] \\
+&amp;= \sum_{j = 1}^n \frac{u(x(t_j), y(t_j) ) - u(x(t_j), y(t_{j - 1} ) ) }{y(t_j) - y(t_{j - 1} ) } \frac{y(t_j) - y(t_{j - 1} )}{ t_j - t_{j - 1} }(t_j - t_{j - 1})\\
+&amp;\quad +\sum_{j = 1}^n \frac{u(x(t_j), y(t_{j - 1})) - u(x(t_{j - 1}), y(t_{j - 1}))}{x(t_j) - x(t_{j - 1})} \frac{x(t_j) - x(t_{j - 1}) }{t_j - t_{j - 1} } (t_j - t_{j - 1}) \\
+&amp;= \sum_{j = 1}^n [u_y&#39; (x(t_j), y^*_j) y&#39;(e_j&#39;) + u_x&#39; (x^*_j, y(t_{j - 1})) x&#39;(e_j&#39;&#39;)] (t_j - t_{j - 1})\\
 \end{aligned}
 \]</span></p>
-<p>It follows that <span class="math inline">\(\sum_{i = 1}^j dist[v_i] &gt; \sum_{i = 1}^j dist[v_i] dist[v_i] + \sum_{i = 2}^j w(v_{i - 1}, v_i) + w(v_j, v_1)\)</span>, which implies that <span class="math inline">\(\sum_{i = 2}^j w(v_{i - 1}, v_i) + w(v_j, v_1) &lt; 0\)</span>.</p>
+<p>where <span class="math inline">\(y^*_j \in [ y( t_{j - 1} ), y( t_j ) ]\)</span>, <span class="math inline">\(x^*_j \in [ x( t_{j - 1} ), x( t_j ) ]\)</span>, <span class="math inline">\(e_j&#39;, e_j&#39;&#39; \in [ t_{j - 1}, t_j ]\)</span>. If <span class="math inline">\(u&#39;_x, u&#39;_y, x&#39;(t), y&#39;(t)\)</span> are continuous, then as <span class="math inline">\(||P_t|| \rightarrow 0\)</span>, <span class="math inline">\(\sum_{j = 1}^n [u_y&#39; ( x( t_j ), y( t_j ) ) y&#39;( t_j ) + u_x&#39; ( x( t_j ), y( t_j ) ) x&#39;( t_j ) ] ( t_j - t_{j - 1} ) = \sum_{j = 1}^n \frac{\partial u}{\partial t} ( t_j - t_{j - 1} ) \rightarrow u(x(b), y(b) ) - u(x(a), y(a) )\)</span>. An immediately consequence is that</p>
+<p><span class="math display">\[
+F(\gamma(b)) - F(\gamma(a)) = \int_C F&#39;(\gamma(t)) dt
+\]</span></p>
+<p>On the other hand, since <span class="math inline">\(F(z)\)</span> is differential, <span class="math inline">\(\lim_{h \rightarrow 0} \frac{F(z + h) - F(z) }{h} = \frac{\partial u}{\partial x} + i \frac{\partial v}{\partial x} = \lim_{ih \rightarrow 0} \frac{F(z + ih) - F(z) }{ih} = -i \frac{\partial u}{\partial y} + \frac{\partial v}{\partial y}\)</span>. It holds that <span class="math inline">\(\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y}\)</span> and <span class="math inline">\(\frac{\partial v}{\partial x} = -\frac{\partial u}{\partial y}\)</span>. Therefore,<br />
+<span class="math display">\[
+F&#39;(\gamma(t)) = \frac{\partial u}{\partial x} \frac{\partial x}{\partial t} - \frac{\partial v}{\partial x} \frac{\partial y}{\partial t} + i (  \frac{\partial v}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial u}{\partial x} \frac{\partial y}{\partial t}  ) = (\frac{\partial u}{\partial x} + i \frac{\partial v}{\partial x}) ( \frac{\partial x}{\partial t} + i \frac{\partial y}{\partial t} ) = F&#39;(\gamma(t)) \gamma&#39;(t) = f(\gamma(t)) \gamma&#39;(t)
+\]</span> and<br />
+<span class="math display">\[
+F(\gamma(b)) - F(\gamma(a)) = \int_C f(\gamma(t)) \gamma&#39;(t) dt
+\]</span></p>
+<p>Remark: That <span class="math inline">\(u_x&#39;, u_y&#39;\)</span> are continuous is a strong condition. What we need in the proof is just that *</p>
+<p><span class="math display">\[
+\begin{aligned}
+u(x(t_j), y(t_j))  
+&amp;= u(x(t_{j - 1}), y(t_{j - 1})) \\
+&amp;+ u_x&#39;(x(t_{j - 1}), y(t_{j - 1})) (x(t_j) -  x(t_{j - 1})) \\
+&amp;+ u_y&#39;(x(t_{j - 1}), y(t_{j - 1})) (y(t_j) -  y(t_{j - 1})) \\
+&amp;+ o(x(t_j) -  x(t_{j - 1}), y(t_j) -  y(t_{j - 1}))
+\end{aligned}
+\]</span></p>
+<p>or</p>
+<p><span class="math display">\[
+\begin{aligned}
+u(x(t_{j - 1}) + \delta_x, y(t_{j - 1}) + \delta_y)  
+&amp;= u(x(t_{j - 1}), y(t_{j - 1})) \\
+&amp;+ u_x&#39;(x(t_{j - 1}), y(t_{j - 1})) \delta_x \\
+&amp;+ u_y&#39;(x(t_{j - 1}), y(t_{j - 1})) \delta_y \\
+&amp;+ o(\delta_x, \delta_y)
+\end{aligned}
+\]</span></p>
+<p><em>i.e., <span class="math inline">\(u\)</span> is differentiable at every point in the domain.</em></p>
+<p>Question: Is is possible that <span class="math inline">\(u\)</span> is differentiable but its partial derivatives are not continuous? The answer is NO. First we consider an one dimension counter example:<br />
+<span class="math display">\[
+f(x) =  
+\begin{cases}
+x^2 \sin \frac{1}{x} \quad \forall x \neq 0, \\
+0, \quad if \quad x = 0
+\end{cases}
+\]</span> To show <span class="math inline">\(f(x)\)</span> is differential at <span class="math inline">\(0\)</span>, we use the definition of derivative:<br />
+<span class="math display">\[
+f&#39;(0) = \lim_{h \rightarrow } \frac{f(h) - f(0)}{h - 0} = \lim_{h \rightarrow 0} h \sin \frac{1}{h} = 0
+\]</span> On the other hand, <span class="math inline">\(f(x)\)</span> is always differentiable from <span class="math inline">\(0\)</span>:<br />
+<span class="math display">\[
+f&#39;(x) = 2x \sin \frac{1}{x} + x^2 ( -1 / x^2) cos \frac{1}{x} = 2x \sin \frac{1}{x} -cos \frac{1}{x}
+\]</span> Hence, <span class="math inline">\(f(x)\)</span> is differentiable everywhere, but <span class="math inline">\(f&#39;(x)\)</span> is not continuous at <span class="math inline">\(0\)</span>.</p>
+<p>The above example can be easily extended to two dimension case:<br />
+<span class="math display">\[
+f(x, y) =  
+\begin{cases}
+(x^2 + y^2) \sin \frac{1}{ \sqrt{x^2 + y^2} } \quad \forall (x, y) \neq (0, 0) \\
+0 \qquad \qquad \qquad \qquad \quad if \quad  (x, y) = (0, 0)  
+\end{cases}
+\]</span> By definition, <span class="math inline">\(f(x, y)\)</span> is differential at <span class="math inline">\((0, 0)\)</span>,<br />
+<span class="math display">\[
+\lim_{||(x, y)|| \rightarrow 0} \frac{||f(x, y) - f(0) - (0,0) \cdot (x, y)||}{||(x, y)||} \le \lim_{||(x, y)|| \rightarrow 0} \frac{||x^2 + y^2||}{||(x, y)||} = \lim_{||(x, y)|| \rightarrow 0} ||(x, y)||= 0
+\]</span> However, it partial derivative from <span class="math inline">\((0, 0)\)</span> <span class="math display">\[
+\frac{\partial f}{\partial x} = 2x \sin \frac{1}{ \sqrt{x^2 + y^2} } + (x^2 + y^2) (-\frac{ 2x }{ \sqrt{ x^2 + y^2 }^{3} }) \cos \frac{1}{ \sqrt{x + y} } = 2x \sin \frac{1}{ \sqrt{x^2 + y^2} } - \frac{ 2x }{ \sqrt{ x^2 + y^2 } } \cos \frac{1}{ \sqrt{x^2 + y^2 } }
+\]</span> and<br />
+<span class="math display">\[
+\frac{\partial f}{\partial x}(0, 0) = \lim_{h \rightarrow} \frac{h^2 \sin \frac{1}{|h|} }{h} = 0
+\]</span> Therefore, <span class="math inline">\(\partial f / \partial x\)</span> is not continuous.</p>
 
       
     </div>
@@ -230,7 +361,7 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/10/18/Fully-Binary-Tree/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/12/01/Separation-Plane-Theorem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -244,7 +375,7 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/10/18/Fully-Binary-Tree/" class="post-title-link" itemprop="url">Fully Binary Tree</a>
+            <a href="/2018/12/01/Separation-Plane-Theorem/" class="post-title-link" itemprop="url">Separation Plane Theorem</a>
         </h2>
 
         <div class="post-meta">
@@ -254,14 +385,14 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-10-18 23:23:51" itemprop="dateCreated datePublished" datetime="2018-10-18T23:23:51+11:00">2018-10-18</time>
+              <time title="Created: 2018-12-01 20:17:53" itemprop="dateCreated datePublished" datetime="2018-12-01T20:17:53+11:00">2018-12-01</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-10-19 02:30:30" itemprop="dateModified" datetime="2018-10-19T02:30:30+11:00">2018-10-19</time>
+                <time title="Modified: 2021-07-13 16:02:41" itemprop="dateModified" datetime="2021-07-13T16:02:41+10:00">2021-07-13</time>
               </span>
 
           
@@ -275,7 +406,57 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>A binary tree is called a fully binary tree if each non-leaf node has two children. Suppose there are <span class="math inline">\(n\)</span> leaf nodes. Then the number of non-leaf nodes is <span class="math inline">\(n - 1\)</span>. To see this, we remove a pair of leaves that shares the same parent repeatedly until there are 3 nodes left. Each time we remove such a pair of nodes, both the number of leaf nodes and the number of non-leaf nodes decreases by one. Therefore the difference between the number of leaf and non-leaf node remains. By induction we see that the difference is exactly one.</p>
+          <blockquote>
+<p><strong>Separation Theorem</strong>. Given a convex and closed set <span class="math inline">\(S \subset \mathbb{R}^d\)</span> and a point <span class="math inline">\(p \notin S\)</span>, there is a separation plane between <span class="math inline">\(S\)</span> and <span class="math inline">\(p\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Define <span class="math inline">\(\delta = \min \{ \Vert s - p \Vert : s \in S \}\)</span>, where <span class="math inline">\(\Vert \cdot \Vert\)</span> is the <span class="math inline">\(\ell_2\)</span> norm.</p>
+<blockquote>
+<p><strong>Lemma.</strong> There is a point <span class="math inline">\(s^\star \in S\)</span> that achieves <span class="math inline">\(\Vert s^\star - p \Vert = \delta\)</span>.</p>
+</blockquote>
+<p><em>Proof</em>:</p>
+<ol type="1">
+<li>Pick arbitrary point <span class="math inline">\(s \in S\)</span> and let <span class="math inline">\(r = \Vert s - p \Vert\)</span>.</li>
+<li>Define <span class="math inline">\(S&#39; = S \cap \{\Vert x - p \Vert \le r \}\)</span>. Observe that <span class="math inline">\(S&#39;\)</span> is nonempty, bounded, and closed.</li>
+<li>Define a function <span class="math inline">\(f: S&#39; \rightarrow R\)</span> as <span class="math inline">\(f(s) = \Vert s - p \Vert\)</span>, which is a continuous.</li>
+<li>Since <span class="math inline">\(S&#39;\)</span> is bounded and closed, there exists a point <span class="math inline">\(s^\star\)</span> that minimizes <span class="math inline">\(f(s)\)</span>.</li>
+<li>We claim that <span class="math inline">\(f(s^\star) = \delta\)</span>. Otherwise, there is a point <span class="math inline">\(s&#39;&#39; \in S\)</span>, s.t., <span class="math inline">\(f(s^\star) &gt; \Vert s&#39;&#39; - p\Vert &gt; \delta\)</span>. But this implies <span class="math inline">\(s&#39;&#39; \in S&#39;\)</span>, a contradicting <span class="math inline">\(s^\star = \min_{s \in S&#39;} f(s)\)</span>.</li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Lemma.</strong> <span class="math inline">\(s^\star\)</span> is unique.</p>
+</blockquote>
+<p><em>Proof:</em> The uniqueness results from the convexity of <span class="math inline">\(S\)</span>. If not, let <span class="math inline">\(s&#39;&#39;\)</span> be another optimal point. Now <span class="math inline">\(\Vert q - s&#39;\Vert = \delta\)</span> and <span class="math inline">\(\Vert q - s&#39;&#39;\Vert = \delta\)</span>. The middle point between <span class="math inline">\(s&#39;\)</span> and <span class="math inline">\(s&#39;&#39;\)</span> is clearly closer to <span class="math inline">\(p\)</span> than both <span class="math inline">\(s&#39;\)</span> and <span class="math inline">\(s&#39;&#39;\)</span>, as<br />
+<span class="math display">\[
+    \Vert p - (s&#39; + s&#39;&#39;) / 2\Vert  = \Vert  (p - s&#39;) / 2 + (p - s&#39;&#39;) / 2\Vert  \le 1/2 \Vert p - s&#39;\Vert  + 1/2 \Vert p - s&#39;&#39;\Vert  = \delta
+\]</span> The inequality is tight if <span class="math inline">\(s&#39; \neq s&#39;&#39;\)</span>. Therefore, we use <span class="math inline">\(s^\star\)</span> to indicate the unique point.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Lemma.</strong> <span class="math inline">\((p - s^\star)^T(x - s^\star) = 0\)</span> is a separation plane between <span class="math inline">\(S\)</span> and <span class="math inline">\(p\)</span>.</p>
+</blockquote>
+<p><em>Proof</em>.</p>
+<p>First, observe that <span class="math inline">\((p - s^\star)^T(p - s^\star) = \delta^2 &gt; 0\)</span> since <span class="math inline">\(p \notin S\)</span> and <span class="math inline">\(S\)</span> is closed.</p>
+<p>Further, for each <span class="math inline">\(s \in S​\)</span>, let * <span class="math inline">\(a = s^\star - p\)</span>, and * <span class="math inline">\(b = s - s^\star\)</span>.</p>
+<p>We claim that <span class="math inline">\(\left&lt; b, a \right&gt; \ge 0\)</span>.</p>
+<p>For all <span class="math inline">\(\lambda \in (0, 1)​\)</span>, by convexity, <span class="math inline">\(\lambda \cdot (s - s^\star) + s^\star \in S​\)</span>. By the definition of <span class="math inline">\(s^\star​\)</span>, <span class="math display">\[
+    \Vert \lambda(s - s^\star) + s^\star - p\Vert ^2 \ge \Vert p - s^\star\Vert ^2 = \Vert   a \Vert ^2. 
+\]</span> On the other hand, <span class="math display">\[
+    \Vert \lambda(s - s^\star) + s^\star - p\Vert ^2 = \lambda^2 \Vert   b \Vert ^2 + 2 \lambda \left&lt;   b,   a \right&gt; + \Vert   a \Vert ^2
+\]</span> Therefore, <span class="math inline">\(\lambda^2 \Vert b \Vert ^2 + 2 \lambda \left&lt; b, a \right&gt; \ge 0\)</span>. As <span class="math inline">\(\lambda\rightarrow 0\)</span>, we obtained the desired result.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Corollary</strong>. Given a convex and closed set <span class="math inline">\(S \subset \mathbb{R}^d\)</span> and a point <span class="math inline">\(p \in \partial S\)</span> (the boundary of <span class="math inline">\(S\)</span>), there is supporting hyperplane passing through <span class="math inline">\(p\)</span> and containing <span class="math inline">\(S\)</span> in one of its half-spaces.</p>
+</blockquote>
+<p><strong>Proof.</strong> Since <span class="math inline">\(p \in \partial S\)</span>, there is a countable, bounded sequence of points <span class="math inline">\(p_k\)</span> such that <span class="math inline">\(p_k \notin S\)</span> and <span class="math inline">\(p_k \rightarrow p\)</span>.</p>
+<p>Let <span class="math inline">\(s_k\)</span> be the projection of <span class="math inline">\(p_k\)</span> to <span class="math inline">\(S\)</span>. Clearly <span class="math inline">\(\Vert s_k - p_k \Vert \le \Vert p - p_k \Vert\)</span>. By triangle inequality, <span class="math display">\[
+    \Vert s_k - p \Vert \le \Vert s_k - p_k \Vert + \Vert p_k - p \Vert \le 2 \Vert p - p_k \Vert \rightarrow 0. 
+\]</span> It follows that <span class="math inline">\(s_k \rightarrow p\)</span>.</p>
+<p>For each <span class="math inline">\(p_k\)</span>, we can find a supporting hyperplane <span class="math inline">\(f_k (x) = \left&lt; a_k, x - p_k \right&gt;\)</span>, such that 1. <span class="math inline">\(\Vert a_k \Vert \neq 0\)</span> and, 2. <span class="math inline">\(\left&lt; a_k, s - s_k \right&gt; \ge 0\)</span> for all <span class="math inline">\(s \in S\)</span>, where <span class="math inline">\(s_k\)</span> is the projection of <span class="math inline">\(p_k\)</span> to <span class="math inline">\(S\)</span>.</p>
+<p>Replacing <span class="math inline">\(a_k\)</span> by <span class="math inline">\(a_k / \Vert a_k \Vert\)</span>, we can assume without lose of generality that <span class="math inline">\(\Vert a_k \Vert = 1\)</span>.</p>
+<p>The sequence <span class="math inline">\(\{ a_k \}\)</span> is therefore bounded. There is a converging subsequence <span class="math inline">\(\{ a_\ell \}\)</span> of <span class="math inline">\(\{ a_k \}\)</span> such that <span class="math inline">\(a_\ell \rightarrow a\)</span>.<br />
+Finally, <span class="math display">\[
+    \lim \left&lt; a_\ell, s - s_\ell \right&gt; = \left&lt; a, s - p\right&gt; \ge 0.
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
 
       
     </div>
@@ -295,7 +476,7 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/09/16/Max-Cut/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/21/RSA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -309,7 +490,7 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/09/16/Max-Cut/" class="post-title-link" itemprop="url">Max Cut</a>
+            <a href="/2018/11/21/RSA/" class="post-title-link" itemprop="url">RSA</a>
         </h2>
 
         <div class="post-meta">
@@ -318,10 +499,16 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2018-09-16 17:10:22 / Modified: 23:01:31" itemprop="dateCreated datePublished" datetime="2018-09-16T17:10:22+10:00">2018-09-16</time>
+              <time title="Created: 2018-11-21 21:52:18" itemprop="dateCreated datePublished" datetime="2018-11-21T21:52:18+11:00">2018-11-21</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-12-04 20:52:46" itemprop="dateModified" datetime="2019-12-04T20:52:46+11:00">2019-12-04</time>
+              </span>
 
           
 
@@ -334,43 +521,51 @@ dist[v_1] = dist[v_j] + w(v_1, v_2) \\
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Given an undirected graph <span class="math inline">\(G = (V, E)\)</span>, the maximum cut problem asks for a subset <span class="math inline">\(S \subset V\)</span> that maximizes the number of edges which cross <span class="math inline">\(S\)</span>, i.e., <span class="math inline">\(S = \arg \max_{S&#39; \subset S} \delta(S)\)</span>, where <span class="math inline">\(\delta(S) = |\{ \ (i, j) \ \mid \ (i, j) \in E \wedge i \in S, j \notin S\}|\)</span>.</p>
-<h5 id="programming-formulation">Programming Formulation</h5>
-<p>To solve the problem, we can assign each vertex <span class="math inline">\(i \in V\)</span> a binary variable <span class="math inline">\(x_i \in \{-1, 1\}\)</span>, which serves as an indicator of whether <span class="math inline">\(i\)</span> belongs to <span class="math inline">\(S\)</span>. WLOG, we can specify here that <span class="math inline">\(i \in S\)</span> if <span class="math inline">\(x_i = 1\)</span>. Now the value of <span class="math inline">\(\delta(S)\)</span> can be expressed as</p>
-<p><span class="math display">\[
-\delta(S) = \sum_{(i,j) \in E} \frac{1 - x_i x_j}{2}
+          <p>We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence <span class="math inline">\(x\)</span>, the encrypt message is <span class="math inline">\(y\)</span>.</p>
+<p>One solution is to perform XOR operation. Suppose there is a key <span class="math inline">\((k)_2\)</span> that is known both to the sender the receiver. Then the sender encrypt the message by <span class="math display">\[
+(y)_2 = (x)_2 \oplus k
+\]</span> The receiver can decrypt the message by <span class="math display">\[
+(x)_2 = (y)_2 \oplus k
+\]</span> Given <span class="math inline">\(x\)</span> with length <span class="math inline">\(n\)</span>, if <span class="math inline">\(k\)</span> is chosen uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, then <span class="math inline">\((y)_2\)</span> is a sequence uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>. If the message is sent only one time, the eavesdropper can't get more information about <span class="math inline">\(x\)</span> after seeing <span class="math inline">\(y\)</span>.</p>
+<p>Two drawbacks exists. First, how can the sender exchange the key <span class="math inline">\(k\)</span> with the receiver without meeting each other. Second, if the many messages are sent, there are frequency pattern associated with <span class="math inline">\(y\)</span>, making it breakable.</p>
+<p>RSA encryption algorithm overcomes the first issue by generating two keys for the receiver: the secrete key and the public key. The public key is distributed across the internet. The sender encrypts the message <span class="math inline">\(x\)</span> with the public key. Only the receiver who has the secret key can decrypt the message. The mathematics behind is explained as follows.</p>
+<p>Question to ponder: can we attack RSA by the frequency pattern?</p>
+<p>First generate two prime number <span class="math inline">\(p, q\)</span> and let <span class="math inline">\(N = pq\)</span>. Further, we find a integer <span class="math inline">\(e\)</span>, such that</p>
+<ol type="1">
+<li><span class="math inline">\(e\)</span> is coprime to <span class="math inline">\((p - 1)(q - 1)\)</span>, i.e., <span class="math inline">\(\exists d\)</span>, such that <span class="math inline">\(ed \equiv 1 \mod (p - 1)(q - 1)\)</span>.</li>
+<li><span class="math inline">\(e \neq p\)</span>, <span class="math inline">\(e \neq q\)</span>.</li>
+</ol>
+<p>Question to ponder: does such <span class="math inline">\(e\)</span> exists?</p>
+<p>Answer: YES. There are <span class="math inline">\(O(\frac{(p - 1)(q - 1) }{ \log (p - 1)(q - 1) } - \frac{ \sqrt{ (p - 1)(q - 1) } }{ \log \sqrt { (p - 1)(q - 1) } } )\)</span> prime numbers in <span class="math inline">\((\sqrt{(p - 1)(q - 1)}, (p - 1)(q - 1))\)</span>, which can not be prime factors of <span class="math inline">\((q - 1)(p - 1)\)</span>.</p>
+<p>Then we give out the pair as <em>public key</em>: <span class="math display">\[
+(n, e)
 \]</span></p>
-<p>The correctness of the expression can be verified as follows: (1) if <span class="math inline">\(i, j \in V\)</span> belongs to the same partition, i.e, <span class="math inline">\(i, j \in S\)</span> or <span class="math inline">\(i, j \in V - S\)</span>, then <span class="math inline">\(x_i x_j = 1\)</span> and <span class="math inline">\(\frac{1 - x_i x_j}{2} = 0\)</span>. (2) Otherwise, <span class="math inline">\(x_i x_j = -1\)</span> and <span class="math inline">\(\frac{1 - x_i x_j}{2} = 1\)</span>.</p>
-<h5 id="convex-relaxation">Convex Relaxation</h5>
-<p>We consider a relaxation of the above programming: <span class="math display">\[
-\begin{aligned}
-&amp;&amp;\max &amp;&amp;\sum_{(i,j) \in E} \frac{1 - x_i^T x_j}{2} \\
-&amp;&amp;s.t., &amp;&amp; x_i^T x_i = 1 &amp;&amp;\forall i \in V \\
-&amp;&amp;      &amp;&amp; x_i \in R^n   &amp;&amp;\forall i \in V
-\end{aligned}
+<p>And keep in secrete the triple as <em>private key</em>: <span class="math display">\[
+(p, q, d)
 \]</span></p>
-<p>Note that this can be transformed into a convex optimization: <span class="math display">\[
-\begin{aligned}
-&amp;&amp;\max &amp;&amp;\sum_{(i,j) \in E} \frac{1 - y_{i,j}}{2} &amp;&amp;\\
-&amp;&amp;s.t., &amp;&amp; y_{i,i} = 1 &amp;&amp;\forall i \in V \\
-&amp;&amp;      &amp;&amp; y_{i,j} = y_{j,i} &amp;&amp;\forall i, j \in V \\
-&amp;&amp;      &amp;&amp; Y = (y_{i,j}) \succcurlyeq 0
-\end{aligned}
+<p>The algorithm for encryption and decryption is as follows:</p>
+<p>Encryption: <span class="math display">\[
+y = f(x) = x^e \pmod N
 \]</span></p>
-<p>The above problem can be solved within <span class="math inline">\(\epsilon\)</span> additive error in polynomial time in terms of input size and <span class="math inline">\(\log 1/\epsilon\)</span>.</p>
-<h5 id="rounding">Rounding</h5>
-<p>To round the fractional solution to integral solution, we take a random unit vector <span class="math inline">\(v\)</span> from <span class="math inline">\(R^n\)</span>. For each vertex <span class="math inline">\(i\)</span>, if <span class="math inline">\(v^T x_i \ge 0\)</span> we set <span class="math inline">\(x_i&#39; = 1\)</span> otherwise we set <span class="math inline">\(x_i&#39; = 0\)</span>. For any pair <span class="math inline">\(i, j \in V\)</span>, denote the angle between <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span> as <span class="math inline">\(\theta_{i,j} = \arccos x_i^T x_j\)</span>. Notice that <span class="math inline">\(\sum_{(i,j) \in E} \frac{1 - x_i x_j}{2} = \sum_{(i,j) \in E} \frac{1 - \cos \theta_{i,j}}{2}\)</span>. Furthermore, the probability that <span class="math inline">\(x_i&#39;\)</span> and <span class="math inline">\(x_j&#39;\)</span> are assigned different values is given by <span class="math inline">\(\theta_{i,j} / \pi\)</span>. By linearity of expectation, the expected cut value is</p>
-<p><span class="math display">\[
-E[\sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2}] = \sum_{(i,j) \in E} \frac{\theta_{i,j}}{\pi}
+<p>Decryption: <span class="math display">\[
+g(y) = y^d \pmod N
 \]</span></p>
-<p>As <span class="math inline">\(\max_{0 \le \theta \le \pi} \frac{\pi}{\theta}\frac{1 - \cos \theta}{2} \approx 1.138\)</span>, <span class="math inline">\(E[\sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2}]\)</span> is greater approximately <span class="math inline">\(1/1.138 = 0.878\)</span> <span class="math inline">\(\sum_{(i,j) \in E} \frac{1 - x_i x_j}{2}\)</span>.</p>
-<!-- 
-<p align="center">
-  <img https://imglf6.nosdn0.126.net/img/Y1FUYmVJRmJqaTNNVk15SFhyTUZHalJjMStjRE4wYXV4aEtMazNHMHJieFdDdDM4L29PcTl3PT0.png?imageView&thumbnail=500x0&quality=96&stripmeta=0%7Cwatermark&type=2&text=wqkgbHdwaGlsZSAvIGx3cGhpbGUubG9mdGVyLmNvbQ==&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=240&dx=8&dy=10&stripmeta=0>
-</p> -->
-<figure>
-<img src="http://imglf6.nosdn0.126.net/img/Y1FUYmVJRmJqaTNNVk15SFhyTUZHalJjMStjRE4wYXV4aEtMazNHMHJieFdDdDM4L29PcTl3PT0.png?imageView&amp;thumbnail=500x0&amp;quality=96&amp;stripmeta=0%7Cwatermark&amp;type=2&amp;text=wqkgbHdwaGlsZSAvIGx3cGhpbGUubG9mdGVyLmNvbQ==&amp;font=bXN5aA==&amp;gravity=southwest&amp;dissolve=30&amp;fontsize=240&amp;dx=8&amp;dy=10&amp;stripmeta=0" alt="" /><figcaption><span class="math inline">\(\max_{0 \le \theta \le \pi} \frac{\pi}{\theta}\frac{1 - \cos \theta}{2} \approx 1.138\)</span></figcaption>
-</figure>
+<p>The key theorem states:</p>
+<p><em>Theorem</em>: <span class="math display">\[
+g(y) = x
+\]</span></p>
+<p><em>Proof 1:</em> the first proof relies on a result derived from the Chinese Reminder Theorem, which i that for any integer <span class="math inline">\(a &lt; b\)</span>, we have <span class="math display">\[
+a \equiv b \mod p \vee a \equiv b \mod q
+\]</span> Then, <span class="math inline">\(p | (b - a)\)</span> and <span class="math inline">\(q | (b - a)\)</span>. If follows that <span class="math inline">\(N | (b - a)\)</span>, since <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> are primes and <span class="math inline">\(N\)</span> is their least common multiple.</p>
+<p>Now define <span class="math inline">\(m = x^{ed} = x^{k(p - 1)(q - 1) + 1}\)</span>. By Fermat's Little Theorem, <span class="math display">\[
+m \equiv x  \mod p \wedge m \equiv x \mod q
+\]</span></p>
+<p>Hence <span class="math inline">\(N | (m - x)\)</span> and <span class="math inline">\(m \equiv x \mod N\)</span>.</p>
+<p><em>Proof 2:</em> <span class="math display">\[
+y^d = x^{ed} = x^{k(p - 1)(q - 1) + 1} \pmod N
+\]</span></p>
+<p>Case 1: this is the easy case in which <span class="math inline">\(x\)</span> is coprime to <span class="math inline">\(N\)</span>. Then by Fermat-Euler theorem, <span class="math inline">\(x^{\varphi(N)} = 1 \pmod N\)</span>. It follows immediately that <span class="math inline">\(x^{ed} = x \pmod N\)</span>.</p>
+<p>Case 2: otherwise, <span class="math inline">\(x = lp\)</span> for some <span class="math inline">\(1 \le l \le q\)</span> or <span class="math inline">\(x = lq\)</span> for some <span class="math inline">\(1\le l \le p\)</span>. WLOG, we just consider the former case. Now <span class="math inline">\(y^d = (lp)^{k(p - 1)(q - 1) + 1} \pmod N\)</span>. On the other hand, as <span class="math inline">\((lp)^{k(p - 1)}\)</span> is relative prime to <span class="math inline">\(q\)</span>, we conclude that <span class="math inline">\(((lp)^{k(p-1)})^{q- 1} = mq + 1\)</span> for some integer <span class="math inline">\(m\)</span>, by Fermat's little theorem. Therefore, <span class="math inline">\(y^d = (mq + 1) x = (mq + 1) (lp) = mlpq + lp = lp = x \pmod N\)</span> , which finishes our proof.</p>
 
       
     </div>
@@ -389,7 +584,7 @@ E[\sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2}] = \sum_{(i,j) \in E} \frac
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/40/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/40/">40</a><span class="page-number current">41</span><a class="page-number" href="/page/42/">42</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><a class="extend next" rel="next" href="/page/42/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/40/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/40/">40</a><span class="page-number current">41</span><a class="page-number" href="/page/42/">42</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/42/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -455,7 +650,7 @@ E[\sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2}] = \sum_{(i,j) \in E} \frac
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">155</span>
+          <span class="site-state-item-count">160</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

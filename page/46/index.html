@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/21/Karger%20Algorithm%20I/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/24/Projection-of-A-Random-Unit-Vector-on-Its-First-Dimension/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/07/21/Karger%20Algorithm%20I/" class="post-title-link" itemprop="url">Karger Algorithm I</a>
+            <a href="/2018/08/24/Projection-of-A-Random-Unit-Vector-on-Its-First-Dimension/" class="post-title-link" itemprop="url">Projection of A Random Unit Vector on Its First Dimension</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-07-21 12:53:14" itemprop="dateCreated datePublished" datetime="2018-07-21T12:53:14+10:00">2018-07-21</time>
+              <time title="Created: 2018-08-24 16:27:36" itemprop="dateCreated datePublished" datetime="2018-08-24T16:27:36+10:00">2018-08-24</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-09-04 01:30:08" itemprop="dateModified" datetime="2018-09-04T01:30:08+10:00">2018-09-04</time>
+                <time title="Modified: 2020-05-30 14:20:30" itemprop="dateModified" datetime="2020-05-30T14:20:30+10:00">2020-05-30</time>
               </span>
 
           
@@ -191,102 +191,59 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Karger Algorithm</p>
-<p>The Karger algorithm was proposed by David R. Karger [<em>Global Min-cuts in RNC, and Other Ramifications of a Simple Min-Cut Algorithm</em>]. It is a randomized algorithm to find a min-cut of an undirected connected graph.</p>
-<p>The idea of the algorithm is simple -- randomly pick an edge from the graph, and merge the endpoints of this edge into one. The edges incident on two merged endpoints is now incident on the new endpoint. Repeat this process until two nodes are left on the graph. We show that the probability that the number of edges remained between the two nodes equals the value of min-cut is at least <span class="math inline">\(\frac{2}{n(n - 1)}\)</span>.</p>
-<p>Formally, suppose we are given an undirected graph <span class="math inline">\(G = (V, E)\)</span> with <span class="math inline">\(n = |V|\)</span> vertices, <span class="math inline">\(m = |E|\)</span> edges, and <span class="math inline">\(c^*=\)</span> <em>size of the min-cut</em>.</p>
-<h4 id="karger-algorithm">Karger Algorithm</h4>
-<ol type="1">
-<li>Select an edge <span class="math inline">\(e = (u,v) \in E\)</span> uniformly with probability <span class="math inline">\(1/|E|\)</span>.<br />
-</li>
-<li>Contract <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> into a new vertex <span class="math inline">\(w\)</span>, and all edges -- except <span class="math inline">\(e\)</span>-- incident on <span class="math inline">\(u\)</span> or <span class="math inline">\(v\)</span> are now incident on <span class="math inline">\(w\)</span>. In other words,</li>
-</ol>
+          <p>Let <span class="math inline">\(x = &lt;x_1, x_2, ..., x_d&gt;\)</span> be an <span class="math inline">\(d\)</span> dimension random unit vector, i.e., a vector generated uniformly at random from the sphere of the unit ball. What is the probability that <span class="math inline">\(|x_1| \ge \frac{1}{n}\)</span> for some given <span class="math inline">\(n \ge 2\)</span>?</p>
+<p>When <span class="math inline">\(d = 1\)</span>, then <span class="math inline">\(x_1 = 1\)</span> or <span class="math inline">\(x_1 = -1\)</span>. Therefore <span class="math inline">\(P[|x_1| \ge \frac{1}{n}] = 1\)</span>.</p>
+<p>When <span class="math inline">\(d = 2\)</span>,</p>
 <p><span class="math display">\[
- \begin{aligned}
-  V  \leftarrow &amp; V /  \{u,v\} \cup \{w\}, \\
-  E  \leftarrow &amp; E /  \{(x, y) | (x,y) \in E \ and \ x \in \{u, v\} \}  \\
-   &amp; \cup \{(w,y) | \exists  (x,y) \in E \ and \ x \in \{u, v\} \ and \ y \notin \{u,v\} \}
- \end{aligned}
+P[|x_1| \ge \frac{1}{n}] = \frac{4}{2 \pi} \int_{1/n}^1 \sqrt{1 - t^2} d_t = \frac{2}{\pi} \arccos \frac{1}{n}
 \]</span></p>
-<ol start="3" type="1">
-<li>Repeat the above process until |V| = 2.</li>
-</ol>
-<p>In the end, there is only one cut between the remaining two vertices, whose size we denote as <span class="math inline">\(c\)</span>. If follows that <span class="math inline">\(P(c = c^*) = \frac{2}{n ( n - 1)}\)</span>.</p>
-<p>By repeating the process <span class="math inline">\(\frac{n (n - 1)}{2} \log n\)</span> times, the probability we don't find the size of min-cut is at most</p>
-<p><span class="math display">\[
-\big( 1 - \frac{2}{n (n - 1)} \big)^{\frac{n (n - 1)}{2} \log n} \le e^{log n} = \frac{1}{n}
-\]</span></p>
-<p>Now we prove that <span class="math inline">\(P(c = c^*) = \frac{2}{n ( n - 1)}\)</span>.</p>
-<p>The key observation is that the degree each vertex is at least <span class="math inline">\(c^*\)</span>. Therefore there are at least <span class="math inline">\(\frac{c^* n}{2}\)</span> edges for a graph with <span class="math inline">\(n\)</span> vertices. Given a particular min-cut, which has <span class="math inline">\(c^*\)</span> edges, the probability that any of its edges is selected during the contraction operation is at most</p>
-<p><span class="math display">\[
-\frac{c^*}{|E|} \le \frac{c^*}{ \frac{c^* n}{2} } = \frac{2} { n }
-\]</span></p>
-<p>The second observation is that, if the edges of a min-cut are not selected during contraction, then the min-cut value of the contracted graph remains the same. After <span class="math inline">\(i\)</span> contractions, there are <span class="math inline">\(n - i\)</span> vertices and the probability a min-cut survives the <span class="math inline">\(i + 1\)</span> contraction is most <span class="math inline">\(\frac{2}{n - i}\)</span>. After <span class="math inline">\(n - 1\)</span> round, the min-cut remains with probability at least <span class="math display">\[
-(1 - \frac{2}{n})(1 - \frac{2}{n - 1})...(1 - \frac{2}{3}) = \binom{n}{2}^{-1}
-\]</span> Some interesting corollaries could be derived from this.</p>
-<h4 id="corollary-one">Corollary one</h4>
-<blockquote>
-<p>There are <span class="math inline">\(\frac{n (n - 1)}{ 2 }\)</span> min-cuts in the graph, since the events of outputting each min-cut are disjoint.</p>
-</blockquote>
-<p>By slightly modifying the algorithm, we can give another fact.</p>
-<p><strong>Definition</strong>. A <span class="math inline">\(\alpha\)</span>-min-cut is a cut with no more than <span class="math inline">\(\alpha c^*\)</span> edges.</p>
-<h4 id="corollary-two">Corollary two</h4>
-<p>For any <span class="math inline">\(\alpha\)</span> s.t. <span class="math inline">\(2 \alpha\)</span> is an integer, the number of <span class="math inline">\(\alpha\)</span>-min-cuts is at most <span class="math inline">\(n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2}\)</span>, which is less than <span class="math inline">\(n^{2 \alpha}\)</span>.</p>
-<p><strong>Proof</strong>: We perform the contraction as before but stop when there are <span class="math inline">\(2\alpha\)</span> vertexes left. Then we output one the <span class="math inline">\(2^{2\alpha - 1}\)</span> cuts uniformly at random.</p>
-<p>The probability a <span class="math inline">\(\alpha\)</span>-min-cut is outputted with probability at least <span class="math display">\[
+<p>By <span class="math display">\[
 \begin{aligned}
-&amp; (1 - \frac{2 \alpha }{n})(1 - \frac{ 2 \alpha }{ n-1 })...(1 - \frac{2 \alpha }{ 2\alpha + 1 }) \cdot \frac{1}{2^{2 \alpha - 1}}  \\
-&amp;=2 \frac{ (n - 2 \alpha)! (2 \alpha)! }{ 2^{2\alpha} n!  } \\
-&amp;\ge \frac{ 2 } { 2^{2\alpha} } 
-\sqrt{2 \pi (n - 2 \alpha)} \frac{(n - 2\alpha)^{(n - 2\alpha)} }{e ^{(n - 2\alpha)} }
-\sqrt{2 \pi (2 \alpha)} \frac{(2\alpha)^{(2\alpha)} }{e ^{(2\alpha)} } 
-\frac{1}{e \sqrt n} \frac{e ^{n} }{ n^{n} } \\
-&amp;= \frac{ 2 \cdot 2\pi } { e \cdot 2^{2\alpha} } 
-\sqrt \frac{(n - 2\alpha) 2\alpha}{n} 
-\frac{ (2\alpha)^{(2\alpha)} (n - 2\alpha)^{(n - 2\alpha)} }{ n^n }
-\end{aligned}
-\]</span> As <span class="math inline">\(\frac{(n - 2\alpha) 2\alpha}{n}\)</span> is minimized to <span class="math inline">\(\frac{1}{2}\)</span> for <span class="math inline">\(n \ge 2, \ 1 \le 2 \alpha \le n - 1\)</span>, the above inequality becomes <span class="math display">\[
-\ge \frac{ \sqrt{2} \cdot 2\pi \cdot (2\alpha)^{(2\alpha)}} { e \cdot 2^{2\alpha} } 
-\frac{ 1 }{ n^{(2\alpha)} }
-\]</span> The number of <span class="math inline">\(\alpha\)</span>-min-cuts is bounded by <span class="math display">\[
-n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2} 
-\]</span> <strong>Remark</strong>: For <span class="math inline">\(k \in N\)</span>, we have <span class="math display">\[
-\sqrt{2 \pi k} \cdot \frac{k^k}{e^k} \le k! \le e \sqrt k \cdot \frac{k^k}{e^k}
-\]</span></p>
-<h4 id="corollary-three">Corollary three</h4>
-<p>The number of <span class="math inline">\(\alpha\)</span>-min-cuts is at most <span class="math inline">\(e^{7/6} n^{2\alpha} \frac{2^{ 2 \alpha} }{( 2 \alpha + 1 )^ {2 \alpha} }\)</span> for any <span class="math inline">\(\alpha \ge 1\)</span>.</p>
-<p><strong>Proof</strong>: We perform the contraction as before but stop when there are <span class="math inline">\(\lceil 2\alpha \rceil\)</span> vertexes left. Then we output one the <span class="math inline">\(2^{\lceil 2\alpha \rceil - 1}\)</span> cuts uniformly at random.</p>
-<p>The probability a <span class="math inline">\(\alpha\)</span>-min-cut is outputted with probability at least <span class="math display">\[
-\begin{aligned}
-&amp; (1 - \frac{2 \alpha}{n }) (1 - \frac{2 \alpha}{n - 1 }) ... (1 - \frac{2 \alpha}{\lceil 2 \alpha \rceil + 1 }) 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;= \frac{(n - 2 \alpha) (n - 1 - 2 \alpha) ... (\lceil 2 \alpha \rceil + 1 - 2 \alpha)}{ n (n - 1) ...(\lceil 2 \alpha \rceil + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;= \frac{\Gamma(n - 2 \alpha + 1)}{ \Gamma(\lceil 2 \alpha \rceil + 1 - 2 \alpha) } \frac{\Gamma(\lceil 2 \alpha \rceil + 1)}{\Gamma(n + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;\ge \sqrt{2\pi} \frac{1}{\sqrt {n - 2 \alpha + 1} }(\frac{n - 2 \alpha + 1}{e})^ {n - 2 \alpha + 1} \\ 
-&amp;\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (\lceil 2 \alpha \rceil + 1 - 2 \alpha ) } } \sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha)} (\frac{e}{\lceil 2 \alpha \rceil + 1 - 2 \alpha})^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha} \\
-&amp;\ \ \cdot \sqrt{2\pi} \frac{1}{ \sqrt{\lceil 2 \alpha \rceil + 1} }(\frac{ \lceil 2 \alpha \rceil + 1 }{e})^ {\lceil 2 \alpha \rceil + 1} \\
-&amp;\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (n + 1) } } \sqrt{(n + 1)} (\frac{e}{n + 1})^ {n + 1} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;= \frac{1}{e^{2 / 12}} \frac{\sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha} }{ \sqrt {n - 2 \alpha + 1} } \frac{\sqrt{(n + 1)} }{\sqrt{\lceil 2 \alpha \rceil + 1}} 
-e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\lceil 2 \alpha \rceil + 1)} \\
-&amp;\ \ \cdot (\frac{n - 2 \alpha + 1}{n + 1})^ {n - 2 \alpha + 1} (\frac{1}{n + 1})^{2\alpha} \cdot 
-\frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;\ge  \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
-\frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1 / 2} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 / 2 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;\ge \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
-\frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
-&amp;= \frac{1}{e^{1 / 6}} \frac{1}{n^{2\alpha}} \frac{1}{(1 + 1/n)^{2\alpha}}
-\frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
-&amp;\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
-&amp;\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( 2 \alpha + 1 )^ {2 \alpha} }{2^{ 2 \alpha} }
+\arcsin(z) &amp;= z + \left({\frac {1}{2} } \right) {\frac {z^{3} } {3} } +\left({\frac {1\cdot 3}{2\cdot 4} } \right){\frac {z^{5} } {5} } +\left({\frac {1\cdot 3\cdot 5}{2\cdot 4\cdot 6} } \right){\frac {z^{7} } {7} } +\cdots \\\\
+&amp;=\sum _{n=0}^{\infty }{\frac {(2n-1)!!}{(2n)!!} } \cdot {\frac {z^{2n+1} } {2n+1} } \\\\
+&amp;=\sum _{n=0}^{\infty }{\frac { {\binom {2n}{n} } z^{2n+1} } {4^{n}(2n+1)} } \qquad |z|\leq 1
 \end{aligned}
 \]</span></p>
-<p>To bound the inequality, we need the stirling formula for Gamma functions.</p>
-<p><strong>Lemma</strong>. <span class="math inline">\(\forall x \ge 0\)</span>, <span class="math display">\[
-\Gamma(x + 1) = x \Gamma(x) \\
-\sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x 
-\le 
-\Gamma(x)
-\le
-\sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x e^{\frac{1}{12 x}}
+<p>We get <span class="math display">\[
+\begin{aligned}
+\arccos \frac{1}{n} &amp;= \frac{\pi}{2} - \arcsin \frac{1}{n} \\\\
+&amp;= \frac{\pi}{2} - (\frac{1}{n} + \left({\frac {1}{2} } \right) {\frac {\frac{1}{n}^{3} } {3} } +\left({\frac {1\cdot 3}{2\cdot 4} } \right){\frac {\frac{1}{n}^{5} } {5} } +\left({\frac {1\cdot 3\cdot 5}{2\cdot 4\cdot 6} } \right){\frac {\frac{1}{n}^{7} } {7} } +\cdots  ) \\\\
+&amp;\ge \frac{\pi}{2} - \frac{1}{n} - \frac{1}{2 n^3}\left( \sum_{i = 0}^\infty 1 / 2^i \right)  \qquad since \ n \ge 2 \\\\
+&amp;\ge  \frac{\pi}{2} - \frac{5}{4n}
+\end{aligned}
+\]</span></p>
+<p>It follows that <span class="math display">\[
+P[|x_1| \ge \frac{1}{n}] = \frac{2}{\pi} \arccos \frac{1}{n} \ge 1 - \frac{1}{n}
+\]</span></p>
+<p>For general values of <span class="math inline">\(d\)</span>, we would like to give an easier estimation by upper bounding the following integration</p>
+<p><span class="math display">\[
+\begin{aligned}
+\begin{matrix} 
+\int_{x_1 = 0}^{1 / n} &amp; \underbrace{\int_{x_2 = 0}^{1} \int_{x_3 = 0}^{1} ... \int_{x_d = 0}^{1} }  &amp; 1 \  d_{x_d} d_{x_{d - 1} }  ... d_{x_1} 
+\le \frac{1}{n} &amp;\underbrace{\int_{x_2 = 0}^{1} \int_{x_3 = 0}^{1} ... \int_{x_d = 0}^{1} }  &amp; 1 \  d_{x_d} d_{x_{d - 1} }  ... d_{x_2} \\\\
+&amp; x_2^2 + x_3^2 + ... + x_d^2 \le 1 - x_1^2 &amp;
+&amp; x_2^2 + x_3^2 + ... + x_d^2 = 1 &amp;
+\end{matrix} 
+\end{aligned}
+\]</span></p>
+<p>Using the result that the surface area of a <span class="math inline">\(d - 1\)</span> dimension sphere is given by</p>
+<p><span class="math display">\[
+{\frac {2\pi ^{\frac {d}{2} } }{\Gamma \left({\frac {d}{2} } \right)} } 
+\]</span></p>
+<p>We get <span class="math display">\[
+\begin{aligned}
+    P[|x_1| \ge \frac{1}{n}] 
+    &amp;= 1 - \frac{1}{n} \frac{ {\frac {2\pi ^{\frac {d}{2} } }{\Gamma \left({\frac {d}{2} } \right)} } }{ {\frac {2\pi ^{\frac {d + 1}{2} } }{\Gamma \left({\frac {d + 1}{2} } \right)} } } \\
+    &amp;= 1 - \frac{1}{n} \frac{ \Gamma \left({\frac {d + 1}{2} } \right)}{ \Gamma \left({\frac {d}{2} } \right) \pi^{\frac {1}{2} } } \\
+    &amp;\ge 1 - \sqrt{ \frac{d}{2\pi} } \frac{e}{n}
+\end{aligned}
+\]</span></p>
+<p>where by Stirling’s formula <span class="math display">\[
+\begin{aligned}
+    \frac{ \Gamma \left({\frac {d + 1}{2} } \right)}{ \Gamma \left({\frac {d}{2} } \right)} &amp;\le (\frac{d + 1}{2})^{\frac {d + 1}{2} - 1 / 2} e^{1 / (12 (\frac {d + 1}{2}))}  / (\frac{d}{2})^{\frac{d}{2} - 1 / 2} \\
+    &amp;= (1 + \frac{1}{d})^{d/2} e^{1 / (6(d + 1))} (\frac{d}{2})^{1 / 2} \\
+    &amp;\le e (\frac{d}{2})^{1 / 2}
+\end{aligned}
 \]</span></p>
 
       
@@ -307,7 +264,7 @@ e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\l
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/20/Random-Points-on-Shpere/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/23/Unbiased%20Estimator%20of%20Sampling%20Variance/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -321,7 +278,7 @@ e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\l
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/07/20/Random-Points-on-Shpere/" class="post-title-link" itemprop="url">Random Points on Shpere</a>
+            <a href="/2018/08/23/Unbiased%20Estimator%20of%20Sampling%20Variance/" class="post-title-link" itemprop="url">Unbiased Estimator of Sampling Variance</a>
         </h2>
 
         <div class="post-meta">
@@ -331,14 +288,14 @@ e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\l
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-07-20 10:45:18" itemprop="dateCreated datePublished" datetime="2018-07-20T10:45:18+10:00">2018-07-20</time>
+              <time title="Created: 2018-08-23 17:30:22" itemprop="dateCreated datePublished" datetime="2018-08-23T17:30:22+10:00">2018-08-23</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-09-16 18:08:01" itemprop="dateModified" datetime="2018-09-16T18:08:01+10:00">2018-09-16</time>
+                <time title="Modified: 2019-09-22 11:44:17" itemprop="dateModified" datetime="2019-09-22T11:44:17+10:00">2019-09-22</time>
               </span>
 
           
@@ -352,15 +309,63 @@ e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\l
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>To generate a random unit vector in <span class="math inline">\(R^n\)</span>, the most trivial approach is to use spherical coordinates and generate the angles uniformly at random. Here we introduce another way : sample <span class="math inline">\(n\)</span> independent identical random variables from Gaussian distribution <span class="math inline">\(N(0, 1)\)</span>, denoted as <span class="math inline">\(x_1, x_2, ..., x_n\)</span>. Then a unit vector <span class="math inline">\(v\)</span> is obtained by</p>
+          <p>Let <span class="math inline">\(X_1, X_2, ..., X_n\)</span> be a set of <span class="math inline">\(i.i.d.\)</span> random variables with mean <span class="math inline">\(\mu\)</span> and varaince <span class="math inline">\(\sigma^2\)</span>. Define <span class="math inline">\(\overline X = \frac{1}{n} \sum_i X_i\)</span>. Then</p>
 <p><span class="math display">\[
-v = \frac{1}{\sum_{i = 1}^n x_i^2 }(x_1, x_2, ..., x_n) 
+\begin{aligned}
+\sum_i (X_i - \overline X)^2 
+&amp;= \sum_i (X_i - \mu  - (\overline X - \mu))^2 \\
+&amp;= \sum_i (X_i - \mu)^2 - 2 \sum_i (X_i - \mu)(\overline X - \mu) + n (\overline X - \mu)^2 \\
+&amp;= \sum_i (X_i - \mu)^2 - n (\overline X - \mu)^2
+\end{aligned}
 \]</span></p>
-<p>The key observation is that all points at a fixed distance from the origin is equally generated. To see this, the joints distribution of <span class="math inline">\(x_1, x_2, ..., x_n\)</span> is given by</p>
+<p>Define <span class="math inline">\(S = \sum_i X_i\)</span>. Note that <span class="math inline">\(S\)</span> is a random variable with mean <span class="math inline">\(n\mu\)</span> and variance <span class="math inline">\(n\sigma^2\)</span>. Therefore,</p>
 <p><span class="math display">\[
-p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big)
+\begin{aligned}
+E[ \sum_i (X_i - \overline X)^2 ] 
+&amp;= \sum_i E[(X_i - \mu)^2] - n E[(\overline X - \mu)^2] \\
+&amp;= n \sigma^2 - \frac{1}{n} E \left[ (S - n\mu)^2 \right] \\
+&amp;= (n - 1) \sigma^2
+\end{aligned}
 \]</span></p>
-<p><span class="math inline">\(p\)</span> is fixed when <span class="math inline">\(\sum_{i = 1}^n x_i^2\)</span> is fixed.</p>
+<p>Another way of looking this is that, <span class="math display">\[
+\begin{aligned}
+\frac{1}{n}\sum_i (X_i - \overline X)^2  
+&amp;= \frac{1}{n} (\sum_{i} X_i^2 - 2 \overline X (\sum_{i} X_i) + n(\overline X)^2) \\
+&amp;= \frac{1}{n}( \sum_{i} X_i^2 - n(\overline X)^2 ) \\
+&amp;= \frac{1}{n} \sum_{i} X_i^2 - \overline X^2 \\
+&amp;= \frac{1}{n} \sum_{i} X_i^2 - \mu^2 - (\overline X^2 - \mu^2)
+\end{aligned}
+\]</span> Therefore, <span class="math display">\[
+\begin{aligned}
+E[\frac{1}{n}\sum_i (X_i - \overline X)^2]
+&amp;= \sigma^2 - \frac{1}{n} \sigma^2
+\end{aligned}
+\]</span></p>
+<p>We can also prove this via linear algebra. Let <span class="math inline">\(X = (X_1, X_2, ..., X_n)\)</span> be a <span class="math inline">\(n\)</span>-dimension vector. Also, denote <span class="math inline">\(e = (1, 1, ..., 1)\)</span>. Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+\overline X &amp;= \frac{1}{n} e^T X  \\
+\sum_{i} (X_i - \overline X)^2 &amp;= (X - \frac{1}{n} e e^T X)^T (X -  \frac{1}{n} e e^T X) \\
+&amp;= X^T (I -  \frac{1}{n} e e^T)^T (I -  \frac{1}{n} e e^T)X \\
+&amp;= X^T (I -  \frac{1}{n} e e^T)(I -  \frac{1}{n} e e^T)X \\
+&amp;= X^T (I -  2 \frac{1}{n} e e^T +  \frac{1}{n^2 } e e^T e e^T)X \\
+&amp;= X^T (I -  2 \frac{1}{n} e e^T +  \frac{1}{n} e e^T)X \\
+&amp;= X^T (I -  \frac{1}{n} e e^T)X \\
+&amp;= Tr[X^T (I -  \frac{1}{n} e e^T)X] \\
+&amp;= Tr[(I -  \frac{1}{n} e e^T) X X^T]
+\end{aligned}
+\]</span></p>
+<p>Since <span class="math inline">\(E[X X^T] = \mu^2 e e^T + \sigma^2 I\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+E[\sum_{i} (X_i - \overline X)^2] &amp;= Tr[(I -  \frac{1}{n} e e^T) E[X X^T]] \\
+&amp;=Tr[(I -  \frac{1}{n} e e^T)(\mu^2 e e^T + \sigma^2 I)] \\
+&amp;=Tr[(ee^T  - ee^T)\mu^2 + (I -  \frac{1}{n} e e^T)\sigma^2] \\
+&amp;=Tr[(I -  \frac{1}{n} e e^T)\sigma^2] \\
+&amp;=Tr[I -  \frac{1}{n} e e^T] \sigma^2 
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(n - 1\)</span> is the trace as well as the rank of <span class="math inline">\(I - \frac{1}{n}e e^T\)</span>.</p>
 
       
     </div>
@@ -380,7 +385,7 @@ p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/18/Hashing/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/02/Empty-Bins/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -394,7 +399,7 @@ p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/07/18/Hashing/" class="post-title-link" itemprop="url">Hashing</a>
+            <a href="/2018/08/02/Empty-Bins/" class="post-title-link" itemprop="url">Empty Bins</a>
         </h2>
 
         <div class="post-meta">
@@ -403,16 +408,10 @@ p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2018-07-18 15:07:42" itemprop="dateCreated datePublished" datetime="2018-07-18T15:07:42+10:00">2018-07-18</time>
+              <time title="Created: 2018-08-02 14:06:16 / Modified: 17:29:56" itemprop="dateCreated datePublished" datetime="2018-08-02T14:06:16+10:00">2018-08-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-03 00:17:49" itemprop="dateModified" datetime="2020-05-03T00:17:49+10:00">2020-05-03</time>
-              </span>
 
           
 
@@ -425,85 +424,13 @@ p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Let <span class="math inline">\(S = \{ x_1, x_2, ..., x_m \}\)</span> be a set of distinct element from domain <span class="math inline">\(U\)</span>. A function <span class="math inline">\(h: U \rightarrow [n]\)</span> that takes element from <span class="math inline">\(U\)</span> to a smaller domain <span class="math inline">\([n]\)</span> is called a hash function, where <span class="math inline">\([n] = \{ 0, 1, ..., n - 1\}\)</span> and <span class="math inline">\(n \le |U|\)</span>. In the case where <span class="math inline">\(n &lt; |U|\)</span>, there must be some <span class="math inline">\(i \in [n]\)</span>, s.t., <span class="math inline">\(|h^{-1}(i)| &gt; 1\)</span>. We are interested in the number of total duplicate value in <span class="math inline">\(h(S) = \{ h(x_1), h(x_2), ..., h(x_m) \}\)</span>.</p>
-<p>If both <span class="math inline">\(S\)</span> and <span class="math inline">\(h\)</span> are fixed, there is nothing uncertain. There are two ways to add some randomness to our analysis</p>
-<ol type="1">
-<li><p><span class="math inline">\(h\)</span> is fixed, and <span class="math inline">\(S\)</span> follows some distribution on <span class="math inline">\(U\)</span>. As an example, let <span class="math inline">\(U = [0, 2^{20} - 1]\)</span> and <span class="math inline">\(h(x) = x \ \&amp; \ 1023\)</span> that returns the last <span class="math inline">\(10\)</span> bits of <span class="math inline">\(x\)</span> (in binary form). If <span class="math inline">\(S\)</span> is sampled uniformly at random from <span class="math inline">\(U\)</span>, then on average for each <span class="math inline">\(x_i \in S\)</span>, there are <span class="math inline">\(\frac{m - 1}{1024}\)</span> elements that have the same value as <span class="math inline">\(x_i\)</span> under <span class="math inline">\(h\)</span>.</p></li>
-<li><p>The assumption that <span class="math inline">\(S\)</span> follows some distribution is too strong. Instead we assume that given <span class="math inline">\(S\)</span>, we select a function <span class="math inline">\(h\)</span> uniformly, from a set of functions <span class="math inline">\(\mathcal{H}\)</span>. Now we are going to analyze the probability <span class="math inline">\(P[ h(x_i) = h(x_j) ]\)</span> for <span class="math inline">\(i \neq j\)</span>.</p></li>
-</ol>
-<p>Let <span class="math inline">\(p &gt; |U|\)</span> be a prime number and <span class="math display">\[
-\mathcal{H} \doteq \{ h(x) = ax + b \mod p \mod n | 1 \le a &lt; p, 0 \le b &lt; p \}
+          <p>Suppose we throw <span class="math inline">\(m\)</span> balls into <span class="math inline">\(n\)</span> bins uniformly at random, what is the probability that at least <span class="math inline">\(\epsilon n\)</span> (<span class="math inline">\(0 &lt; \epsilon &lt; 1\)</span>) bins remain empty?</p>
+<p>When we throw a ball, if there are at least <span class="math inline">\(\epsilon n\)</span> empty bins, we increase the number of non-empty bins with probability at least <span class="math inline">\(\epsilon\)</span>. Let <span class="math inline">\(X_1, X_2, ..., X_m\)</span> be <span class="math inline">\(m\)</span> i.i.d Bernoulli random variable that takes <span class="math inline">\(1\)</span> with probability <span class="math inline">\(\epsilon\)</span>. The event that <span class="math inline">\(\epsilon n\)</span> empty bins remains is upper bounded by <span class="math display">\[
+\Pr [\sum_{i=1}^m X_i \le (1 - \epsilon) n] = \Pr [\sum_{i=1}^m X_i \le \frac{\epsilon m - \epsilon m + n - \epsilon n}{\epsilon m} \epsilon m] = \Pr [\sum_{i=1}^m X_i \le (1 - (1 - \frac{(1 - \epsilon ) n}{\epsilon m}) \frac{}{} \epsilon m]
 \]</span></p>
-<p>It follows that if <span class="math inline">\(h\)</span> is sampled uniformly at random, <span class="math inline">\(P[h(x_i) = h(x_j)] \le 1 / n\)</span> for <span class="math inline">\(i \neq j\)</span>.</p>
-<h5 id="lemma-1.">Lemma 1.</h5>
-<p>For <span class="math inline">\(x_i \neq x_j\)</span>, and <span class="math inline">\(s, t \in [p], s \neq t\)</span>, there is a unique pair <span class="math inline">\((a,b) \in [p]^+ \times [p]\)</span> <span class="math display">\[
-    a x_i + b \mod p = s \\
-    a x_j + b \mod p = t
-\]</span> where <span class="math inline">\([p]^+ \doteq \{1, 2, ..., p-1 \}\)</span>.</p>
-<p><strong>Proof</strong>: Since <span class="math inline">\([p]\)</span> is a finite filed and <span class="math inline">\(x_i \neq x_j\)</span>, the matrix</p>
-<p><span class="math display">\[
-\begin{bmatrix}
-x_i \mod p, 1 \\
-x_j \mod p, 1
-\end{bmatrix} \in [p]^{2 \times 2}
+<p>When <span class="math inline">\(\epsilon\)</span> is fixed, by setting <span class="math inline">\(\frac{1}{\lambda} \doteq \frac{n}{m} =\frac{\epsilon}{1 - \epsilon} (1 - \sqrt{\frac{2n }{\epsilon m} })\)</span> (this is solvable since the left hand side is increasing with <span class="math inline">\(1 / \lambda\)</span> while the right hand side is decreasing with <span class="math inline">\(1 / \lambda\)</span>), we have <span class="math inline">\((1 - \frac{(1 - \epsilon) n}{\epsilon m })^2\frac{\epsilon m}{2} = n\)</span>. Then by Chernoff bound we get <span class="math display">\[
+\Pr [\sum_{i=1}^m X_i \le (1 - \epsilon) n] \le  = \exp (-n)
 \]</span></p>
-<p>is invertible. Therefore,</p>
-<p><span class="math display">\[
-\begin{bmatrix}
-a \\ 
-b
-\end{bmatrix} 
-= 
-\begin{bmatrix}
-x_i \mod p, 1 \\
-x_j \mod p, 1
-\end{bmatrix}^{-1}
-\begin{bmatrix}
-s \\ 
-t
-\end{bmatrix}
-\]</span> is unique. Moreover, <span class="math inline">\(a \neq 0\)</span>. Otherwise <span class="math inline">\(b = s\)</span> and <span class="math inline">\(b = t\)</span>, a contradiction to <span class="math inline">\(s \neq t\)</span>.</p>
-<h5 id="lemma-2.">Lemma 2.</h5>
-<p>For <span class="math inline">\(x_i \neq x_j\)</span>, <span class="math display">\[
-\begin{aligned}
-P[h(x_i = x_j)] 
-&amp;= \sum_{s, t \in [p], s \neq t, s \mod n = t \mod n} P[ h(x_i) = s \wedge h(x_j) = t] \\
-&amp;= \sum_{s, t \in [p], s \neq t, s = t \mod n} \frac{1}{ (p-1)p } \\
-&amp;= \sum_{s \in [p]} \sum_{t \in [p], t \neq s, t = s \mod n} \frac{1}{ (p-1)p } \\
-&amp;\le \sum_{s \in [p]} \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
-&amp;= p \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
-&amp;= \frac{1}{ n }
-\end{aligned}
-\]</span></p>
-<h5 id="lemma-3.">Lemma 3.</h5>
-<p>The expected number of pair <span class="math inline">\(x_i, x_j\)</span>, s.t., <span class="math inline">\(x_i \neq x_j \wedge h(x_i) = h(x_j)\)</span> is given by</p>
-<p><span class="math display">\[
-E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] = \sum_{x_i \neq x_j} P[h(x_i = x_j)] = \binom{m}{2} \frac{1}{n} = \frac{m (m - 1)}{ 2n }
-\]</span></p>
-<p>When <span class="math inline">\(m^2 \le n\)</span>, then <span class="math inline">\(E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] \le \frac{1}{2}\)</span>. By Markov inequality,</p>
-<p><span class="math display">\[
-P[\exists \quad \text{collision}] \le \frac{1}{ 2 }
-\]</span></p>
-<p>Lemma 4.</p>
-<p>With probability at most <span class="math inline">\(1/2\)</span>, some bin contains more than <span class="math inline">\(\frac{m}{n} + \sqrt{2m}\)</span> balls.</p>
-<p>For a fixed bin, let <span class="math inline">\(Y\)</span> denote the number of ball in this bin. Further, define <span class="math display">\[
-Y_i = \begin{cases}
-1, \qquad \text{if the } i \text{-th ball falls into the bin} \\
-0, \qquad \text{otherwise}
-\end{cases}
-\]</span> Then <span class="math inline">\(Y = \sum_i Y_i\)</span>, and <span class="math display">\[
-E[Y] = \frac{m}{n} \\
-\]</span> By pair-wise independence, we have <span class="math display">\[
-Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
-\]</span> Therefore, by Chebyshev inequality, we have <span class="math display">\[
-\Pr \left[ |Y - E[Y]| \ge \sqrt{2n} \sqrt{ m \frac{1}{n} \left(1 - \frac{1}{n} \right)} \right] = \Pr[|Y - E[Y]| \ge \sqrt{2n} \cdot \sigma] \le \frac{Var[Y]}{2n\sigma^2} = \frac{1}{2n}
-\]</span> Finally, applying union bound over <span class="math inline">\(n\)</span> bins, we get <span class="math display">\[
-\Pr[\text{some bin gets more than } \sqrt{2m} \text{ balls} ] \le \frac{1}{2}
-\]</span></p>
-<h5 id="reference">Reference:</h5>
-<ol type="1">
-<li>Sanjeev Arora, Cos 521: Advanced Algorithm Design, Lecture 1: Course Intro and Hashing</li>
-</ol>
 
       
     </div>
@@ -522,7 +449,7 @@ Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/45/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/45/">45</a><span class="page-number current">46</span><a class="page-number" href="/page/47/">47</a><span class="space">&hellip;</span><a class="page-number" href="/page/52/">52</a><a class="extend next" rel="next" href="/page/47/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/45/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/45/">45</a><span class="page-number current">46</span><a class="page-number" href="/page/47/">47</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/47/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -588,7 +515,7 @@ Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">155</span>
+          <span class="site-state-item-count">160</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
