@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/12/Beyond-Chebyshev-s-Inequality/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/22/The-Poisson-Approximation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/02/12/Beyond-Chebyshev-s-Inequality/" class="post-title-link" itemprop="url">Beyond Chebyshev's Inequality</a>
+            <a href="/2021/03/22/The-Poisson-Approximation/" class="post-title-link" itemprop="url">The Poisson Approximation</a>
         </h2>
 
         <div class="post-meta">
@@ -169,16 +169,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-02-12 13:56:18" itemprop="dateCreated datePublished" datetime="2021-02-12T13:56:18+11:00">2021-02-12</time>
+              <time title="Created: 2021-03-22 11:37:19 / Modified: 15:27:54" itemprop="dateCreated datePublished" datetime="2021-03-22T11:37:19+11:00">2021-03-22</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-15 11:00:25" itemprop="dateModified" datetime="2021-02-15T11:00:25+11:00">2021-02-15</time>
-              </span>
 
           
 
@@ -191,226 +185,121 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>We consider the Count Sketch with single array.</p>
-<p><strong>Definitions</strong></p>
-<ol type="1">
-<li>Let <span class="math inline">\(S = (s_1, s_2, ..., s_n)\)</span> be a stream of <span class="math inline">\(n\)</span> elements from a domain <span class="math inline">\([d]\)</span>.<br />
-</li>
-<li><span class="math inline">\(A:\)</span> an array of size <span class="math inline">\(m\)</span>.<br />
-</li>
-<li><span class="math inline">\(h: [d] \rightarrow [m]\)</span> a hash function that assigns each value in <span class="math inline">\([d]\)</span> an integer uniformly at random from <span class="math inline">\([m]\)</span>.<br />
-</li>
-<li><span class="math inline">\(g: [d] \rightarrow \{ - 1, 1 \}\)</span> a hash function that assigns each value in <span class="math inline">\([d]\)</span> a random sign.</li>
-</ol>
-<p><strong>Algorithm</strong></p>
-<p>For each element <span class="math inline">\(s \in S\)</span>, Count-Sketch updates <span class="math inline">\(A\)</span> as follows:</p>
+          <h1 id="poisson-distribution">Poisson Distribution</h1>
+<p>A discrete random variable <span class="math inline">\(X\)</span> follows Poisson (<span class="math inline">\(ˈ\)</span>pwɑːsɒn) distribution, with a parameter <span class="math inline">\(\lambda\)</span>, if its probability mass function is given by <span class="math display">\[
+    \Pr[ X = k ] = e^{ - \lambda } \frac{ \lambda^k }{ k! }, \qquad \forall k \in \mathbb{N}. 
+\]</span></p>
+<p>We can verify that the definition is valid: <span class="math display">\[
+    \sum_{ k \in \mathbb{N} } \Pr[ X = k ] = e^{ - \lambda } \sum_{ k \in \mathbb{N} }  \frac{ \lambda^k }{ k! } = e^{ - \lambda } e^{ \lambda } = 1. 
+\]</span></p>
+<p>We use <span class="math inline">\(\text{Pois}(\lambda)\)</span> to denote a Poisson distribution with parameter <span class="math inline">\(\lambda\)</span>.</p>
+<h2 id="mean">Mean</h2>
 <blockquote>
-<p>Update (<span class="math inline">\(s\)</span>):<br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(A[ h(s) ] \leftarrow A[ h(s) ] + g[s]\)</span></p>
+<p><strong>Property.</strong> <span class="math inline">\(\mathbb{E}[X] = \lambda\)</span>.</p>
 </blockquote>
-<p>After processing elements in <span class="math inline">\(S\)</span>, Count-Sketch answer query for an element's frequency as follows:</p>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \sum_{ k \in \mathbb{N} } k\Pr[ X = k ] = e^{ - \lambda } \lambda \sum_{ 1 \le k \in \mathbb{N} }  \frac{ \lambda^{k - 1} }{ (k - 1)! } = e^{ - \lambda } \lambda \sum_{ k \in \mathbb{N} }  \frac{ \lambda^k }{ k! } = \lambda. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="variance">Variance</h2>
 <blockquote>
-<p>Query (<span class="math inline">\(v\)</span>):<br />
-<span class="math inline">\(\qquad\)</span> return <span class="math inline">\(\hat f[v] \doteq g[v] \cdot A[ h(v) ]\)</span></p>
+<p><strong>Property.</strong> <span class="math inline">\(\mathbb{Var}[X] = \lambda\)</span>.</p>
 </blockquote>
-<p><strong>Error Analysis</strong></p>
-<p>For a fixed <span class="math inline">\(v \in [d]\)</span>, let <span class="math inline">\(f[v]\)</span> be its true frequencies in <span class="math inline">\(S\)</span> (i.e., the number of times it appears in <span class="math inline">\(S\)</span>). Define indicator random variables <span class="math display">\[
-    X_1, X_2, ..., X_n, 
+<p><strong>Proof.</strong> <span class="math display">\[
+    \sum_{ k \in \mathbb{N} } k(k - 1)\Pr[ X = k ] = e^{ - \lambda } \lambda^2 \sum_{ 2 \le k \in \mathbb{N} }  \frac{ \lambda^{k - 2} }{ (k - 2)! } = e^{ - \lambda } \lambda^2 \sum_{ k \in \mathbb{N} }  \frac{ \lambda^k }{ k! } = \lambda^2. 
 \]</span></p>
-<p>such that for <span class="math inline">\(i \in [n]\)</span>, define <span class="math display">\[
-    X_i = \begin{cases}
-        &amp;1,     &amp;\text{ if } h(s_i) = h(v),     &amp;g(s_i) = g(v), \\
-        &amp;0,     &amp;\text{ if } h(s_i) \neq h(v),  &amp;               \\
-        &amp;-1,    &amp;\text{ if } h(s_i) = h(v),     &amp;g(s_i) \neq g(v), 
-    \end{cases}
-\]</span></p>
-<p>The <span class="math inline">\(X_i\)</span>'s are not independent. For <span class="math inline">\(i \in [n]\)</span>, if <span class="math inline">\(s_i \neq v\)</span>, it holds that <span class="math display">\[
-    \mathbb{E} [ X_i ] = 0. 
-\]</span></p>
-<p>For <span class="math inline">\(i, j \in [n], s_i \neq v, s_j \neq v\)</span>, we have <span class="math display">\[
-    \mathbb{ E } [X_i X_j ] = 
-        \begin{cases}
-            &amp;0,         &amp;\text{ if } s_i \neq s_j, \\
-            &amp;\frac{1}{m}&amp;\text{ if } s_i = s_j.
-        \end{cases}
-\]</span></p>
-<p>The estimation error of <span class="math inline">\(\hat f[v]\)</span> can be written as <span class="math display">\[
-    \left| \sum_{ i \in [n], s_i \neq v } X_i \right|. 
-\]</span></p>
-<p>For given <span class="math inline">\(\epsilon &gt; 0\)</span>, we want to bound. <span class="math display">\[
+<p>Hence, <span class="math display">\[
     \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
+        \mathbb{Var}[X] &amp;= \sum_{ k \in \mathbb{N} } k^2 \Pr[ X = k ] -  (\mathbb{E}[X] )^2 \\
+                &amp;= \sum_{ k \in \mathbb{N} } ( k (k - 1) + k ) \Pr[ X = k ] -  (\mathbb{E}[X] )^2 \\
+                &amp;= \lambda^2 + \lambda - \lambda^2 \\
+                &amp;= \lambda. 
     \end{aligned}
 \]</span></p>
-<p>To do this, we pick some parameter <span class="math inline">\(t &gt; 0\)</span> and define <span class="math inline">\(\mathcal{V}_{bad} \doteq \{ u \in [d], h(u) \ge t \}\)</span>, and consider <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-            &amp;\le  \Pr \left[  \exists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] + 
-            \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;\le \frac{n}{ t \cdot m} + \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right].
-    \end{aligned}
-\]</span></p>
-<p>We consider the second probability. <span class="math display">\[
-    \begin{aligned}
-        \mathbb{Var} \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right]
-            &amp;= \sum_{ i \in [n], s_i \neq v} \mathbb{Var} \left[ X_i \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;\quad + \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v } \mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] 
-    \end{aligned}
-\]</span></p>
-<p>The first term equals to <span class="math inline">\(\frac{n}{m}\)</span>. For the second term, if <span class="math inline">\(s_i \neq s_j\)</span>, then by independence of <span class="math inline">\(X_i\)</span> and <span class="math inline">\(X_j\)</span>, it holds that <span class="math display">\[
-\mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] = \mathbb{E} \left[ X_i \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \cdot \mathbb{E} \left[  X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right]=0.
-\]</span></p>
-<p>If <span class="math inline">\(s_i = s_j\)</span>, then <span class="math inline">\(X_i = X_j\)</span>. Hence, <span class="math display">\[
-    \begin{aligned}
-        \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v } \mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] 
-            &amp;= \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v, s_i = s_j } \mathbb{E} \left[ X_i^2 \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;= \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v, s_i = s_j, f[s_i] \le t } \frac{1}{m} \\
-            &amp;\le t^2 \cdot \frac{n}{t} \cdot \frac{1}{m} \\
-            &amp;= \frac{ t \cdot n}{m}.
-    \end{aligned}
-\]</span></p>
-<p>By Chebyshev's inequality, <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-            &amp;\le \frac{n}{ t \cdot m} + \frac{t \cdot n}{m \cdot \epsilon^2}.
-    \end{aligned}
-\]</span></p>
-<p>By setting <span class="math inline">\(t = \epsilon\)</span>, the probability is minimized to <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-            &amp;\le \frac{n}{m} \cdot \frac{2}{\epsilon}. 
-    \end{aligned}
-\]</span></p>
-<p>Note that this error bound is exactly the same as Count-Min sketch with a single array of size <span class="math inline">\(m\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/07/Morris-Counter/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/07/Morris-Counter/" class="post-title-link" itemprop="url">Morris Counter</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-07 15:29:06" itemprop="dateCreated datePublished" datetime="2021-02-07T15:29:06+11:00">2021-02-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-25 19:30:11" itemprop="dateModified" datetime="2021-02-25T19:30:11+11:00">2021-02-25</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="problem">Problem</h3>
-<p>Given a stream <span class="math inline">\(S\)</span> of <span class="math inline">\(n\)</span> elements, a server that observes the elements in <span class="math inline">\(S\)</span> one by one is required to estimate the cardinality <span class="math inline">\(n\)</span> with less than <span class="math inline">\(\log n\)</span> bits, with relative error <span class="math inline">\(\epsilon \in (0, 1)\)</span> and failure probability <span class="math inline">\(\delta\)</span>.</p>
-<p>Let <span class="math inline">\(w \in (1, 2)\)</span> be some parameter to be determined.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="sum-of-two-independent-poisson-variable">Sum of Two Independent Poisson Variable</h2>
 <blockquote>
-<p><strong>Algorithm</strong>. Morris Counter<br />
-1. <span class="math inline">\(k \leftarrow 0; \quad X_0 \leftarrow 0\)</span>; (introduced only for analysis)</p>
-<ol start="2" type="1">
-<li><p>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(n\)</span>:</p></li>
-<li><p><span class="math inline">\(\qquad\)</span> <span class="math inline">\(X_t \leftarrow X_{t - 1}\)</span>; (introduced only for analysis)</p></li>
-<li><p><span class="math inline">\(\qquad\)</span> With probability <span class="math inline">\(p_t \doteq 1 / w^k\)</span> do:</p></li>
-<li><p><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(X_t \leftarrow X_t + w^k\)</span>;</p></li>
-<li><p><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(k \leftarrow k + 1\)</span>;</p></li>
-<li><p>Output <span class="math inline">\(\frac{w^k - 1}{w - 1}\)</span>.</p></li>
-</ol>
+<p><strong>Property.</strong> If <span class="math inline">\(X_1 \sim \text{Pois}(\lambda_1)\)</span> and <span class="math inline">\(X_2 \sim \text{Pois}(\lambda_2)\)</span>, then <span class="math inline">\(X_1 + X_2 \sim \text{Pois} (\lambda_1 + \lambda_2)\)</span>.</p>
 </blockquote>
-<p>It can be verified that, when the algorithm stops, <span class="math inline">\(X_n = \frac{w^k - 1}{w - 1}\)</span>.</p>
-<blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(\forall 0 \le t \le n\)</span>, <span class="math inline">\(\mathbb{E} [ X_t ] = t\)</span>.</p>
-</blockquote>
-<p><em>Proof:</em> Clearly, <span class="math inline">\(\mathbb{E} [ X_0 ] = 0\)</span>. For <span class="math inline">\(t \ge 1\)</span>, <span class="math display">\[
-    \mathbb{E} [ X_t \mid X_{t - 1} ] = p_t \cdot \left( X_{t - 1} + \frac{1}{p_t} \right) + ( 1 - p_t ) \cdot X_{t - 1} = X_{t - 1} + 1. 
-\]</span></p>
-<p>Hence, by induction on <span class="math inline">\(t\)</span>, we have <span class="math display">\[
-    \mathbb{E} [ X_t ] = \mathbb{E} [ \mathbb{E} [ X_t \mid X_{t - 1} ] ] = \mathbb{E} [ X_{t - 1} ] + 1 = t. 
+<p><strong>Proof.</strong> For every <span class="math inline">\(k \in \mathbb{N}\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \Pr[X_1 + X_2 = k] 
+            &amp;= \sum_{a, b \in \mathbb{N}, a + b = k} \left( e^{- \lambda_1 } \frac{ \lambda_1^{a} }{ a! } \right) \left( e^{-\lambda_2 } \frac{ \lambda_2^b }{ b! } \right) \\
+            &amp;= e^{- (\lambda_1 + \lambda_2) } \frac{1}{k!} \sum_{a, b \in \mathbb{N}, a + b = k} \frac{ k! }{ a! b! } \lambda_1^{a} \lambda_2^b \\
+            &amp;= e^{- (\lambda_1 + \lambda_2) } \frac{ (\lambda_1 + \lambda_2)^k }{k!}.
+    \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(\forall t \in [n]\)</span>, <span class="math inline">\(\mathbb{Var } [ X_t ] = (w - 1) \cdot \frac{ t^2 }{ 2 }\)</span>.</p>
+<p><strong>Corollary.</strong> If <span class="math inline">\(X_i \sim \text{Pois}(\lambda_i)\)</span> for every <span class="math inline">\(i \in [n]\)</span>, then <span class="math inline">\(\sum_{i \in [n] } X_i \sim \text{Pois} \left( \sum_{i \in [n] } \lambda_i \right)\)</span>.</p>
 </blockquote>
-<p><em>Proof:</em> For <span class="math inline">\(t \ge 1\)</span>, it holds that <span class="math inline">\(X_{t - 1} = \frac{ 1 / p_t - 1}{w - 1}\)</span>. Therefore,</p>
-<p><span class="math display">\[
-1 / p_t = (w - 1) \cdot X_{t - 1} + 1
-\]</span> and <span class="math display">\[
-\begin{aligned}
-     \mathbb{E} [ X_t^2 | X_{t - 1} ] 
-            &amp;= p_t \cdot  \left( X_{t - 1} + 1 / p_t \right)^2 + ( 1 - p_t ) \cdot (X_{t - 1})^2 \\
-            &amp;= 1 / p_t + 2 \cdot X_{t - 1} + (X_{t - 1})^2 \\
-            &amp;= (w + 1) \cdot X_{t - 1}  + 1 + (X_{t - 1})^2 
-\end{aligned}
-\]</span></p>
-<p>Therefore, since <span class="math inline">\(X_0 = 0\)</span>, <span class="math display">\[
-\begin{aligned}
-     \mathbb{E} [ X_t^2 ] 
-                &amp;= \mathbb{E} [ \mathbb{E} [ X_t^2 | X_{t - 1}  ] ] \\
-                &amp;= (w + 1) \cdot \mathbb{E}  [ X_{t - 1} ] + 1 +  \mathbb{E}  [ X_{t - 1} ^2] \\
-                &amp;=  \mathbb{E}  [ X_{t - 1}^2 ] + (w + 1) \cdot (t - 1) + 1 \\
-                &amp;... \\
-                &amp;=  \mathbb{E}  [ X_0^2 ] + (w + 1) \cdot \sum_{i = 0}^{t - 1} i + t  \\
-                &amp;= (w + 1) \cdot \frac{ t (t - 1) }{ 2 } + t \\
-                &amp;\le (w - 1) \cdot \frac{ t^2 }{ 2 } + t^2, 
-\end{aligned}
-\]</span></p>
-<p>and <span class="math display">\[
-    \mathbb{Var } [ X_t ] = \mathbb{E} [ X_t^2 ]  - (\mathbb{E} [ X_t ])^2 \le (w - 1) \cdot \frac{ t^2 }{ 2 } . 
-\]</span></p>
+<h1 id="poisson-approximation">Poisson Approximation</h1>
+<h2 id="binomial-distribution">Binomial Distribution</h2>
+<p>The Poisson distribution can be used to approximate the limit of the binomial distribution, under some condition.</p>
 <blockquote>
-<p><strong>Corollary.</strong> By Chebyshev's inequality, <span class="math display">\[
-\Pr[ | X_t - t | \ge \epsilon \cdot t ] \le (w - 1) \cdot \frac{ t^2 }{ 2 \epsilon^2 \cdot t^2} = \frac{w - 1}{ 2 \epsilon^2 }.
+<p><strong>Poisson Limit Theorem.</strong> Suppose that <span class="math inline">\(\forall n \in \mathbb{N}^+\)</span>, the random variable <span class="math inline">\(Y_n\)</span> follows binomial distribution <span class="math inline">\(\text{B}(n, p_n)\)</span> and that <span class="math inline">\(n p_n = \lambda\)</span>. Let <span class="math inline">\(X \sim \text{Pois}(\lambda)\)</span>, then <span class="math display">\[
+\lim_n \Pr[ Y_n  = k ] = \Pr[ X = k ]. 
 \]</span></p>
 </blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \Pr[ Y_n = k ] 
+            &amp;= \binom{n}{k } p_n^k (1 - p_n)^{n - k} \\
+            &amp;= \frac{ n (n - 1) ... (n - k + 1) }{ k !} p_n^k ( 1 - p_n )^{n - k} \\
+            &amp;= \frac{ n^k + O(n^{k - 1} ) }{ k !} \frac{ \lambda^k }{ n^k } \left( 1 - \frac{ \lambda }{ n } \right)^{n - k} \\
+            &amp;= \frac{ \lambda^k \left( 1 + O( n^{-1} ) \right) }{ k !} \left( 1 - \frac{ \lambda }{ n } \right)^{n - k} 
+    \end{aligned}
+\]</span></p>
+<p>For fixed <span class="math inline">\(k\)</span>, taking <span class="math inline">\(n \rightarrow \infty\)</span>, we have <span class="math display">\[
+    \frac{ \lambda^k \left( 1 + O( n^{-1} ) \right) }{ k !} \left( 1 - \frac{ \lambda }{ n } \right)^{n - k} \rightarrow \frac{\lambda^k}{ k !} e^{-\lambda }. 
+\]</span></p>
+<h2 id="balls-and-bins">Balls and Bins</h2>
+<p>We study the problem of throwing <span class="math inline">\(m\)</span> balls into <span class="math inline">\(n\)</span> bins randomly. For every <span class="math inline">\(i \in [n]\)</span>, let <span class="math inline">\(Y_i\)</span> denote the number of balls in the <span class="math inline">\(i\)</span>th bin, which follows binomial distribution <span class="math inline">\(\text{B}(m, 1 / m)\)</span>. We have shown that <span class="math inline">\(Y_i\)</span> can be approximated by <span class="math inline">\(X_i \sim \text{Pois}(m / n)\)</span>. In this section, we show a stronger result that the joint distribution of <span class="math inline">\((Y_1, ..., Y_n)\)</span> can be approximated by the joint distribution of Poisson random variables.</p>
 <blockquote>
-<p><strong>Corollary.</strong> If we set <span class="math inline">\(w = 1 + 2 \epsilon^2 \delta\)</span>, then the failure probability is at most <span class="math inline">\(\delta\)</span>.</p>
+<p><strong>Theorem.</strong> <span class="math inline">\(\forall \lambda &gt; 0\)</span>, let <span class="math inline">\(X_i \sim \text{Pois}(\lambda)\)</span> be independent random variables. Then the joint distribution of <span class="math inline">\((X_1, ..., X_n)\)</span> conditioned on <span class="math inline">\(\sum_{i \in [n]} X_i = m\)</span> is the same as <span class="math inline">\((Y_1, ..., Y_n)\)</span>.</p>
 </blockquote>
-<h2 id="reference.">Reference.</h2>
-<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+<p><strong>Remark:</strong> <em>the theorem holds for <span class="math inline">\(\forall \lambda &gt; 0\)</span> and does not require that <span class="math inline">\(\lambda = m / n\)</span></em>.</p>
+<p><strong>Proof.</strong> Let <span class="math inline">\(X = \sum_{i \in [n] } X_i\)</span>. We have proven that <span class="math inline">\(X \sim \text{Pois}( n \lambda)\)</span>. Hence, <span class="math inline">\(\forall k_1, ..., k_n \ge 0\)</span>, s.t. <span class="math inline">\(\sum_{i \in [n] } k_i = m\)</span>, we have <span class="math display">\[
+    \begin{aligned}
+        \Pr[ X_1 = k_1, X_2 = k_2, ..., X_n = k_n \mid X = m ] 
+            &amp;= \left( \prod_{i \in [n] } e^{-\lambda} \frac{ \lambda^{k_i} }{ k_i! }  \right) / \left( e^{ - n\lambda} \frac{ (n\lambda)^m }{ m! } \right) \\
+            &amp;= \frac{ e^{ - n \lambda} \lambda^{ \sum_{i \in [n] } k_i} }{ e^{ - n\lambda} (n\lambda)^m } \frac{ m! }{ \prod_{i \in [n] } k_i ! } \\
+            &amp;= \binom{ m! }{ k_1; k_2; ...; k_n } \frac{1}{ n^m }.
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem [1]</strong>. <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math inline">\(X_i \sim \text{Pois}(m / n)\)</span>. Let <span class="math inline">\(f(y_1, ..., y_n)\)</span> be a nonnegative function. Then <span class="math display">\[
+\mathbb{E}[ f(Y_1, ..., Y_n) ] \le e \sqrt{m} \mathbb{E}[ f(X_1, ..., X_n) ].  
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(X = \sum_{i \in [n] } X_i\)</span>. Then <span class="math inline">\(X \sim \text{Pois}(m)\)</span>. As <span class="math inline">\(f\)</span> is nonnegative, it holds that <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E}[ f(X_1, ..., X_n) ] 
+            &amp;= \sum_{ k \in \mathbb{N} } \mathbb{E}[ f(X_1, ..., X_n)  \mid X = k] \cdot \Pr[ X = k ] \\              
+            &amp;\ge  \mathbb{E}[ f(X_1, ..., X_n)  \mid X = m] \cdot \Pr[ X = m ] \\
+            &amp;=  \mathbb{E}[ f(Y_1, ..., Y_n) ] \cdot e^{ - m } \frac{ m^m }{ m! } \\
+            &amp;\ge \mathbb{E}[ f(Y_1, ..., Y_n) ] \cdot e^{ - m } (m)^m \left( \frac{e}{m} \right)^m \frac{1}{ e \sqrt{m} } \\
+            &amp;= \mathbb{E}[ f(Y_1, ..., Y_n) ] \cdot \frac{1}{ e \sqrt{m} },  
+    \end{aligned}
+\]</span> and the theorem is proven. The last inequality follows from Stirling's formula that <span class="math inline">\(m! \le e \sqrt{m} (m / e)^m\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Corollary.</strong> If some event happens with probability <span class="math inline">\(p\)</span> with <span class="math inline">\(X_1, ..., X_n\)</span>, then it happens with probability at most <span class="math inline">\(e\sqrt{m} \cdot p\)</span> with <span class="math inline">\(Y_1, ..., Y_n\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(f\)</span> be the indicator variable of the event that takes 1 if the event occurs and 0 otherwise. Then by the previous theorem, <span class="math display">\[
+    \Pr[ f(Y_1, ..., Y_n) ] \le e \sqrt{m} \Pr[ f(X_1, ..., X_n) ]. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>The analysis makes some analysis simpler since the <span class="math inline">\(X_i\)</span>'s are independent random variables.</p>
+<p>In some special cases, the theorem can be strengthened.</p>
+<blockquote>
+<p><strong>Theorem [1].</strong> Let <span class="math inline">\(f(y_1, ..., y_n)\)</span> be a nonnegative function such that <span class="math inline">\(\mathbb{E} [ f(Y_1, ..., Y_n) ]\)</span> is either monotonically increasing or decreasing in <span class="math inline">\(m\)</span>. Then <span class="math display">\[
+\mathbb{E}[ f(Y_1, ..., Y_n) ] \le 2 \mathbb{E}[ f(X_1, ..., X_n) ].  
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Refer to [1]. Omitted.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] M. Mitzenmacher and E. Upfal, “Probability and Computing,” p. 490.</p>
 
       
     </div>
@@ -430,7 +319,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/02/Fast-Fourier-Transform/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/16/Pairwise-Independent-Bits/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -444,7 +333,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/02/02/Fast-Fourier-Transform/" class="post-title-link" itemprop="url">Fast Fourier Transform</a>
+            <a href="/2021/03/16/Pairwise-Independent-Bits/" class="post-title-link" itemprop="url">Pairwise Independent Bits</a>
         </h2>
 
         <div class="post-meta">
@@ -454,14 +343,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-02-02 10:31:22" itemprop="dateCreated datePublished" datetime="2021-02-02T10:31:22+11:00">2021-02-02</time>
+              <time title="Created: 2021-03-16 23:37:32" itemprop="dateCreated datePublished" datetime="2021-03-16T23:37:32+11:00">2021-03-16</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-04 22:50:26" itemprop="dateModified" datetime="2021-02-04T22:50:26+11:00">2021-02-04</time>
+                <time title="Modified: 2021-03-17 10:24:59" itemprop="dateModified" datetime="2021-03-17T10:24:59+11:00">2021-03-17</time>
               </span>
 
           
@@ -475,187 +364,127 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <!-- ![](https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.npng?raw=true) -->
-<p>In the discrete Fourier transform, we want to project a vector <span class="math inline">\(v \in \mathbb{C}^n\)</span> to the orthonormal bases <span class="math display">\[
-\begin{aligned}
-    &amp;e_0 = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot 0 \cdot \pi i}{ n} }, e^{ 1 \frac{2 \cdot 0 \cdot \pi i}{ n} }, ..., e^{ (n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } ), \\
-    &amp;... \\
-    &amp;e_{k - 1} = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} }, ..., e^{ (n - 1) \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} } ), \\
-    &amp;... \\
-    &amp;e_{n - 1} = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} }, ..., e^{ (n - 1) \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} } ).
-\end{aligned}
-\]</span></p>
-<p>We use <span class="math inline">\(\mathcal{S}\)</span> to denote the linear span of <span class="math inline">\(e_0, e_1, ..., e_{n - 1}\)</span>.</p>
-<h2 id="orthonormal-bases-verification">Orthonormal bases verification</h2>
-<p>It is easy to see that <span class="math inline">\(e_k\)</span> is a unit vector, <span class="math inline">\(\forall k \in [0, n)\)</span>. The vectors in the bases are also mutually orthogonal, as for <span class="math inline">\(k, l \in [0, n), k \neq l\)</span>, <span class="math display">\[
-    \left&lt; e_k, e_l \right&gt;_H = \sum_{j = 0 }^{n - 1} e^{ j \cdot \frac{ 2 (l - k) \pi i }{ n } } = \frac{ 1 - e^{ n \cdot \frac{ 2 (l - k) \pi i }{ n } } }{ 1 - e^{ \frac{ 2 (l - k) \pi i }{ n } } } = 0.
-\]</span></p>
-<h2 id="the-projection">The projection</h2>
-<p>The projection of <span class="math inline">\(v\)</span> to the bases, is defined as the vector in the linear span of the bases that is closest to <span class="math inline">\(v\)</span>. It is given by <span class="math display">\[
-    P(v) \doteq \sum_{k \in [0, n) } a_k e_k, 
-\]</span></p>
-<p>where <span class="math inline">\(a_k = \left&lt; e_k, v\right&gt;_H \doteq \bar e_k \cdot v\)</span>.</p>
+          <h1 id="problem">Problem</h1>
+<p>Given <span class="math inline">\(n \in \mathbb{N}_+\)</span>, generate <span class="math inline">\(n\)</span> pairwise independent binary bits with as few randomness as possible.</p>
+<h1 id="solution">Solution</h1>
+<p>WLOG, assume that <span class="math inline">\(n = 2^k - 1\)</span> for some <span class="math inline">\(k \ge 2\)</span>.</p>
 <blockquote>
-<p>Lemma. For any vector <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span>, it holds that <span class="math display">\[
-\left&lt; u, v \right&gt;_H = \left&lt; u, P(v) \right&gt;_H.
-\]</span> Or, equivalently, <span class="math display">\[
-\left&lt; u , v - P(v) \right&gt;_H = \left&lt; v - P(v), u \right&gt;_H = 0.
-\]</span> <em>Proof:</em> Let <span class="math inline">\(u = \sum_{k \in [0, n) } c_k e_k : c_k \in \mathbb{C}, \forall k \in [0, n)\)</span> be a vector in <span class="math inline">\(\mathcal{S}\)</span>. As <span class="math inline">\(e_0, e_1, ..., e_{n - 1}\)</span> are mutually orthogonal, <span class="math display">\[
-\left&lt; u, v \right&gt;_H = \sum_{k \in [0, n) } \bar c_k \cdot a_k =\left&lt; u, P(v) \right&gt;_H.
+<p><strong>Theorem.</strong> We can generate <span class="math inline">\(n\)</span> pairwise independent bits with <span class="math inline">\(k\)</span> independent unbiased random bits.</p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(X_1, X_2, ..., X_k\)</span> be unbiased random bits.</p>
+<!-- such that for every $i \in [k]$, we have 
+$$
+    \Pr[ X_i = 0 ] = \Pr[ X_i = 1 ] = 0.5. 
+$$ -->
+<p>Define for every nonempty subset <span class="math inline">\(S \subset [k]\)</span>, <span class="math display">\[
+    Y_S \doteq \sum_{i \in S} X_i \mod 2. 
+\]</span></p>
+<p>There are <span class="math inline">\(2^k - 1\)</span> such random variables. We claim that they are pairwise independent.</p>
+<p>First, observe that for every <span class="math inline">\(S \subset [k]\)</span>, <span class="math display">\[
+    \Pr[ Y_S = 0 ] = \Pr [ Y_S = 1 ] = 0.5. 
+\]</span></p>
+<!-- Moreover, for every pair of nonempty subsets $S \neq S' \subset [k]$, there exists at least one index $j \in (S \cup S') \setminus (S \cap S')$.  -->
+<p>Moreover, for every pair of nonempty subsets <span class="math inline">\(S \neq S&#39; \subset [k]\)</span>, there exists at least one index <span class="math inline">\(j \in S \Delta S&#39;\)</span>. Fixing the values of <span class="math inline">\(X_i\)</span> for all <span class="math inline">\(i \in [k] \setminus \{ j \}\)</span>, whether <span class="math inline">\(Y_S = Y_{S&#39;}\)</span> or not depends solely on <span class="math inline">\(X_j\)</span>. Hence, <span class="math display">\[
+    \Pr [ Y_S = Y_{S&#39;} ] = \Pr [ Y_S \neq Y_{ S&#39; } ] = 0.5. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark:</strong> We can label the nonempty subsets <span class="math inline">\(\{ S \subset [k] : S \neq \emptyset \}\)</span> by numbers in <span class="math inline">\([n]\)</span> and rewrite the random variables <span class="math inline">\(\{ Y_S : S \subset [k] \wedge S \neq \emptyset \}\)</span> as an <span class="math inline">\(n\)</span>-bit vector <span class="math inline">\(\pmb Y = (Y_1, ..., Y_n)\)</span>. The vector <span class="math inline">\(\pmb Y\)</span> has <span class="math inline">\(2^k\)</span> distinct values.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>S. P. Vadhan, “Pseudorandomness,” TCS, vol. 7, no. 1–3, pp. 1–336, Dec. 2012</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/11/Fingerprints/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/11/Fingerprints/" class="post-title-link" itemprop="url">Fingerprints</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-11 16:30:47 / Modified: 17:19:39" itemprop="dateCreated datePublished" datetime="2021-03-11T16:30:47+11:00">2021-03-11</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(\vec v = (v_1, ..., v_d) \in \mathbb{R}^d\)</span> be a vector, such that <span class="math inline">\(\exists\)</span> some positive integer <span class="math inline">\(M\)</span>, <span class="math inline">\(\forall i \in [d], v_i \in [M]\)</span>. Assume that <span class="math inline">\(d\)</span> is very large and <span class="math inline">\(\vec v\)</span> is sparse, so it is represented by a set of pairs that record the non-zero positions and values of <span class="math inline">\(\vec v:\)</span> <span class="math display">\[
+    S(\vec v ) \doteq \{ (i, v_i ) : v_i \neq 0, \forall i \in [d] \}. 
+\]</span></p>
+<p>A fingerprint <span class="math inline">\(h( \vec v) \in \mathbb{R}\)</span> is a succinct summary of <span class="math inline">\(\vec v\)</span>.</p>
+<blockquote>
+<p><strong>Goal</strong>: For a given <span class="math inline">\(\delta \in (0, 1)\)</span>, find an <span class="math inline">\(h: \mathbb{R}^d \rightarrow \mathbb{R}\)</span>, such that, <span class="math inline">\(\forall \vec v, \vec u \in \mathbb{R}^d\)</span>, if <span class="math inline">\(\vec v \neq \vec u\)</span>, then <span class="math display">\[
+\Pr [ h( \vec v) = h ( \vec u) ] \le \delta. 
 \]</span></p>
 </blockquote>
-<p>Next, we verify that <span class="math inline">\(P(v)\)</span> minimizes the distance to <span class="math inline">\(v\)</span>.</p>
+<h1 id="solution">Solution</h1>
 <blockquote>
-<p>Theorem. <span class="math display">\[
-P(v) = \argmin_{w \in \mathcal{S} } ||u - w||^2.
-\]</span> <em>Proof:</em> Let <span class="math inline">\(w = \sum_{k \in [0, n) } d_k e_k : d_k \in \mathbb{C}, \forall k \in [0, n)\)</span> and define <span class="math inline">\(u = P(v) - w\)</span>. Observe that <span class="math inline">\(u \in \mathcal{S}\)</span>. By the previous lemma, <span class="math display">\[
-\begin{aligned}
-|| v - w ||^2 
-&amp;= || v - P(v) + P(v) - w ||^2 \\
-&amp;= || v - P(v) ||^2 + ||P(v) - w||^2 + \left&lt; v - P(v), u \right&gt;_H + \left&lt; u, v - P(v) \right&gt;_H \\
-&amp;= || v - P(v) ||^2 + ||P(v) - w||^2
-\end{aligned}
-\]</span> Hence, <span class="math inline">\(|| v - w ||^2\)</span> is minimized if and only if <span class="math inline">\(w = P(v)\)</span>.</p>
+<p>Theorem. Let <span class="math inline">\(p \ge \max\{ d / \delta, M \}\)</span> be a prime number and let <span class="math inline">\(a\)</span> be an integer generated from <span class="math inline">\(1\)</span> to <span class="math inline">\(p - 1\)</span> uniformly at random. Then <span class="math display">\[
+h( \vec v ) \doteq \sum_{i \in [d] } v_i \cdot a^i
+\]</span> satisfies the goal.</p>
 </blockquote>
-<h2 id="matrix-form">Matrix Form</h2>
-<p>The coefficients of <span class="math inline">\(a_0, a_1, ..., a_{n - 1}\)</span> can be given in matrix form: <span class="math display">\[
-\begin{bmatrix}
-    a_0 \\
-    a_1 \\
-    ... \\
-    a_{n - 1}
-\end{bmatrix} 
-=
-\begin{bmatrix}
-    - \bar e_0 - \\
-    ...\\
-    - \bar e_k - \\
-    ... \\
-    - \bar e_{n - 1} - \\
-\end{bmatrix} v 
-=
-\frac{1}{ \sqrt n }
-\begin{bmatrix}
-    e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2 \cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
-    ...\\
-    e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
-    ... \\
-    e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
-\end{bmatrix} v.
+<p><strong>Proof.</strong> <span class="math inline">\(\forall \vec v, \vec u \in \mathbb{R}^d\)</span>, if <span class="math inline">\(\vec v \neq \vec u\)</span>, if <span class="math inline">\(h( \vec v) = h ( \vec u)\)</span>, then <span class="math display">\[
+    \sum_{i \in [d] } (v_i - u_i) \cdot a^i = 0. 
+\]</span> However, the polynomial <span class="math inline">\(p(x) \doteq \sum_{i \in [d] } (v_i - u_i) \cdot x^i\)</span> has at most <span class="math inline">\(d\)</span> distinct roots. As <span class="math inline">\(p(0) = 0\)</span>, it has at most <span class="math inline">\(d - 1\)</span> distinct non-zero root. The probability that <span class="math inline">\(a \neq 0\)</span> being one of them is bounded by <span class="math display">\[
+    \Pr \left[ a \text{ is a root of } p(x) \right] = \frac{d - 1 }{ p - 1} \le \frac{ d } { p } =  \delta. 
 \]</span></p>
-<p>Define the matrix <span class="math inline">\(M_n\)</span> as <span class="math display">\[
-    M_n \doteq 
-    \begin{bmatrix}
-        e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2 \cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
-        ...\\
-        e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
-        ... \\
-        e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
-    \end{bmatrix}.
-\]</span></p>
-<p>The key result of this section is the following theorem.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><span class="math inline">\(h (\vec v)\)</span> can be computed by the following pseudo-codes:</p>
 <blockquote>
-<p>Theorem. An <span class="math inline">\(n\)</span>-dimension discrete Fourier transform can be performed in <span class="math inline">\(O(n \log n)\)</span> time. Equivalently, given <span class="math inline">\(v \in \mathbb{C}^n\)</span>, <span class="math inline">\(M_n v\)</span> can be computed in <span class="math inline">\(O(n \log n)\)</span> time.</p>
+<ol type="1">
+<li><span class="math inline">\(h \leftarrow 0\)</span>.<br />
+</li>
+<li>For <span class="math inline">\((i, v_i) \in S( \vec v):\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(h \leftarrow h + v_i \cdot a^i\)</span>.<br />
+</li>
+<li>Return <span class="math inline">\(h\)</span>.</li>
+</ol>
 </blockquote>
-<p>The underlying idea of the theorem is divide-and-conquer. Let <span class="math inline">\(T(n)\)</span> be the time of performing an <span class="math inline">\(n\)</span>-dimension discrete Fourier transform. We will prove the following recursion</p>
-<blockquote>
-<p><span class="math inline">\(T(n) = 2 \cdot T(n / 2) + O(n)\)</span>.</p>
-</blockquote>
-<p>We begin by a special case where <span class="math inline">\(n = 8\)</span>. As each entry in <span class="math inline">\(M_8\)</span> is complex number with unit length, we can represent it by a unit length vector, as the figure below shows.</p>
-<p>There are some patterns in <span class="math inline">\(M_8\)</span> and it can be decomposed into 4 matrices related to <span class="math inline">\(M_4\)</span>.</p>
-<p><em>Remark: I get this visualization idea from [1].</em></p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>First, look the the first half of the rows of <span class="math inline">\(M\)</span>, denoted as <span class="math inline">\(M_U\)</span>. The even columns constitute exactly the matrix <span class="math inline">\(M_4\)</span>. The odd columns forms a <span class="math inline">\(4 \times 4\)</span> matrix that can be obtained by proper rotations of <span class="math inline">\(M_4\)</span>.</p>
-<p>Let <span class="math inline">\(v_e\)</span>, <span class="math inline">\(v_o\)</span> be the even and odd dimensions of <span class="math inline">\(v\)</span>, respectively. Then <span class="math display">\[
-    M_U v = M_4 v_e + 
-        \begin{bmatrix} 
-           e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
-           e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} } \\
-           e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} } \\
-           e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} }
-        \end{bmatrix} \times M_4 v_0, 
-\]</span></p>
-<p>where <span class="math inline">\(\times\)</span> is element-wise multiplication between two vectors. This can also be replaced by matrix multiplication. <span class="math display">\[
-    M_U v = M_4 v_e + 
-        \text{diag} \left( 
-                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_4 v_0, 
-\]</span></p>
-<p>where <span class="math inline">\(\text{diag} \left( e^{ -\frac{2 \cdot 0 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 1 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 2 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 3 \cdot \pi i}{ n} } \right)\)</span> denotes a <span class="math inline">\(4 \times 4\)</span>-diagonal matrix.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/1.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>First, look the the second half of the rows of <span class="math inline">\(M\)</span>, denoted as <span class="math inline">\(M_D\)</span>. The even columns constitute exactly the matrix <span class="math inline">\(M_4\)</span>, which is the same as the even columns of <span class="math inline">\(M_U\)</span>.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/2.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>For the odd columns of <span class="math inline">\(M_D\)</span>, they are in the opposite directions of the odds columns of <span class="math inline">\(M_U\)</span>. This can also be verified algebraically. An entry <span class="math inline">\(M_{k, l}\)</span> in the odd columns <span class="math inline">\(M_U\)</span> (<span class="math inline">\(k \in [0, n / 2)\)</span> and <span class="math inline">\(l\)</span> is odd) equals to <span class="math display">\[
-    M_{k, l} = e^{ - l \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n} }.
-\]</span></p>
-<p>Its corresponding entry in <span class="math inline">\(M_D\)</span> is <span class="math display">\[
-    M_{k + n / 2, l} = e^{ - l \cdot (k + n / 2- 1) \cdot \frac{2 \cdot \pi \cdot i}{n} } = e^{ - l \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n} } \cdot e^{ - l \cdot \pi \cdot i } = M_{k, l} \cdot (-1).
-\]</span></p>
-<p>The last equality holds since <span class="math inline">\(l\)</span> is odd.</p>
-<p><em>Remark:</em> This also explains why <span class="math inline">\(M_{k + n / 2, l} = M_{k, l}\)</span> when <span class="math inline">\(l\)</span> is even.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/3.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>In summary, we have <span class="math display">\[
-M v 
-    =   \begin{bmatrix}
-            M_U \\
-            M_D
-        \end{bmatrix} v
-    =   \begin{bmatrix}
-             M_{n / 2} v_e + 
-        \text{diag} \left( 
-                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n / 2} v_0  \\
-            M_{n / 2} v_e - 
-        \text{diag} \left( 
-                e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n / 2} v_0
-        \end{bmatrix}.
-\]</span></p>
-<p>And the Fast Fourier Transform algorithm is shown as below.</p>
-<blockquote>
-<p><strong>Algorithm FFT (Fast Fourier Transform).</strong><br />
-<strong>Input.</strong> <span class="math inline">\(v \in \mathbb{C}^n\)</span>.<br />
-1. If <span class="math inline">\(n = 1\)</span>, return <span class="math inline">\(v\)</span>.<br />
-2. Compute <span class="math inline">\(r_e \leftarrow M_{n / 2} v_e\)</span> by <strong>FFT(<span class="math inline">\(v_e\)</span>)</strong>.<br />
-3. Compute <span class="math inline">\(r_o \leftarrow M_{n / 2} v_o\)</span> by <strong>FFT(<span class="math inline">\(v_o\)</span>)</strong>.<br />
-4. Return<br />
-<span class="math display">\[
-r \leftarrow  
-\begin{bmatrix}
-r_e +   
-\text{diag} \left( 
-e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o \\
-r_e -   
-\text{diag} \left( 
-e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
-\end{bmatrix}.
-\]</span></p>
-</blockquote>
-<p>Both step 2 and 3 have time <span class="math inline">\(T(n / 2)\)</span>. Step 4 aggregates the results and has time <span class="math inline">\(O(n)\)</span>, which implies that <span class="math display">\[
-    T(n) = 2 \cdot T(n / 2) + O(n). 
-\]</span></p>
-<h3 id="reference">Reference</h3>
-<p>[1] T. Roughgarden and G. Valiant, “CS168: The Modern Algorithmic Toolbox Lecture #15 and #16: The Fourier Transform and Convolution,” p. 12.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
 
       
     </div>
@@ -674,7 +503,7 @@ e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/10/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/12/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -740,7 +569,7 @@ e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

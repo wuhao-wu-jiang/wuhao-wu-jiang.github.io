@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/04/05/Multiplicative-Weight-Updates/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/03/Less-Communication/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/04/05/Multiplicative-Weight-Updates/" class="post-title-link" itemprop="url">Multiplicative Weight Updates</a>
+            <a href="/2019/09/03/Less-Communication/" class="post-title-link" itemprop="url">Less Communication</a>
         </h2>
 
         <div class="post-meta">
@@ -169,16 +169,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2019-04-05 18:05:10" itemprop="dateCreated datePublished" datetime="2019-04-05T18:05:10+11:00">2019-04-05</time>
+              <time title="Created: 2019-09-03 14:19:55 / Modified: 15:35:25" itemprop="dateCreated datePublished" datetime="2019-09-03T14:19:55+10:00">2019-09-03</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-14 17:48:44" itemprop="dateModified" datetime="2020-12-14T17:48:44+11:00">2020-12-14</time>
-              </span>
 
           
 
@@ -191,199 +185,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Consider a problem that might arises from many application scenarios. We have a sequence of <span class="math inline">\(T\)</span> binary variables indexed by time <span class="math inline">\(X_1, X_2, ..., X_T\)</span>, where <span class="math inline">\(X_t \in \{0, 1\}, \forall t \in [T]\)</span>. We try to predict the value of <span class="math inline">\(X_t\)</span>, such that we win <span class="math inline">\(1\)</span> dollar if our guess is correct and <span class="math inline">\(0\)</span> dollar otherwise.</p>
-<p>We don't make decision on our own. Instead, we resort a group of <span class="math inline">\(n\)</span> experts. At each time <span class="math inline">\(t\)</span>, each expert <span class="math inline">\(i\)</span> gives a prediction <span class="math inline">\(p_i^t\)</span> of <span class="math inline">\(X_t\)</span>. Based on the experts' prediction, we make prediction our prediction <span class="math inline">\(p_A^t\)</span>. The value of <span class="math inline">\(X_t\)</span> is then revealed and we make a mistake if our prediction is wrong. The goal to minimize the number of mistakes.</p>
-<h3 id="how-good-can-we-do">How Good Can We Do</h3>
-<p>The first question is how good can we do? Define</p>
-<ol type="1">
-<li><span class="math inline">\(L_i^t:\)</span> the indicator variable of whether the expert <span class="math inline">\(i\)</span> makes a mistake at round <span class="math inline">\(t\)</span>.</li>
-<li><span class="math inline">\(L_i = \sum_{t \in [T] } L_i^t:\)</span> the total number of mistakes expert <span class="math inline">\(i\)</span> makes, when <span class="math inline">\(T\)</span> is fixed.</li>
-<li><span class="math inline">\(L_A:\)</span> the one made by our algorithm.</li>
-</ol>
-<p>Ideally, we would like achieve as few mistakes as<br />
-<span class="math display">\[
-    \sum_{t \in [T] } \min_{i \in [n]} L_i^t. 
-\]</span></p>
-<p>However, this is impossible. To see this, suppose <span class="math inline">\(X_t\)</span> is a sequence of independent Bernoulli random variable with probability <span class="math inline">\(0.5\)</span> equal to <span class="math inline">\(1\)</span>. No matter what strategy we use, the expected number of mistakes is always <span class="math inline">\(T / 2\)</span>. On the other hand, <span class="math inline">\(\sum_{t \in [T] } \min_{i \in [n]} L_i^t\)</span> could be <span class="math inline">\(0\)</span>.</p>
-<p>Despite the negative result, there is hope to achieve as few mistakes as the best expert (up to some constant), that is<br />
-<span class="math display">\[
-O \left( \min_{i \in [n]} \sum_{t \in [T] } L_i^t \right) = O \left( \min_{i \in [n] } L_i \right). 
-\]</span></p>
-<h3 id="follow-the-majority">Follow the Majority</h3>
-<p>We start with an easy case where there exists an expert who always gives the correct guess. Under this assumption, we can achieve <span class="math display">\[
-\min_{i \in [n] } L_i + \log n
-\]</span></p>
-<p>mistakes. We simply keep track of a set of experts who do not make any mistake so far. Each time we make a decision, we follow the majority of the set.</p>
-<blockquote>
-<p>Algorithm 1. <strong>Follow the Majority</strong></p>
-<ol type="1">
-<li>Let <span class="math inline">\(E_0 \leftarrow \{ 1, 2, ..., n \}\)</span> be the set of all experts.<br />
-</li>
-<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 0 at time <span class="math inline">\(t\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 1 at time <span class="math inline">\(t\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(|S| &gt; |\bar S|\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
-</li>
-<li><span class="math inline">\(\qquad\qquad\qquad\quad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(X_t = 0\)</span>, then <span class="math inline">\(E_t \leftarrow S\)</span>;<br />
-</li>
-<li><span class="math inline">\(\qquad\qquad\qquad\)</span> else <span class="math inline">\(E_t \leftarrow \bar S\)</span>.</li>
-</ol>
-</blockquote>
-<p><em>Theorem. If there is a perfect expert, the algorithm </em>Follow the Majority* makes at most <span class="math inline">\(\log n\)</span> mistakes.*<br />
-<em>Proof.</em> Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. Each time it makes a mistake, the size of <span class="math inline">\(E_{t}\)</span> shrink by half. Hence, <span class="math display">\[
-1 \le |E_T| \le |E_1| \frac{1}{2^M}  = \frac{n}{2^M}. 
-\]</span></p>
-<p>The first inequality follows from the existence of perfect expert. It concludes that <span class="math display">\[
-M \le \log n.  
-\]</span> <span class="math inline">\(\square\)</span></p>
-<h3 id="follow-the-majority-with-reset">Follow the Majority With Reset</h3>
-<p>We continue with the case without a perfect expert. By modifying the <em>Follow the Majority</em> a little, we can achieve <span class="math display">\[
-\left( \min_{i \in [n] } L_i  + 1 \right) \cdot \log n
-\]</span> mistakes. As before, we maintain a set of experts who do not make any mistake so far and we follow the majority of the set to make decisions.</p>
-<blockquote>
-<p>Algorithm 2. <strong>Follow the Majority With Reset</strong></p>
-<ol type="1">
-<li>Let <span class="math inline">\(E_0 \leftarrow \{ 1, 2, ..., n \}\)</span> be the set of all experts.<br />
-</li>
-<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 0 at time <span class="math inline">\(t\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 1 at time <span class="math inline">\(t\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(|S| &gt; |\bar S|\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
-</li>
-<li><span class="math inline">\(\qquad\qquad\qquad\quad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(X_t = 0\)</span>, then <span class="math inline">\(E_t \leftarrow S\)</span>;<br />
-</li>
-<li><span class="math inline">\(\qquad\qquad\qquad\)</span> else <span class="math inline">\(E_t \leftarrow \bar S\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(E_t = \emptyset\)</span>, then reset <span class="math inline">\(E_t \leftarrow \{1, 2, ..., n\}\)</span>.</li>
-</ol>
-</blockquote>
-<p><em>Theorem. If there isn't a perfect expert, the algorithm </em>Follow the Majority* makes at most <span class="math inline">\(\left( \min_{i \in [n] } L_i + 1 \right) \cdot \log n\)</span> mistakes.*<br />
-<em>Proof.</em> Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. As analysed before, between two consecutive resets of <span class="math inline">\(E_t\)</span>, the algorithm makes at most <span class="math inline">\(\log n\)</span> mistakes while the best expert makes at least one mistake. Therefore, <span class="math display">\[
-\frac{M}{ \log n } \le \min_{i \in [n] } L_i + 1\implies M \le \left( \min_{i \in [n]}  L_i  + 1\right) \cdot \log n
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h3 id="follow-the-weighted-majority">Follow the Weighted Majority</h3>
-<p>One drawback of the previous approach is that, the algorithm forgets the relative performance of the experts each time it resets <span class="math inline">\(E_t\)</span>. To fix this, we assign each expert <span class="math inline">\(i\)</span> a weight <span class="math inline">\(w_i^t\)</span> and we follow the weighted majority at time <span class="math inline">\(t\)</span>. This reduces the number of mistakes to <span class="math display">\[
-    2.41 \cdot ( \min_{i \in [n]} L_i + \log n).
-\]</span></p>
-<blockquote>
-<p>Algorithm 3. <strong>Follow the Weighted Majority</strong></p>
-<ol type="1">
-<li>Set <span class="math inline">\(w_i \leftarrow 1, \forall i \in [n].\)</span><br />
-</li>
-<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the set of experts who predict 0.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the set of experts who predict 1.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(\sum_{i \in S} w_i &gt; \sum_{i \in \bar S} w_i\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
-</li>
-<li><span class="math inline">\(\qquad\qquad\qquad\qquad\qquad\qquad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> For each expert <span class="math inline">\(i\)</span> who predicts wrong</li>
-<li><span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(w_i \leftarrow w_i / 2\)</span></li>
-</ol>
-</blockquote>
-<p><strong><em>Analysis.</em></strong> Let <span class="math inline">\(w_i^t\)</span> be the weight of player <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span> and define <span class="math inline">\(W^t = \sum_{i = 1}^n w_i^t\)</span>. Each time we make a mistake, the experts who make wrong the prediction have sum of weight <span class="math inline">\(\ge \frac{1}{2} W^t\)</span>. Since their weights halve, we have <span class="math display">\[
-W^{t + 1} \le W^t ( 1 - \frac{1}{2}\frac{1}{2}) = \frac{3}{4} W^t.
-\]</span></p>
-<p>Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. It follows that <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
- \left( \frac{1}{2} \right)^{L_i} = w_i^T \le W^T \le \left( \frac{3}{4} \right)^M W_0 = \left( \frac{3}{4} \right)^M n,  
-\]</span></p>
-<p>which implies <span class="math display">\[
-M \le  \frac{1}{ \log \frac{4}{3} } ( L_i + \log n) \le 2.41 \cdot (L_i + \log n).
-\]</span></p>
-<p><em>Remark:</em> it is not necessary to halve an expert's weight when it makes a mistake. We can decrease it by any factor <span class="math inline">\((1 - \epsilon)\)</span> for <span class="math inline">\(\epsilon \in (0, 1)\)</span>. In such case, we get <span class="math display">\[
-\begin{aligned}
-    &amp;\qquad (1- \epsilon)^{L_i} \le \left( 1 - \frac{1 - (1 - \epsilon)}{2} \right)^M n \\
-    &amp;\implies L_i \cdot \ln (1 -\epsilon) \le M \ln \left( 1 - \frac{\epsilon}{ 2 } \right) + \ln n \\
-    &amp;\implies M \le \frac{ L_i \ln \frac{1}{1 - \epsilon} + \ln n}{ \ln \frac{ 2 }{ 2 - \epsilon } }.
-\end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(x = \frac{1}{1 - \epsilon} &gt; 0\)</span>, then <span class="math inline">\(1 - \epsilon = \frac{1}{x}\)</span> and <span class="math inline">\(\frac{2 - \epsilon }{ 2 } = \frac{x + 1}{2x}\)</span>. Define <span class="math display">\[
-y = \frac{ L_i \ln x + \ln n}{ \ln 2x - \ln ( x + 1  ) }.
-\]</span></p>
-<p>Then <span class="math display">\[
-\begin{aligned}
-    y&#39; \ge 0 
-        &amp;\implies  \frac{L_i}{x} (\ln 2x - \ln ( x + 1  ) ) - \left( \frac{1}{x} - \frac{1}{x + 1} \right) (L_i \ln x + \ln n ) \ge 0 \\
-        &amp;\implies  L_i(x + 1) (\ln 2x - \ln ( x + 1  ) ) - (L_i \ln x + \ln n ) \ge 0 \\
-        &amp;\implies  (x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x \ge \frac{\ln n}{L_i}
-\end{aligned}
-\]</span></p>
-<p>It is not easy to compute a closed-form solution for <span class="math inline">\(x\)</span>. But observe that the function <span class="math inline">\((x + 1) (\ln 2x - \ln ( x + 1 ) ) - \ln x\)</span> equals to <span class="math inline">\(0\)</span> for <span class="math inline">\(x = 1\)</span> and is increasing for <span class="math inline">\(x &gt; 1\)</span>. Hence, there exists some <span class="math inline">\(x &gt; 1\)</span>, s.t., the value of the functions equal to <span class="math inline">\(\frac{ \ln n }{ L_i }\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/MultiplicativeWeightUpdate/MultiplicativeWeightUpdate.png?raw=true" /></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h3 id="multiplicative-weight-updates">Multiplicative Weight Updates</h3>
-<p>We are in good shape so far. Let's extend the problem to more general settings. In this cases, the experts interact with the environment in round-robin fashion. At each round <span class="math inline">\(t\)</span>,</p>
-<ol type="1">
-<li>The expert <span class="math inline">\(i\)</span> performs action, termed <span class="math inline">\(a_i^t\)</span>.</li>
-<li>The environment returns the loss of performing <span class="math inline">\(a_i^t\)</span>, denoted as <span class="math inline">\(l_i^t \in [0, 1]\)</span>.</li>
-</ol>
-<p>Although there is no restriction of the experts' actions and their losses, we can come up with some strategy the expected loss of which is almost as good as the best expert: <span class="math display">\[
-    \min_{i \in [n] } L_i + 2 \sqrt{ T \ln n }, 
-\]</span></p>
-<p>where <span class="math inline">\(L_i \doteq \sum_{t \in [T] } l_i^t\)</span> is the loss of expert <span class="math inline">\(i\)</span>. This implies that the average expected loss converges at a rate of <span class="math inline">\(\sqrt \frac{1}{T}\)</span> to the best one.</p>
-<blockquote>
-<p>Algorithm 4. <strong>Multiplicative Weight Update</strong></p>
-<ol type="1">
-<li>Set <span class="math inline">\(w_i \leftarrow 1, \forall i \in [n].\)</span><br />
-</li>
-<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(W = \sum_{i \in [n] } w_i\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Follow action <span class="math inline">\(a_i^t\)</span> with probability <span class="math inline">\(w_i / W\)</span>.</li>
-<li><span class="math inline">\(\qquad\)</span> For each expert <span class="math inline">\(i\)</span>:</li>
-<li><span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(w_i \leftarrow w_i \cdot (1 - \epsilon l_i^t)\)</span></li>
-</ol>
-</blockquote>
-<p><strong><em>Analysis.</em></strong> Let <span class="math inline">\(l_A^t\)</span> be the loss of the algorithm at round <span class="math inline">\(t\)</span> and <span class="math inline">\(L_A \doteq \sum_{t \in [T] } l_A^t\)</span>. Let <span class="math inline">\(w_i^t\)</span> be the weight of expert <span class="math inline">\(i\)</span> and <span class="math inline">\(W^t\)</span> be the sum of weights at round <span class="math inline">\(t\)</span>. Then <span class="math display">\[
-\mathbb{E} [ l_A^t ] = \sum_{i \in [n] } \frac{ \epsilon w_i^t l_i^t }{ W^t }. 
-\]</span></p>
-<p>By the update rule of the <span class="math inline">\(w_i\)</span>'s, we see <span class="math display">\[
-W^{t + 1} = \sum_{i \in [n] } w_i^t (1 - \epsilon l_i^t) = W^t ( 1 - \epsilon \mathbb{E} [ l_A^t ] ) \le W^t \exp( - \epsilon \mathbb{E} [ l_A^t ] ). 
-\]</span></p>
-<p>By induction, we can write <span class="math display">\[
-W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot \exp( - \epsilon \mathbb{E} [ L_A ] ).
-\]</span></p>
-<p>To upper bound <span class="math inline">\(\mathbb{E} [ L_A ]\)</span>, we try to lower bound the value of <span class="math inline">\(n \cdot \exp( - \epsilon \mathbb{E} [ L_A ] )\)</span>. We uses that <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
-    \prod_{t \in [T] } (1 - \epsilon l_i^t) = w_i^T \le W^T. 
-\]</span></p>
-<p>Using the fact that <span class="math inline">\(\ln(1 - \epsilon ) \ge \epsilon - \epsilon^2\)</span> for <span class="math inline">\(0 &lt; \epsilon &lt; 0.5\)</span>, we know that <span class="math inline">\(\forall i \in [n]\)</span>,</p>
-<p><span class="math display">\[
-\exp \left( - \sum_{i \in [T] } \epsilon l_i^t  - \sum_{i \in [T] } (\epsilon l_i^t)^2 \right) \le n \cdot \exp ( - \epsilon \mathbb{E} [ l_A^t ] ). 
-\]</span></p>
-<p>Taking the log, we get <span class="math display">\[
-\mathbb{E} [ l_A^t ] \le \frac{1}{\epsilon } \ln n  + L_i + \epsilon \sum_{i \in [T] } (l_i^t)^2. 
-\]</span></p>
-<p>There are various ways to upper bound <span class="math inline">\(\sum_{i \in [T] } (l_i^t)^2\)</span>. Naively, this is at most <span class="math inline">\(T\)</span>. Hence, <span class="math display">\[
-\mathbb{E} [ l_A^t ] \le \frac{1}{\epsilon } \ln n  + L_i + \epsilon T.  
-\]</span></p>
-<p>Setting <span class="math inline">\(\epsilon = \sqrt{ \frac{ \ln n}{T} }\)</span>, we get <span class="math display">\[
-\mathbb{E} [ l_A^t ] \le L_i + 2 \sqrt{ T \ln n}.
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h4 id="last-updated-date-dec-14th-2020.">Last Updated Date: <strong>Dec 14th, 2020</strong>.</h4>
-<h3 id="reference">Reference</h3>
-<p>[1] Aaron Roth, “The Polynomial Weights Algorithm”, NETS 412: Algorithmic Game Theory,</p>
+          <p>A set of <span class="math inline">\(k\)</span> servers are receiving requests and they are required to report to a coordinator the numbers of requests they process. An event is trigerrd by the coordinator if the culmulative requests received by the serves reaches a threshold <span class="math inline">\(\tau\)</span>. The goal is to minimized the communicaiton between the coordinator and the servers.</p>
+<p>A naive approach asks the servers to send a notificiation to the coordinator each time they process a request, resulting in <span class="math inline">\(O(\tau)\)</span> bits communication in total.</p>
+<p>An alternative approach achieves <span class="math inline">\(O(h \log \tau)\)</span> words communication cost. Instead of response to the coordinator every a new request comes, the server reports only after some requests reaches. However, we don't want the coordinator to miss the <span class="math inline">\(\tau\)</span> threshold, i.e., it must triger the event when exactly <span class="math inline">\(\tau\)</span> requests come in total.</p>
+<p>Here is the scheme.<br />
+1. If <span class="math inline">\(\tau \le 5 \cdot h\)</span>, the server report each time a request comes. 2. The coordinator sends the threshold <span class="math inline">\(\lfloor \frac{\tau}{ 2h} \rfloor\)</span> to each server. This requires <span class="math inline">\(h\)</span> words. 3. Each server sends a report to the coordinator every <span class="math inline">\(\lfloor \frac{\tau}{ 2h} \rfloor\)</span> requests comes. 4. When the coordinator learns that, the servers has processed <span class="math inline">\(\lfloor \tau / 2 \rfloor\)</span> requests (at most <span class="math inline">\(2h\)</span> words communication needed), it collects how many requests are proceed in each servers which are not reported to it (at most <span class="math inline">\(2h\)</span> words communication needed). The number of requests comes is at most <span class="math display">\[
+        \lfloor \tau / 2 \rfloor + (h - 1) (\lfloor \tau / 2h \rfloor - 1) &lt; \tau /2 + \tau / 2 = \tau
+   \]</span> 5. The number of requests remains to reach the <span class="math inline">\(\tau\)</span> threshold is at most <span class="math inline">\(\tau&#39; \doteq \lceil \tau / 2 \rceil\)</span>. We set <span class="math inline">\(\tau&#39;\)</span> as the new threshold and go to step 1. 6. The overall communication cost is given by <span class="math display">\[
+        T(\tau) = T(\lceil \tau / 2 \rceil) + 5 \cdot h
+   \]</span> for some constant <span class="math inline">\(k\)</span>. 7. There are at most <span class="math inline">\(2 \log \tau\)</span> recursions. Each recursion requires <span class="math inline">\(k\)</span> words communication, resulting in a total communication cost <span class="math inline">\(O(h \log \tau)\)</span> words.</p>
 
       
     </div>
@@ -403,7 +213,7 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/24/Monotone-Class/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/08/15/Chinese-Reminder-Theorem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -417,7 +227,7 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/24/Monotone-Class/" class="post-title-link" itemprop="url">Monotone Class</a>
+            <a href="/2019/08/15/Chinese-Reminder-Theorem/" class="post-title-link" itemprop="url">Chinese-Reminder-Theorem</a>
         </h2>
 
         <div class="post-meta">
@@ -427,14 +237,14 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-03-24 16:06:49" itemprop="dateCreated datePublished" datetime="2019-03-24T16:06:49+11:00">2019-03-24</time>
+              <time title="Created: 2019-08-15 11:37:18" itemprop="dateCreated datePublished" datetime="2019-08-15T11:37:18+10:00">2019-08-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-02 02:14:05" itemprop="dateModified" datetime="2019-04-02T02:14:05+11:00">2019-04-02</time>
+                <time title="Modified: 2021-03-18 16:19:30" itemprop="dateModified" datetime="2021-03-18T16:19:30+11:00">2021-03-18</time>
               </span>
 
           
@@ -448,25 +258,67 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="theorem">Theorem</h1>
-<p>If <span class="math inline">\(M\)</span> is a monotone class and <span class="math inline">\(R \subset M\)</span> is a ring, then <span class="math inline">\(M\)</span> contains the <span class="math inline">\(\sigma\)</span>-ring <span class="math inline">\(\sigma(R)\)</span> generated by <span class="math inline">\(R\)</span> and use the following lemma.</p>
-<p><strong>Proof:</strong></p>
-<p>Consider the monotone class <span class="math inline">\(M_0\)</span> generated by <span class="math inline">\(R\)</span>. By definition <span class="math inline">\(M_0 \subset M\)</span>. The goal is show that <span class="math inline">\(M_0\)</span> is a ring that contains <span class="math inline">\(R\)</span>.</p>
-<h2 id="lemma">Lemma</h2>
-<p>If <span class="math inline">\(M_0\)</span> is a ring, then it must be a <span class="math inline">\(\sigma\)</span>-ring.</p>
-<p><em>Pf:</em> For each countable collection of sets <span class="math inline">\(( E_n )\)</span>, <span class="math inline">\(\cup_{n} E_n = \cup_{n} (\cup_{k = 1}^n E_k)\)</span>. Denote <span class="math inline">\(F_n = \cup_{k = 1}^n E_n\)</span>, and <span class="math inline">\(F = \cup_{n} E_n\)</span>. Clearly <span class="math inline">\(F_n \uparrow F\)</span>, which implies that <span class="math inline">\(F \subset M_0\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p>It immediately follows that <span class="math inline">\(M_0 \supset \sigma(R)\)</span>. Indeed, as <span class="math inline">\(\sigma(R)\)</span> itself is a monotone class and <span class="math inline">\(M_0\)</span> is the smallest monotone class that contains <span class="math inline">\(R\)</span>, we have <span class="math inline">\(\sigma(R) \supset M_0\)</span>. It concludes that <span class="math inline">\(M_0 = \sigma(R)\)</span>.</p>
-<p>To show <span class="math inline">\(M_0\)</span> is a ring, we need to verify that <span class="math inline">\(E, F \in M_0\)</span>, <span class="math inline">\(E \cup F = M_0\)</span> and <span class="math inline">\(E \setminus F \in M_0\)</span>.</p>
-<p>Define <span class="math inline">\(S_E = \{ F \in M_0 : E \cup F \in M_0, E \setminus F \in M_0 \}\)</span>, the collection of sets that satisfies the conditions. Note that <span class="math inline">\(S_E\)</span> is a monotone class.</p>
-<ol type="1">
-<li><p><span class="math inline">\((F_n) \subset S_E\)</span>, and <span class="math inline">\((F_n) \uparrow F\)</span>, then <span class="math inline">\(E \cup F = E \cup [\cup_n F_n] = \cup_n [E \cup F_n]\)</span>. By definition of <span class="math inline">\(S_E\)</span>, <span class="math inline">\(E \cup F_n \in M_0\)</span>. As <span class="math inline">\(F_n \uparrow\)</span> and <span class="math inline">\(M_0\)</span> is monotone, <span class="math inline">\(E \cup F \in M_0\)</span>. Hence <span class="math inline">\(F \in M_0\)</span>.</p></li>
-<li><p><span class="math inline">\((F_n) \subset S_E\)</span>, and <span class="math inline">\((F_n) \uparrow F\)</span>, then <span class="math inline">\(E \setminus F = E \setminus [\cup_n F_n] = \cap_n [E \cap F_n] \in M_0\)</span>.</p></li>
-</ol>
-<p>We claim that for each <span class="math inline">\(E \in M_0\)</span>, it holds that <span class="math inline">\(F \in S_E\)</span> for any <span class="math inline">\(F \in M_0\)</span>, i.e., <span class="math inline">\(M_0 \subset S_E\)</span>. But this is equivalent to show <span class="math inline">\(E \in S_F\)</span>. Since <span class="math inline">\(M_0\)</span> is the smallest monotone class that contains <span class="math inline">\(R\)</span>, it suffices to prove <span class="math inline">\(R \subset S_F\)</span>. We need to utilize the following observation.</p>
-<p><em>Let <span class="math inline">\(O \subset R\)</span>, then <span class="math inline">\(S_O \supset R\)</span>, which implies that <span class="math inline">\(S_O \supset M_0\)</span>, as <span class="math inline">\(S_O\)</span> is a monotone class.</em></p>
-<p>Therefore, <span class="math inline">\(\forall F \in M_0\)</span>, <span class="math inline">\(R \subset S_F\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span>.</p>
+          <h1 id="chinese-reminder-theorem">Chinese-Reminder-Theorem</h1>
+<blockquote>
+<p>If <span class="math inline">\(n_1, n_2,...,n_k \in \mathbb{N}\)</span> are relatively prime, then for <span class="math inline">\(a_1, a_2, ..., a_k \in \mathbb{N}\)</span>, there exists <span class="math inline">\(x \in \mathbb{N}\)</span> such that <span class="math display">\[
+\begin{aligned}
+x \equiv a_1 \pmod {n_1} \\
+x \equiv a_2 \pmod {n_2} \\
+... \\
+x \equiv a_k \pmod {n_k}
+\end{aligned}
+\]</span></p>
+</blockquote>
+<h2 id="proof-one">Proof One</h2>
+<p>Define <span class="math inline">\(N_i = (\prod_{j \in [k] } n_j) / {n_i}\)</span> for every <span class="math inline">\(i \in [k]\)</span>. Clearly <span class="math inline">\(n_j | N_i\)</span> for every <span class="math inline">\(j \in [k] \setminus \{ i \}\)</span>. Moreover <span class="math inline">\(N_i\)</span> is coprime to <span class="math inline">\(n_i\)</span>. Therefore, <span class="math inline">\(\exists M_i \in [1, N_i - 1]\)</span>, s.t., <span class="math display">\[
+    M_i \equiv N_i^{-1} \pmod {n_i}
+\]</span> It follows that <span class="math inline">\(a_i M_i N_i \equiv a_i \pmod {n_i}\)</span>.</p>
+<p>Now <span class="math display">\[
+\sum_{i = 1}^k a_i M_i N_i
+\]</span> is a solution to the problem. Indeed, for every <span class="math inline">\(\ell \in \mathbb{Z}\)</span>, <span class="math display">\[
+\sum_{i = 1}^k a_i M_i N_i + \ell \cdot \prod_{i = 1}^k n_i
+\]</span> is also a solution.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="proof-two">Proof Two</h2>
+<p>There is a probably more intuitive proof. First we investigate a simple example of pair <span class="math inline">\(2\)</span> and <span class="math inline">\(3\)</span> and their modules <span class="math display">\[
+\begin{aligned}
+    &amp;       &amp; 0 &amp;&amp; 1 &amp;&amp; 2 &amp;&amp; 3 &amp;&amp; 4 &amp;&amp; \qquad 5 &amp;&amp; ... \\
+    &amp;\mod 2 &amp; 0 &amp;&amp; 1 &amp;&amp; 0 &amp;&amp; 1 &amp;&amp; 0 &amp;&amp; \qquad 1 &amp;&amp; ... \\
+    &amp;\mod 3 &amp; 0 &amp;&amp; 1 &amp;&amp; 2 &amp;&amp; 0 &amp;&amp; 1 &amp;&amp; \qquad 2 &amp;&amp; ...
+\end{aligned}
+\]</span> Note that there is one-to-one correspondence between numbers in <span class="math inline">\(\{0, 1, 2, 3, 4, 5\}\)</span> and pairs in <span class="math inline">\(\{0, 1\} \times \{0, 1, 2\}\)</span>. In general, if integers <span class="math inline">\(n_1, n_2,...,n_k\)</span> that are relatively prime, and two numbers <span class="math inline">\(1 \le x \le y \le \prod_j n_j\)</span>, if <span class="math display">\[
+\begin{aligned}
+x \equiv y \pmod {n_1} \\
+x \equiv y \pmod {n_2} \\
+... \\
+x \equiv y \pmod {n_k}
+\end{aligned}
+\]</span> then <span class="math inline">\(x = y\)</span>. To see this, we have for any <span class="math inline">\(1 \le j \le k\)</span>, <span class="math display">\[
+n_j | (y - x )
+\]</span> As the <span class="math inline">\(n_j\)</span>'s are coprime, we have <span class="math inline">\(\prod_j n_j | (y - x)\)</span>, hence <span class="math inline">\(y - x = 0\)</span> and <span class="math inline">\(y = x\)</span>. Then we can define a one-to-one correspondence between <span class="math inline">\([\prod_j n_j]\)</span> and the <span class="math inline">\(k\)</span> dimension vectors <span class="math inline">\([n_1] \times [n_2] \times ... \times [n_k]\)</span>.</p>
+<h2 id="corollary">Corollary</h2>
+<blockquote>
+<p>There is a unique solution in <span class="math inline">\([0, \prod_{i = 1}^k n_i - 1]\)</span>.</p>
+</blockquote>
+<p>Suppose that <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are two solutions to the problem. Then for every <span class="math inline">\(i \in [1, k]\)</span>, <span class="math display">\[
+    x - y \equiv 0 \pmod {n_k }
+\]</span></p>
+<p>Hence, <span class="math inline">\(x - y = \ell \cdot \prod_{i = 1}^k n_i\)</span> for some <span class="math inline">\(\ell\)</span>. Therefore, the gap between two solutions is at least <span class="math inline">\(\prod_{i = 1}^k n_i\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="applications">Applications</h1>
+<p>The theorem has many interesting applications. Here are some:</p>
+<p>Theorem 1: Let <span class="math inline">\(\varphi(n)\)</span> be the numbers in <span class="math inline">\([n]\)</span> that are coprime with <span class="math inline">\(n\)</span>. If <span class="math inline">\(n = pq\)</span> for primes <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span>, then <span class="math inline">\(\varphi(n) = (p - 1)(q - 1)\)</span>.</p>
+<p>Proof: By Chinese Reminder Theorem, there is a one-to-one correspondence between <span class="math inline">\([n]\)</span> and <span class="math inline">\([p] \times [q]\)</span>. If <span class="math inline">\(x \in [n]\)</span> is not coprime with <span class="math inline">\(n\)</span>, either <span class="math inline">\(p \mid x\)</span> or <span class="math inline">\(q \mid x\)</span>. Therefore, <span class="math inline">\(x\)</span> corresponds to a pair <span class="math inline">\((p, a)\)</span> or <span class="math inline">\((b, q)\)</span> for some <span class="math inline">\(a \in [q]\)</span> or <span class="math inline">\(b \in [p]\)</span>. The number of such pairs is given by <span class="math inline">\(p + q - 1\)</span>. <span class="math inline">\(\blacksquare\)</span></p>
+<p>Theorem 2: If <span class="math inline">\(n = pq\)</span> for positive integers <span class="math inline">\(p, q\)</span> and <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> are coprime, then <span class="math inline">\(\varphi(n) = \varphi(p) \varphi(q)\)</span>.</p>
+<p>Proof: By Chinese Reminder Theorem, there is a one-to-one correspondence between <span class="math inline">\([n]\)</span> and <span class="math inline">\([p] \times [q]\)</span>. If <span class="math inline">\(x \in [n]\)</span> is coprime with <span class="math inline">\(n\)</span>, it holds that <span class="math inline">\(\gcd(x, p) = 1 \wedge \gcd(x, q) = 1\)</span>. Therefore, <span class="math inline">\(x\)</span> corresponds to a pair for <span class="math inline">\((x \mod p, x \mod q)\)</span> , such that <span class="math inline">\(x \mod p\)</span> is coprime with <span class="math inline">\(p\)</span> and <span class="math inline">\(x \mod q\)</span> is coprime with <span class="math inline">\(q\)</span>. The number of possible values of <span class="math inline">\(x \mod p\)</span> is <span class="math inline">\(\varphi(p)\)</span>, and the number of possible values of <span class="math inline">\(x \mod q\)</span> is <span class="math inline">\(\varphi(q)\)</span> . Hence <span class="math inline">\(\varphi(n) = \varphi(p) \varphi(q)\)</span>. <span class="math inline">\(\blacksquare\)</span></p>
+<p>Theorem 3: Let <span class="math inline">\(n = p_1^{k_1} p_2^{k_2} ... p_m ^{k_m}\)</span> be the unique prime factorization of <span class="math inline">\(n\)</span>, then <span class="math inline">\(\varphi(n) = n \prod_{i = 1}^m (1 - 1/p_i)\)</span>.</p>
+<p>Proof: <span class="math display">\[
+\varphi(n) = \prod_{i = 1}^m \varphi(p_i^{k _i})
+\]</span> On the other hand, there are <span class="math inline">\(p_i^{k _i - 1}\)</span> numbers in <span class="math inline">\([p_i^{k _1}]\)</span> there are not coprime with <span class="math inline">\(p_i^{k_i}\)</span>, namely <span class="math display">\[
+1\cdot p_i, 2 \cdot p_i, 3 \cdot p_i..., p_i^{k_i - 1} p_i
+\]</span> Therefore, <span class="math inline">\(\varphi(p_i^{k_i}) = p_i^{k_i} - p_i^{k_i - 1} = p_i^{k_i}( 1 - 1/p_i)\)</span> and <span class="math display">\[
+\varphi(n) = \prod_{i = 1}^m p_i^{k_i} (1 - 1/ p_i) =  n \prod_{i = 1}^m (1 - 1/ p_i)
+\]</span></p>
 
       
     </div>
@@ -486,7 +338,7 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/21/Partial-Derivatives/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/06/01/Matrix-Norm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -500,7 +352,7 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/21/Partial-Derivatives/" class="post-title-link" itemprop="url">Partial Derivatives</a>
+            <a href="/2019/06/01/Matrix-Norm/" class="post-title-link" itemprop="url">Matrix Norm</a>
         </h2>
 
         <div class="post-meta">
@@ -510,14 +362,14 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-03-21 19:14:45" itemprop="dateCreated datePublished" datetime="2019-03-21T19:14:45+11:00">2019-03-21</time>
+              <time title="Created: 2019-06-01 19:37:46" itemprop="dateCreated datePublished" datetime="2019-06-01T19:37:46+10:00">2019-06-01</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-08 14:53:45" itemprop="dateModified" datetime="2020-01-08T14:53:45+11:00">2020-01-08</time>
+                <time title="Modified: 2020-12-23 21:15:20" itemprop="dateModified" datetime="2020-12-23T21:15:20+11:00">2020-12-23</time>
               </span>
 
           
@@ -531,65 +383,40 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="theorem-the-mix-derivative">Theorem The Mix Derivative</h1>
-<p><em>Theorem (Symmetry of Second Partial Derivative)</em>: If the function <span class="math inline">\(f : R^2 \rightarrow R\)</span> has continuous derivatives <span class="math inline">\(f_{xy}\)</span> and <span class="math inline">\(f_{yx}\)</span> at some point <span class="math inline">\((a, b)\)</span>, then<br />
-<span class="math display">\[
-f_{xy}(a, b) = f_{yx}(a, b)
-\]</span></p>
-<p><strong>Proof:</strong></p>
-<p>W.L.O.G, for <span class="math inline">\(h &gt; 0, k &gt; 0\)</span>, define<br />
-<span class="math display">\[
-\Delta = [f(a + h, b + k) - f(a + h, b)] - [f(a, b + h) - f(a, b)]
-\]</span></p>
-<p>Define <span class="math inline">\(F(x) = f(x, b + k) - f(x, b)\)</span>, which is continuous and differentiable (since <span class="math inline">\(f_x\)</span> exists on <span class="math inline">\(R\)</span>). By mean value theorem, <span class="math inline">\(\exists a_1 \in [a, a + h]\)</span> for which</p>
-<p><span class="math display">\[
-\Delta = F(a + h) - F(a) = F&#39;(a_1) h = [f_x(a_1, b + k) - f_x(a_1, b)] h
-\]</span></p>
-<p>Apply again mean value theorem, <span class="math inline">\(\exists b_1 \in [b, b + k]\)</span>, s.t.,</p>
-<p><span class="math display">\[
-\begin{aligned}
-\Delta &amp;= f_{xy}(a_1, b_1) k h
-\end{aligned}
-\]</span></p>
-<p>We can also define <span class="math inline">\(G(y) = f(a + h, y) - f(a, y)\)</span> and rewrite</p>
-<p><span class="math display">\[
-\Delta = G(b + h) - G(b)
-\]</span></p>
-<p>Similarly, by applying mean value theorem twice, <span class="math inline">\(\exists b_2 \in [b, b + k], a_2 \in [a, a + h]\)</span>, s.t,</p>
-<p><span class="math display">\[
-\Delta = f_{yx}(a_2, b_2)hk
-\]</span></p>
-<p>Putting together</p>
-<p><span class="math display">\[
-\Delta = f_{xy}(a_1, b_1) k h = f_{yx}(a_2, b_2)hk
-\]</span></p>
-<p>Because both <span class="math inline">\(f_{xy}\)</span> and <span class="math inline">\(f_{yx}\)</span> are continuous, as <span class="math inline">\(h \rightarrow 0\)</span> and <span class="math inline">\(k \rightarrow 0\)</span>, <span class="math inline">\(f_{xy}(a_1, b_1) \rightarrow f_{xy}(a, b)\)</span> and <span class="math inline">\(f_{yx}(a_2, b_2) \rightarrow f_{yx}(a, b)\)</span>, as desired.</p>
-<p><span class="math inline">\(\blacksquare\)</span>.</p>
-<h1 id="theorem-the-increment">Theorem The Increment</h1>
-<p>If function <span class="math inline">\(f : R^2 \rightarrow R\)</span> has continuous derivative <span class="math inline">\(f_x\)</span> and <span class="math inline">\(f_y\)</span> at some point <span class="math inline">\((a, b)\)</span>, then</p>
-<p><span class="math display">\[
-f(a + h, b + k) - f(a, b) = f_x(a, b) h + f_y(a, b)k + \epsilon_1 h + \epsilon_2 k
-\]</span></p>
-<p>where <span class="math inline">\(\epsilon_1, \epsilon_2 \rightarrow 0\)</span> as <span class="math inline">\(h,k \rightarrow 0\)</span>.</p>
-<p><strong>Proof:</strong></p>
-<p>By mean value theorem, <span class="math inline">\(\exists a_1\)</span> between <span class="math inline">\(a\)</span> and <span class="math inline">\(a + h\)</span>, <span class="math inline">\(\exists b_1\)</span> between <span class="math inline">\(b\)</span> and <span class="math inline">\(b + k\)</span>, s.t.,</p>
-<p><span class="math display">\[
-\begin{aligned}
-f(a + h, b + k) - f(a, b)  
-&amp;= f(a + h, b + k) - f(a + h, b) + f(a + h, b) - f(a, b) \\
-&amp;= f_y(a + h, b_1)k + f_x(a_1, b)h
-\end{aligned}
-\]</span></p>
-<p>Define <span class="math inline">\(\epsilon_1 = f_x(a_1, b) - f_x(a, b)\)</span> and <span class="math inline">\(\epsilon_2 = f_y(a + h, b_1) - f_y(a, b)\)</span>, we infer that</p>
-<p><span class="math display">\[
-f(a + h, b + k) - f(a, b) = f_x(a, b) h + f_y(a, b)k + \epsilon_1 h + \epsilon_2 k
-\]</span></p>
-<p>The claim <span class="math inline">\(\epsilon_1, \epsilon_2 \rightarrow 0\)</span> as <span class="math inline">\(h,k \rightarrow 0\)</span> results from the continuity of <span class="math inline">\(f_x\)</span> and <span class="math inline">\(f_y\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span>.</p>
-<h1 id="reference">Reference</h1>
+          <p>A function <span class="math inline">\(f: \mathbb{R}^{m \times n} \rightarrow \mathbb{R}\)</span> is called a matrix norm if it satisfies that <span class="math inline">\(\forall A, B \in \mathbb{R}^{m \times n}\)</span> and <span class="math inline">\(k \in \mathbb{R}\)</span>,</p>
 <ol type="1">
-<li>George B. Thomas, Jr., Maurice D. Weir, Joel Hass, <em>THOMAS’ CALCULUS</em></li>
+<li><span class="math inline">\(f(A) = 0 \rightarrow A = 0\)</span>.<br />
+</li>
+<li><span class="math inline">\(f(kA) = kf(A)\)</span>.<br />
+</li>
+<li><span class="math inline">\(f(A + B) \le f(A) + f(B)\)</span>.</li>
 </ol>
+<h2 id="frobenius-norm">Frobenius Norm</h2>
+<p>The Frobenius Norm view a matrix as a vector and is defined as <span class="math inline">\(|A|_F = \sqrt{\sum_{i, j} a_{i,j}^2 }\)</span>, where <span class="math inline">\(a_{i,j}\)</span> is the element in the <span class="math inline">\(i\)</span>-th row and <span class="math inline">\(j\)</span>-th column. Clearly this is a norm.</p>
+<h2 id="norm-or-spectral-norm">2-norm or spectral norm</h2>
+<p>The 2-norm is defined as <span class="math inline">\(|A|_2 = \sigma_1\)</span>, where <span class="math inline">\(\sigma_1\)</span> is the maximum singular value of <span class="math inline">\(A\)</span>. We prove this is a norm by checking triangle inequality.</p>
+<p><em>Proof:</em> First, note that<br />
+<span class="math display">\[
+|A|_2 = \max_{x \in \mathbb{R}^n \wedge ||x|| = 1 } ||Ax||
+\]</span></p>
+<p>This can be verified by writing <span class="math inline">\(A\)</span> as its singular value decomposition <span class="math display">\[
+A = \sigma_1 u_1 v_1^T + ... + \sigma_r u_r v_r^T
+\]</span> where <span class="math inline">\(u_1, ..., u_r \in \mathbb{R}^m\)</span> are orthogonal, <span class="math inline">\(v_1, v_2, ..., v_r \in \mathbb{R}^n\)</span> are orthogonal and <span class="math inline">\(\sigma_1 \ge \sigma_2 \ge ... \ge \sigma_r \ge 0\)</span>.</p>
+<p>We augment <span class="math inline">\(v_1, v_2, ..., v_r\)</span> to <span class="math inline">\(v_1, .., v_n\)</span> such that they constitutes an orthogonal base of <span class="math inline">\(\mathbb{R}^n\)</span>. Then we can write <span class="math inline">\(x \in \mathbb{R}^n\)</span> as<br />
+<span class="math display">\[
+x = x_1 v_1 + x_2 v_2 + ... + x_n v_n
+\]</span> where <span class="math inline">\(\sum_{i = 1}^n x_i^2 = 1\)</span>.</p>
+<p>Therefore, <span class="math display">\[
+||Ax|| = \sqrt{\sum_{i = 1}^r \sigma_i^2x_i^2 }
+\]</span></p>
+<p>Clearly <span class="math inline">\(||Ax||\)</span> is maximized when <span class="math inline">\(x_1 = 1\)</span> and <span class="math inline">\(x_i = 0\)</span> for <span class="math inline">\(i \neq 1\)</span>: <span class="math display">\[
+\max_{x} ||Ax|| =  \sigma_1
+\]</span></p>
+<p>Now, for any <span class="math inline">\(x \in \mathbb{R}^n\)</span> and <span class="math inline">\(||x|| = 1\)</span>, by triangle inequality of vectors, it holds that<br />
+<span class="math display">\[
+||(A + B)x|| \le ||Ax|| + ||Bx|| \le |A|_2 + |B|_2
+\]</span></p>
+<p>Maximizing over the left hand side gives the desired triangle inequality.</p>
 
       
     </div>
@@ -608,7 +435,7 @@ f(a + h, b + k) - f(a, b) = f_x(a, b) h + f_y(a, b)k + \epsilon_1 h + \epsilon_2
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/35/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/35/">35</a><span class="page-number current">36</span><a class="page-number" href="/page/37/">37</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/37/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/35/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/35/">35</a><span class="page-number current">36</span><a class="page-number" href="/page/37/">37</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/37/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -674,7 +501,7 @@ f(a + h, b + k) - f(a, b) = f_x(a, b) h + f_y(a, b)k + \epsilon_1 h + \epsilon_2
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

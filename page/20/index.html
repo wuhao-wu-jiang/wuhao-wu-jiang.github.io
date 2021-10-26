@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/21/Median-of-Mean/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/26/Norm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/06/21/Median-of-Mean/" class="post-title-link" itemprop="url">Median-of-Mean</a>
+            <a href="/2020/10/26/Norm/" class="post-title-link" itemprop="url">Norm</a>
         </h2>
 
         <div class="post-meta">
@@ -169,10 +169,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-06-21 21:23:19 / Modified: 21:54:42" itemprop="dateCreated datePublished" datetime="2020-06-21T21:23:19+10:00">2020-06-21</time>
+              <time title="Created: 2020-10-26 22:17:18" itemprop="dateCreated datePublished" datetime="2020-10-26T22:17:18+11:00">2020-10-26</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-01 00:49:31" itemprop="dateModified" datetime="2020-11-01T00:49:31+11:00">2020-11-01</time>
+              </span>
 
           
 
@@ -185,457 +191,443 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Suppose that we have an algorithm <span class="math inline">\(A\)</span> that estimates the mean <span class="math inline">\(E[Y]\)</span> of a random variable <span class="math inline">\(Y\)</span> within some specified range <span class="math inline">\(r\)</span> with probability <span class="math inline">\(\rho &gt; \frac{1}{2}\)</span>. We can derive a new algorithm <span class="math inline">\(A^*\)</span> from <span class="math inline">\(A\)</span> that boosts the successful probability to <span class="math inline">\(1 - \delta\)</span>, as follows:</p>
-<blockquote>
+          <p>A norm <span class="math inline">\(| \cdot |:\mathbb{R}^n \rightarrow \mathbb{R}\)</span> is a function that satisfies the following properties:</p>
 <ol type="1">
-<li>Repeat <span class="math inline">\(A\)</span> for <span class="math inline">\(m = \frac{1}{2 (\rho - 0.5)^2 } \ln \frac{1}{\delta}\)</span> times.</li>
-<li>Take the median of the <span class="math inline">\(m\)</span> outputs.</li>
+<li>Positive definite: <span class="math inline">\(|x| = 0 \rightarrow x = \vec 0\)</span>,</li>
+<li>Nonnegative:<span class="math inline">\(|x| \ge 0\)</span> for any <span class="math inline">\(x \in \mathbb{R}^n\)</span>,</li>
+<li>Absolutely homogeneous: <span class="math inline">\(|k x| = |k| |x|\)</span>, for any <span class="math inline">\(x \in \mathbb{R}^n, k \in \mathbb{R}\)</span>,</li>
+<li>Subadditive (triangle inequality): <span class="math inline">\(|x + y| \le |x| + |y|\)</span>, for any <span class="math inline">\(x \in \mathbb{R}^n, y \in \mathbb{R}^n\)</span>.</li>
 </ol>
-</blockquote>
-<p>To prove it, define the indicator random variable <span class="math display">\[
-X_i = \begin{cases}
-    1, \text{ if the } i \text{-th output of } A \text{ is within the range } r \\
-    0, \text{otherwise}
+<p>Given properties 1-3, we claim that property 4 is equivalent to</p>
+<ol start="5" type="1">
+<li>The region <span class="math inline">\(\{ x \in \mathbb{R}^n: |x| \le 1\}\)</span> is convex.</li>
+</ol>
+<p><em>Proof:</em> The proof is straightforward.</p>
+<p><span class="math inline">\(5 \rightarrow 4:\)</span> If <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(\vec y = 0\)</span>, then 4 holds trivially. Otherwise, suppose that <span class="math inline">\(x, y \neq \vec 0\)</span>. Then <span class="math display">\[
+\begin{aligned}
+    &amp;|x + y| \le |x| + |y| \\
+    \leftrightarrow 
+    &amp;| \frac{ |x| }{ |x| + |y| } \frac{ x }{ |x| } + \frac{ |x| }{ |x| + |y| } \frac{ y }{ |y| } | \le 1
+\end{aligned}
+\]</span></p>
+<p>As <span class="math inline">\(|\frac{ x }{ |x| } | =1\)</span>, <span class="math inline">\(|\frac{ y }{ |y| }| = 1\)</span> and <span class="math inline">\(\frac{ |x| }{ |x| + |y| } + \frac{ |y| }{ |x| + |y| } = 1\)</span>, the second inequality follows exactly from condition 5.</p>
+<p><span class="math inline">\(4 \rightarrow 5:\)</span> Let <span class="math inline">\(x, y \in \mathbb{R}^n, |x| \le 1, |y| \le 1\)</span> and <span class="math inline">\(a, b \ge 0\)</span>, <span class="math inline">\(a + b = 1\)</span>. Then <span class="math display">\[
+|ax + by| \le |ax| + |by| = a|x| + b|y| = 1
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h3 id="induced-norm"><strong>Induced Norm</strong></h3>
+<p>To illustrate a deeper connection between property 4 and 5, we first show how a norm can be induced by a convex and symmetric region centered at the origin <span class="math inline">\(O\)</span>. Let the boundary of the region as <span class="math inline">\(E\)</span>. We are going to induce a norm by <span class="math inline">\(E\)</span>, denoted as <span class="math inline">\(|\cdot |_E\)</span>.</p>
+<p>First, we define</p>
+<ol type="1">
+<li><span class="math inline">\(| x |_E = 1, \forall x \in E\)</span>.</li>
+</ol>
+<p>For any other vector <span class="math inline">\(x \notin E\)</span>, consider the ray initiated from the origin and with the same direction as <span class="math inline">\(x\)</span>. Denote its intersection point with <span class="math inline">\(E\)</span> as <span class="math inline">\(x_E\)</span>. Suppose that <span class="math inline">\(x = a \cdot x_E\)</span> for some <span class="math inline">\(a \in \mathbb{R}_+\)</span>. Then we define</p>
+<ol start="2" type="1">
+<li><span class="math inline">\(| x |_E = a |x_E|_E = a\)</span>.</li>
+</ol>
+<p>Indeed, if we write the <span class="math inline">\(|\cdot|_2\)</span> as the <span class="math inline">\(\ell_2\)</span> norm, then the value of <span class="math inline">\(a\)</span> is given by <span class="math inline">\(\frac{ |x|_2 } { |x_E|_2 }\)</span>. Clearly, by definition, <span class="math inline">\(|\cdot|_2\)</span> is positive definite and non-negative. To prove that it is absolutely homogeneous, <span class="math inline">\(\forall k \in \mathbb{R}\)</span>, <span class="math display">\[
+|k x|_E = |k ax_E|_E
+\]</span></p>
+<p>If <span class="math inline">\(k \ge 0\)</span>, we have <span class="math inline">\(|k ax_E|_E = ka |x_E|_E = ka\)</span>. Otherwise, if <span class="math inline">\(k &lt; 0\)</span>, <span class="math display">\[
+|k x|_E = |k ax_E|_E = |-k a (-x_E)|_E = -k a |(-x_E)|_E
+\]</span></p>
+<p>By symmetry of <span class="math inline">\(E\)</span> (with respect to the origin <span class="math inline">\(O\)</span>), <span class="math inline">\(|(-x_E)|_E = |x_E|_E = 1\)</span>. Therefore, <span class="math display">\[
+|k x|_E = |k|a 
+\]</span></p>
+<p>Finally, we have a graphical verification of triangle inequality. Let <span class="math inline">\(v, u \in \mathbb{R}^n\)</span>, which intersect with <span class="math inline">\(E\)</span> at <span class="math inline">\(v_E\)</span> and <span class="math inline">\(u_E\)</span> respectively. If <span class="math inline">\(|v|_E &lt; 1\)</span> (<span class="math inline">\(|u|_E &lt; 1\)</span>), then we can extend it along its direction to get its intersection with <span class="math inline">\(E\)</span>. Let <span class="math inline">\(c = |v|_E\)</span> and <span class="math inline">\(d = |u|_E\)</span>, then</p>
+<ol type="1">
+<li><span class="math inline">\(v = c \cdot v_E\)</span>,</li>
+<li><span class="math inline">\(u = d \cdot u_E\)</span>.</li>
+</ol>
+<p>Let <span class="math inline">\(w = v + u = c \cdot v_E + d \cdot u_E\)</span>. Let <span class="math inline">\(p\)</span> be the intersection between <span class="math inline">\(w\)</span> and the line segment between <span class="math inline">\(v\)</span> and <span class="math inline">\(u\)</span>. It is easy to verify that <span class="math display">\[
+p = \frac{c}{c + d} v_E + \frac{d}{ c + d} u_E
+\]</span></p>
+<p>By convexity of the region bounded by <span class="math inline">\(E\)</span>, <span class="math display">\[
+|p|_E \le 1
+\]</span></p>
+<p>It concludes that <span class="math inline">\(|w|_E = |c v_E + d u_E |_E \le c + d = |v|_E + |u|_E\)</span>.</p>
+<!-- <img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Induced-Norm.png?raw=true" style="zoom: 67%;" /> -->
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Induced-Norm.png?raw=true" /></p>
+<h3 id="application"><strong>Application</strong></h3>
+<p>The idea discussed above significantly simplifies the proof of Minkowski inequality.</p>
+<p>The <span class="math inline">\(p\)</span>-norm (<span class="math inline">\(p \ge 1\)</span>) on <span class="math inline">\(\mathbb{R}^n\)</span> is given as <span class="math display">\[
+| x |_p = \big( \sum_{i = 1}^n |x_i|^p \big)^\frac{1}{p}
+\]</span></p>
+<p>Clearly, <span class="math inline">\(p\)</span>-norm is positive definite, nonnegative, absolutely homogeneous. It is left to verify triangle inequality, which is known as Minkowski inequality for the case of <span class="math inline">\(p\)</span>-norm. This is equivalent to show that <span class="math display">\[
+\{ x \in \mathbb{R}^n : |x |_p \le 1 \}
+\]</span></p>
+<p>is convex. The trick here is that <span class="math inline">\(|x|_p \le 1\)</span> is equivalent to <span class="math inline">\((|x|_p)^p \le 1\)</span>. Hence, <span class="math display">\[
+\{ x \in \mathbb{R}^n : |x |_p \le 1 \} = \{ x \in \mathbb{R}^n : \sum_{i = 1}^n |x_i|^p  \le 1 \}
+\]</span></p>
+<p>The convexity of this set follows directly from the point-wise convexity of the function <span class="math inline">\(|\cdot |^p\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong><em>Remark:</em></strong> To appreciate how concise the above proof is, we also give one traditional proof here, which consists of three steps.</p>
+<h4 id="youngs-inequality">Young's Inequality</h4>
+<p>For <span class="math inline">\(a, b &gt; 0\)</span>, <span class="math inline">\(p, q &gt; 0\)</span>, s.t., <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>, it holds that <span class="math display">\[
+ab \le \frac{a^p}{p} + \frac{b^q}{q}
+\]</span></p>
+<p><em>Proof:</em> The inequality is nothing more than convexity of the function <span class="math inline">\(x \rightarrow e^x\)</span>: <span class="math display">\[
+ab = \exp(\frac{ p \ln a }{p} + \frac{ q \ln b }{q}) \le \frac{ \exp( \ln a^p ) }{p} + \frac{ \exp( \ln b^q ) }{q} = \frac{a^p}{p} + \frac{b^q}{q} 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h4 id="holders-inequality">Holder's Inequality</h4>
+<p>For <span class="math inline">\(x, y \in \mathbb{R}^n\)</span>, <span class="math inline">\(p, q &gt; 0\)</span>, s.t., <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>, it holds that <span class="math display">\[
+\sum_{i = 1}^n |x_i| |y_i| \le |x|_p |y|_q
+\]</span></p>
+<p><em>Proof:</em> The inequality is trivial if <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(y = \vec 0\)</span>. Otherwise, let <span class="math inline">\(u = \frac{x}{ |x|_p }\)</span> and <span class="math inline">\(v = \frac{ y }{ |y|_q }\)</span>. It remains to prove that <span class="math display">\[
+\sum_{i = 1}^n |u_i| |v_i| \le 1
+\]</span></p>
+<p>for <span class="math inline">\(|u|_p = 1\)</span> and <span class="math inline">\(|v|_q = 1\)</span>. WLOG, we assume <span class="math inline">\(u &gt; 0\)</span> and <span class="math inline">\(v &gt; 0\)</span>. Applying Young's Inequality, we have <span class="math display">\[
+u_i v_i \le \frac{ u_i^p }{p}  + \frac{v_i^q}{q}.
+\]</span> Hence, <span class="math display">\[
+u \cdot v = \sum_{i = 1}^n \big( \frac{ u_i^p }{p}  + \frac{v_i^q}{q} \big) = \frac{1}{p} + \frac{1}{q} = 1 .
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h4 id="minkowski-inequality">Minkowski Inequality</h4>
+<p>For <span class="math inline">\(x, y \in \mathbb{R}^n\)</span>, <span class="math inline">\(p \ge 1\)</span>, it holds that <span class="math display">\[
+|x + y|_p \le |x|_p + |y|_p
+\]</span></p>
+<p><em>Proof:</em> The inequality is trivial if <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(y = \vec 0\)</span>. Otherwise, assume that <span class="math inline">\(x &gt; 0\)</span> and <span class="math inline">\(y &gt; 0\)</span>. Now</p>
+<p><span class="math display">\[
+|x + y|_p^p = \sum_{i = 1}^n |x_i + y_i|^p = \sum_{i = 1}^n [ x_i (x_i + y_i)^{p - 1} + y_i (x_i + y_i)^{p - 1} ]
+\]</span></p>
+<p>Let <span class="math inline">\(q = \frac{p}{p - 1}\)</span>. Then <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>. By Holder's inequality, <span class="math display">\[
+\begin{aligned}
+    \sum_{i = 1}^n x_i (x_i + y_i)^{p - 1} 
+    &amp;\le |x|_p ( \sum_{i = 1}^n (x_i + y_i)^{(p - 1)q} )^{ \frac{1}{q} } \\
+    &amp;= |x|_p ( \sum_{i = 1}^n (x_i + y_i)^{ p } )^{ \frac{p - 1}{ p } } \\
+    &amp;= |x|_p (|x + y|_p)^{p - 1}
+\end{aligned}
+\]</span></p>
+<p>Similarly, we have <span class="math display">\[
+\sum_{i = 1}^n y_i (x_i + y_i)^{p - 1} \le |y|_p (|x + y|_p)^{p - 1}
+\]</span></p>
+<p>Putting the inequalities together, <span class="math display">\[
+|x + y|_p^p \le |x|_p (|x + y|_p)^{p - 1} + |y|_p (|x + y|_p)^{p - 1}
+\]</span></p>
+<p>We finish the proof by dividing both side with <span class="math inline">\((|x + y|_p)^{p - 1}\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/25/Bit-Guessing-Game/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/25/Bit-Guessing-Game/" class="post-title-link" itemprop="url">Bit Guessing Game</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-25 15:33:16" itemprop="dateCreated datePublished" datetime="2020-10-25T15:33:16+11:00">2020-10-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-03 10:23:55" itemprop="dateModified" datetime="2020-11-03T10:23:55+11:00">2020-11-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>The bit guessing game models two players, namely Alice and Bob, where Alice has a secret vector <span class="math inline">\(\vec x \in \{0, 1 \}^n\)</span> which Bob tries to learn. Bob is only allowed to ask Alice the value of <span class="math display">\[
+\vec c \cdot \vec x
+\]</span></p>
+<p>for bit vector <span class="math inline">\(\vec c \in \{0, 1\}^n\)</span> he comes up with. Under this setting, it is trivial for Bob to learn each bit of <span class="math inline">\(x\)</span>: he needs to just query Alice for <span class="math inline">\(\vec e_i \cdot \vec x\)</span>, where <span class="math inline">\(\vec e_i\)</span> is the indicator vector with its <span class="math inline">\(i\)</span>-th dimension equal to 1 and other dimensions equal to 0.</p>
+<p>One way for Alice to prevent information leakage is to add some bounded noise <span class="math inline">\(Z\)</span> to the query result and returns <span class="math display">\[
+r(\vec c) \doteq \vec c \cdot \vec x + Z
+\]</span></p>
+<p>For example, <span class="math inline">\(Z\)</span> could be a bounded random variable. Is is still a chance for Bob to learn the vector <span class="math inline">\(\vec x\)</span>?</p>
+<p><strong><em>Theorem 1.</em></strong> If Bob is allowed to query <span class="math inline">\(r(\vec c)\)</span> for all <span class="math inline">\(\vec c \in \{0, 1\}^n\)</span>, and suppose that <span class="math inline">\(Z\)</span> is bounded by some real number <span class="math inline">\(R\)</span>, then Bob can have an estimation <span class="math inline">\(\vec y\)</span> such that <span class="math display">\[
+|\vec x - \vec y| = \sum_{i = 1}^n | x_i - y_i | \le 4R
+\]</span></p>
+<p><strong>Remark:</strong> <em>In this case Bob queries for <span class="math inline">\(2^n\)</span> vectors. This result implies that is Bob is able to ask exponential number of questions, then it is hard to prevent information leakage. E.g., suppose <span class="math inline">\(R = n / 400\)</span>, which is a relatively large number when <span class="math inline">\(n\)</span> is large, the theorem says that Bob can recover <span class="math inline">\(99\%\)</span> of bits in <span class="math inline">\(\vec x\)</span>.</em></p>
+<p><em>Proof:</em> We say a vector <span class="math inline">\(\vec y\)</span> is consistent with a query result <span class="math inline">\(r(\vec c)\)</span> if <span class="math display">\[
+| r(\vec c) - \vec c \cdot \vec y| \le R.
+\]</span></p>
+<p>The strategy of Bob is to choose any <span class="math inline">\(\vec y\)</span> that is consistent with all <span class="math inline">\(\vec c \in \{0, 1\}^n\)</span>. Such <span class="math inline">\(\vec y\)</span> exits, a special of which is given by <span class="math inline">\(\vec y = \vec x\)</span>. It remains to prove that such an <span class="math inline">\(\vec y\)</span> satisfies the constraint.</p>
+<p>Consider the special case of <span class="math inline">\(\vec c = \vec x\)</span>, <span class="math display">\[
+|r(\vec x) - \vec x \cdot \vec y| \le R \\
+|r(\vec x) - \vec x \cdot \vec x| \le R \\
+\]</span></p>
+<p>By triangle inequality, it holds <span class="math display">\[
+|\vec x \cdot \vec y - \vec x \cdot \vec x| \le 2R.
+\]</span></p>
+<p>Observe that <span class="math inline">\(\vec x \cdot \vec x \ge \vec x \cdot \vec y\)</span>, which implies <span class="math display">\[ 
+|\vec x \cdot \vec y - \vec x \cdot \vec x| = \vec x \cdot \vec x - \vec x \cdot \vec y \le 2R
+\]</span></p>
+<p>Hence, <span class="math inline">\(\vec y\)</span> and <span class="math inline">\(\vec x\)</span> differ by at most <span class="math inline">\(2R\)</span> bits, on the non-zero dimensions of <span class="math inline">\(\vec x\)</span>.</p>
+<p>Let <span class="math inline">\(\bar x\)</span> be the bit-wise complement of <span class="math inline">\(\vec x\)</span>. By similar arguments, we get <span class="math display">\[
+|\bar x \cdot \vec y - \bar x \cdot \vec x|\le 2R.
+\]</span></p>
+<p>and <span class="math inline">\(\vec x\)</span> and <span class="math inline">\(\vec y\)</span> differ by at most <span class="math inline">\(2R\)</span> bits, on the zero dimensions of <span class="math inline">\(\vec x\)</span>. It concludes that <span class="math inline">\(|\vec x - \vec y | \le 4R\)</span>.<br />
+<!-- Define $S$ to be the set of non-zero dimensions of $\vec x$: 
+$$
+S \doteq \{ i \in [n]: x_i > 0 \}
+$$
+
+Let $\vec e_S \in \{0, 1\}^n$ ($\vec e_{\bar S} \in \{0, 1\}^n$) be the indicator vector that takes $1$ on dimensions belonging to $S$ ($\bar S$).  It follows that 
+$$
+|r(\vec e_S) - \vec e_S \cdot \vec y| \le R \\
+|r(\vec e_S) - \vec e_S \cdot \vec x| \le R \\
+$$ --></p>
+<!-- By triangle inequality, it holds 
+$$
+|\vec e_S \cdot \vec y - \vec e_S \cdot \vec x|\le 2R.
+$$   -->
+<!-- Similarly, $|\vec e_{\bar S} \cdot \vec y - \vec e_{\bar S} \cdot \vec x| \le 2R$. As $S$ and $\bar S$ is a partition of $[n]$, 
+$$
+| \vec x - \vec y| = |\vec e_S \cdot \vec y - \vec e_S \cdot \vec x| + |\vec e_{\bar S} \cdot \vec y - \vec e_{\bar S} \cdot \vec x| \le 4R
+$$ -->
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>What if Bob asks <span class="math inline">\(O(n)\)</span> questions? The following theorem states that if <span class="math inline">\(Z\)</span> is bounded by <span class="math inline">\(O(\sqrt n)\)</span>, then Bob is able to have a good estimation of <span class="math inline">\(\vec x\)</span>.</p>
+<p><strong><em>Theorem 2.</em></strong> If Bob is able to ask <span class="math inline">\(\frac{n \log 2 + \ln n}{\log \frac{3}{2} - \log \lambda }\)</span> queries, and <span class="math inline">\(Z\)</span> is bounded by <span class="math inline">\(\alpha \sqrt n\)</span>, then Bob can obtains an estimation <span class="math inline">\(\vec y\)</span>, such that <span class="math display">\[
+|\vec x - \vec y| \le (3e \frac{\alpha}{\lambda } )^2 \cdot n
+\]</span></p>
+<p><em>Proof:</em> As before, a vector <span class="math inline">\(\vec y\)</span> is said to be consistent with a query result <span class="math inline">\(r(\vec c)\)</span> if <span class="math display">\[
+| r(\vec c) - \vec c \cdot \vec y| \le \alpha \sqrt n.
+\]</span></p>
+<p>It suffices to find a sequence of vectors <span class="math inline">\(\vec c_1, \vec c_2, ..., \vec c_k\)</span> (<span class="math inline">\(k\)</span> is a value to be determined), such that</p>
+<ol type="1">
+<li><span class="math inline">\(k = O(n)\)</span>,</li>
+<li>For any <span class="math inline">\(\vec y\)</span> with <span class="math inline">\(|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n\)</span>, there exists at least one <span class="math inline">\(\vec c_i\)</span>, such that <span class="math inline">\(\vec y\)</span> is not consistent with <span class="math inline">\(r(\vec c_i)\)</span>, with high probability.</li>
+</ol>
+<p>If Bob can find a sequence of query vectors with the specified properties, he can rule out any <span class="math inline">\(\vec y\)</span> such that <span class="math inline">\(|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n\)</span>. Note that not every vector in <span class="math inline">\(\{0, 1\}^n\)</span> will be ruled out. At least <span class="math inline">\(\vec x\)</span> will remain. Bob can output any <span class="math inline">\(\vec y\)</span> that is not ruled out as his guess of <span class="math inline">\(\vec x\)</span>.</p>
+<p>It turns out that fining <span class="math inline">\(\vec c_i\)</span>'s is simple: each <span class="math inline">\(\vec c_i\)</span> is sampled independently and uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>. It remains to prove that any <span class="math inline">\(\vec y\)</span> with <span class="math inline">\(|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n\)</span> will be ruled out with high probability.</p>
+<p>For a fix <span class="math inline">\(i\)</span>, consider the probability of <span class="math display">\[
+\Pr[ | r(\vec c_i) - \vec c_i \cdot \vec y| &gt; \alpha \sqrt n ] = \Pr[ |\vec c_i \cdot (\vec x - \vec y) | &gt; \alpha \sqrt n ].
+\]</span></p>
+<p>Lower bounding this probability is equivalent to upper bounding the probability <span class="math display">\[
+\Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ].
+\]</span></p>
+<p><em>Lemma.</em> <strong>For a value <span class="math inline">\(l \in \mathbb{N}\)</span></strong>, <span class="math display">\[
+\Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] \le \frac{e }{\sqrt {|\vec x - \vec y| } }
+\]</span></p>
+<p>We leave the proof of the lemma at the end of our discussion. It following by union bound that <span class="math display">\[
+\begin{aligned}
+    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ] 
+        &amp;= \sum_{l = -\alpha \sqrt n}^{\alpha \sqrt n} \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] \\
+        &amp;\le \frac{2 e \cdot \alpha \sqrt n}{\sqrt {|\vec x - \vec y| } }
+\end{aligned}
+\]</span></p>
+<p>Conditioning on that <span class="math inline">\(|\vec x - \vec y| &gt; (3e \frac{\alpha}{\lambda } )^2 \cdot n\)</span>, this probability is at most <span class="math display">\[
+\begin{aligned}
+    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | \le \alpha \sqrt n ] 
+        &amp;\le \frac{2}{3} \lambda
+\end{aligned}
+\]</span></p>
+<p>The probability that this holds simultaneously for all <span class="math inline">\(\vec c_i\)</span> is therefore <span class="math inline">\((\frac{2\lambda }{3})^k\)</span>. Applying union bound over all <span class="math inline">\(\vec y\)</span> such that <span class="math inline">\(|\vec x - \vec y| &gt; (3e\alpha)^2 \cdot n\)</span>, we have an upper bound of failure probability <span class="math display">\[
+(\frac{2 \lambda }{3})^k 2^n = \exp( k \log \frac{2 \lambda }{3} + n \log 2)
+\]</span></p>
+<p>If we take <span class="math inline">\(k = \frac{n \log 2 + \ln n}{\log \frac{3}{2} - \log \lambda }\)</span>, this probability becomes <span class="math inline">\(\frac{1}{n}\)</span>.</p>
+<p><em>Proof of the lemma:</em> Without lose of generality, suppose that <span class="math inline">\(l \ge 0\)</span>. Observe that <span class="math inline">\(\vec x - \vec y\)</span> is a vector in <span class="math inline">\(\{-1, 0, 1 \}^n\)</span>. Denote <span class="math inline">\(v = |\vec x - \vec y|\)</span> be the number of non-zero dimensions in <span class="math inline">\(\vec x - \vec y\)</span>. Further, let <span class="math inline">\(v_+\)</span> (<span class="math inline">\(v_-\)</span>) be the number of positive (negative) dimensions in <span class="math inline">\(\vec x - \vec y\)</span>. Hence, <span class="math inline">\(v = v_+ + v_-\)</span>. As <span class="math inline">\(\vec c_i\)</span> is sampled uniformly from <span class="math inline">\(\{0, 1\}^n\)</span>, we have <span class="math display">\[
+\begin{aligned}
+    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] 
+    &amp;= \frac{1}{2^{v} } \sum_{j = 0}^{ \min \{ v_+ - l, v_- \} } \binom{v_+}{l + j} \binom{v_-}{j} \\
+    &amp;= \frac{1}{2^{v} } \sum_{j = 0}^{ \min \{ v_+ - l, v_- \} } \binom{v_+}{l + j} \binom{v_-}{v_- - j} \\
+    &amp;\le \frac{1}{2^{v} } \binom{v_+ + v_- }{l + v_-} \\
+    &amp;\le \frac{1}{2^{v} } \binom{v }{ \lfloor v / 2 \rfloor } \\
+\end{aligned}
+\]</span></p>
+<p>By Stirling's approximation, <span class="math display">\[
+v! \le e \sqrt v (\frac{v}{e} )^v  \\
+\lfloor v / 2 \rfloor! \ge \sqrt{2 \pi v} (\frac{ \lfloor v / 2 \rfloor }{e} )^{\lfloor v / 2 \rfloor }  \\
+\lceil v / 2 \rceil ! \ge \sqrt{2 \pi v} ( \frac{ \lceil v / 2 \rceil }{ e } )^{\lceil v / 2 \rceil }   \\
+\]</span></p>
+<p>Assuming that <span class="math inline">\(\lfloor v / 2\rfloor \ge 1\)</span>, we get <span class="math display">\[
+\begin{aligned}
+    \Pr[ |\vec c_i \cdot (\vec x - \vec y) | = l ] 
+    &amp;\le \frac{1}{2^{v} } \binom{v }{ \lfloor v / 2 \rfloor } \\
+    &amp;\le \frac{1}{2^{v} } \frac{e}{2 \pi} \frac{v^{ v + 0.5 } }{ (v / 2)^{ v + 1 } } (\frac{ v / 2 }{ \lfloor v / 2 \rfloor })^{ \lfloor v / 2 \rfloor + 0.5 } (\frac{ v / 2 }{ \lceil v / 2 \rceil })^{ \lceil v / 2 \rceil + 0.5 } \\
+    &amp;\le \frac{ 1 }{ \sqrt v } ( \frac{ v / 2 }{ \lfloor v / 2 \rfloor })^{ \lfloor v / 2 \rfloor + 0.5 } \\
+    &amp;\le \frac{ 1 }{ \sqrt v } \exp( \frac{ 1 }{ 2 \lfloor v / 2 \rfloor } ( \lfloor v / 2 \rfloor + 0.5 )  ) \\
+    &amp;\le \frac{ e }{ \sqrt v }  \\
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>The idea behind Theorem 2 is more obvious if we study the scenario where <span class="math inline">\(\vec x \in \{-1, 1\}^n\)</span>. For any estimation <span class="math inline">\(\vec y \in \{-1, 1\}^n\)</span>, if <span class="math inline">\(\vec c\)</span> is sampled uniformly at random from <span class="math inline">\(\{-1, 1\}^n\)</span>, then <span class="math display">\[
+\mathbb{E}[ \vec c (\vec x - \vec y)] = 0
+\]</span></p>
+<p>If <span class="math inline">\(|\vec x - \vec y| = O(\alpha^2 n)\)</span>, by anti-concentration property, the probability <span class="math display">\[
+\Pr[ |\vec c (\vec x - \vec y) | \ge \alpha \sqrt n] 
+\]</span></p>
+<p>equals to some constant. Equivalently, <span class="math inline">\(\Pr[ |\vec c (\vec x - \vec y) | &lt; \alpha \sqrt n]\)</span> is some constant. By sampling <span class="math inline">\(\vec c\)</span> repeatedly, the probability that <span class="math inline">\(|\vec c (\vec x - \vec y) | &lt; \alpha \sqrt n\)</span> holds for all sampled <span class="math inline">\(\vec c\)</span> decreases exponentially. That is why we can rule out any <span class="math inline">\(\vec y\)</span> such that <span class="math inline">\(|\vec x - \vec y| = O(\alpha^2 n)\)</span> with high probability.</p>
+<!-- First, observe that 
+$$
+\mathbb{E}[ \vec c_i \cdot ( \vec x - \vec y) ] = \mathbb{E}[ \vec c_i \cdot ( \vec x - \vec y) ] \ge 0.
+$$ -->
+<!-- We re-write the event of $\vec c_i$ not consistent with $\vec y$ as 
+$$
+\begin{array}{ll}
+\{ | r(\vec c_i) - \vec c_i \cdot \vec y| > \alpha \sqrt n \} \\
+= \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] + \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n \} \\
+= \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | + |\mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n \} \\
+\supset \{ | \vec c_i \cdot ( \vec x - \vec y) - \mathbb{ E }[ \vec c_i \cdot ( \vec x - \vec y) ] | > \alpha \sqrt n  \} 
+\end{array}
+$$
+
+and 
+$$
+\Pr[ \vec c \cdot (\vec x - \vec y) - \mathbb{E}[ \vec c \cdot ( \vec x - \vec y) ] \ge \sqrt n] ] \le \binom{\alpha n}{ \alpha n / 2} \frac{1}{2^{\alpha n} } 
+$$ -->
+<h3 id="reference">Reference</h3>
+<p>[1] C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,” Foundations and Trends in Theoretical Computer Science, vol. 9, no. 3–4, pp. 211–407, 2013</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/24/Littlewood%E2%80%93Offord-Problem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/24/Littlewood%E2%80%93Offord-Problem/" class="post-title-link" itemprop="url">Littlewood–Offord Problem</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-10-24 23:25:49" itemprop="dateCreated datePublished" datetime="2020-10-24T23:25:49+11:00">2020-10-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-10-31 23:07:05" itemprop="dateModified" datetime="2020-10-31T23:07:05+11:00">2020-10-31</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Let <span class="math inline">\(a = (a_1, a_2, ..., a_n) \in \mathbb{R}^n\)</span> with <span class="math inline">\(|a_i| \ge 1\)</span>. Let <span class="math inline">\(p(a)\)</span> be the number of vectors <span class="math inline">\(c = (c_1, c_2, ..., c_n) \in \mathbb{R}^n\)</span> where <span class="math inline">\(c_i = \pm 1, \forall i \in [n]\)</span>, such that <span class="math display">\[
+-1 \le \left&lt; a , c \right&gt; = \sum_{i = 1}^n c_i a_i &lt; 1
+\]</span></p>
+<ol type="1">
+<li><p>Prove that <span class="math inline">\(p(a) \le \binom{n}{\lfloor n / 2 \rfloor }\)</span>.</p></li>
+<li><p>Find an <span class="math inline">\(a \in \mathbb{R}^n\)</span> with <span class="math inline">\(p(a) = \binom{n}{\lfloor n / 2 \rfloor }\)</span>.</p></li>
+</ol>
+<p><em>Proof.</em> By symmetry, we can assume that <span class="math inline">\(a &gt; 0\)</span> without lose of generality. Define <span class="math display">\[
+C = \{ c = (c_1, c_2, ..., c_n) \in \mathbb{R}^n \mid c_i = \pm 1, i \in [n] \}. 
+\]</span></p>
+<p>Let <span class="math inline">\([n]\)</span> be the set of integers from <span class="math inline">\(1\)</span> to <span class="math inline">\(n\)</span>, and <span class="math inline">\(\mathscr{P}([n])\)</span> be the power set of <span class="math inline">\([n]\)</span>, i.e., the set of all subsets of <span class="math inline">\([n]\)</span>. For any subset <span class="math inline">\(s \subset [n]\)</span>, we can associate to <span class="math inline">\(s\)</span> a vector in <span class="math inline">\(C\)</span>, which is denoted as <span class="math display">\[
+c(s) \doteq (c(s)_1, c(s)_2, ..., c(s)_n), 
+\]</span></p>
+<p>where <span class="math display">\[
+\begin{cases}
+    c(s)_i = 1, &amp; \forall i \in s \\
+    c(s)_i = -1,&amp; \forall i \notin s
 \end{cases}
 \]</span></p>
-<p>for <span class="math inline">\(1 \le i \le m\)</span>. Then <span class="math inline">\(E[X_i] = \rho &gt; 0.5\)</span>. Let <span class="math inline">\(\mu = E \left[\sum_{i = 1}^m X_i \right] = m\rho\)</span>.</p>
-<p>By Hoeffding's inequality, for $&gt; 0 $, <span class="math display">\[
-\Pr \left[ \left| \sum_{i = 1}^m X_i - \mu \right| \ge \lambda \right] \le \exp \left(- \frac{2\lambda^2}{m} \right)
+<p>It remains to show the set <span class="math display">\[
+S(a) \doteq \{ s \subset [n] : -1 &lt; \left&lt; a, c(s) \right&gt; &lt; 1 \}
 \]</span></p>
-<p>Replacing <span class="math inline">\(\lambda\)</span> with <span class="math inline">\(\mu - 0.5m\)</span>, and <span class="math inline">\(m\)</span> with <span class="math inline">\(m = \frac{1}{2 (\rho - 0.5)^2 }\ln \frac{1}{\delta}\)</span>, we get <span class="math display">\[
-\begin{aligned}
-    \Pr \left[ \sum_{i = 1}^m X_i \le 0.5m \right] &amp;\le \Pr \left[ \left| \sum_{i = 1}^m X_i - \mu \right| \ge m(\rho - 0.5) \right] \\
-    &amp;\le \exp \left(- 2m(\rho - 0.5)^2 \right) \\
-    &amp;= \delta   
-\end{aligned}
+<p>has size at most <span class="math inline">\(\binom{n}{\lfloor n / 2 \rfloor }\)</span>. The key observation is that <span class="math display">\[
+\forall s, s&#39; \in S(a) \Rightarrow s \nsubseteq s&#39;. 
 \]</span></p>
-<p>Note that if more than half of <span class="math inline">\(A\)</span> outputs are correct, then the output of <span class="math inline">\(A^*\)</span> is correct. This happens with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/18/Entropy-and-Message-Transmission/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/06/18/Entropy-and-Message-Transmission/" class="post-title-link" itemprop="url">Entropy and Message Transmission</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-06-18 20:26:03" itemprop="dateCreated datePublished" datetime="2020-06-18T20:26:03+10:00">2020-06-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-07-01 11:06:27" itemprop="dateModified" datetime="2020-07-01T11:06:27+10:00">2020-07-01</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>We discuss another application that sheds light on meaning of entropy, the message transmission problem. In this model, a sender transmits a message to the receiver through a channel. In real world, the channel could be an optical fiber, a wireless channel, a hard disk etc. In the final application, the computer that writes and reads information from the hard disk is both the sender and the receiver.</p>
-<p>In real world the channel is not perfect and the message transmitted is distorted by noise. It is natural to ask whether the message can be transmitted accurately under the noise, i.e., whether the receiver can recover the noisy message.</p>
-<p>To study the problem, we need a mathematical model for both the channel and the noise. We focus on the simplest binary channel with bits of 0 and 1. The noise causes the bits to flip and is modelled by the distribution on the bit-flips. We study the simplest one that flips each bit independently with some identical probability <span class="math inline">\(p &lt; 0.5\)</span>. For a message with length <span class="math inline">\(n\)</span>, the number of bit flips follows a Binomial distribution <span class="math inline">\(B(n, p)\)</span>. We call such channel a <em>binary symmetric channel</em>.</p>
-<p>To protect the message against noise, a naïve way is to send the each bit multiple times. For example, if the sender wants to send a bit 1, it sends <span class="math inline">\(10\)</span> copies of <span class="math inline">\(1\)</span> as <span class="math inline">\(1111111111\)</span>. The receiver decides that the bit sent is 1, if the majority of the <span class="math inline">\(10\)</span> bits it receives is 1.</p>
-<p>Could it be improved? Repeating each bit may not be the mot efficient way against the noise. In general, if the sender wants to send a message of <span class="math inline">\(k\)</span> bits, it can convert it into a new message of <span class="math inline">\(n\)</span> bits and sends the new one. The receiver considers the <span class="math inline">\(n\)</span> bits received as a whole, and try to recover the <span class="math inline">\(k\)</span>-bit message the sender wants to send.</p>
-<p>We call the method used by the sender to convert the original message the <em>encoding function</em>, and the one used by the receiver to recover the message the <em>decoding function.</em></p>
-<p><strong><em>Definition.</em></strong> A <span class="math inline">\((k, n)\)</span> encoding function <span class="math inline">\(\text{Enc}: \{0, 1\}^k \rightarrow \{0, 1\}^n\)</span> and a <span class="math inline">\((k, n)\)</span> decoding function <span class="math inline">\(\text{Dec}: \{0, 1\}^n \rightarrow \{0, 1\}^k\)</span>, where <span class="math inline">\(n \ge k\)</span>.</p>
-<p>Since the noise flips the bits randomly, it is impossible to have an encoding function and a decoding function without error (unless <span class="math inline">\(p = 0\)</span>). Instead, we aim to control the probability of error within some specified threshold <span class="math inline">\(\delta\)</span>. To achieve this, we add redundancy to the message and encode a <span class="math inline">\(k\)</span>-bit one into an <span class="math inline">\(n\)</span>-bit one. Now, <span class="math inline">\(n - k\)</span> is the amount of redundancy introduced. We would like to make <span class="math inline">\(n - k\)</span> as small as possible. On the other hand, the value of <span class="math inline">\(n-k\)</span> should positively related to <span class="math inline">\(p\)</span>. The larger <span class="math inline">\(p\)</span> is, the noisier the channel is and the larger <span class="math inline">\(n - k\)</span> should be.</p>
-<p>For fixed <span class="math inline">\(\delta\)</span> and <span class="math inline">\(p\)</span>, the <em>Shannon's Theorem</em> says that the smallest possible value of <span class="math inline">\(n - k\)</span> we can achieve is roughly <span class="math inline">\(n\mathbf{H}(p)\)</span>. Intuitively, <span class="math inline">\(\mathbf{H}(p)\)</span> is the amount of randomness the noise exerts on each bit. Therefore <span class="math inline">\(1 - \mathbf{H}(p)\)</span> is the maximum amount of information we can transmit by one bit.</p>
-<p>Before we proceed, we prove the following lemma.</p>
-<p><strong><em>Lemma 1</em></strong><br />
-For <span class="math inline">\(q \in \mathbb{R}, q \le 1 / 2\)</span> and <span class="math inline">\(n \in \mathbb{N}\)</span>, it hold that <span class="math display">\[
-\begin{aligned}
-    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i} 
-    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }
-\end{aligned}
+<p>We call <span class="math inline">\(S(a)\)</span> an antichain. To show this, suppose thta <span class="math inline">\(s&#39;\)</span> contains at least one element that is not in <span class="math inline">\(s\)</span>. Denote this element as <span class="math inline">\(j\)</span>. It follows that <span class="math inline">\(c(s&#39;)_j = 1\)</span> and <span class="math inline">\(c(s&#39;)_j = -1\)</span> and that <span class="math display">\[
+\left&lt; a, c(s&#39;) \right&gt; - \left&lt; a, c(s) \right&gt; \ge c(s&#39;)_j a_j - c(s)_j a_j = 2 a_j \ge 2
 \]</span></p>
-<p><strong><em>Proof.</em></strong><br />
-<span class="math display">\[
-\begin{aligned}
-    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i} 
-    &amp;\le \frac{n + 1}{2} \binom{n }{\lfloor q n \rfloor }  \\
-    &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} \left( { \lfloor q n \rfloor } / { n } \right) } \\
-    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }
-\end{aligned}
+<p>We conclude that <span class="math inline">\(\left&lt; a, c(s&#39;) \right&gt; \ge \left&lt; a, c(s) \right&gt; + 2 \ge 1\)</span>, a contradiction.</p>
+<p>Now, consider an increasing sequence of <span class="math inline">\(n\)</span> subsets of <span class="math inline">\([n]\)</span> of the form: <span class="math display">\[
+\emptyset \subset \{ x_1 \} \subset \{ x_1, x_2 \} \subset \{ x_1, x_2, x_3 \} \subset ... \subset \{ x_1, x_2, ..., x_n \}
 \]</span></p>
-<p>The first inequality follows from that <span class="math inline">\(\binom{n}{i}\)</span> is increasing for <span class="math inline">\(i \le n / 2\)</span> and that the summation is over at most <span class="math inline">\((n + 1) /2\)</span> terms. The last one follows from that <span class="math inline">\(\mathbf{H}(x)\)</span> is increasing for <span class="math inline">\(x \le 1 / 2\)</span> and that <span class="math inline">\({ \lfloor q n \rfloor } / { n } \le { q n } / { n } = q &lt; 1/2\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p><strong><em>Shannon's Theorem</em></strong><br />
-Given a binary symmetric channel with flip probability <span class="math inline">\(p &lt; 1 / 2\)</span> and for any any <span class="math inline">\(\epsilon, \delta &gt; 0\)</span>, when <span class="math inline">\(n\)</span> is large enough,</p>
+<p>where <span class="math inline">\(x_1, ..., x_n\)</span> are different integers in <span class="math inline">\([n]\)</span>. Each such sequence induces a permutation of integers in <span class="math inline">\([n]\)</span>. As a result, the total number of such sequence equals <span class="math inline">\(n!\)</span>. The relation between <span class="math inline">\(S(a)\)</span> and such sequence is established as follows:</p>
 <ol type="1">
-<li>if <span class="math inline">\(k \le n (1 - \mathbf{H}(p) - \epsilon)\)</span>, there exist <span class="math inline">\((k, n)\)</span> encoding and decoding functions such that the receiver fails to obtain the correct message with probability at most <span class="math inline">\(2\delta\)</span>.<br />
-</li>
-<li><span class="math inline">\(\nexists (k, n)\)</span> encoding and decoding functions with <span class="math inline">\(k \ge n (1 - \mathbf{H}(p) + \epsilon)\)</span> such that the decoding is correctly is at most <span class="math inline">\(\delta\)</span> for a <span class="math inline">\(k\)</span>-bit input message chosen uniformly at random.</li>
+<li><p>For each such sequence, there can be at most one set in <span class="math inline">\(S(a)\)</span>, because <span class="math inline">\(S(a)\)</span> is a antichain.</p></li>
+<li><p>For each <span class="math inline">\(s = \{x_1, x_2, ..., x_k \} \in S(a)\)</span>, where <span class="math inline">\(k = |s| \ge 1\)</span> is the size of <span class="math inline">\(s\)</span>, the number of sequences it appears in is given by</p>
+<p><span class="math display">\[
+ |s| ! (n - |s|)! \ge \lfloor n / 2 \rfloor ! (n - \lfloor n / 2 \rfloor)!
+ \]</span></p></li>
 </ol>
-<p><strong><em>Proof of 1.</em></strong></p>
-<p><strong>Intuition.</strong> When an <span class="math inline">\(n\)</span>-bit message <span class="math inline">\(s\)</span> is transmitted through the channel, the number of flipped bits is roughly <span class="math inline">\(np\)</span>. As <span class="math inline">\(p &lt; {1} / {2}\)</span>, we can find a <span class="math inline">\(\lambda &gt; 0\)</span> such that <span class="math inline">\(p + \lambda &lt; {1} / {2}\)</span>. Let <span class="math inline">\(R\)</span> be the received <span class="math inline">\(n\)</span>-bit message and define <span class="math inline">\(d(s, R)\)</span> the number of different bits between <span class="math inline">\(s\)</span> and <span class="math inline">\(R\)</span>, i.e., the Hamming distance between <span class="math inline">\(s\)</span> and <span class="math inline">\(R\)</span>. Given <span class="math inline">\(s\)</span> and <span class="math inline">\(p\)</span>, let <span class="math inline">\(\mathfrak{D}(s, p)\)</span> be the distribution of <span class="math inline">\(R\)</span> on <span class="math inline">\(\{0, 1\}^n\)</span>.</p>
-<p>By Hoeffding's inequality, it holds that <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s, p) } [ |d(s, R) - pn | \ge \lambda n] \le \exp(- 2 \lambda^2 n).
-\]</span></p>
-<p>Define the <span class="math inline">\((p + \lambda)n\)</span> ball centered <span class="math inline">\(s\)</span> as <span class="math display">\[
-B_{s, (p + \lambda)n} \doteq \{ r \in \{0, 1\}^n : d(s, r) &lt; (p + \lambda)n \}.
-\]</span></p>
-<p>The the Hoeffding's inequality implies that for large enough <span class="math inline">\(n\)</span>, we have <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s, p) } [ R \notin B_{s, (p + \lambda)n}] \le \delta.
-\]</span></p>
-<p>That is, with probability at most <span class="math inline">\(\delta\)</span>, the received message fall outside the ball <span class="math inline">\(B_{s, (p + \lambda)n}\)</span>. This motivates to decode each message in <span class="math inline">\(B_{s, (p + \lambda)n}\)</span> as the original message the sender wants to send.</p>
-<p>Further, by Lemma 1, the size of <span class="math inline">\(B_{s, (p + \lambda) n}\)</span> is bounded by <span class="math display">\[
-\begin{aligned}
-    \sum_{i = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{i} 
-    &amp;\le 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }
-\end{aligned}
-\]</span></p>
-<p>Therefore, the maximum number of non-overlapped balls we can pack into the message space <span class="math inline">\(\{0, 1\}^n\)</span> is<br />
-<span class="math display">\[
-\frac{2^n}{ 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }  } = 2^{ n (1 - \mathbf{H} ( p + \lambda) - \frac{1}{n} \log \frac{n + 1}{2})   }
-\]</span></p>
-<p>When <span class="math inline">\(n\)</span> is large enough, this is at least <span class="math inline">\(2^{ n (1 - \mathbf{H} ( p ) - \epsilon) }\)</span>.</p>
-<p><em>Remark: Hoeffding's inequality is an overkill. Chebyshev's inequality suffices for this proof.</em></p>
-<p><strong>Designing Encoding and Decoding Functions.</strong></p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Balls.png" /></p>
-<p>This motivates one to design of encoding and decoding function as follows: find a set of messages <span class="math inline">\(s_1, s_2, ..., s_{2^k} \in \{0, 1\}^n\)</span>, such that <span class="math display">\[
-B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, ..., B_{s_{2^k} , (p + \lambda)n}
-\]</span></p>
-<p>are disjoint balls, and assign the messages in <span class="math inline">\(\{0, 1\}^k\)</span> to the ones in <span class="math inline">\(\{ s_i \}&#39;s\)</span> one by one. If the sending want to send <span class="math inline">\(i\)</span>, it sends <span class="math inline">\(s_i\)</span>. On receiving a message <span class="math inline">\(r\)</span>, the receiver determines which ball <span class="math inline">\(r\)</span> belongs to. The probability of decoding error is at most <span class="math inline">\(\delta\)</span>.</p>
-<p><em>Question to ponder: can we find such a set efficiently, such that</em><br />
-<span class="math display">\[
-B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, ..., B_{s_{2^k} , (p + \lambda)n}
-\]</span> <em>are disjoint?</em></p>
-<p><strong>Finding the Codewords.</strong></p>
-<p>It is left to find a set of satisfactory <span class="math inline">\(s_1, s_2, ..., s_{2^k} \in \{0, 1\}^n\)</span>. The method we show here does not find a set of non-overlapped balls. Instead it aims to find a set such that</p>
-<blockquote>
-<p>if <span class="math inline">\(s_i\)</span> is transmitted, then the probability received message <span class="math inline">\(r\)</span> falls into the another ball, i.e., <span class="math inline">\(r \in B_{s_{j} , (p + \lambda)n}\)</span> (<span class="math inline">\(j \neq i\)</span>), is less than <span class="math inline">\(\delta\)</span>.</p>
-</blockquote>
-<p>The property implies that the overlap between <span class="math inline">\(B_{s_{i} , (p + \lambda)n}\)</span> and <span class="math inline">\(\cup_{j \neq i} B_{s_{j} , (p + \lambda)n}\)</span> is less than <span class="math inline">\(\delta\)</span> (measured by probability). To formalize the statement, define the random variable <span class="math inline">\(S\)</span> to be the message sent and <span class="math inline">\(R\)</span> to be the one received. Given that <span class="math inline">\(S = s_i\)</span> is sent, the conditional probability of receiving <span class="math inline">\(R = r\)</span> is <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] = p^{d(s_i,r)} (1 - p)^{1 - d(s_i, r)}
-\]</span></p>
-<p>To goal is to prove that it holds for all <span class="math inline">\(i\)</span>, <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] = \sum_{r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n} } p_r \le \delta
-\]</span></p>
-<p>Then , by union bound, it holds that <span class="math display">\[
-\begin{aligned} 
-\Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \text{ is not recovered correctly} \mid S = s_i] 
-    &amp;= \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p + \lambda)n}  \vee  R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid S = s_i] \\
-    &amp;\le \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p + \lambda)n}   \mid S = s_i]  + \Pr[ R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid S = s_i] \\
-    &amp;\le 2 \delta
-\end{aligned}
-\]</span> That is, <span class="math inline">\(s_i\)</span> is transmitted and decoded correctly with probability at least <span class="math inline">\(1 - 2 \delta\)</span>.</p>
-<p>In what follows, we will prove the following claim:</p>
-<p><strong>Claim 1</strong>. <em>If we generate <span class="math inline">\(2^{k + 1}\)</span> codewords uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, then in expectation</em> <span class="math display">\[
-\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \le  2^k \delta
-\]</span></p>
-<p>Claim 1 implies that there exits a set of codewords <span class="math inline">\(s_1, s_2, ..., s_{2^{k + 1} }\)</span> with <span class="math display">\[
-\sum_{i = 1}^{2^{k + 1} } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]    \le 2^k \delta
-\]</span></p>
-<p>If we send each <span class="math inline">\(s_i\)</span> with probability <span class="math inline">\(1 / 2^k\)</span>, then the expected error probability is already <span class="math inline">\(\delta\)</span>. But we can have a stronger result: we can find a set of <span class="math inline">\(2^k\)</span> codewords, such that for each <span class="math inline">\(i\)</span>, <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \le 2 \delta
-\]</span></p>
-<p>W.L.O.G., suppose that <span class="math inline">\(s_1, s_2, ..., s_{2^k}\)</span> are the ones with the smallest <span class="math inline">\(\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]\)</span> 's, it must be that <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]  \le \frac{2^k \delta }{2^k } = \delta
-\]</span></p>
-<p><strong><em>Proof of Claim 1</em></strong>. By Lemma 1, for a fixed <span class="math inline">\(r\)</span>, the number of strings <span class="math inline">\(s \in \{0, 1\}^n\)</span> such that <span class="math inline">\(d(s, r) &lt; (p + \lambda) n\)</span> is bounded by <span class="math display">\[
-\begin{aligned}
-    \sum_{k = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{k} 
-        &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} ( p + \lambda) }
-\end{aligned}
-\]</span></p>
-<p>If a message <span class="math inline">\(s\)</span> is picked uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, the probability such that <span class="math display">\[
-\Pr_{s \sim \mathbf{U}(\{0, 1\}^n) } [d(s, r) &lt; (p + \lambda) n ] \le \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H} \left(  p + \lambda \right) }
-\]</span></p>
-<p>By union bound,<br />
-<span class="math display">\[
-\begin{aligned}
-    \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] 
-    &amp;&lt; 2^k \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H}( p + \lambda) }  \\
-    &amp;= 2^{ k + \log (n + 1) +  n \mathbf{H} ( p + \lambda) - n - 1 } 
-\end{aligned}
-\]</span></p>
-<p>As <span class="math inline">\(k \le n(1 - \mathbf{H}(p) - \epsilon)\)</span>, when <span class="math inline">\(n\)</span> is sufficient large, it follows<br />
-<span class="math display">\[
-\begin{aligned}
-     \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] 
-        &lt; 2^{ \log \frac{n + 1}{2} +  n ( \mathbf{H} ( p + \lambda) - \mathbf{H} ( p) - \delta) } 
-        \le \frac{\delta}{2}
-\end{aligned}
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-\begin{aligned}
-    &amp;\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} } \left[ \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \\
-    &amp;= \sum_{r \in \{0, 1\}^n }     \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ] \cdot  \Pr_{R \sim \mathfrak{D}(s_i, p) } [ R = r \mid S = s_i] \\
-    &amp;\le \frac{\delta}{2}
-\end{aligned}
+<p>We obtain <span class="math display">\[
+|S(a) | \cdot \lfloor n / 2 \rfloor ! (n - \lfloor n / 2 \rfloor)! \le\sum_{s \in S(a) } |s| ! (n - |s|) ! \le n!
 \]</span></p>
 <p>and <span class="math display">\[
-\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } } {\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \le 2^{k + 1} \frac{\delta}{2} = 2^k \delta
+p(a) = |S(a) | = \frac{n!}{ \lfloor n / 2 \rfloor ! (n - \lfloor n / 2 \rfloor)! } = \binom{n}{\lfloor n / 2 \rfloor }
 \]</span></p>
+<p>This finishes the proof for problem 1.</p>
+<p>Finally, <span class="math inline">\(a_i = 1, \forall i \in [n]\)</span> gives a tight example to problem 2.</p>
 <p><span class="math inline">\(\blacksquare\)</span></p>
-<p><strong><em>Proof of 2.</em></strong></p>
-<p>The difficulty here is to prove that the claim holds for arbitrary <span class="math inline">\((k, n)\)</span> encoding and decoding functions. The proof relies on an important property:</p>
-<blockquote>
-<p>the decoding function <span class="math inline">\(\text{Dec}\)</span> is a function on <span class="math inline">\(\{0, 1\}^n\)</span></p>
-</blockquote>
-<p>For any <span class="math inline">\(r \in \{0, 1\}^n\)</span>, there is a unique output <span class="math inline">\(\text{Dec}(r) \in \{0, 1\}^k\)</span>. The decoding function needs to decide the unique message <span class="math inline">\(\{0, 1\}^n\)</span> the sender want to send.</p>
-<p>Now, define <span class="math display">\[
-S_i \doteq \{ r \in \{0, 1\}^n :  r \text{ is decoded correctly if } s_i \text{ is sent}   \}
-\]</span></p>
-<p>The <span class="math inline">\(S_i\)</span>'s are non-overlapped and we have, <span class="math display">\[
-\cup_{i = 1}^{2^k} S_i \subset \{0, 1 \}^n
-\]</span></p>
-<p>If <span class="math inline">\(s_i\)</span> is sent, then by Hoeffding inequality, with probability at least <span class="math inline">\(1 - \exp(- 2\lambda^2 n)\)</span>, the received message <span class="math inline">\(R\)</span> is likely to fall into a ring centered at <span class="math inline">\(s_i\)</span>: <span class="math display">\[
-\text{ring} (s_i) \doteq \{ r \in \{0, 1\}^n : |d(r, s_i) - pn |&lt; \lambda n \}
-\]</span></p>
-<p>Finally, if the messages <span class="math inline">\(s_1, s_2, ..., s_{2^k}\)</span> are sent uniformly at random, i.e., <span class="math inline">\(i \sim \mathbf{U}[1, 2^k]\)</span>, then <span class="math display">\[
-\begin{aligned}
-    \Pr[ R \text{ is decoded correctly}]   &amp;=  \sum_{i = 1}^{2^k} \sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \Pr_{i \sim \mathbf{U}[1, 2^k]} [ S = s_i] \\ 
-        &amp;=  \frac{1}{2^k} \sum_{i = 1}^{2^k} \sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] 
-\end{aligned}
-\]</span></p>
-<p>Observed that <span class="math inline">\(S_i \subset \text{ring} (s_i) \cup (S_i \cap \text{ring} (s_i) )\)</span>, we get</p>
-<p><span class="math display">\[
-\begin{aligned}
- &amp;\Pr[ R \text{ is decoded correctly}] \\
-        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \sum_{r \notin \text{ring} (s_i)  } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i]  +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right) \\ 
-        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \exp( -2\lambda^2n) +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right) 
-\end{aligned}
-\]</span></p>
-<p>Note that for <span class="math inline">\(r \in S_i \cap \text{ring} (s_i)\)</span>, as <span class="math inline">\(p &lt; 1 / 2\)</span>, it holds that <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \le p^{ \lceil(p - \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil }
-\]</span></p>
-<p>We obtain</p>
-<p><span class="math display">\[
-\begin{aligned}
-        &amp;\Pr[ R \text{ is decoded correctly}] \\
-        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ \lceil(p - \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil } \\
-        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ (p - \lambda) n } (1 - p)^{ n - (p - \lambda) n  } \\
-        &amp;= \exp( -2\lambda^2n) +  p^{ (p - \lambda) n } (1 - p)^{ n - (p - \lambda) n  }  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } \frac{1}{2^k}  \\
-        &amp;= \exp( -2\lambda^2n) +   p^{ pn } (1 - p)^{ n - pn } \left(\frac{ 1 - p}{ p} \right)^{\lambda n} 2^{n - k}\\
-        &amp;= \exp( -2\lambda^2n) +  2^{n - k - n \mathbf{H}(p)}  \left(\frac{ 1 - p}{ p} \right)^{\lambda n}
-\end{aligned}
-\]</span></p>
-<p>Conditioning on that <span class="math inline">\(k \ge n (1 - \mathbf{H}(p) + \delta)\)</span>, <span class="math display">\[
-\Pr[ R \text{ is decoded correctly}] \le \exp( -2\lambda^2n) +  2^{- n (\delta + \lambda \log \frac{ 1 - p}{ p} ) }  
-\]</span></p>
-<p>By choosing sufficient small <span class="math inline">\(\lambda\)</span> and large enough <span class="math inline">\(n\)</span>, <span class="math inline">\(\Pr[ R \text{ is decoded correctly}]\)</span> can be arbitrary small.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h2 id="reference">Reference</h2>
-<p>[1] M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/07/Entropy-and-Compression/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/06/07/Entropy-and-Compression/" class="post-title-link" itemprop="url">Entropy and Compression</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-06-07 12:24:22" itemprop="dateCreated datePublished" datetime="2020-06-07T12:24:22+10:00">2020-06-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-11 23:49:47" itemprop="dateModified" datetime="2021-07-11T23:49:47+10:00">2021-07-11</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>One interpretation of entropy of a random variable is as a measure of how many unbiased, independent random bits in expectation we can extract from the random variable.<br>Another one comes from compression of a sequence.</p>
-<p>Assume that the sequence studied (denoted as $s$) is a binary one.<br>It consists of a concatenation of the outcomes of $n$ independent Bernoulli random variables.<br>Without lose of generality, we assume that each bit comes up $1$ with probability $p \le  1 / 2$.<br>This is one of the simplest models of a sequence. </p>
-<p>The fact that sequence could be a biased one makes it possible to represent it by a new sequence with shorter length in expectation.<br>For example, suppose that $p = \frac{1}{4}$, then for a pair of consecutive bits, it have   </p>
-<ol>
-<li>probability $\frac{1}{16}$ of being $11$,   </li>
-<li>probability $\frac{3}{16}$ of being $01$, </li>
-<li>probability $\frac{3}{16}$ of being $10$,</li>
-<li>probability $\frac{9}{16}$ of being $00$.  </li>
-</ol>
-<p>If we use $111$ to represent $11$, $110$ to represent $01$, $10$ to represent $10$, and $0$ to represent $00$,  then the expected number of representation bits per pair is </p>
-<script type="math/tex; mode=display">
-\begin{array}{r}
-    3 \cdot \frac{1}{16} + 3 \cdot \frac{3}{16} + 2 \cdot  \frac{3}{16} + 1 \cdot  \frac{9}{16} 
-    = \frac{27}{16} 
-    < 2
-\end{array}</script><p>In general, compression is not limited to the way described above.<br>We call the rule with which we compress a string <em>a compression function</em>. </p>
-<h1 id="Compression-Function"><a href="#Compression-Function" class="headerlink" title="Compression Function"></a>Compression Function</h1><blockquote>
-<p><strong>Definition.</strong> Let $S = \{0, 1\}^n$ be the set of binary sequence of length $n$, and $T = \{ 0, 1\}^+$ the set of binary sequence of any positive length. A compression function $h: S \rightarrow T$ is an injective (one-to-one) function from $S$ to $T$.    </p>
-</blockquote>
-<p>In other words, each $s \in S$ is assigned a unique non-empty sequence (of arbitrary length) by $h$. </p>
-<p>Observe that the size of $S$ is $2^n$. On the other hand, the number of sequences with length less than $n$ is $\sum_{i = 1}^{n - 1} 2^{i} = 2^n - 1 &lt; 2^n$.<br>For any $h$, it is impossible for $h$ to map every $s \in S$ to a sequence with length less than $n$.<br>Under adversarial input, $h$ can not compress at all.</p>
-<p>The hope is that when there is a distribution $\mathfrak{D}$ on $S$, the expected length of the compressed sequences would be small: </p>
-<script type="math/tex; mode=display">
-    \mathbf{E} [ |h(s)| ] = \sum_{s \in S} p_s \cdot |h(s)|</script><p>To illustrate the meaning of entropy, we study a simple case where $\mathfrak{D}$ is the joint distribution of $n$ <em>i.i.d.</em> Bernoulli random variables that come up $1$ with probability $p \le { 1 / 2 }$ (by symmetry, the claim holds for the case of $p &gt; { 1 / 2 }$).</p>
-<p>The following theorem formalizes how good a compression function we can find. </p>
-<h2 id="Entropy-as-Lower-and-Upper-Bounds"><a href="#Entropy-as-Lower-and-Upper-Bounds" class="headerlink" title="Entropy as Lower and Upper Bounds"></a><strong>Entropy as Lower and Upper Bounds</strong></h2><blockquote>
-<p><strong>Theorem.</strong></p>
-<ol>
-<li>$\forall \delta &gt; 0$, $\exists$ a compression $h$ and integer $N &gt; 0$, s.t., $\forall n \ge N$, it holds that <script type="math/tex; mode=display">
- \mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)</script></li>
-<li>$\forall \delta &gt; 0$, $\exists$ integer $N &gt; 0$, s.t., $\forall n \ge N$, it holds that for any compression $h$, <script type="math/tex; mode=display">
- \mathbf{E}[ |h(s)| ] \ge (1 - \delta) n \mathbf{H}(p)</script></li>
-</ol>
-</blockquote>
-<p><em>Intuitively, the entropy $\mathbf{H}(p)$ is the measure of the average number of bits in expectation we need after compression to represent a Bernoulli random variable that comes up $1$ with probability $p$.</em> </p>
-<p><em>The high level idea of the proof is that, with high probability, the number of ones in a $s \in S$ is roughly $np$. There are roughly $2^{n\mathbf{H}(p)}$ such sequences. Therefore, we can use $n \mathbf{H}(p)$ bits to represent each sequence.</em></p>
-<p><strong>Proof.</strong> The claim is trivially true if $p = { 1 / 2 }$. Otherwise, $p &lt; { 1 / 2 }$. We can pick some $\epsilon &gt; 0$, such that $p + \epsilon &lt; { 1 / 2 }$. Further, if $n$ is large enough,  $np + n\epsilon \le n / 2 - 1$. Hence, we may assume that $\lceil np + n\epsilon \rceil \le n / 2$ . </p>
-<p>Denote $Z$ be the number of ones in the string $s$. By Hoeffding Inequality, it holds that </p>
-<script type="math/tex; mode=display">
-    \Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)</script><p>By the fact that $Z$ takes only integer values, we have </p>
-<script type="math/tex; mode=display">
-    \Pr[Z \ge \lceil np + n\epsilon \rceil] \le \exp(-2 n \epsilon^2 )</script><p>We use the first bit output of $h$ as a flag. For a string $s$ with $Z \ge \lceil np + n\epsilon \rceil$, we set the first bit to $0$ and then output the same sequence, i.e., $h(s) = 0 \circ s$. In such case we do not compress the string at all and use $n + 1$ bits to represent it. </p>
-<p>We set the first bit output to $1$ if $Z &lt; \lceil np + n \epsilon \rceil \le n / 2$.  The number of such sequences is bounded by</p>
-<script type="math/tex; mode=display">
-    \sum_{k = 0}^{\lceil np + n\epsilon \rceil - 1} \binom{n}{k} \le  \frac{n}{2} \binom{n}{\lceil np + n\epsilon \rceil - 1 } \le \frac{n}{2} 2^{ n \cdot \mathbf{H} \left( \frac{ \lceil np + n\epsilon \rceil - 1 }{n} \right) } \le \frac{n}{2} 2^{ n \mathbf{H} \left( p + \epsilon  \right) }</script><p>The first inequality holds because $\binom{n}{k}$ increases for $k &lt; n / 2$ and that the summation is over $\lceil np + n \epsilon \rceil \le n / 2$ terms. The last inequality holds since $(\lceil np + n\epsilon \rceil - 1) / n \le ( np + n\epsilon ) / n = p + \epsilon &lt; 1 / 2$ and $\mathbf{H}( \cdot )$ is a increasing function in the range $[0, 1/2]$. </p>
-<p>We compress these sequences by representing each of them with a unique sequence of at most  </p>
-<script type="math/tex; mode=display">
-\begin{array}{rl}
-    \log \left[ (n / 2) \cdot  2^{ n \cdot\mathbf{H} \left( p + \epsilon  \right) } \right]
-    = n \cdot\mathbf{H} \left( p + \epsilon  \right)  + \log n -1
-\end{array}</script><p>bits. Considering the leading flag bit 1 (to indicate the sequence is a compressed one), we output at most $n \mathbf{H} \left( p + \epsilon  \right)  + \log n$ bits for sequences with $Z &lt; \lceil np + n \epsilon \rceil$. This can be written as $\left[ \mathbf{H} \left( p + \epsilon  \right)  + (1 / n) \cdot (\log n - 1) \right] n$ bits and is smaller than </p>
-<script type="math/tex; mode=display">
-(1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n</script><p>is $\epsilon$ is smaller enough and $n$ is large enough.</p>
-<p>We are almost done with the proof. It is left to consider sequences with $Z \ge \lceil np + n \epsilon \rceil$. For those sequence, we don’t compress them and and set the leading flag bit to 0. The outputs for those sequences consist of at most $1 + n$ bits. However, by Hoeffding inequality, such sequences do not appear frequently and the expected output length can be made arbitrary small.</p>
-<p>Specifically, $\forall \delta &gt; 0$, we can find large enough $N$, such that $\forall n &gt; N$, it holds  </p>
-<script type="math/tex; mode=display">
-    (n + 1 ) \cdot \exp(-2 n \epsilon^2 ) \le n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)</script><p>Then, in expectation, the bits outputted by $h$ is at most</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-    &(n + 1) \cdot \exp(-2 n \epsilon^2 ) + [n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ] \cdot [ 1 - \exp(-2 n \epsilon^2 ) ] \\
-    \le& n \cdot (\delta / 2)  \cdot  \mathbf{H}(p) + [ n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ]\\
-    \le& n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)  +  (1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n\\
-    \le& \left(  1 + \delta \right) \cdot \mathbf{H}(p) \cdot n
-\end{aligned}</script><p>To prove the lower bound, first we need the following lemma.</p>
-<blockquote>
-<p><strong>Lemma.</strong> <em>for $s_1, s_2 \in S$, if $s_1$ has more ones than $s_2$, i.e., $\Pr(s_1) \ge \Pr(s_2)$, then the $h$ that minimizes the expected output length $\mathbf{E}[ |h(s)| ]$ should assign $s_1$ a sequence at most as long as $s_2$, i.e., $|h(s_1)| \le |h(s_2)|$.</em> </p>
-</blockquote>
-<p><strong>Proof</strong>. Otherwise, if we swap the output sequences of $h(s_1)$ and $h(s_2)$, we lower value of  $\mathbf{E}[ |h(s)| ]$.  </p>
-<p>$\square$</p>
-<p>Further, consider the number of $s \in S$ with $\lfloor np - n \epsilon \rfloor$ ones, </p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\binom{n}{\lfloor np - n\epsilon \rfloor } 
-    &\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H} \left( { \lfloor np - n\epsilon \rfloor } / { n} \right) } \\
-    &\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H}( { (np - n\epsilon - 1) } / {n} )} \\
-    &\ge 2^{ \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) -  \log (n + 1)  \rfloor }
-\end{aligned}</script><p>Let $k = \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) - \log (n + 1)  \rfloor$. For large enough $n$, it holds that </p>
-<script type="math/tex; mode=display">
-k \ge (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)</script><p>Further, since</p>
-<script type="math/tex; mode=display">
-\sum_{i = 1}^{  k - 1  } 2^i \le \sum_{i = 0}^{  k - 1  } 2^i = 2^{  k } - 1 < 2^k,</script><p>there are strictly less than $2^k$ distinct binary sequences with length at most $k - 1$. </p>
-<p>Therefore, for the set of $s \in S$ with $\lfloor np - n\epsilon \rfloor$ ones, at least one of them has output length at least $k$. </p>
-<p>By the previous lemma, all sequences with more than $\lfloor np - n\epsilon \rfloor$ ones has length at least $k$. </p>
-<p>Denote $Z$ be the number of ones in the string $s$. By Hoeffding Inequality, it holds that </p>
-<script type="math/tex; mode=display">
-\Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)</script><p>By the fact that $Z$ takes only integer values, we have </p>
-<script type="math/tex; mode=display">
-\Pr[Z \le \lfloor np - n\epsilon \rfloor] \le \exp(-2 n \epsilon^2 )</script><p>The expected output length of the sequences with more than $\lfloor np - n\epsilon \rfloor$ ones is at least </p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-    &[ 1 - \exp(-2n\epsilon^2) ] \cdot k \\
-    =&[ 1 - \exp(-2n\epsilon^2) ] \cdot  (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)
-\end{aligned}</script><p>This is at least $(1 - \delta) \cdot n \cdot \mathbf{H}(p)$ when $n$ is large enough. </p>
-<p>$\blacksquare$</p>
-<h2 id="Huffman-Code"><a href="#Huffman-Code" class="headerlink" title="Huffman Code"></a><strong>Huffman Code</strong></h2><p>In this section, we show that the upper bound can be achieved by Huffman code. </p>
-<blockquote>
-<p><em>$\forall \delta &gt; 0$, $\exists$ a compression $h$ and integer $N &gt; 0$, s.t., $\forall n \ge N$, it holds that</em> </p>
-<script type="math/tex; mode=display">
-   \mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)</script></blockquote>
-<p>We begin with an important property of Huffman Code. Suppose that we have an alphabet $\mathbb{U}$ such that probability associated with each element in $\mathbb{U}$ is $2^{-l}$ for some integer $l$. Then $\exists h$, such that </p>
-<script type="math/tex; mode=display">
-   \mathbf{E}_{X \in \mathbb{U} } [ |h(X)| ] =  n \mathbf{H}(X)</script><p>For example, if $\mathbb{U} = \{0, 1, 2, 3 \}$ and the distribution $p = \{ 0.5, 0.25, 0.125, 0.125 \}$, then we can have the following encoding </p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Encoding.png" alt=""></p>
-<p>The expected coding length is </p>
-<script type="math/tex; mode=display">
-0.5 \cdot 1 + 0.25 \cdot 2 + 2 \cdot 0.125 \cdot 3 = 1.75</script><p>which is exactly the entropy of the random variable. </p>
-<p>In general, if we have a random variable $X$, we can round down its probability to the nearest integer negative power of $2$. The expected code length is given by </p>
-<script type="math/tex; mode=display">
-\sum_{i } p_i \left\lceil \log \frac{1}{p_i} \right\rceil \le \mathbf{H}(p) + 1</script><p>Intuitively, the $\left\lceil \log \frac{1}{p_i} \right\rceil$ has enough slot to accommodate all elements with probabilities $p_i$’s. </p>
-<p>In particular, we view $\{0, 1\}^n$ as a large alphabet $\mathbf{\Sigma }$. The alphabet has entropy $n \cdot \mathbf{H}(p)$. We can have a encoding such that the expected output length is at most $n \cdot \mathbf{H}(p) + 1$. For large enough $n$, this is at most $(1 + \delta) n \cdot \mathbf{H}(p)$. </p>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] <em>M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</em></p>
+<h3 id="reference">Reference</h3>
+<p>[1] J. Matoušek and J. Nešetřil, Invitation to discrete mathematics, 2nd ed. Oxford ; New York: Oxford University Press, 2009.</p>
 
       
     </div>
@@ -654,7 +646,7 @@ k \ge (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)</script><p>Further, since</p>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -720,7 +712,7 @@ k \ge (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)</script><p>Further, since</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

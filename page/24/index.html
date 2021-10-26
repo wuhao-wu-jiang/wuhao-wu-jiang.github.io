@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/01/Ball%20in%20Bins/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/23/Total-Law-of-Variance/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/04/01/Ball%20in%20Bins/" class="post-title-link" itemprop="url">Ball and Bins</a>
+            <a href="/2020/05/23/Total-Law-of-Variance/" class="post-title-link" itemprop="url">Total Law of Variance</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-04-01 10:24:00" itemprop="dateCreated datePublished" datetime="2020-04-01T10:24:00+11:00">2020-04-01</time>
+              <time title="Created: 2020-05-23 21:16:25" itemprop="dateCreated datePublished" datetime="2020-05-23T21:16:25+10:00">2020-05-23</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-25 16:13:42" itemprop="dateModified" datetime="2021-07-25T16:13:42+10:00">2021-07-25</time>
+                <time title="Modified: 2021-02-07 11:59:22" itemprop="dateModified" datetime="2021-02-07T11:59:22+11:00">2021-02-07</time>
               </span>
 
           
@@ -191,100 +191,160 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Suppose we would like to throw <span class="math inline">\(n\)</span> balls into <span class="math inline">\(n\)</span> bins uniformly at random. We claim that the bin with maximum load has <span class="math inline">\(\Theta( \frac{\ln n}{\ln \ln n})\)</span> ball with high probability.</p>
-<h1 id="upper-bound">Upper Bound</h1>
-<p>The probability that a particular bin receives at least <span class="math inline">\(k\)</span> balls is given by <span class="math display">\[
-    \Pr[ \exists k \text{ balls in the bin} ] 
-        \le \binom{n}{k}\frac{1}{n^k} 
-        \le \frac{1}{k!} 
-        \le \frac{  e^k }{ k^k},
-\]</span></p>
-<p>where the first inequality follows from union bound, and the last inequality comes from <span class="math inline">\(e^{ k } \ge \frac{k^k}{k!}\)</span>, as for <span class="math inline">\(\forall x \ge 0\)</span>, <span class="math display">\[
-    e^x = 1 + x + \frac{x^2}{2!} + ...\ge \frac{x^k}{ k! }. 
-\]</span></p>
-<p>We want to find a <span class="math inline">\(k\)</span>, such that <span class="math display">\[
-    \left( \frac{e}{ k} \right)^k = \frac{1}{n^2}.
-\]</span></p>
-<p>Taking <span class="math inline">\(\ln\)</span> of both sides, <span class="math display">\[
-    \begin{aligned}
-        &amp;k \ln k - k = 2 \ln n \\
-        \implies &amp;k \ln k = \Theta( \ln n) \\
-        \implies &amp;\ln k = \Theta( \ln \ln n). 
-    \end{aligned}
-\]</span></p>
-<p>(By using asymptotically notations, the relationship only holds for reasonably large enough <span class="math inline">\(k\)</span> and <span class="math inline">\(n\)</span>.)</p>
-<p>Substituting <span class="math inline">\(\ln k = \Theta( \ln \ln n)\)</span> into <span class="math inline">\(k \ln k = \Theta( \ln n)\)</span>, we get <span class="math display">\[
-    k  = \Theta\left( \frac{\ln n}{\ln \ln n} \right).
-\]</span></p>
-<p>Finally, by union bound over the number of possible bins, the probability that there is a bin which receives <span class="math inline">\(\ge k\)</span> ball is bounded by <span class="math inline">\(1 / n\)</span>.</p>
-<h1 id="lower-bound">Lower Bound</h1>
-<p>The probability that a bin gets exactly <span class="math inline">\(k\)</span> balls is given by (for <span class="math inline">\(k \ge 1\)</span>)</p>
-<p><span class="math display">\[
-\begin{aligned}    
-    \binom{n}{k}\frac{1}{n^k} \left( 1 - \frac{1}{n} \right)^{n - k} 
-        &amp;\ge \frac{n^k}{k^k} \cdot \frac{1}{n^k} \cdot \left( \frac{ n - 1}{n} \right)^{n - 1} \\
-        &amp;\ge \frac{n^k}{k^k} \cdot \frac{1}{n^k} \cdot \frac{1}{ \left(  1 + \frac{1}{n - 1} \right)^{n - 1} }  \\
-        &amp;\ge \frac{1}{k^k} \frac{1}{e}. 
+          <p>Let <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> be random variables. Then the conditional expectation <span class="math display">\[
+ \mathbb{E} [Y \mid X]
+\]</span> is a random variable that depends on <span class="math inline">\(X\)</span>. Correspondingly we define its variance as <span class="math display">\[
+ \mathbb{Var} [ \mathbb{E} [Y \mid X]] =  \mathbb{E} \left[ \left(  \mathbb{E} [Y \mid X] \right)^2 \right] - ( \mathbb{E} \left[  \mathbb{E} [Y \mid X] \right] )^2
+\]</span> The <strong><em>Law of Total Variance</em></strong> states that <span class="math display">\[
+\begin{aligned}
+ \mathbb{Var} [Y] 
+&amp;=  \mathbb{E} [Y^2] - \left( \mathbb{E} [Y] \right)^2  \\
+&amp;=  \mathbb{E} [ \mathbb{E} [Y^2 \mid X]] -  \mathbb{E} \left[ \left(  \mathbb{E} [Y \mid X] \right)^2 \right] +  \mathbb{E} \left[ \left(  \mathbb{E} [Y \mid X] \right)^2 \right] - \left( \mathbb{E} \left[  \mathbb{E} [Y \mid X] \right] \right)^2 \\
+&amp;=  \mathbb{E} \left[ \mathbb{E} [Y^2 \mid X] - \left(  \mathbb{E} [Y \mid X] \right)^2 \right] +  \mathbb{Var} [  \mathbb{E} [Y \mid X] ] \\
+&amp;=  \mathbb{E} \left[ \mathbb{Var} [Y \mid X] \right]  +  \mathbb{Var} [  \mathbb{E} [Y \mid X] ]
 \end{aligned}
-\]</span></p>
-<p>The first inequality follows from that <span class="math display">\[
-    \frac{n (n - 1) \ldots (n - k + 1) }{k (k - 1) \ldots  1} \ge \frac{n^k}{k^k},
-\]</span></p>
-<p>and the last inequality from that <span class="math inline">\(1 + x \le e^x\)</span> for <span class="math inline">\(x \in \mathbb{R}\)</span>.</p>
-<p>If we set <span class="math inline">\(k = \frac{1}{3} \frac{ \ln n }{ \ln \ln n }\)</span>, then <span class="math display">\[
-    \begin{aligned}
-        &amp; k^k \le ( \ln n)^k = n^{1/3} \\
-        \implies 
-        &amp; \frac{1}{k^k} \frac{1}{e} \ge e^{ - 1} n^{-1 / 3}.
-    \end{aligned}
-\]</span></p>
-<p>This probability is rather smaller. At this point it seems that a single bin is unlikely to success. But by linearity of expectation, the expected number of bins with <span class="math inline">\(k\)</span> balls is given by <span class="math inline">\(e^{ - 1} n^{ 2/ 3}\)</span>. Define the indicator variables <span class="math inline">\(X_i\)</span> for the event that the <span class="math inline">\(i\)</span>-th bin receives exactly <span class="math inline">\(k\)</span> balls, and let <span class="math inline">\(X = \sum X_i\)</span>. Then</p>
+\]</span> <span class="math inline">\(\blacksquare\)</span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/05/Cycle-Core-Connection-Game/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/05/Cycle-Core-Connection-Game/" class="post-title-link" itemprop="url">Cycle-Core Connection Game</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-05-05 10:56:51" itemprop="dateCreated datePublished" datetime="2020-05-05T10:56:51+10:00">2020-05-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-01-30 14:33:36" itemprop="dateModified" datetime="2021-01-30T14:33:36+11:00">2021-01-30</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Eisenbrand et al [1] proposed an interesting technique called cycle connection game. In the setting, there is a set of <span class="math inline">\(n\)</span> core points connected by an undirected cycle. Each core point is associated with a client. There is a pair of opposite directed edges between each core point and its associated client. Each edge has a weight. We denote <span class="math inline">\(G\)</span> be the resulting graph.</p>
+<p>An example is shown as follows:</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/CycleCoreConnectionGame.png" /></p>
+<p>Given an instance, we would like to sample a set of clients randomly (we call the sampled clients the "marked" ones). Then each client sends a unit capacity flow to its nearest marked client (could be itself). The cost of each flow is the sum of edges weights it travels. We would like to bound the expected cost of sending the flows.</p>
+<p>The selection process requires a probability <span class="math inline">\(p\)</span> as input and consists of two steps:</p>
 <ol type="1">
-<li><span class="math inline">\(\mathbb{E}[X_i] = \Pr[X_i = 1] \ge e^{-1} n^{ - 1 / 3}\)</span>.</li>
-<li><span class="math inline">\(\mathbb{E}[X] = \sum \mathbb{E}[X_i] \ge e^{ - 1} n^{ 2/ 3}\)</span>.</li>
+<li>Pick a client uniformly at random. This step ensures that at least one client is selected.</li>
+<li>For the rest clients, pick each of them independently with some probability <span class="math inline">\(p\)</span>.</li>
 </ol>
-<p>As in expectation there are <span class="math inline">\(e^{-1} n^{2/ 3}\)</span> such bins, it seems that we are likely to find one. To formalize the intuition, we need to make sure that <span class="math inline">\(X\)</span> does not deviate from its expectation much. To see why this might cause a problem, consider the random variable <span class="math inline">\(Y\)</span> such that <span class="math display">\[
-\begin{aligned}
-    &amp;\Pr[Y = e^{-1} n^{ 5 / 3} ] = \frac{1}{n}, \\ 
-    &amp;\Pr[Y = 0 ] = 1 - \frac{1}{n}. \\ 
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(Y\)</span> has expectation <span class="math inline">\(\mathbb{E}[Y] = e^{ - 1} n^{ 2 / 3}\)</span>, but is very likely to be <span class="math inline">\(0\)</span>. The problem with <span class="math inline">\(Y\)</span> is that it has large variance.</p>
-<p>We investigate the variance of <span class="math inline">\(X\)</span>: <span class="math display">\[
-\begin{aligned}
-\mathbb{Var}[X] 
-    &amp;= \sum_i \mathbb{Var}[X_i] + \sum_{i \neq j} \mathbb{Cor}(X_i, X_j) \\
-    &amp;\le    \sum_i \mathbb{Var}[X_i] 
-    \le    \sum_i \mathbb{E}[X_i^2] 
-    =      \sum_i \mathbb{E}[X_i] \\
-    &amp;\le    n.
-\end{aligned}
-\]</span></p>
-<p>The first inequality follows from that <span class="math display">\[
-    \mathbb{Cor}(X_i, X_j) &lt; 0,\, \forall i \neq j.
-\]</span></p>
-<p>Intuitively, that bin <span class="math inline">\(i\)</span> obtains ball makes it more difficult for bin <span class="math inline">\(j\)</span> to obtain ball.</p>
-<p>Finally, by Chebyshev Inequality, we have <span class="math display">\[
-    \Pr[ |X - \mathbb{E}[X]| \ge \mathbb{E}[X] ] \le \frac{ \mathbb{Var}[X] }{ \mathbb{E}[X]^2} \le \frac{n}{ e^{-2} n^{4  / 3}} = \frac{e^2}{n^ {1 / 3} }.
-\]</span></p>
+<p>To analyze the expected cost, we divide the edges into three categories:</p>
+<ol type="1">
+<li>Directed edges from the clients to the core points, denoted as <span class="math inline">\(\mathcal{E}_{in}\)</span>;</li>
+<li>Directed edges from the core points to the clients, denoted as <span class="math inline">\(\mathcal{E}_{out}\)</span>;</li>
+<li>Edges on the cycle, denoted as <span class="math inline">\(\mathcal{C}\)</span>.</li>
+</ol>
+<p>The following theorem holds:</p>
 <blockquote>
-<p><strong>Fact.</strong> For <span class="math inline">\(i \neq j\)</span>, <span class="math inline">\(\mathbb{Cor}(X_i, X_j) &lt; 0\)</span></p>
+<p><em>Theorem.</em> The expected cost is bounded by <span class="math display">\[
+\sum_{e \in \mathcal{E}_{in} \cup \mathcal{E}_{out} } w_e + \frac{1}{2p} \sum_{e \in \mathcal{C} } w_e
+\]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \mathbb{Cor}(X_i, X_j) 
-            &amp;= \mathbb{E} [ X_i X_j ] - \mathbb{E} [X_i] \cdot \mathbb{E} [X_j] \\
-            &amp;= \Pr[X_i = 1, X_j = 1] - \mathbb{E} [X_i] \cdot \mathbb{E} [X_j] \\
-            &amp;= \binom{n}{k} \binom{n - k}{k} \frac{1}{n^k} \frac{1}{n^k} \left( 1 - \frac{2}{n} \right)^{n - k} - \mathbb{E} [X_i] \cdot \mathbb{E} [X_j] \\
-            &amp;&lt; \binom{n}{k} \binom{n}{k} \frac{1}{n^k} \frac{1}{n^k} \left( 1 - \frac{1}{n} \right)^{n - k} - \mathbb{E} [X_i] \cdot \mathbb{E} [X_j] \\
-            &amp;= \mathbb{E} [X_i] \cdot \mathbb{E} [X_j] - \mathbb{E} [X_i] \cdot \mathbb{E} [X_j] \\
-            &amp;= 0.
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
+<p><strong><em>Proof.</em></strong><br />
+For each edge <span class="math inline">\(e\)</span>, define a random variable <span class="math inline">\(X_e\)</span> to be the flow value of <span class="math inline">\(e\)</span>. For <span class="math inline">\(e \in \mathcal{E}_{in}\)</span>, it holds that <span class="math inline">\(X_e \in \{0, 1\}\)</span>. However, for <span class="math inline">\(e \in \mathcal{E}_{out} \cup \mathcal{C}\)</span>, it is possible that <span class="math inline">\(X_e &gt; 1\)</span>. By linearity of expectation, <span class="math display">\[
+    \mathbb{E} \left[ \sum_{e \in \mathcal{E}_{in} \cup \mathcal{E}_{out} } w_e \cdot X_e + \sum_{e \in \mathcal{C} } w_e \cdot X_e \right] = \sum_{e \in \mathcal{E}_{in} \cup \mathcal{E}_{out} } w_e \cdot \mathbb{E} \left[  X_e \right]  + \sum_{e \in \mathcal{C} } w_e \cdot \mathbb{E} \left[  \cdot X_e \right].
+\]</span></p>
 <ol type="1">
-<li><p><em>Sanjeev Arora, Cos 521: Advanced Algorithm Design, Lecture 1: Course Intro and Hashing</em></p></li>
-<li><p><em>Sariel Har-Peled, Chapter 4, The Occupancy and Coupon Collector problems.</em></p></li>
+<li><p>For <span class="math inline">\(e \in \mathcal{E}_{in}\)</span>, there is a unit flow on <span class="math inline">\(e\)</span> if only the associated client is not sampled. This happens with probability <span class="math inline">\((1 - \frac{1}{n})(1 - p)\)</span>, where <span class="math inline">\(n\)</span> is the number of clients. Therefore, <span class="math inline">\(\mathbb{E} [X_e \cdot w_e] = (1 - \frac{1}{n})(1 - p) \cdot w_e\)</span> and <span class="math display">\[
+     \mathbb{E} \left[ \sum_{e \in \mathcal{E}_{in} } X_e \cdot w_e \right] = (1 - \frac{1}{n})(1 - p) \cdot \sum_{ e \in \mathcal{E}_{in} } w_e.
+\]</span></p></li>
+<li><p>For <span class="math inline">\(e \in \mathcal{E}_{out}\)</span>, the analysis is a little tricky. For each particular sample instance, it holds that <span class="math inline">\(\sum_{e \in \mathcal{E}_{out}} X_e = \sum_{e \in \mathcal{E}_{in}} X_e\)</span>, by flow conservation. Therefore, <span class="math display">\[
+     \mathbb{E} \left[  \sum_{e \in \mathcal{E}_{out}} X_e \right] = \mathbb{E} \left[ \sum_{e \in \mathcal{E}_{in}} X_e \right] = (1 - \frac{1}{n})(1 - p) n.
+\]</span> By symmetry, <span class="math inline">\(\{ X_e \}_{ e \in \mathcal{E}_{out} }\)</span> are identical distributed random variables. Therefore <span class="math inline">\(\mathbb{E} [X_e] = (1 - \frac{1}{n})(1 - p)\)</span>. It concludes that <span class="math display">\[
+     \mathbb{E} \left[ \sum_{e \in \mathcal{E}_{out} } X_e \cdot w_e \right] = (1 - \frac{1}{n})(1 - p) \cdot \sum_{ e \in \mathcal{E}_{out} } w_e.
+\]</span></p></li>
+<li><p>For <span class="math inline">\(e \in \mathcal{C}\)</span>, the analysis of <span class="math inline">\(\mathbb{E} [X_e]\)</span> is the hardest part. We look at the suboptimal flow routing scheme such that each un-marked client sends a unit flow to a nearest marked client, with respect to unit cycle edge weight. Let <span class="math inline">\(Y_e\)</span> be the number of flows on edge <span class="math inline">\(e\)</span>. Clearly, <span class="math display">\[
+     \mathbb{E} \left[ \sum_{e \in \mathcal{C} } X_e \cdot w_e \right] \le \mathbb{E} \left[ \sum_{e \in \mathcal{C} } Y_e \cdot w_e \right]. 
+ \]</span></p>
+<p>Further, for each client <span class="math inline">\(j\)</span>, let the random variable <span class="math inline">\(Y_j\)</span> be the number of cycle edges travelled by its flow, then <span class="math display">\[
+     \sum_{e \in \mathcal{C} } Y_e = \sum_j Y_j.
+ \]</span></p>
+<p>For a fixed <span class="math inline">\(j\)</span> and some integer <span class="math inline">\(0 \le k \le \lfloor (n - 2) / 2 \rfloor\)</span>, the event <span class="math inline">\(Y_j &gt; k\)</span> happens if and only if <span class="math inline">\(j\)</span> is not marked and none of the first <span class="math inline">\(k\)</span> client neighbors to the left and right of <span class="math inline">\(j\)</span> is marked, the probability of which is given by <span class="math display">\[
+     \Pr[Y_j &gt; k] = \left( 1 - \frac{2k + 1}{n} \right) q^{2k + 1}. 
+ \]</span></p>
+<p>where <span class="math inline">\(q = (1 - p)\)</span>. Now the expectation of <span class="math inline">\(Y_j\)</span> is given by <span class="math display">\[
+ \begin{aligned}
+     \mathbb{E} [Y_j] 
+         &amp;= \sum_{k = 0}^{\lfloor (n - 2) / 2 \rfloor } \left( 1 - \frac{2k + 1}{n} \right) q^{2k + 1} \\
+         &amp;\le e^{ - \frac{ 1 }{n} } q \sum_{k = 0}^{\lfloor (n - 2) / 2 \rfloor } e^{ -  k \frac{ 2 }{n} } q^{k2} \\ 
+         &amp;\le e^{ - \frac{ 1 }{n} } q \sum_{k = 0}^{\lfloor (n - 2) / 2 \rfloor } (e^{ - \frac{ 2 }{n} } q^{2} )^k \\ 
+         &amp;= e^{ - \frac{ 1 }{n} } q \frac{ (1 - (e^{ - \frac{ 2 }{n} } q^{2} )^{\lfloor (n - 2) / 2 \rfloor } ) }{1 -  (e^{ - \frac{ 2 }{n} } q^{2} ) } \\
+         &amp;\le \frac{ e^{ - \frac{ 1 }{n} } q }{ 1 -  (e^{ - \frac{ 2 }{n} } q^{2} ) } \\
+         &amp;\le \frac{1}{ 2 (1 - e^{ - \frac{ 1 }{n} } q) }.
+ \end{aligned}
+ \]</span> The final inequality holds as <span class="math inline">\(2x - 2x^2 \le 1 - x^2\)</span>. Replacing <span class="math inline">\(q\)</span> with <span class="math inline">\(1 - p\)</span>, we have <span class="math display">\[
+     \mathbb{E} [Y_j] \le  \frac{1}{ 2 (1 - e^{ - \frac{ 1 }{n} } (1 - p)) } \le  \frac{1}{ 2 (1 - e^{ - \frac{ 1 }{n} }  + e^{ - \frac{ 1 }{n} } p) }  \le \frac{1}{2p}.
+ \]</span></p>
+<p>Remark: a more coarse calculation which leads to the same result would be <span class="math display">\[
+     \mathbb{E} [Y_j] \le \sum_{k = 0}^\infty (1 - p)^{2k + 1} \le \frac{1 - p}{1 - (1 - p)^2 } \le \frac{1}{2p}.
+ \]</span></p>
+<p>By symmetry, the <span class="math inline">\(Y_j\)</span>'s are identical distributed random variables. So are the variable <span class="math inline">\(Y_e\)</span>'s for <span class="math inline">\(e \in \mathcal{C}\)</span>. It follows <span class="math display">\[
+ \begin{aligned}
+     \mathbb{E} [Y_e] 
+         = \mathbb{E} [Y_j] 
+         &amp;\le \frac{1}{2p}. 
+ \end{aligned}
+ \]</span> and <span class="math display">\[
+ \begin{aligned}
+     \mathbb{E} \left[ \sum_{e \in \mathcal{C}} Y_e \cdot w_e \right]  
+         &amp;\le \frac{1}{2p} \sum_{e \in \mathcal{C}} w_e.
+ \end{aligned}
+ \]</span></p></li>
+</ol>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong>Reference:</strong></p>
+<ol type="1">
+<li><p>Eisenbrand, Friedrich, Fabrizio Grandoni, Thomas Rothvoß, and Guido Schäfer. "Approximating connected facility location problems via random facility sampling and core detouring." In Proceeding of Nineteenth annual ACM-SIAM Symposium (SODA'08), no. CONF, pp. 1174-1183. 2008.</p></li>
+<li><p>Eisenbrand, F., Grandoni, F., Rothvoß, T., Schäfer, G., 2010. Connected facility location via random facility sampling and core detouring. Journal of Computer and System Sciences 76, 709–726.</p></li>
 </ol>
 
       
@@ -305,7 +365,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/31/Sampling-With-Or-Without-Replacement/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/21/Linear-Transformation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -319,108 +379,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/03/31/Sampling-With-Or-Without-Replacement/" class="post-title-link" itemprop="url">Sampling With Or Without Replacement</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-31 22:58:36 / Modified: 23:59:13" itemprop="dateCreated datePublished" datetime="2020-03-31T22:58:36+11:00">2020-03-31</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Suppose that there are <span class="math inline">\(a\)</span> blue balls and <span class="math inline">\(b\)</span> red balls in a box and we would like to sample <span class="math inline">\(k\)</span> balls from them. We can sample the balls with replacement such that after picking each ball we put it back into the box, or we can do it without replacement.</p>
-<p>For convenience of discussion, denote <span class="math inline">\(n = a + b\)</span>, <span class="math inline">\(p = \frac{a}{n}\)</span> and <span class="math inline">\(q = \frac{b}{n}\)</span>. Define <span class="math inline">\(X_i\)</span> (<span class="math inline">\(i \in [k]\)</span>) the indicator random variable of whether the <span class="math inline">\(i\)</span>-th selected ball is blue. Let <span class="math display">\[
-X = \sum X_i
-\]</span></p>
-<p>Then we claim that <span class="math display">\[
-E[X] = \sum_{i \in [k]} E[X_i] = kp
-\]</span></p>
-<p>The first equality holds by linearity of expectation. The second equality states that in expectation, <span class="math inline">\(p\)</span> fraction of the selected balls are blue.</p>
-<p>The claim is trivial when we sample with replacement, as <span class="math inline">\(\Pr[X_i = 1] = p\)</span>. To prove that the probability applies for the case of sampling without replacement requires a little more effort, as shown by the following</p>
-<ol type="1">
-<li>There are in total <span class="math inline">\(\begin{pmatrix} n \\ k\end{pmatrix}\)</span> possible combinations of choosing <span class="math inline">\(k\)</span> balls out of <span class="math inline">\(n\)</span>.</li>
-<li>Among them there are <span class="math inline">\(\begin{pmatrix} a \\ 1 \end{pmatrix} \cdot \begin{pmatrix} n - 1 \\ k - 1 \end{pmatrix}\)</span> combinations such that the <span class="math inline">\(i\)</span>-th ball is blue.</li>
-<li>Therefore, <span class="math inline">\(\Pr[X_i = 1] = \frac{ \begin{pmatrix} a \\ 1 \end{pmatrix} \cdot \begin{pmatrix} n - 1 \\ k - 1 \end{pmatrix} }{ \begin{pmatrix} n \\ k\end{pmatrix} } = \frac{a}{n} = p\)</span>.</li>
-</ol>
-<p>However, the two sampling scheme have different variance.</p>
-<h5 id="variance-of-sampling-with-replacement">Variance of Sampling With Replacement</h5>
-<p>By independence of <span class="math inline">\(X_i\)</span> <span class="math display">\[
-Var[X] \doteq \sigma^2 = \sum_{i \in [k]} Var[X_i] = k p q
-\]</span></p>
-<h5 id="variance-of-sampling-without-replacement">Variance of Sampling Without Replacement</h5>
-<p>In this case, the <span class="math inline">\(X_i\)</span>'s are not independent. <span class="math display">\[
-\begin{aligned}
-       Var[X]  
-        &amp;= E \left[ X^2 \right] - \left( E[X] \right)^2 \\
-        &amp;= \sum_{i \in [k]} E[X_i^2] + \sum_{i, j \in [k]} E[X_i X_j] - (kp)^2 \\
-        &amp;=  kp + k(k - 1) \frac{ \begin{pmatrix} a \\ 2 \end{pmatrix} \cdot \begin{pmatrix} n  - 2 \\ k - 2 \end{pmatrix} }{ \begin{pmatrix} n \\ k\end{pmatrix} } - (kp)^2 \\
-        &amp;=  kp + k(k - 1) \frac{ a(a-1) }{ n(n - 1) } - (kp)^2 \\
-        &amp;=  kp + kp \frac{ (k - 1) (a-1) }{ (n - 1) } - (kp)^2 \\
-        &amp;=  kp ( 1 + \frac{ (k - 1) (a-1) }{ (n - 1) } - k \frac{a}{ n } ) \\
-        &amp;=  kp \frac{n^2 - n + ka n - kn - an + n - kan + ka }{ n (n - 1) } \\
-        &amp;=  kp \frac{n^2  - kn - an  + ka }{ n(n - 1) } \\
-        &amp;=  kp \frac{(n - a) (n - k)}{ n (n - 1)} \\
-        &amp;=  kpq \frac{n - k}{n - 1} \\
-        &amp;= \sigma^2 \frac{n - k}{n - 1}
-\end{aligned}
-\]</span></p>
-<p>We have shown that sampling without replacement has smaller variance than sampling with replacement. Moreover, if <span class="math inline">\(n \succ k\)</span>, then <span class="math inline">\(\frac{n - k}{n - 1} \approx 1\)</span> and the two sampling scheme have almost the same variance. We can bound the concentration behavior of <span class="math inline">\(X\)</span> by Chebyshev's inequality: for any <span class="math inline">\(c &gt; 0\)</span>, <span class="math display">\[
-\Pr[ |X - E[X] | \ge c \cdot \sigma] \le \frac{Var[X] }{c^2 \sigma^2} = \frac{1}{c^2}
-\]</span></p>
-<p>The <span class="math inline">\(3\)</span>-sigma rule says only <span class="math inline">\(X\)</span> deviates more than <span class="math inline">\(3\sigma\)</span> from its expectation with probability at most <span class="math inline">\(11.11\%\)</span> <span class="math display">\[
-\Pr[ |X - E[X] | \ge 3 \cdot \sigma] \le \frac{Var[X] }{c^2 \sigma^2} = \frac{1}{9} \approx 0.1111
-\]</span></p>
-<p>It is also interesting to observe that the variance most related to the sample size <span class="math inline">\(k\)</span> and probabilities <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> , but not <span class="math inline">\(n\)</span>!</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/30/LSH/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/30/LSH/" class="post-title-link" itemprop="url">LSH</a>
+            <a href="/2020/04/21/Linear-Transformation/" class="post-title-link" itemprop="url">Linear Transformation</a>
         </h2>
 
         <div class="post-meta">
@@ -430,14 +389,14 @@ Var[X] \doteq \sigma^2 = \sum_{i \in [k]} Var[X_i] = k p q
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-03-30 16:14:46" itemprop="dateCreated datePublished" datetime="2020-03-30T16:14:46+11:00">2020-03-30</time>
+              <time title="Created: 2020-04-21 22:13:49" itemprop="dateCreated datePublished" datetime="2020-04-21T22:13:49+10:00">2020-04-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-03 22:17:23" itemprop="dateModified" datetime="2020-05-03T22:17:23+10:00">2020-05-03</time>
+                <time title="Modified: 2020-05-03 22:14:46" itemprop="dateModified" datetime="2020-05-03T22:14:46+10:00">2020-05-03</time>
               </span>
 
           
@@ -451,155 +410,34 @@ Var[X] \doteq \sigma^2 = \sum_{i \in [k]} Var[X_i] = k p q
     <div class="post-body" itemprop="articleBody">
 
       
-          <p><strong><em>Given a set <span class="math inline">\(S \subset U\)</span> of <span class="math inline">\(n\)</span> points, a metric <span class="math inline">\(d\)</span> defined on <span class="math inline">\(U\)</span>, and a query point <span class="math inline">\(v\)</span>, the nearest neighbor search (NNS) problem finds <span class="math inline">\(v\)</span>'s nearest point in <span class="math inline">\(S\)</span>:</em></strong> <span class="math display">\[
-u = \arg\min_{s \in S} d(v, s)
-\]</span> Potential applications include web search and clustering.</p>
-<p>If <span class="math inline">\(U\)</span> is a Euclidean space <span class="math inline">\(\mathcal{R}^d\)</span> for some <span class="math inline">\(d\)</span>, the hardness of NNS depends largely on the value of <span class="math inline">\(d\)</span>. Suppose <span class="math inline">\(d = 1\)</span>, then we can pre-process the points by building a balanced binary search tree on <span class="math inline">\(S\)</span>. Finding the nearest point to <span class="math inline">\(v \notin S\)</span> reduces to searching for its predecessor and successor, which takes <span class="math inline">\(O(\log n)\)</span> time. For <span class="math inline">\(d = 2\)</span>, we can construct a Voronoi diagram.</p>
-<p>For higher dimensions <span class="math inline">\(d\)</span> it is not easy to extend the index structures. A naïve search loops over all points and takes <span class="math inline">\(O(nd)\)</span> time. It is natural to ask whether we can do better. If we are willing to sacrifice accuracy for efficiency, this is possible. Instead of finding the exact nearest neighbor, we relax our goal to finding an approximate nearest neighbor whose distance is within <span class="math inline">\(1 + \epsilon\)</span> of the minimum one.</p>
-<p>One possible solution is Johnson–Lindenstrauss decomposition. We can generate a matrix <span class="math inline">\(A \in R^{ O( \frac{ \log n }{ \epsilon^2 } )\times d}\)</span> and multiply it with every element in <span class="math inline">\(S\)</span>. The mapping <span class="math inline">\(u \rightarrow Au\)</span> preserves pair-wise distance up to a relative error of <span class="math inline">\(\epsilon\)</span>. The pre-processing takes <span class="math inline">\(O( \frac{n d \log n}{\epsilon^2} )\)</span> time. To answer an query, we map <span class="math inline">\(v\)</span> to <span class="math inline">\(Av\)</span>, which takes <span class="math inline">\(O(\frac{ d\log n }{ \epsilon^2 } )\)</span> time. Then we perform a loop over all elements of <span class="math inline">\(\{ Au : u \in S\}\)</span>, which takes <span class="math inline">\(O(\frac{ n \log n }{ \epsilon^2 } )\)</span> time. Therefore, the total time complexity is <span class="math inline">\(O(\frac{ (n + d) \log n }{ \epsilon^2 } )\)</span>.</p>
-<h3 id="hashing">Hashing</h3>
-<p>[1] solves the problem by hashing. We call the pair of points that are close to each other the <em>similar pair</em> and the pair that are far from each other the <em>dissimilar pair</em>. Intuitively, we want similar pairs to be hashed to the same bucket and that dissimilar pairs to be hashed to different buckets.</p>
-<p>Instead of finding the <span class="math inline">\((1 + \epsilon)\)</span> approximate nearest neighbor directly, [1] further reduces it to the <span class="math inline">\((c, r)\)</span>-approximate neighbor search (ANNS<span class="math inline">\((c, r)\)</span>) problem, which is defined as follows:</p>
-<p><strong><em>Given a query point <span class="math inline">\(v\)</span>, if <span class="math inline">\(\exists s \in S\)</span>, then return a point <span class="math inline">\(u\)</span>, such that</em></strong> <span class="math display">\[
-d(v, u) \le c \cdot r
-\]</span></p>
-<p>The reduction from <span class="math inline">\(1 + \epsilon\)</span> to ANNS(<span class="math inline">\(c, r\)</span>) is not easy. Here we show one that returns the <span class="math inline">\((1 + \epsilon)^2\)</span> approximate nearest neighbor. Let <span class="math inline">\(d_{\max} = \max_{s, s&#39;} d(s, s&#39;)\)</span> and <span class="math inline">\(d_{\min} = \min_{s, s&#39;} d(s, s&#39;)\)</span>. We build a set of structures that answers ANNS(<span class="math inline">\(1 + \epsilon\)</span>, r) queries for the values of <span class="math inline">\(r\)</span>: <span class="math display">\[
-d_{\min}, \ d_{\min} (1 + \epsilon ), \ d_{min} (1 + \epsilon)^2,\ ...,\ d_{\max}
-\]</span></p>
-<p>Then given the query point <span class="math inline">\(v\)</span>, we do a binary search to find the smallest <span class="math inline">\(r\)</span> that returns a point. This imposes an additional cost of <span class="math inline">\(\ln {\ln \frac{d_{\max} }{d_{\min} } \over \ln (1 + \epsilon) }\)</span>.</p>
-<table>
-<colgroup>
-<col style="width: 100%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><span class="math inline">\(\text{NNS} \longrightarrow (1+\epsilon) \text{NNS} \longrightarrow \text{ANNS}(c, r) \longrightarrow (r, cr, p_1, p_2)\text{-LSH} \longrightarrow \text{Boosting Probability}\)</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">The Problem Reduction Chain</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"></td>
-</tr>
-</tbody>
-</table>
-<h3 id="r-cr-p_1-p_2-locality-sensitive-hashing-family"><span class="math inline">\((r, cr, p_1, p_2)\)</span>-Locality Sensitive Hashing Family</h3>
-<p>Now we show how to solve the ANNS<span class="math inline">\((c, r)\)</span> problem with hashing. Designing a perfecting hashing that solves the problem directly is not easy. It is desirable to have some hashing which successes with some probability and then boost its probability systematically. To achieve this, we introduce the idea of <span class="math inline">\((r, cr, p_1, p_2)\)</span>-locality sensitive hashing family.</p>
-<p><strong><em>Given a set of point <span class="math inline">\(V\)</span>, a metric <span class="math inline">\(d(\cdot , \cdot)\)</span> defined on <span class="math inline">\(V\)</span>, a collection of hash function <span class="math inline">\(\mathcal{H} = \{ h: V \rightarrow Z\}\)</span> is called <span class="math inline">\((r, cr, p_1, p_2)\)</span> locality sensitive if for any <span class="math inline">\(v, u \in V\)</span> and an <span class="math inline">\(h\)</span> sampled uniformly from <span class="math inline">\(\mathcal{H}\)</span>, it holds that</em></strong></p>
+          <p>In linear algebra, we study vectors in some space <span class="math inline">\(\mathcal{R}^n\)</span>. Linear transformation is defined on <span class="math inline">\(\mathcal{R}^n\)</span>. For <span class="math inline">\(v, u \in \mathcal{R}^n\)</span>, and <span class="math inline">\(c \in \mathcal{R}\)</span>, a linear transformation <span class="math inline">\(T : \mathcal{R}^n \rightarrow \mathcal{R}^n\)</span> satisfies</p>
 <ol type="1">
-<li>If <span class="math inline">\(d(v, u) &lt; r\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge p_1\)</span>.</li>
-<li>If <span class="math inline">\(d(v, u) \ge cr\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le p_2\)</span></li>
+<li><span class="math inline">\(T(v + u) = T(v) + T(u)\)</span></li>
+<li><span class="math inline">\(T(cv) = c T(v)\)</span></li>
 </ol>
-<p>where <span class="math inline">\(p_2 &lt; p_1 \le 1\)</span>. Intuitively, pairs near to each other should be more likely to collide. Hence <span class="math inline">\(p_1 = p_2^{\rho}\)</span> for some <span class="math inline">\(\rho = \log p_1 / \log p_2 &lt; 1\)</span>.</p>
-<p>Ideally, we have <span class="math inline">\(p_1 \approx 1\)</span> and <span class="math inline">\(p_2 \approx 0\)</span>. For other cases we can magnify the gap between <span class="math inline">\(p_1\)</span> and <span class="math inline">\(p_2\)</span> and boost <span class="math inline">\(p_1\)</span> to approximate <span class="math inline">\(1\)</span> and <span class="math inline">\(p_2\)</span> to approximate <span class="math inline">\(0\)</span>. The hardness of the boosting highly depends on the value of <span class="math inline">\(c\)</span>.</p>
-<h4 id="example">Example</h4>
-<p>Suppose that <span class="math inline">\(U = \{0, 1\}^d\)</span>, <span class="math inline">\(d(u, v) = u \oplus v = |u - v|_1\)</span> and <span class="math inline">\(\mathcal{H} = \{ h_i (u) = u_i \}_{i \in [d]}\)</span>, where <span class="math inline">\(h_i\)</span> selects the <span class="math inline">\(i\)</span>th bit of <span class="math inline">\(u\)</span>. Picking an <span class="math inline">\(h\)</span> uniformly from <span class="math inline">\(\mathcal{H}\)</span> and applying <span class="math inline">\(h\)</span> to <span class="math inline">\(u\)</span> is equivalent to selecting a bit uniformly from <span class="math inline">\(u\)</span>. Therefore,</p>
+<p>However, the "linear thing" is not limited to vectors. As an illustration, note that a vector <span class="math display">\[
+v = \begin{bmatrix}
+    v_1 \\ v_2 \\ . \\ . \\ . \\ v_n
+\end{bmatrix}
+\]</span></p>
+<p>can be viewed as the image of some function <span class="math inline">\(f : \{1, 2, ..., n \} \rightarrow \mathcal{R}\)</span>, such that <span class="math inline">\(f(i) = v_i\)</span>. It is natural to study the functions <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>, where <span class="math inline">\(\mathbb{I} \subset \mathcal{R}\)</span> is some open interval. For any <span class="math inline">\(x \in \mathbb{I}\)</span>, <span class="math inline">\(f(x)\)</span> gives the value of <span class="math inline">\(x\)</span>. The only difference with vectors is that, it not possible to enumerate all value of <span class="math inline">\(x \in \mathbb{I}\)</span>. Instead, we specify a rule of obtaining the value at <span class="math inline">\(x\)</span>.</p>
+<p>For any two functions <span class="math inline">\(f_1, f_2 : \mathbb{I} \rightarrow \mathcal{R}\)</span>, we can add them together and obtain a new function <span class="math inline">\(f_1 + f_2 : \mathbb{I} \rightarrow \mathcal{R}\)</span>. Addition is closed in the space <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>. Then for <span class="math inline">\(x \in \mathbb{I}\)</span>, <span class="math display">\[
+(f_1 + f_2) (x) = f_1(x) + f_2(x)
+\]</span></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/LinearTransformation/Addition.jpg" /></p>
+<p>which is similar to that adding up coordinates of two vector. We can also define multiplication: for <span class="math inline">\(c \in \mathcal{R}^n\)</span>, <span class="math inline">\(f : \mathbb{I} \rightarrow \mathcal{R}\)</span>, <span class="math inline">\(cf\)</span> is a function in <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span> such that <span class="math display">\[
+(cf)(x) = c f(x)
+\]</span></p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/LinearTransformation/Scale.jpg" /></p>
+<p>Multiplication is closed in the space <span class="math inline">\(\{\mathbb{I} \rightarrow \mathcal{R} \}\)</span>.</p>
+<p><em>Example.</em> The derivative operation <span class="math inline">\(T: \{f: \mathbb{I} \rightarrow \mathcal{R} \wedge \text{differentiable} \} \rightarrow \{\mathbb{I} \rightarrow \mathcal{R} \}\)</span> is linear transformation. It is easy to verify for differentiable functions <span class="math inline">\(f_1, f_2 \in \mathbb{I} \rightarrow \mathcal{R}\)</span>, and <span class="math inline">\(c \in \mathcal{R}\)</span>, we have</p>
 <ol type="1">
-<li>If <span class="math inline">\(d(v, u) &lt; r\)</span> (<span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> has less then <span class="math inline">\(r\)</span> common bits), then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \ge \frac{d - r}{d} = 1 - \frac{r}{d} = p_1\)</span>.</li>
-<li>If <span class="math inline">\(d(v, u) \ge cr\)</span>, then <span class="math inline">\(\Pr_{h \in \mathcal{H} } [h(v) = h(u)] \le \frac{d - cr}{d} = 1 - \frac{cr}{d} = p_2\)</span></li>
+<li><span class="math inline">\((f_1 + f_2)&#39; = f_1&#39; + f_2&#39;\)</span></li>
+<li><span class="math inline">\((c f_1)&#39; = c f_1&#39;\)</span></li>
 </ol>
-<p>Now <span class="math inline">\(p_1 \approx \exp(- r / d)\)</span> and <span class="math inline">\(p_2 \approx \exp(- cr / d)\)</span>. Hence <span class="math inline">\(\rho \approx \frac{1}{c}\)</span>. Indeed it can be proven rigorously that <span class="math display">\[
-\rho = \frac{\ln (1 - \frac{r}{d}) }{ \ln (1 - \frac{cr}{d}) } \le \frac{1}{c}
+<p>What is more, we can extend some other concepts in linear algebra. In linear algebra, "eigenvector" is a vector whose direction does not change under a linear transformation. For derivative operation, the function <span class="math inline">\(e^x\)</span> is un-changed after the transformation: <span class="math display">\[
+(e^x)&#39; = e^x
 \]</span></p>
-<p>as <span class="math inline">\(( 1 - \frac{r}{d})^c \ge 1 - \frac{cr}{d}\)</span>. There are many ways to prove this. Since we are dealing with probability, we give a probabilistic interpretation of this inequality. Suppose that are <span class="math inline">\(c\)</span> independent events each happening with probability <span class="math inline">\(\frac{r}{d}\)</span>. Then the probability that at least one of them happens is given by <span class="math display">\[
-1 - \Pr[\textbf{none of them happens } ] = 1 - (1 - \frac{r}{d})^c
-\]</span></p>
-<p>On the other hand, by union bound, this is upper bounded by <span class="math inline">\(\frac{cr}{d}\)</span>.</p>
-<h3 id="boosting-the-probabilities">Boosting the Probabilities</h3>
-<p>We would like the boost the probability such that <span class="math inline">\(p_1 \approx 1\)</span> and <span class="math inline">\(p_2 \approx 0\)</span>. We follow a two-step approach. First we sample <span class="math inline">\(k\)</span> (to be determined) hash functions independently from <span class="math inline">\(\mathcal{H}\)</span> can concatenate them as a single hash function <span class="math inline">\(g\)</span>: <span class="math display">\[
-g(v) = [h_1(v),  h_2(v), ... ,h_k(v)]
-\]</span></p>
-<p>Here <span class="math inline">\(g\)</span> hash a point <span class="math inline">\(v\)</span> to a <span class="math inline">\(k\)</span> dimensional vector. After this, <span class="math inline">\(g(v) = g(u)\)</span> happens only if <span class="math inline">\(h_i(v) = h_i(u)\)</span> for all <span class="math inline">\(i \in [k]\)</span>. By independence of <span class="math inline">\(h_i\)</span>'s,</p>
-<ol type="1">
-<li><p>If <span class="math inline">\(d(v, u) \ge cr\)</span>, the collision probability of <span class="math inline">\(u\)</span> with <span class="math inline">\(v\)</span> drops to <span class="math inline">\(p_2^k\)</span>: <span class="math display">\[
- \Pr [ g(v) = g(u) ] \le p_2^k
- \]</span></p></li>
-<li><p>On the other hand, if <span class="math inline">\(d(v, u) &lt; r\)</span>, the collision probability also drops to <span class="math inline">\(p_1^k = (p_2^k)^\rho\)</span> <span class="math display">\[
- \Pr [ g(v) = g(u) ] \ge  p_1^k = p_2^{\rho k} = (p_2^{k})^\rho
- \]</span> which is relatively small and not desirable.</p></li>
-</ol>
-<p>We need a second level of boosting to increase the collision probability of similar pairs. Instead of using only one function <span class="math inline">\(g\)</span>, we use a collection of independent copies: <span class="math display">\[
-g_1, g_2, ..., g_l
-\]</span></p>
-<p>where <span class="math inline">\(l\)</span> is the number to be determined. Now,</p>
-<ul>
-<li>If <span class="math inline">\(d(v, u) &lt; r\)</span>, the probability that at least one of the <span class="math inline">\(g_i(u)\)</span> equals to <span class="math inline">\(g_i(v)\)</span> is given by <span class="math display">\[
-  \begin{aligned}
-      \Pr \left[ \exists i \in [l], \ s.t., \ g_i(u) = g_i(v) \right] 
-          &amp;= 1 - (1 - p_1^k)^l  \\
-          &amp;= 1 - (1 - (p_2^k)^\rho)^l \\
-          &amp;\ge 1 - \exp( - (p_2^k)^\rho l )
-  \end{aligned}
-  \]</span></li>
-</ul>
-<p>We can take</p>
-<ol type="1">
-<li><p><span class="math inline">\(p_2^k = \frac{1}{n}\)</span>, i.e., <span class="math inline">\(k = \frac{\log n }{ \log 1 / p_2 }\)</span>.</p></li>
-<li><p><span class="math inline">\(\exp( - (p_2^k)^\rho l ) = \frac{1}{n}\)</span>, i.e., <span class="math inline">\(l = \frac{1}{(p_2^k)^\rho } \ln n = n^\rho \ln n\)</span>.</p></li>
-</ol>
-<p>For a fixed query point <span class="math inline">\(q\)</span> and for any fixed <span class="math inline">\(i \in [l]\)</span>, by linearity of expectation, the expected number of dissimilar collision is given by</p>
-<p><span class="math display">\[
-\begin{aligned}
-    E \left[ |\{ u \in S: d(q, u) \ge cr \wedge g_i(q) = g_i(u)  \}| \right] 
-        &amp;= \sum_{ u \in S : \  d(q, u) \ge cr } \Pr[g_i(v)= g_i(u)] \\
-        &amp;\le n \cdot \frac{1}{n} = 1
-\end{aligned}
-\]</span></p>
-<p>Therefore, there are <span class="math inline">\(l\)</span> of dissimilar collisions over all <span class="math inline">\(i \in [l]\)</span>. This implies an expected overhead of <span class="math inline">\(l\)</span> examinations of dissimilar points. However, by Markov inequality, the number of such points is less than <span class="math inline">\(2l\)</span> with probability at least <span class="math inline">\(1 / 2\)</span>. The time for examination of dissimilar point is <span class="math inline">\(O(ld) = O(d n^\rho \ln n)\)</span>.</p>
-<h3 id="time-and-space">Time and Space</h3>
-<p>Now, given a query point <span class="math inline">\(q\)</span>, computing <span class="math inline">\(g_i(q)\)</span> for a fixed <span class="math inline">\(i\)</span> takes <span class="math inline">\(O(k)\)</span> time. Computing <span class="math inline">\(l\)</span> of them takes <span class="math inline">\(O(kl)\)</span> time. In expectation, there are <span class="math inline">\(l\)</span> dissimilar collision points with <span class="math inline">\(q\)</span>. Checking one collision point takes <span class="math inline">\(O(d)\)</span> time. Therefore, the expected query time is given by (note that we stop upon finding the first ANN of <span class="math inline">\(q\)</span>):</p>
-<p><span class="math display">\[
-\begin{aligned}
-    O(kl + dl) 
-    &amp;= O(\frac{\ln n}{\ln \frac{1}{p_2}} n^\rho \ln n + d n^\rho \ln n) \\
-    &amp;= O(n^{ \rho} \ln^2 n / \ln \frac{1}{p_2} + d n^\rho \ln n) \\
-    &amp;= \tilde{O}( n^\rho )
-\end{aligned}
-\]</span></p>
-<p>As for the space usage, for each point <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span>, we need to compute <span class="math inline">\(g_i(u)\)</span> and store this value (we need to store this, because <span class="math inline">\(g_i(u)\)</span> is self could be a large number and when putting <span class="math inline">\(\{ g_i(u) : u \in S\}\)</span> into a hash table, we need to treat <span class="math inline">\(g_i(u)\)</span> as the key and store it for later collision comparison. But is it possible that when there is a collision, we re-compute this value again to avoid storing it ?). We need to repeat this for <span class="math inline">\(l\)</span> hash functions. Therefore, the space usage is given by <span class="math display">\[
-O(nkl) = O(n^{1 + \rho} \ln^2 n / \ln \frac{1}{p_2})
-\]</span></p>
-<h3 id="another-boosting-scheme">Another Boosting Scheme</h3>
-<p>In last section, we have a scheme that checks <span class="math inline">\(O(n^\rho \ln n)\)</span> dissimilar points in expectation. In this section we achieve it with high probability.</p>
-<ol type="1">
-<li>First, to reduce the collision probability of dis-similar pairs, we concatenate <span class="math inline">\(k\)</span> functions from <span class="math inline">\(\mathcal{H}\)</span>. This gives a <span class="math display">\[
-     (r, cr, p_1^k, p_2^k)
-\]</span> locative sensitive hash function. We determine the value of <span class="math inline">\(k\)</span> later. <!-- We pick $k = \frac{\ln n}{\ln \frac{1}{p_2} }$, such that $p_2^k = 1 / n$. In expectation, at most $1$ dis-similar collision occurs.  --></li>
-<li>Second, to boost the collision probability of similar pairs, we use <span class="math inline">\(l\)</span> concatenated hash functions independently. The probability at least one collision occurs is given by <span class="math display">\[
-     1 - (1 - p_1^k)^l \ge 1 - e^{-p_1^k \cdot l} 
-\]</span> We require this to happen with constant probability <span class="math inline">\(1 - \frac{1}{e}\)</span>, hence we need to set <span class="math inline">\(l = \frac{1}{p_1^k} = (\frac{1}{p_2^k})^\rho\)</span>. <!-- where $l = n^\rho$. The final equality holds since $p_1^k \cdot l = p_2^{k \cdot \rho} \cdot l = n^{-\rho} \cdot l = 1$ --></li>
-<li>Now consider a query point <span class="math inline">\(q\)</span>. We compute <span class="math inline">\(g_1(q), g_2(q), ..., g_l(q)\)</span> and check the points <span class="math inline">\(u\)</span>'s such that <span class="math inline">\(g_i(u) = g_i(q)\)</span> for some <span class="math inline">\(i \in [l]\)</span>. Note that we check at most the first <span class="math inline">\(4 n p_2^k l + 1\)</span> points we found. Why <span class="math inline">\(4 n p_2^k l + 1\)</span>? In expectation, there are <span class="math inline">\(n p_2^k l\)</span> dissimilar collisions. By Markov inequality, the probability of dissimilar collisions is no more than <span class="math inline">\(4l\)</span> is at most <span class="math inline">\(1 / 4\)</span>. By union bound, <span class="math display">\[
- \begin{aligned}
-     &amp;\Pr[\exists \text{ more than } 4l \text{ bad collision } \vee \nexists \text{ good collision }] \\
-     &amp;\le \frac{1}{e} + \frac{1}{4} \\
-     &amp;\le \frac{1}{2.5} + \frac{1}{4} \\
-     &amp;= \frac{5}{16}
- \end{aligned}
- \]</span></li>
-</ol>
-<p>Therefore, the boosting strategy successes with constant probability. Now consider the running time of such boosting strategy. When a query point <span class="math inline">\(q\)</span> comes, we need to compute <span class="math inline">\(g_1(q), g_2(q), ..., g_l(q)\)</span>, which takes time <span class="math inline">\(kl\)</span>. Further, the strategy checks at most <span class="math inline">\(4 n p_2^k l + 1\)</span> points and checking each point takes <span class="math inline">\(O(d)\)</span> time. The overall time used is <span class="math display">\[
-O(kl + (4 n p_2^k l + 1)d)
-\]</span></p>
-<p>To minimize the running time, we need to choose proper value of <span class="math inline">\(k\)</span>, such that <span class="math display">\[
-k = 4np_2^k d \rightarrow \ln k + k \ln \frac{1}{p_2} = \ln (4nd) 
-\]</span></p>
-<p>It suffice to take <span class="math inline">\(k = \frac{\ln 4nd}{ \ln \frac{1}{p_2} }\)</span>. It follows that <span class="math display">\[
-p_2^k = \frac{1}{4nd} \\
-l = \left( \frac{1}{p_2^k} \right)^\rho = (4nd)^\rho 
-\]</span></p>
-<p>and the running time is given by <span class="math display">\[
-O\left( (4nd)^\rho \frac{\ln (4nd)}{\ln \frac{1}{p_2} } \right)
-\]</span></p>
-<p>As <span class="math inline">\(n \succ d\)</span>, this is equivalent to <span class="math display">\[
-O\left( (4nd)^\rho \frac{\ln n}{\ln \frac{1}{p_2} } \right)
-\]</span></p>
-<p>We can repeat the above steps by <span class="math inline">\(\ln n / \ln \frac{16}{5}\)</span> times, to boost the success probability to <span class="math inline">\(1 - \frac{1}{n}\)</span>. The overall running time is given by <span class="math display">\[
-O\left( (4nd)^\rho \frac{\ln^2 n}{\ln \frac{1}{p_2} } \right)
-\]</span></p>
-<h3 id="reference">Reference</h3>
-<ol type="1">
-<li>Indyk, P. and Motwani, R., 1998, May. Approximate nearest neighbors: towards removing the curse of dimensionality. In Proceedings of the thirtieth annual ACM symposium on Theory of computing (pp. 604-613).</li>
-</ol>
 
       
     </div>
@@ -618,7 +456,7 @@ O\left( (4nd)^\rho \frac{\ln^2 n}{\ln \frac{1}{p_2} } \right)
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/23/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><span class="page-number current">24</span><a class="page-number" href="/page/25/">25</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/25/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/23/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><span class="page-number current">24</span><a class="page-number" href="/page/25/">25</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/25/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -684,7 +522,7 @@ O\left( (4nd)^\rho \frac{\ln^2 n}{\ln \frac{1}{p_2} } \right)
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

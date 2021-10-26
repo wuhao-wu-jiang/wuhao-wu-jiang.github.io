@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/30/Weak%20duality,%20Complementary%20Slackness,%20Strong%20Duality/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/27/Primal-Dual-Algorithm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/01/30/Weak%20duality,%20Complementary%20Slackness,%20Strong%20Duality/" class="post-title-link" itemprop="url">Dual Program, Weak Duality, Complementary Slackness, Strong Duality</a>
+            <a href="/2020/02/27/Primal-Dual-Algorithm/" class="post-title-link" itemprop="url">Primal-Dual Algorithm</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-01-30 11:47:54" itemprop="dateCreated datePublished" datetime="2020-01-30T11:47:54+11:00">2020-01-30</time>
+              <time title="Created: 2020-02-27 21:57:12" itemprop="dateCreated datePublished" datetime="2020-02-27T21:57:12+11:00">2020-02-27</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-24 20:49:41" itemprop="dateModified" datetime="2021-07-24T20:49:41+10:00">2021-07-24</time>
+                <time title="Modified: 2020-02-28 11:36:47" itemprop="dateModified" datetime="2020-02-28T11:36:47+11:00">2020-02-28</time>
               </span>
 
           
@@ -191,289 +191,59 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="dual-program-and-weak-duality">Dual Program and Weak Duality</h1>
-<p>Every linear program can be converted into Canonical form <span class="math display">\[
-    \begin{array}{lr}
-        \max &amp; c^T x \\
-        \text{s.t. } &amp; Ax \le b \\
-            &amp;x \ge 0
-    \end{array}
-\]</span></p>
-<p>where <span class="math inline">\(c, x \in \mathbb{R}^n\)</span>, <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> and <span class="math inline">\(b \in \mathbb{R}^m\)</span>.</p>
-<p>Consider a conic combination (<span class="math inline">\(y \in \mathbb{R}^m\)</span> and <span class="math inline">\(y \ge 0\)</span>) of the linear constraints: <span class="math display">\[
-    y^T (Ax) \le y^T b. 
-\]</span></p>
-<p>If <span class="math inline">\(y\)</span> further satisfies the constraint <span class="math display">\[
-    c^T \le y^T A,
-\]</span></p>
-<p>combining with the fact that <span class="math inline">\(x \ge 0\)</span>, we get <span class="math display">\[
-    c^T x \le (y^T A) x = y^T (Ax) \le y^T b. 
-\]</span></p>
-<p>Hence <span class="math inline">\(y^T b\)</span> is an upper bound of the optimal value of the original program. We want the bound to be as tight as possible. This motivates another linear program: <span class="math display">\[
-    \begin{array}{lr}
-        \min            &amp; y^T b \\
-        \text{s.t. }    &amp; y^T A \ge c^T \\
-                        &amp; y \ge 0
-    \end{array}
-\]</span></p>
-<p>We call the original program the <strong>primal</strong> and the derived program its <strong>dual</strong>. The philosophy behind the dual construction is to combine the primal constraints to obtain a bound of its optimal value.</p>
-<blockquote>
-<p><strong>Corollary.</strong> If the primal is unbounded, then the dual is infeasible. If the dual is unbounded, then the primal is infeasible.</p>
-</blockquote>
-<p>In general, the primal may not be given in Canonical form and can be formulated as</p>
-<p><span class="math display">\[
-    \begin{array}{lr}
-        \max &amp; c^T x + \bar c^T \bar x + \hat c^T \hat x \\
-        \text{s.t. } &amp; Ax + \bar A \bar x + \hat A \hat x \le b \\
-        &amp; Bx + \bar B \bar x + \hat B \hat x =  \bar b \\ 
-        &amp; Cx + \bar C \bar x + \hat C \hat x \ge \hat b \\
-        &amp; x \ge 0 \\
-        &amp; \hat x \le 0
-    \end{array}
-\]</span></p>
-<p>Note that the <span class="math inline">\(\bar x\)</span>'s are unconstrained variables. Driven by the same philosophy, we hope to derive an upper bound by using the constraints: <span class="math display">\[
+          <p>Primal: <span class="math display">\[
 \begin{aligned}
-    c^T x + \bar c^T \bar x + \hat c^T \hat x 
-        &amp; \le y^T (Ax + \bar A \bar x + \hat A \hat x) \\
-        &amp; + \bar y^T (Bx + \bar B \bar x + \hat B \hat x) \\
-        &amp; + \hat y^T (Cx + \bar C \bar x + \hat C \hat x) \\
-        &amp;\le y^T b + \bar y^T \bar b + \hat y^T \hat b
+    &amp;\min       &amp;c^T x \\
+    &amp;s.t.       &amp;Ax = b\\
+    &amp;           &amp;x \ge 0
 \end{aligned}
 \]</span></p>
+<p>We assume that <span class="math inline">\(b \ge 0\)</span>. Otherwise we can flip the <span class="math inline">\(i\)</span> constraints <span class="math inline">\(A^T_i x = b_i\)</span> by <span class="math inline">\(- A^T_i x = -b_i\)</span>, where <span class="math inline">\(A^T_i\)</span> is the <span class="math inline">\(i\)</span>-th column of matrix <span class="math inline">\(A^T\)</span>, i.e, the <span class="math inline">\(i\)</span>-th row of matrix <span class="math inline">\(A\)</span>.</p>
+<p>Dual: <span class="math display">\[
+\begin{aligned}
+    &amp;\max       &amp;y^T b \\
+    &amp;s.t.       &amp;y^TA \le c^T \\
+\end{aligned}
+\]</span></p>
+<p>Suppose that we have a feasible solution <span class="math inline">\(y\)</span> for the dual (if <span class="math inline">\(c \ge 0\)</span>, then <span class="math inline">\(y = 0\)</span> is a feasible solution). Weak duality states that <span class="math display">\[
+c^T x \ge y^T A x = y^T b
+\]</span></p>
+<p>Denote <span class="math inline">\(S = \{ i : i \in [n], y^T A_i &lt; c_i \}\)</span> (the set of constraints that have slacks for increments) and <span class="math inline">\(\bar S = [n] \setminus S\)</span> (the set of indexes of tight dual constraints), where <span class="math inline">\(A_i\)</span> is the <span class="math inline">\(i\)</span>-th columns of <span class="math inline">\(A\)</span>.</p>
+<p>By weak duality, if we can find an <span class="math inline">\(x\)</span> such that</p>
 <ol type="1">
-<li><p>To guarantee the second inequality, we require that <span class="math inline">\(y^T \ge 0\)</span> (since the constraint <span class="math inline">\(Ax + \bar A \bar x + \hat A \hat x \le b\)</span> holds), <span class="math inline">\(\bar y^T\)</span> be unconstrained (since the constraint <span class="math inline">\(Bx + \bar B \bar x + \hat B \hat x = \bar b\)</span> holds), and <span class="math inline">\(\hat y^T \le 0\)</span> (since the constraint <span class="math inline">\(Cx + \bar C \bar x + \hat C \hat x \ge \hat b\)</span> holds). We see that the types of constraints in the primal determine the signs of variables in the dual.</p></li>
-<li><p>The reverse is also true: the constraints in the dual are determined the signs of variables in the primal. The first inequality implies that (by proper rearranging): <span class="math display">\[
- \begin{aligned}
-     c^T x + \bar c^T \bar x + \hat c^T \hat x 
-         &amp; \le (y^T A + \bar y^T B + \hat y^T C)x \\
-         &amp; + (y^T \bar A + \bar y^T \bar B + \hat y^T \bar C) \bar x \\
-         &amp; + (y^T \hat A + \bar y^T \hat B + \hat y^T \hat C) \hat x
- \end{aligned}
- \]</span></p>
-<p>As <span class="math inline">\(x \ge 0\)</span>, <span class="math inline">\(\bar x\)</span> unconstrained and <span class="math inline">\(\hat x \le 0\)</span>, a sufficient condition for the inequality to become true is <span class="math display">\[
- \begin{aligned}
-     c^T      &amp; \le (y^T A + \bar y^T B + \hat y^T C) \\
-     \bar c^T &amp; =   (y^T \bar A + \bar y^T \bar B + \hat y^T \bar C) \\
-     \hat c^T &amp; \ge (y^T \hat A + \bar y^T \hat B + \hat y^T \hat C) \\
- \end{aligned}
- \]</span></p>
-<p>That gives the first set of constraints the dual variables <span class="math inline">\(y\)</span>, <span class="math inline">\(\bar y\)</span> and <span class="math inline">\(\hat y\)</span> need to satisfies. We have just seen that the sign of the primal variable determines the type of constraint in the dual.</p>
-<p>Of particular interest is the inequality constraint, which we will discuss in details in the next section.</p></li>
+<li><span class="math inline">\(x_{S } = 0\)</span>, where <span class="math inline">\(x_{S} \doteq (x_i : i \in {S})\)</span>.</li>
+<li><span class="math inline">\(x_{\bar S} \ge 0\)</span> and <span class="math inline">\(A_{\bar S} x_{\bar S} = b\)</span>, where <span class="math inline">\(A_{\bar S}\)</span> is the sub-matrix of <span class="math inline">\(A\)</span> containing only columns in <span class="math inline">\({\bar S}\)</span>.</li>
 </ol>
-<p>The rules of obtaining dual are summarized as follows:</p>
-<blockquote>
+<p>then both <span class="math inline">\(y\)</span> and <span class="math inline">\(x\)</span> are optimal. However, as <span class="math inline">\(y\)</span> is not necessarily optimal, we have the following relaxed optimization problem, which is called <em>restricted primal</em></p>
+<p>Relaxation: <span class="math display">\[
+\begin{aligned}
+    &amp;\min       &amp;1^T \bar x \\
+    &amp;s.t.       &amp;A_{\bar S} x_{\bar S} + \bar x = b \\
+    &amp;           &amp;x_{\bar S} \ge 0 \\
+    &amp;           &amp;\bar x \ge 0
+\end{aligned}
+\]</span></p>
+<p>Note that <span class="math inline">\(x_{\bar S} = 0\)</span> and <span class="math inline">\(\bar x = b\)</span> is a feasible solution as we assume that <span class="math inline">\(b \ge 0\)</span>. Therefore, <em>restricted primal</em> is feasible. Further, it is bounded below by <span class="math inline">\(1^{\bar S} 0 = 0\)</span>. Indeed, if it achieves optimal solution value <span class="math inline">\(0\)</span>, it holds that <span class="math inline">\(\bar x = 0\)</span> so that <span class="math inline">\(A_{\bar S} x_{\bar S} = b\)</span>.</p>
+<p>Associated with the <em>restricted primal</em> is the <em>restricted dual</em> <span class="math display">\[
+\begin{aligned}
+    &amp;\max       &amp; \bar y^T b \\
+    &amp;s.t.       &amp; \bar y^TA_{\bar S} \le 0 \\
+    &amp;           &amp; \bar y^T \le 1^T
+\end{aligned}
+\]</span></p>
+<p>By strong duality, it optimal solution <span class="math inline">\(\bar y^T b = 1^T \bar x\)</span>. If <span class="math inline">\(1^T \bar x= \bar y^T b &gt; 0\)</span>, then we can improve the dual solution <span class="math inline">\(y\)</span> by <span class="math display">\[
+y \leftarrow y + \epsilon \bar y
+\]</span></p>
+<p>for some <span class="math inline">\(\epsilon\)</span>. To determine its value, first observe that <span class="math display">\[
+(y + \epsilon \bar y)^{T} A_{\bar S} = y^T A_{\bar S} + \epsilon \bar y^T A_{\bar S} \le y^T A_{\bar S} = c_{\bar S}^T
+\]</span></p>
+<p>Hence it is left to guarantee that <span class="math display">\[
+(y + \epsilon \bar y)^T A_S = y^T A_S + \epsilon \bar y^T A_S \le  c_S
+\]</span></p>
+<p>By definition of <span class="math inline">\({S}\)</span>, we have <span class="math inline">\(y^T A_{S} &lt; c_{S}^T\)</span>. If that <span class="math inline">\(\bar y^T A_i \le 0\)</span> for <span class="math inline">\(\forall i \in {S}\)</span>, then <span class="math inline">\(\epsilon\)</span> can be arbitrary large and the dual is unbounded. Otherwise,</p>
 <p><span class="math display">\[
-\begin{array}{llll}    
-\hline
-\text{Primal} &amp; \max &amp; \min &amp;  \text{Dual} &amp; \\ 
-\hline
-\text{Constraints}  &amp;  
-\begin{array}{l}
-\le b_i \\ 
-\ge b_i \\ 
-= b_i  
-\end{array} &amp;
-\begin{array}{l} 
-\ge 0 \\ 
-\le 0 \\ 
-\text{Both sides} 
-\end{array} &amp;  
-\text{Variables} &amp; \\
-\hline
-\text{Variables} &amp; 
-\begin{array}{l}
-\ge 0 \\ 
-\le 0 \\ 
-\text{Both sides} 
-\end{array} &amp; 
-\begin{array}{l}
-\ge c_j \\ 
-\le c_i \\ 
-= c_j   
-\end{array} &amp; 
-\text{Constraints}  &amp; \\
-\hline
-\end{array}
+\epsilon = \min_{i \in S, \bar y^T A_i &gt; 0} \frac{c_i - y^T A_i } { \bar y^T A_i }
 \]</span></p>
-</blockquote>
-<h1 id="complementary-slackness">Complementary Slackness</h1>
-<p>The strong duality states that, if both primal and dual are feasible, then the objective function values of their optimal solutions are equal. It follows that the inequalities in weak duality are saturated <span class="math display">\[
-    c^T x = (y^T A) x = y^T (Ax) = y^T b. 
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    (y^T A - c^T) x = 0,\,
-    \\ y^T (b - Ax) = 0.
-\]</span></p>
-<p>If the primal is in canonical form, then the fact that <span class="math inline">\(y^T A \ge c\)</span>, <span class="math inline">\(x \ge 0\)</span>, <span class="math inline">\(y \ge 0\)</span>, and <span class="math inline">\(b - Ax \ge 0\)</span> implies that <span class="math display">\[
-    \begin{array}{lrrr}
-        (y^T A - c^T)_i = 0  &amp;\vee &amp; x_i = 0,\,         &amp;\forall \ i \in [n] \\
-        y_j = 0             &amp;\vee  &amp; (b - Ax)_j = 0,\,  &amp;\forall \ j \in [m]
-    \end{array}
-\]</span></p>
-<p>where <span class="math inline">\((y^T A - c^T)_i\)</span> is its <span class="math inline">\(i\)</span>-th coordinate of the vector <span class="math inline">\(y^T A - c^T \in \mathbb{R}^{1 \times n}\)</span>, and <span class="math inline">\((b - Ax)_j\)</span> is the <span class="math inline">\(j\)</span>-th coordinate of the vector <span class="math inline">\(b - Ax \in \mathbb{R}^{m \times 1}\)</span>.</p>
-<p>This is known as <strong><em>complementary slackness</em></strong>.</p>
-<blockquote>
-<p><strong>Question to ponder</strong>: what is the geometric interpretation of complementary slackness?</p>
-</blockquote>
-<!-- In what follows, we prove this again, by avoiding matrix form. 
-First, weak duality implies 
-$$
-    \sum_{i = 1}^n c_i x_i \le \sum_{i = 1}^n \left( \sum_{j = 1}^m y_j A_{i, j} \right) x_i =  \sum_{j = 1}^m  y_j \left( \sum_{i = 1}^n A_{i, j} x_i \right) \le \sum_{j = 1}^m y_j b_j.
-$$
-
-If the inequalities are saturated, 
-$$
-    \sum_{i = 1}^n c_i x_i = \sum_{i = 1}^n \left( \sum_{j = 1}^m y_j A_{i, j}  \right) x_i,  \\  
-    \sum_{j = 1}^m  y_j \left( \sum_{i = 1}^n A_{i, j} x_i \right)  = \sum_{j = 1}^m b_j y_j,
-$$
-
-i.e., 
-$$
-    \sum_{i = 1}^n \left( \sum_{j = 1}^m y_j A_{i, j} - c_i \right) x_i  = 0, \\  
-    \sum_{j = 1}^m  y_j \left( b_j - \sum_{i = 1}^n A_{i, j} x_i \right) = 0.
-$$
-
-As $\sum_{j = 1}^m A_{i, j} y_j - c_i \ge 0$, $x_i \ge 0$ for all $i$ and $b_j - \sum_{i = 1}^n A_{i, j} x_i  \ge 0$ and $y_j \ge 0$ for all $j$, we conclude that 
-
-$$
-    \begin{array}{lrrr}
-        \sum_{j = 1}^m y_j A_{i, j}  - c_i = 0 &\vee &    x_i = 0,\, & \forall i, \\ 
-        b_j - \sum_{i = 1}^n A_{i, j} x_i = 0 &\vee &     y_j  = 0,\, & \forall j,
-    \end{array}
-$$ -->
-<h1 id="strong-duality">Strong Duality</h1>
-<blockquote>
-<p><strong>Theorem.</strong> Exactly one of the following four cases holds: 1. Neither the primal nor the dual is feasible.<br />
-2. If both the primal and dual are feasible, then their optimal values are equal. 3. If the primal is feasible and unbounded, and dual is infeasible. 4. If the dual is feasible and unbounded, and primal is infeasible.</p>
-</blockquote>
-<h2 id="special-case">Special Case</h2>
-<p>We first consider the special case such that not every linear program can be converted to this case. We consider the general form in the next section.</p>
-<p>The special case is given by <span class="math display">\[
-    \begin{array}{lr}
-        \min &amp; y^T b, \\
-        \text{s.t. } &amp; y^T A = c^T.
-    \end{array}
-\]</span></p>
-<p>The dual form is given by <span class="math display">\[
-    \begin{array}{lr}
-        \max &amp; c^T x, \\
-        \text{s.t. } &amp; Ax = b.
-    \end{array}
-\]</span></p>
-<p>The primal is feasible if <span class="math inline">\(c\)</span> is a linear combination of rows of <span class="math inline">\(A\)</span>, i.e., in the row space of <span class="math inline">\(A\)</span>. The dual is feasible if <span class="math inline">\(b\)</span> is a linear combination of columns of <span class="math inline">\(A\)</span>, i.e., in column space of <span class="math inline">\(A\)</span>, denoted as <span class="math inline">\(C(A)\)</span>.</p>
-<p>It if possible that neither the primal nor the dual is feasible.</p>
-<blockquote>
-<p><strong>Example.</strong> <span class="math display">\[
-A = \begin{bmatrix}
-1,\,    &amp;0\\
-0,\,    &amp;0\\
-\end{bmatrix},\,
-b=  \begin{bmatrix}
-1 \\
-1 \\
-\end{bmatrix},\,
-c=  \begin{bmatrix}
-1 \\
-1 \\
-\end{bmatrix}.
-\]</span> Then neither <span class="math inline">\(A x = b\)</span> nor <span class="math inline">\(y^T A = c^T\)</span> is feasible.</p>
-</blockquote>
-<p>If both primal and dual are feasible, then for all feasible solutions <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, it holds that <span class="math display">\[
-    c^T x = (y^T A) x = y^T (Ax) = y^T b.
-\]</span></p>
-<p>Next, we show that</p>
-<blockquote>
-<p><strong>Theorem.</strong> 1. If the primal is feasible and dual is infeasible, then the primal is unbounded. 2. If the dual is feasible and primal is infeasible, then the dual is unbounded.</p>
-</blockquote>
-<p><strong>Proof.</strong> By symmetry, we prove just the former.</p>
-<p>If <span class="math inline">\(Ax = b\)</span> is not feasible, then <span class="math inline">\(b\)</span> lies outside the column space of <span class="math inline">\(A\)</span>, denoted as <span class="math inline">\(C(A)\)</span> (the subspace in <span class="math inline">\(\mathbb{R}^m\)</span> spanned by the column vectors of <span class="math inline">\(A\)</span>). Let <span class="math inline">\(N(A^T)\)</span> be the subspace orthogonal to <span class="math inline">\(C(A)\)</span>. We can decompose <span class="math inline">\(b\)</span> into two part: <span class="math display">\[
-    b = b_1 + b_2,
-\]</span></p>
-<p>where <span class="math inline">\(b_1 \in C(A)\)</span> is in the columns space of <span class="math inline">\(A\)</span> and <span class="math inline">\(b_2 \in N(A^T)\)</span> is orthogonal to the columns space of <span class="math inline">\(A\)</span>. By assumption we have <span class="math inline">\(b_2 \neq \vec 0\)</span>.</p>
-<p>Suppose <span class="math inline">\(y\)</span> is a feasible solution to <span class="math inline">\(y^T A = c^T\)</span>. Then for all <span class="math inline">\(k \in \mathbb{R}\)</span>, <span class="math inline">\(y + k \cdot b_2\)</span> is still a feasible solution, since <span class="math display">\[
-    (y + k \cdot b_2)^T A = y^T A + k \cdot b_2^T A = y^T A = c^T.
-\]</span></p>
-<p>The new solution has objective <span class="math display">\[
-    (y + k \cdot b_2)^T b = y^T b + k \cdot \Vert b_2 \Vert_2^2.
-\]</span></p>
-<p>When <span class="math inline">\(k \rightarrow - \infty\)</span>, we have <span class="math inline">\(y^T b + k \cdot \Vert b_2 \Vert_2^2 \rightarrow - \infty\)</span>, which implies that the primal is unbounded.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StrongDualitySpecialCase.jpg" /></p>
-<h2 id="general-case">General Case</h2>
-<p>We discuss the more general form: <span class="math display">\[
-    \begin{array}{lr}
-        \min &amp; y^T b, \\
-        \text{s.t. } &amp; y^T A \ge c^T.
-    \end{array}
-\]</span></p>
-<p>Every linear program can be converted into this general form.</p>
-<p>Its dual is given by <span class="math display">\[
-    \begin{array}{lr}
-        \max &amp; c^T x, \\
-        \text{s.t. } &amp; Ax = b, \\
-        &amp; x \ge 0.
-    \end{array}
-\]</span></p>
-<p>By weak duality, <span class="math display">\[
-    c^T x \le y^T A x = y^T b
-\]</span></p>
-<p>To prove strong duality, we need only to prove that</p>
-<blockquote>
-<p>If both primal and dual are feasible, then there exists feasible <span class="math inline">\(x, y\)</span>, such that <span class="math inline">\(c^T x = y^T A x\)</span>.</p>
-</blockquote>
-<p>Define the feasible set of the primal as <span class="math display">\[
-    F \doteq \{ y \in \mathbb{R}^m : y^T A \ge c^T \}.  
-\]</span></p>
-<p>Let <span class="math inline">\(y^\star\)</span> be the optimal solution for the primal. We see that <span class="math inline">\(y^\star\)</span> can not be an interior point of the feasible set <span class="math inline">\(F\)</span>. Otherwise, for small enough <span class="math inline">\(k &gt; 0\)</span>, <span class="math inline">\(y^\star - k \cdot b\)</span> belongs to <span class="math inline">\(F\)</span>. But <span class="math inline">\((y^\star - k \cdot b)^T b &lt; y^\star b\)</span>, contradicting <span class="math inline">\(y^\star\)</span> being optimal.</p>
-<p>Therefore, <span class="math inline">\(y^\star\)</span> must be on the boundary of the <span class="math inline">\(F\)</span>, and there must exit one or more constraints saturated by <span class="math inline">\(y^\star\)</span>. Define the set of indexes of the constraints that are saturated by <span class="math inline">\(y^\star\)</span> <span class="math display">\[
-    S \doteq \{ i \in [m] : (y^\star)^T A_i = c_i \} \subset [m],
-\]</span></p>
-<p>where <span class="math inline">\(A_i\)</span> is the <span class="math inline">\(i\)</span>-th column of matrix <span class="math inline">\(A\)</span> and <span class="math inline">\(c_i\)</span> is the <span class="math inline">\(i\)</span>-th coordinator of vector <span class="math inline">\(c\)</span>. Let <span class="math inline">\(A_S\)</span> be set of columns indexed by <span class="math inline">\(S\)</span>.</p>
-<blockquote>
-<p><strong>Lemma.</strong> <span class="math inline">\(b\)</span> is in the conic hull of columns of <span class="math inline">\(A_S\)</span>, i.e., <span class="math inline">\(\exists x_S \in R^{|S|}\)</span>, such that<br />
-1. <span class="math inline">\(A_S x_S = b\)</span>.<br />
-2. <span class="math inline">\(x_S \ge 0\)</span>.</p>
-</blockquote>
-<p>Such <span class="math inline">\(x_S\)</span> can be converted into a feasible solution <span class="math inline">\(x\)</span> to the dual (by padding zeros in dimensions other than <span class="math inline">\(S\)</span>). It holds that <span class="math display">\[
-    c^T x = (y^\star)^T A x = (y^\star)^T (A_S x_S ) = (y^\star)^T b.
-\]</span></p>
-<blockquote>
-<p><strong>Question to ponder</strong>: prove the existence of optimal solution of the primal, assuming feasibility of the dual.</p>
-</blockquote>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/MinimizeYB.png" /></p>
-<p><strong>Proof.</strong> We prove that if <span class="math inline">\(b\)</span> is not in the conic hull of <span class="math inline">\(A_S\)</span>, we can more <span class="math inline">\(y^\star\)</span> along some direction that decreases objective while maintaining feasibility.</p>
-<p>By <a target="_blank" rel="noopener" href="https://wuhao-wu-jiang.github.io/2019/01/17/Farkas-Lemma/">Farkas' Lemma</a>, if <span class="math inline">\(b\)</span> is not in the conic hull of <span class="math inline">\(A_S\)</span>, <span class="math inline">\(\exists v \in \mathbb{R}^m\)</span>, such that</p>
-<ol type="1">
-<li><span class="math inline">\(v^T A_S \ge 0\)</span>.</li>
-<li><span class="math inline">\(v^T b &lt; 0\)</span>.</li>
-</ol>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FarkasLemma3.png" /></p>
-<p>Then we can move the vector <span class="math inline">\(y^\star\)</span> along the direction of <span class="math inline">\(v\)</span>, by adding <span class="math inline">\(k \cdot v\)</span> to <span class="math inline">\(y^\star\)</span> for some <span class="math inline">\(k \ge 0\)</span>. This decreases the objective <span class="math display">\[
-    (y^\star + k \cdot v)^T b = (y^\star)^T b + k \cdot v^T b &lt; (y^\star)^T b.
-\]</span></p>
-<p>How large can <span class="math inline">\(k\)</span> be, so the constraints <span class="math inline">\((y^\star + k \cdot v)^T A \ge c^T\)</span> are maintained.</p>
-<ol type="1">
-<li><p>If <span class="math inline">\(i \in \bar S\)</span>, then <span class="math inline">\((y^\star)^T A_i &gt; c_i\)</span>. Define <span class="math display">\[
-     t_i \doteq \begin{cases}
-         \infty,\, &amp;\text{if }\, v^T A_i \ge 0, \\
-         \Big( (y^\star)^T A_i - c_i \Big) / \big| v^T A_i \big|,\, &amp;\text{if }\, v^T A_i &lt; 0, \\
-     \end{cases}
- \]</span> Then <span class="math inline">\(t_i &gt; 0\)</span> and it is guaranteed that <span class="math display">\[
-     (y^\star)^T A_i + t_i \cdot v \ge c_i.
- \]</span> Denote <span class="math inline">\(k \doteq \min_{i \in \bar S} t_i &gt; 0\)</span>.</p></li>
-<li><p>If <span class="math inline">\(i \in S\)</span>, as <span class="math inline">\(v^T A_i \ge 0\)</span>, for the value of <span class="math inline">\(k\)</span> defined above, it holds that <span class="math display">\[
-     (y^\star + k v)^T A_i = c_i + k v^T A_i \ge c_i,
- \]</span></p></li>
-</ol>
-<p>It concludes that <span class="math inline">\((y^\star + k v)\)</span> is feasible. But <span class="math inline">\((y^\star + k v)^T b &lt; (y^\star)^T b\)</span>. A contradiction.</p>
-<blockquote>
-<p><strong>Question to ponder</strong>: connect the above discussion to Lagrange multiplier and <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Karush%E2%80%93Kuhn%E2%80%93Tucker_conditions">K.K.T condition</a>.</p>
-</blockquote>
-<h1 id="reference.">Reference.</h1>
-<ol type="1">
-<li>David P. Williamson, ORIE 6300 Mathematical Programming I, <a target="_blank" rel="noopener" href="https://people.orie.cornell.edu/dpw/orie6300/Lectures/lec08.pdf">Lecture 8</a><br />
-</li>
-<li>Boyd, S. and Vandenberghe, L., 2004. Convex optimization. Cambridge university press.</li>
-</ol>
 
       
     </div>
@@ -493,7 +263,7 @@ c=  \begin{bmatrix}
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/14/Sparse-Recovery-with-Count-Sketch/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/26/The-Remainder-Term-in-Taylor-Series/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -507,7 +277,7 @@ c=  \begin{bmatrix}
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/01/14/Sparse-Recovery-with-Count-Sketch/" class="post-title-link" itemprop="url">Sparse Recovery with Count-Sketch</a>
+            <a href="/2020/02/26/The-Remainder-Term-in-Taylor-Series/" class="post-title-link" itemprop="url">The Remainder Term in Taylor Series</a>
         </h2>
 
         <div class="post-meta">
@@ -517,14 +287,14 @@ c=  \begin{bmatrix}
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-01-14 22:51:28" itemprop="dateCreated datePublished" datetime="2020-01-14T22:51:28+11:00">2020-01-14</time>
+              <time title="Created: 2020-02-26 13:57:00" itemprop="dateCreated datePublished" datetime="2020-02-26T13:57:00+11:00">2020-02-26</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-09 13:40:52" itemprop="dateModified" datetime="2021-04-09T13:40:52+10:00">2021-04-09</time>
+                <time title="Modified: 2020-02-28 11:22:58" itemprop="dateModified" datetime="2020-02-28T11:22:58+11:00">2020-02-28</time>
               </span>
 
           
@@ -538,114 +308,96 @@ c=  \begin{bmatrix}
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="background">Background</h1>
-<p>A stream of items <span class="math inline">\(S = \{ a_1, a_2, ..., a_m \}\)</span> where <span class="math inline">\(a_i \in [n]\)</span>. Let the frequencies of elements in <span class="math inline">\([n]\)</span> be <span class="math inline">\(f = \left&lt; f_1, f_2, ..., f_n \right&gt;\)</span>, where <span class="math inline">\(f_j = |\{ a_i \in S : a_i = j \}|\)</span>.</p>
-<h2 id="count-sketch">Count-Sketch</h2>
-<p>It returns an estimation <span class="math inline">\(\hat f\)</span> of <span class="math inline">\(f\)</span> with space <span class="math inline">\(O(\frac{1}{\epsilon^2} \log n)\)</span> words, such that with probability at least <span class="math inline">\(1 - 1 / n\)</span>, for every <span class="math inline">\(i \in [n]\)</span>, <span class="math display">\[
-    |\hat f_i - f_i| \le \epsilon \Vert f \Vert_2,
-\]</span> where <span class="math inline">\(\Vert f \Vert_2 = \sqrt {\sum_{i = 1}^n f_i^2 }\)</span>.</p>
-<h1 id="problem">Problem</h1>
-<p>In general, a sketch is a concise representation of <span class="math inline">\(f\)</span>. Suppose that we limit our space usage to <span class="math inline">\(k\)</span> words (i.e., <span class="math inline">\(\Vert \hat f \Vert_0 = k\)</span>). Then the sketch <span class="math inline">\(\hat f\)</span> that minimizes the <span class="math inline">\(\ell_2\)</span> error <span class="math display">\[
-    err_2^k (f) \doteq \Vert f - \hat f \Vert_2
-\]</span></p>
-<p>keeps the set <span class="math inline">\(H\)</span> of <span class="math inline">\(k\)</span> items with highest frequencies. In such case, the error is given by <span class="math display">\[
-    err_2^k (f) = \sqrt {\sum_{i \notin H} f_i^2}
-\]</span></p>
-<p>In practice, however, <span class="math inline">\(S\)</span> is not given offline. As we don't know <span class="math inline">\(H\)</span>, we can only compute an <span class="math inline">\(\hat f\)</span> with <span class="math inline">\(k\)</span> words that is as good as possible. The question is, how far <span class="math inline">\(\Vert f - \hat f \Vert_2\)</span> can be from the minimum possible value, namely <span class="math inline">\(err_2^k(f)\)</span>?</p>
-<h1 id="algorithm">Algorithm</h1>
-<p>One possible solution, proposed by Cormode and Muthukrishnan [1], is to construct <span class="math inline">\(\hat f\)</span> vis Count-Sketch. In particular,</p>
-<ol type="1">
-<li>It uses <span class="math inline">\(d = O(\log n)\)</span> hash tables.<br />
-</li>
-<li>Each hash table has size <span class="math inline">\(w = \frac{3k}{\epsilon^2}\)</span>.</li>
-</ol>
-<h2 id="frequency-oracle-error">Frequency Oracle Error</h2>
-<blockquote>
-<p><strong>Lemma 1.</strong> For every <span class="math inline">\(i \in [n]\)</span>, with probability <span class="math inline">\(1 - 1 /n^2\)</span>, <span class="math display">\[
-|f_i - \hat f_i| \le \frac{\epsilon}{\sqrt k } err_2^k(f). 
-\]</span></p>
-</blockquote>
-<p><strong>Remark:</strong> <em>If <span class="math inline">\(f\)</span> is <span class="math inline">\(k\)</span> sparse, i.e., the number of non-zero elements of <span class="math inline">\(f\)</span> is at most <span class="math inline">\(k\)</span>, then <span class="math inline">\(err_2^k(f) = 0\)</span> and the algorithm recovers <span class="math inline">\(f\)</span> exactly.</em></p>
-<p><strong>Proof:</strong> Consider a fixed <span class="math inline">\(t \in [k]\)</span>. For <span class="math inline">\(i \in [n]\)</span>, let <span class="math inline">\(h_t(i)\)</span> the bucket of item <span class="math inline">\(i\)</span> in the <span class="math inline">\(t\)</span>-th hash table. Define <span class="math display">\[
-    A_i : \exist x \in H, \text{ s.t. } h_j(x) = h_j(i),
-\]</span> be the event such that some heavy item collides with <span class="math inline">\(i\)</span> in the <span class="math inline">\(t\)</span>-th table. Then by union bound, <span class="math display">\[
-    \Pr[A_i] \le \frac{k}{w} = \frac{\epsilon^2}{3}. 
-\]</span></p>
-<p>Therefore, by the law of total probability and monotonicity of probability, we have <span class="math display">\[
+          <h2 id="taylor-series">Taylor Series</h2>
+<p>The philosophy of Taylor series is to approximate a function with polynomials that use only the information of a single point in the domain of the function. Consider the function <span class="math inline">\(f: \mathbb{R} \rightarrow \mathbb{R}\)</span> and a point <span class="math inline">\(a \in \mathbb{R}\)</span>. Further, we would like to use <span class="math inline">\((x-a)^0\)</span>, <span class="math inline">\((x- a)^1\)</span>, <span class="math inline">\((x- a)^2\)</span>, ..., <span class="math inline">\((x- a)^n\)</span> as the basic building blocks of our approximation. The polynomial constructed is of the form: <span class="math display">\[
+p_n(x) = c_0 + c_1 (x - a) + c_2(x - a)^2 + ... + c_n (x - a)^n
+\]</span> Now, assume that the <span class="math inline">\(n\)</span>-th derivative of <span class="math inline">\(f\)</span> exits. To approximate <span class="math inline">\(f\)</span> well, <span class="math inline">\(p_n\)</span> should satisfy <span class="math display">\[
+p_n(a) = f(a)
+\]</span> so that <span class="math inline">\(c_0 = f(a)\)</span>.</p>
+<p>Further, <span class="math inline">\(f&#39;(a)\)</span> tell how the function <span class="math inline">\(f(x)\)</span> changes when <span class="math inline">\(x\)</span> moves from <span class="math inline">\(a\)</span> by a little bit. We require <span class="math inline">\(p_n(x)\)</span> to exhibit the same behavior: <span class="math display">\[
+p&#39;_n(a) = f&#39;(a)
+\]</span> so that <span class="math inline">\(c_1 = f&#39;(a)\)</span>.</p>
+<p>To fit <span class="math inline">\(f(x)\)</span> even better, we force the second order derivative of <span class="math inline">\(p_n(x)\)</span> at <span class="math inline">\(x\)</span> comply with <span class="math inline">\(f&#39;&#39;(a)\)</span>, hence <span class="math display">\[
+p_n&#39;&#39;(a) = f&#39;&#39;(a)
+\]</span> and <span class="math inline">\(c_2 = \frac{1}{2} f&#39;&#39;(a)\)</span>.</p>
+<p>Following the above procedure,we get <span class="math display">\[
+c_i = \frac{1}{i!}f^{(i) } (a)
+\]</span> and <span class="math display">\[
+p_n(x) = \sum_{k = 0}^n \frac{ f^{( k ) }(a) }{ k! }  (x - a)^k
+\]</span> where <span class="math inline">\(f^{(0)} \doteq f\)</span>, <span class="math inline">\(0! \doteq 1\)</span>. We have just show that the construct polynomial satisfies</p>
+<p><strong><em>Theorem. <span class="math inline">\(p^{ (k) }_n (a) = f^{ (k) } (a)\)</span>, for <span class="math inline">\(k \in [n]\)</span>.</em></strong></p>
+<h2 id="remainder">Remainder</h2>
+<p>One natural to ask is that, how accurate is the <span class="math inline">\(p_n(x)\)</span>. In particular, given <span class="math inline">\(x \neq a\)</span>, we want to measure the error <span class="math display">\[
+r_n(x) = f(x) - p_n(x)
+\]</span> quantitively.</p>
+<p>Note that if the function <span class="math inline">\(f\)</span> is itself a polynomial up to order <span class="math inline">\(n\)</span>, then the approximation is accurate that is <span class="math inline">\(r_n(x) \equiv 0\)</span> for <span class="math inline">\(x \in \mathbb{R}\)</span>. In this case, we recover <span class="math inline">\(f\)</span> globally using only local information at <span class="math inline">\(a\)</span>.</p>
+<p>In general, if <span class="math inline">\(f^{ (n + 1)} (x)\)</span> exists and is continuous, then the error is characterized as</p>
+<p><strong><em>Theorem</em></strong> <span class="math display">\[
+r_n(x) = \frac{1}{n!} \int_a^x f^{ (n + 1) } (t) (x - t)^{n } dt = -\int_a^x f^{ (n + 1) } (t)  d \left( \frac{(x - t)^{n + 1} }{(n + 1)!} \right)
+\]</span> <em>Proof.</em></p>
+<p>By fundamental theorem of calculus, we have <span class="math display">\[
+f(x) = f(a) + \int_{a}^x f&#39;(t) dt
+\]</span> On the other hand <span class="math display">\[
+\frac{\partial [f&#39;(t) (t - x)] }{\partial t} = f&#39;&#39;(t) (t - x) + f&#39;(t)
+\]</span> Therefore, <span class="math display">\[
+f&#39;(t) (t - x) \mid_{t = a}^x = f&#39;(a) (x -a)  = \int_{a}^x f&#39;&#39;(t) (t - x) dt  + \int_{a}^x f&#39;(t) dt
+\]</span> and <span class="math display">\[
+f(x) = f(a) + f&#39;(a) (x - a) +  \int_{a}^x f&#39;&#39;(t) (x - t) dt
+\]</span> Similarly, <span class="math display">\[
 \begin{aligned}
-    \Pr \left[ |f_i - h_i(j)| \ge \frac{\epsilon}{\sqrt k } err_2^k(f) \right] 
-        &amp;\le \Pr[A_i] + \Pr \left[ |f_i - h_i(j) | \ge  \frac{\epsilon}{\sqrt k } err_2^k(f) \mid \bar A_i \right] \\
-        &amp;\le \Pr[A_i] + \frac{ \mathbb{Var} [ f_i - h_i(j)  \mid \bar A_i ] }{ (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
-        &amp;\le \frac{\epsilon^2}{3} + \frac{(err_2^k(f))^2 / w }{ (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
-        &amp;\le \frac{\epsilon^2}{3} + \frac{1}{3}
+\int_{a}^x f&#39;&#39;(t) (x - t) dt 
+    &amp;= - \int_{a}^x f&#39;&#39;(t) d \frac{ (x - t)^2}{2!} \\
+    &amp;= f&#39;&#39;(a) \frac{ (x - a)^2}{2!} + \int_{a}^x \frac{ (x - t)^2}{2!} f^{(3) } (t) dt
 \end{aligned}
-\]</span></p>
-<p>As long as <span class="math inline">\(\epsilon^2 / 3 &lt; 1 / 6\)</span>, this probability is smaller than <span class="math inline">\(1 / 2\)</span>. We can boost the failure probability to <span class="math inline">\(1/ n^2\)</span> by repeating the hash tables <span class="math inline">\(d = O(\log n)\)</span> times and taking the median as estimation.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h2 id="sparse-vector-construction">Sparse Vector Construction</h2>
-<p>The next step is keep only set <span class="math inline">\(\hat H\)</span> of the <span class="math inline">\(k\)</span> largest items in <span class="math inline">\(\hat f\)</span>. Note that <span class="math inline">\(\hat H\)</span> might not equals to <span class="math inline">\(H\)</span>. To bound the value <span class="math inline">\(\Vert f - \hat f \Vert_2\)</span>, we partition <span class="math inline">\([n]\)</span> into three parts: <span class="math display">\[
-    \hat H, \quad H \setminus \hat H, \quad [n] \setminus (H \cup \hat H). 
-\]</span></p>
-<blockquote>
-<p><strong>Lemma 2</strong>. <span class="math inline">\(\sum_{i \in \hat H} (f_i - \hat f_i)^2 \le \epsilon^2 (err_2^k(f))^2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> By lemma 1, each term <span class="math inline">\((f_i - \hat f_i)^2\)</span> has error at most <span class="math inline">\(\frac{\epsilon^2}{k} (err_2^k(f))^2\)</span>. The claim then follows from that <span class="math inline">\(|\hat H| = k\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<blockquote>
-<p><strong>Lemma 3</strong>. <span class="math inline">\(\sum_{i \in H \setminus \hat H} f_i ^2 \le \sum_{j \in \hat H \setminus H} \hat f_j^2 + (2 \epsilon + \epsilon^2) ( err_2^k(f))^2\)</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math inline">\(|H| = |\hat H|\)</span>, we have <span class="math inline">\(|H \setminus \hat H| = |\hat H \setminus H|\)</span>.</p>
-<p>If <span class="math inline">\(H \setminus \hat H = \emptyset\)</span>, the claim is trivial. Otherwise, we can construct a bijection between <span class="math inline">\(H \setminus \hat H\)</span> and <span class="math inline">\(\hat H \setminus H\)</span>. Then for <span class="math inline">\(i \in H \setminus \hat H\)</span>, let <span class="math inline">\(j\)</span> be its corresponding index in <span class="math inline">\(\hat H \setminus H\)</span>. Then</p>
-<p><span class="math display">\[
-\begin{aligned}
-    f_j &amp;= (f_j - \hat f_j) + (\hat f_j - \hat f_i) + (\hat f_i - f_i) + f_i \\
-        &amp;\ge - \frac{\epsilon}{\sqrt k } err_2^k(f) + 0 - \frac{\epsilon}{\sqrt k } err_2^k(f) + f_i
-\end{aligned}
+\]</span> As just shown, the proof can be finished by induction. <span class="math inline">\(\square\)</span></p>
+<p><strong><em>Weighted Mean Value Theorem.</em></strong> Given a continuous functions <span class="math inline">\(f \ge 0\)</span> and an Riemann integral function <span class="math inline">\(g \ge 0\)</span> defined on an closed interval <span class="math inline">\(I\)</span>, then <span class="math display">\[
+\int_I f(t) g(t) dt = f(c) \int_I g(t) dt
+\]</span> for some <span class="math inline">\(c \in I\)</span>.</p>
+<p><em>Proof.</em> As <span class="math inline">\(f\)</span> is continuous and <span class="math inline">\(I\)</span> is closed, <span class="math inline">\(\exists m, M \in \mathbb{R}\)</span>, s.t., <span class="math display">\[
+m \le f(t) \le M, \qquad \forall t \in I
 \]</span></p>
 <p>Therefore, <span class="math display">\[
-    f_i \le f_j + \frac{2\epsilon}{\sqrt k } err_2^k(f)
+mg(t) \le f(t) g(t) \le M g(t), \qquad \forall t \in I
 \]</span></p>
-<p>and <span class="math display">\[
+<p>Define <span class="math inline">\(S = \int_I g(t) dt\)</span>. By monotonicity of Riemann integration, we have <span class="math display">\[
+m S \le \int_I f(t) g(t) dt \le M S
+\]</span></p>
+<p>Note that <span class="math inline">\(S f(t)\)</span> is a continuous function in <span class="math inline">\(I\)</span>. Hence, by mean value theorem, <span class="math inline">\(\exists c \in I\)</span>, such that <span class="math display">\[
+S f(c) = \int_I f(t) g(t) dt
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><strong><em>Corollary 1.</em></strong> By weighted mean value theorem, we have <span class="math display">\[
 \begin{aligned}
-    \sum_{i \in H \setminus \hat H} f_i^2       
-        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4 \epsilon}{\sqrt k } \left( \sum_{j \in \hat H \setminus H} f_j\right) + 4 \epsilon^2 (err_2^k(f))^2 \\
-        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4 \epsilon}{\sqrt k } err_2^k(f) \left( \sum_{j \in \hat H \setminus H} f_j\right) + 4 \epsilon^2 (err_2^k(f))^2 \\
-        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4 \epsilon}{\sqrt k } err_2^k(f) \left( k \sqrt{ \frac{1}{k} \sum_{j \in \hat H \setminus H} f_j^2 } \right) + 4 \epsilon^2 (err_2^k(f))^2 \\
-        &amp;= \sum_{j \in \hat H \setminus H} f_j^2 + 4 \epsilon (err_2^k(f))^2 + 4 \epsilon^2 (err_2^k(f))^2 \\
-        &amp;= \sum_{j \in \hat H \setminus H} f_j^2 + (4 \epsilon + 4 \epsilon^2) (err_2^k(f))^2 
+r_n(x) 
+    &amp;= \frac{1}{n!} \int_a^x f^{ (n + 1) } (t) (x - t)^{n } dt  \\
+    &amp;= f^{ (n + 1) } (c) \int_a^x  \frac{1}{n!} (x - t)^{n } dt  \\
+    &amp;= \frac{f^{ (n + 1) } (c ) }{(n + 1) ! } (x - a)^{n + 1 }  
 \end{aligned}
 \]</span></p>
-<!-- $$
-    f_i = f_i - \hat f_i + \hat f_i - \hat f_j + \hat f_j
-$$ -->
-<!-- As $\hat H$ contains the largest $k$ items in $\hat f$, it must be that $\hat f_i - \hat f_j \le 0$. Therefore, 
-
-$$
-f_i \le f_i - \hat f_i + \hat f_j
-$$
-
-By lemma 1, we have $f_i - \hat f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f)$, we have 
-
-$$
-f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j
-$$
-
-Summing over all possible $i$, 
-
-$$
-\begin{aligned}
-    \sum_{i \in H \setminus \hat H} f_i ^2 
-    &\le \sum_{j \in \hat H \setminus H} (\frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j)^2 \\
-    &= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \left( \sum_{j \in \hat H \setminus H} \hat f_j \right) \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
-    &\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 k \sqrt{ \sum_{j \in \hat H \setminus H} \frac{1}{k} \hat f_j^2} \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
-    &= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \epsilon (err_2^k(f)) \sqrt{ \sum_{j \in \hat H \setminus H} \hat f_j^2} +  \epsilon^2 ( err_2^k(f))^2 \\
-    &\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + (2 \epsilon +  \epsilon^2) ( err_2^k(f))^2. 
-\end{aligned}
-$$ -->
+<p>for some <span class="math inline">\(c \in [a, x]\)</span>.</p>
+<p><strong><em>Corollary 2.</em></strong> Let <span class="math inline">\(f:\rightarrow \mathbb{R}^n \rightarrow \mathbb{R}\)</span> be a function with continuous second partial derivatives, then given <span class="math inline">\(a \in \mathbb{R}^n\)</span>, it holds that <span class="math display">\[
+f(x) = f(a) + [\nabla f(c)]^T (x - a)
+\]</span> for some <span class="math inline">\(c \in a + t(x - a)\)</span>, where <span class="math inline">\(t \in [0, 1]\)</span>.</p>
+<p><em>Proof:</em> Define <span class="math inline">\(g(t) = f(a + t (x- a)) : [0,1] \rightarrow \mathbb{R}\)</span>. Then</p>
+<ol type="1">
+<li><span class="math inline">\(g(0) = f(a)\)</span>.</li>
+<li><span class="math inline">\(g(1) = f(x)\)</span>.</li>
+<li><span class="math inline">\(g&#39;(t) = [\nabla f(a + t (x- a) ) ]^T (x - a)\)</span></li>
+<li>By mean value theorem, <span class="math inline">\(\exists t \in [0, 1]\)</span>, s.t., <span class="math display">\[
+ \frac{g(1) - g(0)}{1} = f(x) - f(a) = g&#39;(t) = [\nabla f(a + t (x- a) ) ]^T (x - a)
+\]</span></li>
+</ol>
 <p><span class="math inline">\(\square\)</span></p>
-<h2 id="reference">Reference</h2>
-<p>[1] G. Cormode and S. Muthukrishnan. Combinatorial algorithms for Compressed Sensing.<br />
-[2] Moses Charikar, Lecture 9, CS 369G: Algorithmic Techniques for Big Data</p>
+<p><strong><em>Corollary 3.</em></strong> Let <span class="math inline">\(f\)</span>, <span class="math inline">\(g\)</span> and <span class="math inline">\(c\)</span> as defined before, then <span class="math display">\[
+f(x) = f(a) + [\nabla f(a)]^T (x - a) + \frac{1}{2} (x - a)^T [\nabla^2 f(c)] (x - a)
+\]</span></p>
+<p><em>Proof:</em> <span class="math display">\[
+g&#39;&#39;(t) = (x - a)^T [\nabla^2 f(a + t (x- a) ) ] (x - a)
+\]</span></p>
+<p>Then applying Corollary 1 gives <span class="math display">\[
+g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
+\]</span></p>
+<p>for some <span class="math inline">\(t \in [0, 1]\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
 
       
     </div>
@@ -665,7 +417,7 @@ $$ -->
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/12/Priority-Sampling/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/24/Eigenvalues-and-Eigenvectors/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -679,7 +431,7 @@ $$ -->
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/01/12/Priority-Sampling/" class="post-title-link" itemprop="url">Priority Sampling</a>
+            <a href="/2020/02/24/Eigenvalues-and-Eigenvectors/" class="post-title-link" itemprop="url">Eigenvalues, Eigenvectors and SVD</a>
         </h2>
 
         <div class="post-meta">
@@ -688,16 +440,10 @@ $$ -->
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-01-12 14:32:57" itemprop="dateCreated datePublished" datetime="2020-01-12T14:32:57+11:00">2020-01-12</time>
+              <time title="Created: 2020-02-24 21:57:00 / Modified: 23:20:37" itemprop="dateCreated datePublished" datetime="2020-02-24T21:57:00+11:00">2020-02-24</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-24 17:07:43" itemprop="dateModified" datetime="2021-02-24T17:07:43+11:00">2021-02-24</time>
-              </span>
 
           
 
@@ -710,152 +456,124 @@ $$ -->
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Suppose there are a set of <span class="math inline">\(n\)</span> items with nonnegative weights <span class="math inline">\(w_1, w_2, ..., w_n\)</span>. We want to maintain a subset of samples <span class="math inline">\(S \subset [n]\)</span> in order to answer queries like given arbitrary <span class="math inline">\(I \subset [n]\)</span> , what is <span class="math inline">\(\sum_{i \in I} w_i\)</span>?</p>
-<p>A trivial solution is to set <span class="math inline">\(S = [n]\)</span> and we can answer the query exactly. This is an overkill if our goal is to only answer the query approximately.</p>
-<p>Alternatively, we can sample each item <span class="math inline">\(i \in [n]\)</span> independently with probability <span class="math inline">\(p_i\)</span> (to be determined), and maintain a random variable <span class="math display">\[
+          <h2 id="eigenvector-and-eigenvalues">Eigenvector and Eigenvalues</h2>
+<p><strong><em>Theorem. Given a symmetric matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> that is positive semi-definitive, there exists an orthogonal matrix <span class="math inline">\(V \in \mathbb{R}^{n \times n}\)</span>, such that</em></strong> <span class="math display">\[
+A = V \Sigma V^T 
+\]</span> <strong><em>where <span class="math inline">\(\Sigma \in \mathbb{R}^{n \times n}\)</span> is a diagonal matrix with all diagonal elements non-negative.</em></strong></p>
+<p>We need the following lemma for the proof.</p>
+<p><strong>Lemma: If a function <span class="math inline">\(f: S \rightarrow \mathbb{R}\)</span> is continuous on a closed set <span class="math inline">\(S\)</span>, then it takes maximum value at some point of <span class="math inline">\(S\)</span>.</strong></p>
+<p><em>Proof.</em> Consider the maximization problem: <span class="math display">\[
 \begin{aligned}
-X_i = 
-    \begin{cases}
-        \frac{w_i}{p_i} &amp; i \text{ is chosen} \\
-        0               &amp;   \text{ else }
-    \end{cases}
+&amp;\max &amp; \frac{1}{2} x^T A x \\
+&amp;s.t. &amp;  x^T x = 1
 \end{aligned}
 \]</span></p>
-<p>Note that <span class="math display">\[
-\mathbb{E} \left[ X_i \right] = w_i
+<p><em><strong>Question to ponder:</strong> Explain the geometric meaning of the term <span class="math inline">\(x^T A x\)</span>.</em></p>
+<p>The corresponding Lagrange function is given by <span class="math display">\[
+L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1)
 \]</span></p>
-<p>And therefore, <span class="math display">\[
-\mathbb{E} \left[\sum_{i \in I} X_i \right] = \sum_{i \in I} \mathbb{E}[X_i] = \sum_{i \in I} w_i
+<p>Taking derivative with respect to <span class="math inline">\(x\)</span> gives <span class="math display">\[
+\frac{\partial L}{\partial x} = Ax - \lambda x
 \]</span></p>
-<h1 id="threshold-sampling">Threshold Sampling</h1>
-<p>One possible implementation of this sampling scheme is called <em>threshold sampling</em>.</p>
-<p>First, a threshold <span class="math inline">\(T\)</span> is chosen. Then, for each item <span class="math inline">\(i \in [n]\)</span>, if <span class="math inline">\(w_i \ge T\)</span>, then the algorithm record a value <span class="math inline">\(X_i = w_i\)</span> deterministically. Otherwise, the algorithm record a value <span class="math inline">\(X_i = T\)</span> with probability <span class="math inline">\(\frac{w_i}{T}\)</span>. If <span class="math inline">\(X_i\)</span> is not recorded, it has default value <span class="math inline">\(0\)</span>. In both cases, <span class="math inline">\(\mathbb{E} [ X_i ] = w_i\)</span>.</p>
-<!-- $\forall i \in [n]$, $w_i$ is kept with probability with $p_i = \min \{ 1 , \frac{w_i}{T} \}$. In particular, for each $i \in [n]$, we sample a uniform random variable $u_i \in [0, 1]$, and set  -->
-<p>Mathematically, the two cases can be combined into one. Let <span class="math inline">\(u_i\)</span> be a random number generated between <span class="math inline">\((0, 1)\)</span>. Then</p>
-<p><span class="math display">\[
+<p><strong><em>Existence of maximum solution:</em></strong> Note that <span class="math inline">\(\{ x : x^T x = 1 \}\)</span> is defined the boundary of the unit cycle, which is a closed set. Combined with the fact that <span class="math inline">\(f\)</span> is a continuous function, it takes its maximum value at some point in <span class="math inline">\(\{ x : x^T x = 1 \}\)</span>. Denote this point <span class="math inline">\(v_1 \in \{ x : x^T x = 1 \}\)</span>.</p>
+<p><strong><em>Gradient at the maximum point:</em></strong> At this point, it holds that <span class="math display">\[
+\frac{\partial L}{\partial x} \mid_{x = v_1} = Av_1 - \lambda v_1 = 0
+\]</span></p>
+<p>which implies that <span class="math inline">\(v_1\)</span> is an eigenvector of <span class="math inline">\(A\)</span>. Denote its associated eigenvalue <span class="math inline">\(\lambda_1\)</span>.</p>
+<p><em><strong>Question to ponder:</strong> Prove that <span class="math inline">\(\lambda_1\)</span> is the largest eigenvalue.</em></p>
+<p>After finding <span class="math inline">\(v_1\)</span>, consider a new optimization problem: <span class="math display">\[
 \begin{aligned}
-X_i = 
-    \begin{cases}
-        \max \{ w_i, T \} &amp; u_i &lt; \frac{w_i}{T} \\
-        0               &amp;   \text{ else }
-    \end{cases}
+&amp;\max   &amp; \frac{1}{2} x^T A x \\
+&amp;s.t.   &amp;  x^T x = 1 \\
+&amp;       &amp;  v_1^T x = 0
 \end{aligned}
 \]</span></p>
-<p>Observe that if <span class="math inline">\(w_i \ge T\)</span>, then <span class="math inline">\(w_i / T \ge 1\)</span> and <span class="math inline">\(X_i \equiv \max \{ w_i, T \} = w_i\)</span>. The expectation of <span class="math inline">\(X_i\)</span> is given algebraically by <span class="math display">\[
+<p>That is, we want to find a new unit vector that is orthogonal to <span class="math inline">\(v_1\)</span> while maximizing <span class="math inline">\(\frac{1}{2} x^T A x\)</span>.</p>
+<p><strong><em>Existence of maximum solution.</em></strong> By the lemma and the facts: 1. <span class="math inline">\(\{x : x^T x = 1\} \cap \{ x : v_1^T x = 0 \}\)</span> is closed.<br />
+2. <span class="math inline">\(\frac{1}{2} x^T A x\)</span> is continuous.</p>
+<p>Denote this maximum point <span class="math inline">\(v_2\)</span>. Now consider the new Lagrange function for the optimization <span class="math display">\[
+L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1) - \beta(v_1^T x - 0)
+\]</span></p>
+<p><strong><em>Gradient at the maximum point:</em></strong> At this point, it holds that <span class="math display">\[
+\frac{\partial L}{\partial x} \mid_{x = v_2} = Av_2 - \lambda v_2 - \beta v_1 = 0
+\]</span></p>
+<p>Left multiplying <span class="math inline">\(v_1^T\)</span> gives <span class="math display">\[
+(v_1^T A)v_2 - \lambda v_1^T v_2 - \beta v_1^T v_1 = (A v_1)^T v_2  - \beta = \lambda_1 v_1^T v_2 - \beta = -\beta = 0
+\]</span> where <span class="math inline">\(v_1^T A = (A v_1)^T\)</span> follows from the symmetry of <span class="math inline">\(A\)</span>, i.e., <span class="math inline">\(A = A^T\)</span>.</p>
+<p>Therefore, <span class="math display">\[
+Av_2 - \lambda v_2 = 0
+\]</span></p>
+<p>It concludes that <span class="math inline">\(v_2\)</span> is an eigenvector of <span class="math inline">\(A\)</span>. Denote its associated eigenvalue <span class="math inline">\(\lambda_2\)</span>.</p>
+<p>In a similar manner, we can define <span class="math display">\[
 \begin{aligned}
-    \mathbb{E} [ X_i ] = \max \{ w_i, T \} \cdot \Pr \left[ u_i \le \frac{w_i}{T} \right] = \max \{ w_i, T \} \cdot \min \{ 1, w_i / T \} = w_i.
+&amp;\max   &amp; \frac{1}{2} x^T A x \\
+&amp;s.t.   &amp;  x^T x = 1 \\
+&amp;       &amp;  v_1^T x = 0 \\
+&amp;       &amp;  v_2^T x = 0 \\
 \end{aligned}
 \]</span></p>
-<p>It follows by linearity of expectation that <span class="math display">\[
-    \mathbb{E} \left[ \sum_{i \in I} X_i \right] = \sum_{i \in I} w_i.
+<p>There exists an optimal point <span class="math inline">\(v_3\)</span>. The derivative of Lagrange function at this point is <span class="math display">\[
+\frac{\partial L}{\partial x} \mid_{x = v_3} = Av_3 - \lambda v_3 - \beta_1 v_1 - \beta_2 v_2 = 0
 \]</span></p>
-<h2 id="space-usage">Space Usage</h2>
-<p>Denote <span class="math inline">\(S\)</span> the set of items with <span class="math inline">\(X_i \neq 0\)</span> and let <span class="math inline">\(p_i\)</span> be the probability of <span class="math inline">\(i\)</span> being sampled. Then the expected size of <span class="math inline">\(S\)</span> is given by <span class="math display">\[
-\sum_{i = 1}^n p_i = \sum_{i = 1}^n \min \left\{ 1 , \frac{w_i}{T} \right\}
-\]</span></p>
-<p>The problem with threshold sampling is that it is hard to control the memory usage of the sample set <span class="math inline">\(S\)</span>. If the <span class="math inline">\(n\)</span> items are known offline, and we would like <span class="math inline">\(|S| \approx k\)</span> for some integer <span class="math inline">\(k \le n\)</span>, then we can search for some <span class="math inline">\(T\)</span> such that <span class="math display">\[
-\sum_{i = 1}^n p_i = k
-\]</span></p>
-<p>Then <span class="math inline">\(|S| = k\)</span> in expectation.</p>
-<p>The question is, is it possible to force <span class="math inline">\(|S|= k\)</span> exactly? Further, what if the items come online (one by one)?</p>
-<h1 id="priority-sampling">Priority Sampling</h1>
-<p><em>Priority sampling</em> achieves this. First recall that in <em>threshold sampling</em> we decide whether to keep <span class="math inline">\(i\)</span> by checking whether a uniform sampled real number <span class="math inline">\(u_i\)</span> is less than <span class="math inline">\(\frac{w_i}{T}\)</span>: <span class="math display">\[
-u_i &lt; \frac{w_i}{T}
-\]</span></p>
-<p>This is equivalent to <span class="math display">\[
-T &lt; \frac{w_i}{u_i}
-\]</span></p>
-<p>Define the <em>priority</em> of an item <span class="math inline">\(i \in [n]\)</span> as <span class="math inline">\(q_i = \frac{w_i}{u_i}\)</span>. Note that <span class="math inline">\(q_i\)</span> is a random variable. In <em>threshold sampling</em>, item <span class="math inline">\(i\)</span> is kept with weight <span class="math inline">\(\max \{ w_i, T \}\)</span> if <span class="math display">\[
-T &lt; q_i
-\]</span></p>
-<p>Now, instead of using a fixed value of <span class="math inline">\(T\)</span>, the <em>Priority sampling</em> sets <span class="math display">\[
-T = (k + 1) \text{-th largest } \{ q_i \}
-\]</span></p>
-<p>By the definition of <span class="math inline">\(T\)</span>, only the <span class="math inline">\(k\)</span> items with largest priorities <span class="math inline">\(q_i\)</span>'s are kept in the sample set <span class="math inline">\(S\)</span>: <span class="math display">\[
-S = \{ k \text{ items with largest } q_i \text{ &#39;s } \}
-\]</span></p>
-<p>It can be seen that <span class="math inline">\(S\)</span> and <span class="math inline">\(T\)</span> can be easily maintained by a binary heap when the items come in stream fashion.</p>
-<p>The challenge is not to analyze the behaviors of the r.v.'s: <span class="math display">\[
+<p>for some parameters <span class="math inline">\(\lambda, \beta_1, \beta_2\)</span>. Left multiplying <span class="math inline">\(v_1^T\)</span> or <span class="math inline">\(v_2^T\)</span> gives <span class="math inline">\(\beta_1 = 0\)</span> and <span class="math inline">\(\beta_2 = 0\)</span> so that <span class="math inline">\(v_3\)</span> is an eigenvector of <span class="math inline">\(A\)</span>.</p>
+<p>Following the procedure, we can find <span class="math inline">\(n\)</span> eigenvectors <span class="math inline">\(v_1, v_2, ..., v_n\)</span> of <span class="math inline">\(A\)</span>. Define <span class="math display">\[
+\Sigma =
 \begin{aligned}
-X_i = 
-    \begin{cases}
-        \max \{ w_i, T \} &amp; T &lt; \frac{w_i}{u_i} \equiv u_i &lt; \frac{w_i}{T} \\
-        0               &amp;   \text{ else }
-    \end{cases}
+    \left[
+    \begin{matrix}
+    &amp;\lambda_1 &amp;    &amp;   \\
+    &amp;          &amp;\lambda_2 &amp; \\
+    &amp;           &amp;   &amp;   ... \\
+    &amp;           &amp;    &amp;      &amp; \lambda_n 
+    \end{matrix} 
+    \right]
+\end{aligned}
+\qquad
+V =
+\begin{aligned}
+    \left[
+    \begin{matrix}
+    v_1, v_2, ..., v_n
+    \end{matrix} 
+    \right]
 \end{aligned}
 \]</span></p>
-<p>since now <span class="math inline">\(T\)</span> is itself a random variable.</p>
-<h2 id="theorem">Theorem</h2>
-<p><span class="math display">\[
-    \mathbb{E}[X_i] = w_i.
+<p>Then <span class="math display">\[
+A V = V \Sigma
 \]</span></p>
-<p><em>Proof.</em> There is an elegant proof based on conditional expectation. For <span class="math inline">\(i \in [n]\)</span>, define the random variable <span class="math inline">\(T_i\)</span> as the <span class="math inline">\(k\)</span>-th largest priority of elements other than <span class="math inline">\(i\)</span>. If <span class="math inline">\(i\)</span>-th is sampled, then <span class="math inline">\(q_i \ge T_i\)</span> and <span class="math inline">\(T_i\)</span> becomes the <span class="math inline">\(k+1\)</span>-th largest priority. Therefore, <span class="math display">\[
-    \mathbb{E}_{X_i} [ X_i \mid T_i ] = \max \{ X_i, T_i \} \cdot \min \{1, w_i / T_i \} = w_i. 
+<p>Hence, <span class="math display">\[
+A = V \Sigma V^{-1} = V \Sigma V^T
 \]</span></p>
-<p>Finally, <span class="math inline">\(\mathbb{E}_{X_i} [X_i ] = \mathbb{E}_{T_i} [ \mathbb{E}_{X_i} [ X_i \mid T_i] ] = w_i\)</span>.</p>
-<!-- The trick is to condition $X_i$ on the $k$-th and $k+1$-th largest priority of the rest items. Define the random variables 
-$$
-L = (k + 1) \text{-th largest } \{ q_j \}_{j \neq i} \\
-U = (k) \text{-th largest } \{ q_j \}_{j \neq i}
-$$
-
-Consider the case $L = a$ and $U = b$, where $a \le b$. There two possible cases
-
-1. If $w_i > b$, then $T = b$ and surely $\frac{w_i}{u_i} > T$ holds. In this case  $X_i = w_i$ and 
-    $$
-        \mathbb{E}[X_i | U = b] = w_i
-    $$
-
-2. If $w_i < b$, then there are four sub-cases:
-   * $\frac{w_i}{u_i} \le a$, then $T = b$ and $i$ is not selected into $S$. Therefore $X_i = 0$.   
-  
-   * $a < \frac{w_i}{u_i} < b$, now $\frac{w_i}{u_i}$ becomes the $k+1$-th largest priority of all items and $T = \frac{w_i}{u_i}$. In this case $i$ is not selected into $S$, and $X_i = 0$ (since $\frac{w_i}{u_i} < T$ does not hold). 
-  
-   * $\frac{w_i}{u_i} = b$, then there is a tie and $T = b$ in this case. Depending on how the tie is broken, either $i$ is put into $S$ or not. But in both cases, $X_i = 0$ since $\frac{w_i}{u_i} < T$ does not hold. 
-  
-   * $\frac{w_i}{u_i} > b$, then $T = b$ and $i$ is put into $S$. As $w_i < T$, we have $X_i = T = b$. 
-
-    Therefore, 
-    $$
-        \mathbb{E}[X_i | U = b] = b \cdot \Pr\left[ \frac{w_i}{u_i} > b \mid w_i < b \wedge U = b \right] = b \cdot \frac{w_i}{b} = w_i
-    $$
-
-In conclusion, 
-$$
-\mathbb{E}[X_i] = \mathbb{E}[\mathbb{E}[X_i | U]]  = w_i
-$$ -->
-<h2 id="theorem-1">Theorem</h2>
-<p>For <span class="math inline">\(I \subset [n]\)</span>, <span class="math display">\[
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="svd">SVD</h2>
+<p>In general, a matrix <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> takes a vector <span class="math inline">\(x \in \mathbb{R}^n\)</span> to a vector <span class="math inline">\(Ax \in \mathbb{R}^m\)</span>. It is natural to ask, is there a vector <span class="math inline">\(x\)</span>, such that its length is enlarged by the largest factor after the transformation: <span class="math display">\[
+\max_{x \in \mathbb{R}^n } \frac{ ||Ax || }{ ||x|| }
+\]</span></p>
+<p>As <span class="math inline">\(||x||\)</span> is a number, <span class="math inline">\(\frac{ ||Ax || }{ ||x|| } = || A \frac{x}{||x||} ||\)</span>. This is equivalent to find a unit vector <span class="math inline">\(x\)</span> that maximize its length (or equivalently, the square of its length) after the transformation <span class="math display">\[
 \begin{aligned}
-    \mathbb{E}\left[ \prod_{i \in I} X_i \right] =
-    \begin{cases}
-         \prod_{i \in I} w_i     &amp; \text{ if } |I| \le k \\
-         0                      &amp; else 
-    \end{cases}
+&amp;\max &amp; \frac{1}{2} x^T A^T Ax \\
+&amp;s.t. &amp;  x^T x = 1
 \end{aligned}
 \]</span></p>
-<p><em>Proof:</em> Clearly, when <span class="math inline">\(|I| &gt; k\)</span>, then <span class="math inline">\(\exists i \in I\)</span>, such that <span class="math inline">\(q_i\)</span> is not one of the <span class="math inline">\(k\)</span> largest priorities. Hence <span class="math inline">\(\prod_{i \in I} X_i = 0\)</span> for sure.</p>
-<p>If <span class="math inline">\(|I| \le k\)</span>, define <span class="math inline">\(T_I\)</span> to be the <span class="math inline">\(k - |I| + 1\)</span>-th largest priority of elements in <span class="math inline">\([n] \setminus I\)</span>. Observe that <span class="math inline">\(\prod_{i \in I} X_i \neq 0\)</span>, if only the priorities of all <span class="math inline">\(i \in I\)</span> are among the <span class="math inline">\(k\)</span> largest ones. In such case, <span class="math inline">\(T_I\)</span> becomes the <span class="math inline">\(k+1\)</span>-th largest priority. Therefore, <span class="math display">\[
-    \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] = \prod_{i \in I} \mathbb{E} [ X_i \mid T_I ] = \prod_{i \in I} w_i, 
-\]</span></p>
-<p>and <span class="math inline">\(\mathbb{E}[ \prod_{i \in I} X_i ] = \mathbb{E} [ \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] ] = \prod_{i \in I} w_i\)</span>.</p>
-<!-- If $|I| \le k$, we show the claims holds by induction. The base case of $|I| = 1$ reduces to *Theorem 1*. Suppose that the claim hold for $|I| \le t < k$, we show it holds for $|I| = t + 1$. 
-
-Similarly to *Theorem 1*, define $U$ to be the $k + 1 - |I|$-th largest priority in $[n] \setminus I$. Conditioning on $U = b$, then we can divide $I$ into two sets: $I_1 = \{ i \in I :   w_i > b\}$ and $I_2 = I \setminus I_1$.  For $i \in I_1$, we have $X_i = w_i$ by definition. Now consider $I_2$. Let $j = \arg \min_{i \in I_2} q_i$. 
-If $q_j \le b$, then it holds that $b \ge T \ge q_j$ and $X_j = 0$. In this case it does not contribute to $\prod_{i \in I} X_i$. Hence
-$$
+<p>In this case, the objective function is <span class="math inline">\(||Ax||^2 = (Ax)^T (Ax) = x^T A^T A x\)</span>.</p>
+<p>Following similar process of previous section, we can find a set of eigenvectors <span class="math inline">\(v_1, v_2, ..., v_n\)</span> of <span class="math inline">\(A^T A\)</span>. Define <span class="math inline">\(U \in \mathbb{R}^{m \times n}\)</span> <span class="math display">\[
+U = A V { \sqrt{\Sigma^{-1} } } = AV 
 \begin{aligned}
-\mathbb{E} \left[ \prod_{i \in I} X_i \mid U = b \right] 
-    &= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \Pr \left[ \frac{w_i}{u_i} > b \right] ) \\
-    &= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \frac{w_i}{b} ) \\
-    &= \prod_{i \in I} w_i
+    \left[
+    \begin{matrix}
+    &amp;\sqrt { 1 / \lambda_1} &amp;    &amp;   \\
+    &amp;          &amp;\sqrt { 1 / \lambda_2} &amp; \\
+    &amp;           &amp;   &amp;   ... \\
+    &amp;           &amp;    &amp;      &amp; \sqrt { 1 / \lambda_n} 
+    \end{matrix} 
+    \right]
 \end{aligned}
-$$ -->
-<h3 id="reference">Reference</h3>
-<ol type="1">
-<li>Nick Duffield, Carsten Lund, and Mikkel Thorup. Priority sampling for estimation fo arbitrary subset sums. Journal of ACM, 2007</li>
-<li>Chandra Chekuri, Lecture note, CS 598: Algorithms for Big Data</li>
-</ol>
+\]</span></p>
+<p>Then <span class="math inline">\(U { \sqrt \Sigma } V^T = A\)</span>, which is exactly the SVD.</p>
+<p>Finally, we can verify that the columns of <span class="math inline">\(U\)</span> are perpendicular, <span class="math inline">\(\forall i \neq j, i, j \in [n]\)</span>, <span class="math display">\[
+u_i^T u_j = (\sqrt { 1 / \lambda_i} A V_i)^T (\sqrt { 1 / \lambda_j} A V_j) = \sqrt { 1 / \lambda_i} \sqrt { 1 / \lambda_j} v_i^T A^T A v_j  = 0
+\]</span></p>
+<p>as <span class="math inline">\(v_i\)</span> and <span class="math inline">\(v_j\)</span> are orthogonal eigenvectors of <span class="math inline">\(A^T A\)</span>.</p>
 
       
     </div>
@@ -874,7 +592,7 @@ $$ -->
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/28/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/28/">28</a><span class="page-number current">29</span><a class="page-number" href="/page/30/">30</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/30/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/28/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/28/">28</a><span class="page-number current">29</span><a class="page-number" href="/page/30/">30</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/30/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -940,7 +658,7 @@ $$ -->
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/14/AMS-Sketch/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/10/Maximum-of-Sub-Gaussian-Random-Variables/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/04/14/AMS-Sketch/" class="post-title-link" itemprop="url">AMS Sketch</a>
+            <a href="/2021/06/10/Maximum-of-Sub-Gaussian-Random-Variables/" class="post-title-link" itemprop="url">Maximum of Sub-Gaussian Random Variables</a>
         </h2>
 
         <div class="post-meta">
@@ -169,16 +169,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2021-04-14 15:41:33" itemprop="dateCreated datePublished" datetime="2021-04-14T15:41:33+10:00">2021-04-14</time>
+              <time title="Created: 2021-06-10 00:42:23 / Modified: 01:08:56" itemprop="dateCreated datePublished" datetime="2021-06-10T00:42:23+10:00">2021-06-10</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-05-14 21:20:45" itemprop="dateModified" datetime="2021-05-14T21:20:45+10:00">2021-05-14</time>
-              </span>
 
           
 
@@ -191,545 +185,319 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="problem">Problem</h1>
-<p>There is a stream <span class="math inline">\(S\)</span> of elements, each consists of a pair <span class="math inline">\((t, \Delta) \in [n] \times \mathbb{R}\)</span>. Let <span class="math inline">\(f \in \mathbb{R}^n\)</span> be the frequency vector of <span class="math inline">\(S\)</span>, s.t., <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
-    f_i = \sum_{ (t, \Delta) \in S \wedge t = i} \Delta. 
+          <p><strong>Definition.</strong> A random variable <span class="math inline">\(X \in \mathbb{R}\)</span> is said to be sub-Gaussian with variance proxy <span class="math inline">\(\sigma^2\)</span> if <span class="math inline">\(\mathbb{E} [X] = 0\)</span> and its moment generating function satisfies <span class="math display">\[
+    \mathbb{E}[ \exp (sX) ] \le \exp \left( \frac{\sigma^2 s^2 }{2} \right), \qquad \forall s \in \mathbb{R}.
 \]</span></p>
-<p>Given <span class="math inline">\(\epsilon \in (0, 1)\)</span>, design a data structure that outputs an <span class="math inline">\((1 \pm \epsilon)\)</span> estimate <span class="math inline">\(\Vert f \Vert_2^2\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>, and uses space of <span class="math inline">\(O( \frac{1}{\epsilon^2 } \ln \frac{1}{\delta} )\)</span>.</p>
-<h1 id="solution">Solution</h1>
-<p>Based on Count-Sketch.</p>
-<h2 id="algorithm">Algorithm</h2>
-<blockquote>
-<hr />
-<p><strong>Count-Sketch</strong><br />
-1. <span class="math inline">\(k \leftarrow O \left( \ln \frac{1}{ \delta} \right); m \leftarrow \frac{3}{\epsilon^2}\)</span>.<br />
-2. <span class="math inline">\(h_1, h_2, ..., h_k: [n] \rightarrow [m]\)</span>, pairwise independent hash functions.<br />
-3. <span class="math inline">\(g_1, g_2, ..., g_k: [n] \rightarrow \{-1, 1\}\)</span>, four-wise independent hash functions.<br />
-4. <span class="math inline">\(M \leftarrow \{ 0 \}^{k \times m}\)</span> be a <span class="math inline">\(k \times m\)</span> matrix initialized with zeros.<br />
-4. For <span class="math inline">\((t, \Delta) \in S:\)</span><br />
-5. <span class="math inline">\(\qquad\)</span> For <span class="math inline">\(i \in [k]:\)</span><br />
-6. <span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(M[i, h_i (t) ] \leftarrow M[i, h_i (t) ] + g_i(t) \cdot \Delta\)</span><br />
-<span class="math inline">\(\qquad\)</span></p>
-<p><strong>Estimation of <span class="math inline">\(\Vert f \Vert_2^2\)</span></strong><br />
-1. For <span class="math inline">\(i \in [k]:\)</span><br />
-2. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(M_i\)</span> be the <span class="math inline">\(i\)</span>-th row of <span class="math inline">\(M\)</span>.<br />
-3. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(a_i \leftarrow \Vert M_i \Vert_2\)</span>.<br />
-4. Return the median of <span class="math inline">\((a_i^2)_{i \in [k] }\)</span>.</p>
-</blockquote>
-<h2 id="analysis">Analysis</h2>
-<blockquote>
-<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall i \in [k], \mathbb{E}[ a_i^2 ] = \Vert f \Vert_2^2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Consider a fixed <span class="math inline">\(i \in [k]\)</span>. <span class="math inline">\(\forall j \in [m]\)</span>, define the set <span class="math inline">\(h_i^{-1}[j]\)</span> as elements in <span class="math inline">\([n]\)</span> hashed to <span class="math inline">\(j\)</span>: <span class="math display">\[
-    h_i^{-1}[j] \doteq \{ t \in [n] : h(t) = j \}. 
+<p>In this case we write <span class="math inline">\(X \sim \text{subG}(\sigma^2)\)</span>.</p>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(X_1, \ldots, X_n\)</span> be <span class="math inline">\(n\)</span> random variables such that <span class="math inline">\(X_i \sim \text{subG}(\sigma^2)\)</span>. Then <span class="math display">\[
+    \mathbb{E} \Big[ \max_{i \in [n] } X_i \Big] \le \sigma \sqrt{ 2 \log n }, 
+    \qquad 
+    \mathbb{E} \Big[ \max_{i \in [n] } | X_i | \Big] \le \sigma \sqrt{ 2 \log (2 n ) }.
 \]</span></p>
-<p>Once <span class="math inline">\(h_i\)</span> is fixed, it holds that <span class="math display">\[
-    M[i, j] = \sum_{ t \in h_i^{-1}[j] } g_i (t) \cdot f_t.
+<p><strong>Proof.</strong> <span class="math inline">\(\forall s &gt; 0\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} \Big[ \max_{i \in [n] } X_i \Big]
+            &amp;= \frac{1}{s} \mathbb{E} \Big[ \max_{i \in [n] } s X_i \Big] \\
+            &amp;= \frac{1}{s} \mathbb{E} \Big[ \ln \Big( \exp \Big( \max_{i \in [n] } s X_i \Big) \Big) \Big] \\
+            &amp;\le \frac{1}{s} \ln \Big( \mathbb{E} \Big[  \exp \Big( \max_{i \in [n] } s X_i \Big) \Big) \Big] 
+            \qquad \text{Jensen}    \\
+            &amp;= \frac{1}{s} \ln \Big( \mathbb{E} \Big[  \max_{i \in [n] } \exp \Big(  s X_i \Big) \Big) \Big] \\
+            &amp;\le \frac{1}{s} \ln \Big( \sum_{i \in [n] } \mathbb{E} \Big[ \exp \Big(  s X_i \Big) \Big) \Big] \\
+            &amp;\le \frac{1}{s} \ln \Big( \sum_{i \in [n] } \exp \Big( \frac{\sigma^2 s^2}{2} \Big) \Big) \\
+            &amp;= \frac{1}{s} \ln n + \frac{\sigma^2 s}{2} \\
+            &amp;\le 2 \sqrt{ \frac{\sigma^2}{2} \ln n} 
+            \qquad \text{Setting } s = \sqrt{ \frac{2 \ln n}{\sigma^2} } \\
+            &amp;= \sigma \sqrt{ 2 \ln n}.
+    \end{aligned}
 \]</span></p>
-<p>By linearity of expectation and four-wise independence of <span class="math inline">\(g_i\)</span>, <span class="math display">\[
-    \underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t, t&#39; \in h_i^{-1}[j] } \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] \cdot f_t \cdot f_{t&#39;}. 
+<p>To prove the second inequality, we can set <span class="math inline">\(X_{i + n} = - X_i\)</span>, for all <span class="math inline">\(i \in [n]\)</span>, so that <span class="math display">\[
+    \mathbb{E} \Big[ \max_{i \in [n] } | X_i | \Big] = \mathbb{E} \Big[ \max_{i \in [2n] } X_i \Big] \le \sigma \sqrt{ 2 \log (2n) }. 
 \]</span></p>
-<p>It holds that <span class="math display">\[
-    \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] = 
-    \begin{cases}
-        1,  &amp; \text{ if } t = t&#39;,    \\
-        0,      &amp; \text{ otherwise }. 
-    \end{cases}
-\]</span></p>
-<p>Therefore, <span class="math inline">\(\underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t \in h_i^{-1}[j] } f_t^2\)</span>.</p>
-<p><strong>Remark. This is a rather deep result, which says that whatever elements are hashed to bucket <span class="math inline">\(j\)</span>, <span class="math inline">\(\underset{g}{ \mathbb{E} } [ (M[i,j] )^2 ]\)</span> equals the sum of squares of these elements.</strong></p>
-<p>By linearity of expectation, when <span class="math inline">\(h_i\)</span> is fixed, <span class="math display">\[
-    \underset{g}{ \mathbb{E} } [ a_i^2 ] = \sum_{j \in [m] } \underset{g}{ \mathbb{E} } [ (M[i,j])^2 ] = \sum_{j \in [m] } \sum_{ t \in h_i^{-1}[j] } f_t^2 = \Vert f \Vert_2^2. 
-\]</span></p>
-<p>It follows that <span class="math inline">\(\underset{h}{ \mathbb{E} } \left[ \underset{g}{ \mathbb{E} } [ a_i^2 ] \right] = \Vert f \Vert_2^2\)</span>.</p>
-<p><strong>Remark. The proof holds even for <span class="math inline">\(m = 1\)</span>, i.e., we can use only one bucket to construct an unbiased estimator of <span class="math inline">\(\Vert f \Vert_2^2\)</span>.</strong></p>
 <p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1]. <em>Rigollet, Phillippe, and Jan-Christian Hütter. "High dimensional statistics." Lecture notes for course 18S997 813 (2015): 814.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/09/Least-Square-Estimation-Error-Bound/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/09/Least-Square-Estimation-Error-Bound/" class="post-title-link" itemprop="url">Least Square Estimation Error Bound</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-06-09 00:10:33 / Modified: 11:26:54" itemprop="dateCreated datePublished" datetime="2021-06-09T00:10:33+10:00">2021-06-09</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(S \subseteq \mathbb{R}^d\)</span> be a symmetric convex body, and let <span class="math inline">\(\vec{x} \in S\)</span> and <span class="math inline">\(\vec y = \vec x + \vec a\)</span> for some <span class="math inline">\(\vec a \in \mathbb{R}^d\)</span>. Set <span class="math inline">\(\vec z = \arg \min_{\vec v \in S} \Vert \vec v - \vec y \Vert_2\)</span>. Let <span class="math inline">\(\vec c = \vec z - \vec x\)</span>. Then we must have <span class="math display">\[
+\Vert \vec c \Vert_2^2 \le 4 \min \Big\{ \Vert \vec a \Vert_2^2, \Vert \vec a \Vert_{S^*} \Big\},
+\]</span> where <span class="math inline">\(\Vert \vec z \Vert_{S^*} \doteq \sup_{ \vec v \in S} | \left&lt; \vec v, \vec a \right&gt;|\)</span>.</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/wuhao-wu-jiang/BlogImgs/master/Least-Square-Estimation-Error-Bound.png" /></p>
+<p><strong>Proof.</strong> Let <span class="math inline">\(\vec b = \vec z - \vec y\)</span>. Then <span class="math display">\[     
+    \vec c = \vec a + \vec b.      
+\]</span></p>
+<ol type="1">
+<li><p>By the definition of <span class="math inline">\(\vec z\)</span>, it holds that <span class="math display">\[
+     \Vert \vec b \Vert_2 \le \Vert \vec a \Vert_2.
+ \]</span> Hence, by triangle inequality, <span class="math display">\[
+     \Vert \vec c \Vert_2 \le \Vert \vec b \Vert_2 + \Vert \vec a \Vert_2 \le 2 \Vert \vec a \Vert_2. 
+ \]</span></p></li>
+<li><p>In the plot, we notices that <span class="math inline">\(\left&lt; \vec c, \vec b \right&gt; \le 0 \le \left&lt; \vec c, \vec a \right&gt;\)</span>. Formally, <span class="math display">\[
+     \begin{aligned}
+         \left&lt; \vec c, \vec b \right&gt; 
+         &amp;= \left&lt; \vec b, \vec b \right&gt; 
+         + \left&lt; \vec a, \vec b \right&gt; \\
+         &amp;= \left&lt; \vec a, \vec b \right&gt; + \Vert \vec b \Vert_2^2 \\
+         &amp;\le \left&lt; \vec a, \vec b \right&gt; + \Vert \vec a \Vert_2^2  \\
+         &amp;= \left&lt; \vec c, \vec a \right&gt; 
+     \end{aligned}
+ \]</span></p>
+<p>Hence, <span class="math display">\[
+     \begin{aligned}
+         \Vert \vec c \Vert_2^2       
+             &amp;= \left&lt; \vec c, \vec c \right&gt; \\  
+             &amp;= \left&lt; \vec c, \vec a \right&gt; + \left&lt; \vec c, \vec b \right&gt; \\      
+             &amp;\le \left&lt; \vec c, \vec a \right&gt; + \left&lt; \vec c, \vec a \right&gt;\\  
+             &amp;= 2 \left&lt; \vec c, \vec a \right&gt;\\
+             &amp;\le 2 \Vert \vec c \Vert_{S} \Vert \vec a \Vert_{S^*} 
+     \end{aligned}
+ \]</span></p>
+<p>where <span class="math inline">\(\Vert \vec c \Vert_S \doteq \inf \{ r \in \mathbb{R}_{\ge 0} : \vec c \in r S \}\)</span> and the last inequality follows from Holder Inequality. As <span class="math display">\[
+     \Vert \vec c \Vert_{S}  =  \Vert \vec z - \vec x \Vert_{S} \le \Vert \vec z \Vert_{S} + \Vert \vec x \Vert_{S} \le 2, 
+ \]</span> we get <span class="math inline">\(\Vert \vec c \Vert_{S} \le 4 \Vert \vec a \Vert_{S^*}\)</span>.</p></li>
+</ol>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>Nikolov, Aleksandar, Kunal Talwar, and Li Zhang. "The geometry of differential privacy: the sparse and approximate cases." In Proceedings of the forty-fifth annual ACM symposium on Theory of computing, pp. 351-360. 2013.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/08/Dual-Norm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/08/Dual-Norm/" class="post-title-link" itemprop="url">Dual Norm</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-06-08 13:47:47 / Modified: 21:31:58" itemprop="dateCreated datePublished" datetime="2021-06-08T13:47:47+10:00">2021-06-08</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="minkowski-norm">Minkowski norm</h1>
+<p>Let <span class="math inline">\(S \subset \mathbb{R}^d\)</span> be a convex set. It is symmetric if <span class="math inline">\(S = -S\)</span>, where <span class="math display">\[
+    -S \doteq \{ - \vec v : \vec v \in S \}.
+\]</span></p>
+<p>The <em>Minkowski norm</em> <span class="math inline">\(\Vert \vec x \Vert_S\)</span> induced by the convex body <span class="math inline">\(S\)</span> is defined as <span class="math display">\[
+    \Vert \vec x \Vert_S \doteq \inf \{ r \in \mathbb{R}_{\ge 0} : \vec x \in r S \},
+\]</span></p>
+<p>where <span class="math inline">\(r S \doteq \{ r \vec v : \vec v \in S \}\)</span>.</p>
+<p><img src="https://raw.githubusercontent.com/wuhao-wu-jiang/BlogImgs/master/DualNorm/MinkowshkiNorm.png" /></p>
 <blockquote>
-<p><strong>Theorem 2.</strong> <span class="math inline">\(\mathbb{Var}[ a_i^2 ] = \frac{\Vert x \Vert_2^4 }{ m }\)</span>.</p>
+<p><strong>Fact</strong> <span class="math inline">\(\Vert \cdot \Vert_S\)</span> is is a norm.</p>
 </blockquote>
 <p><strong>Proof.</strong></p>
-<p><span class="math inline">\(\forall t \in [n]\)</span>, define <span class="math inline">\(X_t \doteq g_i(t) \cdot x_t\)</span>.</p>
-<p><span class="math inline">\(\forall t \in [n], j \in [m]\)</span>, define <span class="math inline">\(Y_{t, j} \doteq \mathbb{1}[ h_i[t] = j ] \cdot X_t\)</span>. Then <span class="math display">\[
-    M[i,j] = \sum_{t \in [n] } Y_{t, j}, 
-\]</span> and hence</p>
-<p><span class="math display">\[
-\begin{aligned}
-    \mathbb{Var}[a_i^2] 
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } (M[i, j])^2 \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \left( \sum_{t \in [n] } Y_{t, j} \right)^2 \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \sum_{t, t&#39; \in [n]} Y_{t, j} Y_{t&#39;, j} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \sum_{j \in [m] } Y_{t, j} Y_{t&#39;, j} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \left( \sum_{j \in [m] } \mathbb{1}[ h_i[t] = j ] \cdot \mathbb{1}[ h_i[t&#39;] = j ] \right) \cdot X_t \cdot X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t \in [n] } f_t^2 + \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] 
-\end{aligned}
-\]</span></p>
-<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>, define <span class="math inline">\(Z_{t, t&#39;} = \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;}\)</span>. Then <span class="math display">\[
-    \mathbb{E}[ Z_{t, t&#39;} ] = \mathbb{E}[ \mathbb{1}[ h_i[t] = h_i[t&#39;] ] ]  \cdot \mathbb{E}[ X_t ] \cdot \mathbb{E}[ x_{t&#39;} ] = 0. 
-\]</span></p>
-<p>Consider <span class="math inline">\(t &lt; t&#39; \in [n]\)</span>, <span class="math inline">\(s &lt; s&#39; \in [n]\)</span>. If <span class="math inline">\((t, t&#39;) \neq (s, s&#39;)\)</span>, then either <span class="math inline">\(t \neq s\)</span> or <span class="math inline">\(t&#39; \neq s&#39;\)</span>. Therefore, there must be an element that appears only once among the four. WLOG, suppose that <span class="math inline">\(t\)</span> is a unique element. Then <span class="math display">\[
-    Z_{t, t&#39;} Z_{s, s&#39;}
-            =  X_t \cdot \left( X_{t&#39;} \cdot X_s \cdot X_{s&#39;} \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right). 
-\]</span></p>
-<p>As <span class="math inline">\(g_i\)</span> is four-wise independent, and that <span class="math inline">\(t \neq t&#39;\)</span>, <span class="math inline">\(t \neq s\)</span> and <span class="math inline">\(t \neq s&#39;\)</span>, it holds that <span class="math inline">\(g_i(t)\)</span> is independent of <span class="math inline">\(\left( g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;) \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right)\)</span>. Hence, <span class="math display">\[
-    \mathbb{E}[ Z_{t, t&#39;} Z_{s, s&#39;}]  = 0. 
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;} \right] 
-            &amp;= \mathbb{E} \left[ \left( \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;} \right)^2 \right] \\
-            &amp;= \mathbb{E} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;}^2  \right] \\
-            &amp;= \sum_{t \neq t&#39; \in [n]} \frac{ x_t^2 x_{t&#39;}^2}{ m } \\
-            &amp;= \frac{\Vert x \Vert_2^4 }{ m }. 
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><span class="math inline">\(\forall i \in [k], \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \ge \epsilon \Vert x \Vert_2^2] \le \frac{1}{3}\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> By Chebyshev's inequality.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><span class="math inline">\(\Pr \left[ \left| \{ i \in [k] : \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \le \epsilon \Vert x \Vert_2^2] \} \right| &gt; \frac{k}{2} \right] \ge 1 - \delta\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> By Chernoff bound.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/02/The-Volume-Bound/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/02/The-Volume-Bound/" class="post-title-link" itemprop="url">The Volume Bound</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-04-02 00:19:23" itemprop="dateCreated datePublished" datetime="2021-04-02T00:19:23+11:00">2021-04-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-03 17:19:58" itemprop="dateModified" datetime="2021-04-03T17:19:58+11:00">2021-04-03</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Given a finite set <span class="math inline">\(\Sigma\)</span> and a integer <span class="math inline">\(n \in \mathbb{N}_+\)</span>, a code <span class="math inline">\(C \subset \Sigma^n\)</span> is a set of strings that are far apart. The set <span class="math inline">\(\Sigma\)</span> is called the alphabet of the code, and <span class="math inline">\(n\)</span> is called the block length of the code. We write <span class="math inline">\(q = |\Sigma|\)</span> as the size of the alphabet. Strings in <span class="math inline">\(C\)</span> are called codewords.</p>
-<p>For <span class="math inline">\(x, y \in \Sigma^n\)</span>, define their Hamming distance as <span class="math display">\[
-    \Delta(x, y) = | \{ i \in [n] : x_i \neq y_i \} |. 
-\]</span></p>
-<p>The distance <span class="math inline">\(\Delta(C)\)</span> of <span class="math inline">\(C\)</span>, is defined as the minimum distance between two different codes words in <span class="math inline">\(C\)</span>: <span class="math display">\[
-    \Delta(C)  \doteq \min_{x \neq  y \in C} \Delta(x, y). 
-\]</span></p>
-<p>Suppose that we have a code <span class="math inline">\(C\)</span> with distance <span class="math inline">\(d\)</span>. If we store a code <span class="math inline">\(x \in C\)</span>, and up to <span class="math inline">\((d - 1) / 2\)</span> bits of <span class="math inline">\(x\)</span> are corrupted, then we can still recover <span class="math inline">\(x\)</span>. Denote the ball centered at <span class="math inline">\(x\)</span> with radius <span class="math inline">\(r \in \mathbb{R}_+\)</span> as <span class="math display">\[
-    B(x, r) \doteq \{ y \in \Sigma^n : \Delta(y, x) \le r \}. 
-\]</span></p>
-<p>The balls <span class="math inline">\(\{ B(x, (d - 1) / 2) : x \in C \}\)</span> are non-overlapped.</p>
-<p>We investigate the maximum possible size of <span class="math inline">\(C\)</span>.</p>
-<blockquote>
-<p><strong>Definition.</strong> Given <span class="math inline">\(q \in \mathbb{N}_+\)</span>, for <span class="math inline">\(r \in \mathbb{R}_+\)</span>, define the volume of the ball <span class="math inline">\(B(x, d)\)</span> as <span class="math display">\[
-\mathbb{Vol}(r) = \sum_{i = 0}^{ \lfloor r \rfloor } \binom{n}{i} (q - 1)^i. 
-\]</span></p>
-</blockquote>
-<p>The following theorem upper bounds <span class="math inline">\(|C|\)</span> in terms of the volume of the balls.</p>
-<blockquote>
-<p><strong>Theorem (Hamming Bound).</strong> Let <span class="math inline">\(C\)</span> be a code with distance <span class="math inline">\(d \ge 3\)</span>. Then <span class="math display">\[
-|C| \le \frac{q^n }{ \mathbb{Vol}( (d - 1) / 2 ) }. 
-\]</span></p>
-</blockquote>
-<p>We are going to prove an estimate of the volume.</p>
-<blockquote>
-<p><strong>Estimate of Volume.</strong> Let <span class="math inline">\(r \in \mathbb{R}_+\)</span> be a positive integer. When <span class="math inline">\(r \le n - n / q\)</span>, <span class="math display">\[
-q^{ n h_q ( \lfloor r \rfloor / n) - O( \log n) } \le \mathbb{Vol} (r) \le q^{ n h_q ( \lfloor r \rfloor / n)}, 
-\]</span> where <span class="math display">\[
-\begin{aligned}
-h_q (\epsilon) 
-&amp;\doteq (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right) + (q - 1) \frac{\epsilon}{q - 1} \log_q \left( \frac{q - 1}{ \epsilon } \right) \\
-&amp;= (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right) + \epsilon \log_q \left( \frac{q - 1}{ \epsilon } \right). 
-\end{aligned}
-\]</span></p>
-</blockquote>
-<p>Observe that by concavity of <span class="math inline">\(\log_q (\cdot)\)</span>, we have <span class="math display">\[
-    h_q (\epsilon) \le \log_q \left( (1 - \epsilon)  \frac{1}{1 - \epsilon}  + \epsilon \frac{q - 1}{ \epsilon } \right) = 1. 
-\]</span></p>
-<p>The inequality holds with equality when <span class="math inline">\(h_q(\epsilon)\)</span> is maximized when <span class="math inline">\(1 - \epsilon = \epsilon / (q - 1)\)</span>, i.e., <span class="math inline">\(1 - \epsilon = 1 / q\)</span>.</p>
-<p>It immediately follows from the estimate that <span class="math display">\[
-    n h_q( \lfloor d / 2 - 1 / 2 \rfloor / n) + \log_q |C| \le n + O(\log n) \\
-    \Longleftrightarrow  h_q( \lfloor d / 2 - 1 / 2 \rfloor / n) + \frac{ \log_q |C| }{ n } \le 1 + O\left(\frac{ \log_q n }{ n } \right). 
-\]</span></p>
-<p>On the other hand, <span class="math display">\[
-    \begin{aligned}
-        h_q&#39;(\epsilon) 
-            &amp;= \frac{1}{\ln q} \left( \ln(1 - \epsilon) + (1 - \epsilon) \frac{1}{1 - \epsilon}  + \ln (q - 1) + \ln \left( \frac{1}{\epsilon} \right) - \epsilon \frac{1}{\epsilon}  \right) \\
-            &amp;= \frac{1}{\ln q} \left( \ln \left( \frac{1 - \epsilon}{\epsilon} \right) + \ln (q - 1)   \right).
-    \end{aligned}
-\]</span></p>
-<p>When <span class="math inline">\(\frac{1 - \epsilon}{\epsilon} = \frac{1}{\epsilon} - 1 \ge \frac{1}{q - 1}\)</span>, i.e., <span class="math inline">\(\epsilon \le 1 - 1 / q\)</span>, it holds that <span class="math inline">\(h_q&#39; \ge 0\)</span>. Conditioned on that <span class="math inline">\(\lfloor d / 2 - 1 / 2 \rfloor \ge 1\)</span>, i.e., <span class="math inline">\(d \ge 3\)</span>, we have <span class="math inline">\(d / 2 \le \lfloor d / 2 - 1 / 2 \rfloor + 1\)</span> and <span class="math display">\[
-    h_q( \lfloor d / 2 - 1 / 2 \rfloor / n) \ge h_q( d / (2n) ) + h&#39;_q(1 / n ) (1 / n) = h_q( d / (2n) ) + O( (\log_q n) / n).
-\]</span></p>
-<p>Define the <em>rate</em> of the code <span class="math inline">\(R = \frac{ \log_q |C| }{ n }\)</span>, and <em>relative distance</em> of the code as <span class="math inline">\(\delta = \frac{2d + 1}{n}\)</span>, we get</p>
-<blockquote>
-<p><span class="math display">\[
-R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right). 
-\]</span></p>
-</blockquote>
-<p>In what's follows, we prove the inequalities for volume estimation. WLOG, we assume that <span class="math inline">\(r\)</span> is an integer.</p>
-<h1 id="upper-bound">Upper Bound</h1>
-<blockquote>
-<p>For <span class="math inline">\(r \in \mathbb{N}_+\)</span>, it holds that <span class="math inline">\(\mathbb{Vol} (r) \le q^{n h_q(r / n)}\)</span>.</p>
-</blockquote>
-<h2 id="algebraic-approach">Algebraic Approach</h2>
-<p><span class="math display">\[
-    \begin{aligned}
-        \mathbb{Vol}(r) 
-            &amp;\le (q - 1)^r \sum_{i = 0}^r \binom{n}{i} \\
-            &amp;\le (q - 1)^r \sum_{i = 0}^r \binom{n - r}{i} \frac{n^r}{(n - r)^i} \\
-            &amp;\le (q - 1)^r \left( \frac{n}{r} \right)^r \sum_{i = 0}^r \binom{n - r}{i} \left( \frac{r}{n - r} \right)^i    \\
-            &amp;\le (q - 1)^r \left( \frac{n}{r} \right)^r \sum_{i = 0}^{n - r} \binom{n - r}{i} \left( \frac{r}{n - r} \right)^i    \\
-            &amp;= (q - 1)^r \left( \frac{n}{r} \right)^r \left( 1 + \frac{r}{n - r} \right)^{n - r}    \\
-            &amp;= (q - 1)^{ n \frac{r}{n} } \left( \frac{n}{r} \right)^{ n \frac{r}{n} } \left( \frac{1}{1 - \frac{r}{n} } \right)^{n \left( 1 - \frac{r}{n} \right) }    
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(\epsilon \doteq \frac{r}{n}\)</span>, we have <span class="math display">\[
-    \log_q \mathbb{Vol}(r) \le n \left( \epsilon \cdot \log_q \frac{q - 1}{\epsilon} + (1 - \epsilon) \cdot \log_q \frac{1}{1 - \epsilon} \right) = n h_q (\epsilon). 
-\]</span></p>
-<h2 id="entropy">Entropy</h2>
-<p>We rely on sub-additivity of entropy.</p>
-<blockquote>
-<p>Let <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> be discrete random variables, then<br />
-1. <span class="math inline">\(H( X, Y ) \le H(X) + H(Y)\)</span>.<br />
-2. <span class="math inline">\(H(X | Y) \le H(X)\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Consider the ball <span class="math inline">\(B(1^n, r)\)</span>, and a uniform random point <span class="math inline">\(X = (X_1, ..., X_n)\)</span> in the ball <span class="math inline">\(B(1^n, r)\)</span>. Its entropy is <span class="math display">\[
-    H(X) = \log \mathbb{Vol}(r). 
-\]</span></p>
-<!-- Let $I$ be a uniform integer in $n$ and let $Y = X_I$ be the coordinate of $X$.  -->
-<p>We write <span class="math inline">\(Y = X_1\)</span>. By sub-additivity of entropy and by symmetry, <span class="math display">\[
-    \begin{aligned}
-        H(X) 
-            &amp;\le H(X_1) + H(X_2) + ... + H(X_n) 
-            &amp;= n H(Y). 
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(\epsilon \doteq \Pr[ Y \neq 1]\)</span> be the probability that <span class="math inline">\(Y\)</span> is not 1. Then by concavity of <span class="math inline">\(\log (\cdot)\)</span>, <span class="math display">\[
-    \begin{aligned}
-        H(Y) 
-            &amp;= \Pr[ Y = 1] \cdot \log \left( \frac{1}{\Pr[ Y = 1]}\right) + \sum_{i \neq 1} \Pr[ Y = i ] \cdot \log \left( \frac{1}{\Pr[ Y = i]}\right) \\
-            &amp;= (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \sum_{i \neq 1} \frac{ \Pr[ Y = i ] }{ \epsilon } \cdot \log \left( \frac{1}{\Pr[ Y = i]}\right) \\
-            &amp;\le (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \log \left( \sum_{i \neq 1} \frac{ \Pr[ Y = i ] }{ \epsilon } \frac{1}{\Pr[ Y = i]}\right) \\
-            &amp;= (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \log \left( \frac{ q - 1 }{ \epsilon } \right) \\
-    \end{aligned}
-\]</span> where then entropy of <span class="math inline">\(Y\)</span> is maximized when <span class="math inline">\(Y\)</span> is uniform of the elements that are not 1. Further, it can be verified that <span class="math inline">\(\epsilon &lt; r / n\)</span>. As <span class="math inline">\(h_q (\epsilon)\)</span> increases for <span class="math inline">\(\epsilon &lt; 1 - 1 / q\)</span>, hence <span class="math display">\[
-    H(Y) \le (1 - r / n) \cdot \log \left( \frac{1}{1 - r / n} \right) + \frac{r}{n} \cdot \log \left( \frac{ q - 1 }{ r / n } \right).
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h3 id="supplementary-material">Supplementary Material</h3>
-<blockquote>
-<p><strong>Definition.</strong> Let <span class="math inline">\(X\)</span> be a discrete r.v., the entropy of <span class="math inline">\(X\)</span> is given by <span class="math display">\[
-H(X) = \sum_{a} \Pr[ X = a ] \log \frac{1}{ \Pr[ X = a] }
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Definition.</strong> Let <span class="math inline">\(X, Y\)</span> be discrete r.v., the entropy of <span class="math inline">\(X\)</span> conditioned <span class="math inline">\(Y\)</span> is given by <span class="math display">\[
-\begin{aligned}
-H(X \mid Y) 
-&amp;= \mathbb{E}_{b \leftarrow Y} [ H(X \mid Y = b) ] \\
-&amp;= \sum_{b} \Pr[ Y = b] \sum_{a } \Pr[ X = a \mid Y = b] \log \frac{1}{ \Pr[ X = a \mid y = b] } \\
-&amp;= \sum_{b, a} \Pr[ Y = b,  X = a] \log \frac{1}{ \Pr[ X = a \mid y = b] } \\
-\end{aligned}
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Chain Rule.</strong> <span class="math display">\[
-\begin{aligned}
-H(X \mid Y) + H(Y) 
-&amp;= \sum_{b, a} \Pr[ Y = b,  X = a] \log \left( \frac{1}{ \Pr[ X = a \mid y = b] } \cdot \frac{1}{ \Pr[ Y = b ] } \right) \\
-&amp;= \sum_{b, a} \Pr[ Y = b,  X = a] \log \left( \frac{1}{ \Pr[ X = a \mid y = b] } \cdot \frac{1}{ \Pr[ Y = b ] } \right) \\
-&amp;= H(X, Y)
-\end{aligned}
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Sub-additivity.</strong> For convenience, we rewrite <span class="math inline">\(p(a, b) = \Pr[X = a, Y = a]\)</span>, <span class="math inline">\(p(a) = \Pr[ X = a]\)</span>, and <span class="math inline">\(p(b) = \Pr[ Y = b]\)</span>. First, <span class="math display">\[
-\begin{aligned}
-H(X, Y) - H(X) - H(Y) 
-&amp;= \sum_{a, b} p(a, b) \log \frac{1}{ p(a, b) } - \sum_{a, b} p(a, b) \log \frac{1}{ p(a)} - \sum_{a, b} \log \frac{1}{p(b)} \\
-&amp;= \sum_{a, b} p(a, b) \log \frac{ p(a) p(b) }{ p(a, b) } \\
-&amp;\le \log \sum_{a, b} p(a, b)  \frac{ p(a) p(b) }{ p(a, b) } \\
-&amp;= \log \sum_{a, b} p(a) p(b) \\
-&amp;= 0. 
-\end{aligned}
-\]</span> Second, we have <span class="math display">\[
-H(X \mid Y) = H(X, Y) - H(Y) \le H(X). 
-\]</span></p>
-</blockquote>
-<h1 id="lower-bound">Lower Bound</h1>
-<blockquote>
-<p>For <span class="math inline">\(r \in \mathbb{N}_+\)</span>, it holds that <span class="math inline">\(\mathbb{Vol} (r) \ge q^{ n h_q ( \lfloor r \rfloor / n) - O( \log n) }\)</span>.</p>
-</blockquote>
-<p>We rely on the Stirling's approximation.</p>
-<blockquote>
-<p>For <span class="math inline">\(n \in \mathbb{N}_+\)</span>, <span class="math inline">\(\sqrt{2 \pi n} \left(\frac{n}{e} \right)^n \le n! \le e \sqrt{n} \left(\frac{n}{e} \right)^n\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \mathbb{Vol} (r) 
-            &amp;\ge \binom{n}{r} (q - 1)^r \\
-            &amp;\ge \frac{ \sqrt{2 \pi n } \left(\frac{n}{e} \right)^n }{ e \sqrt{r} \left(\frac{r}{e} \right)^r e \sqrt{n - r} \left(\frac{n - r}{e} \right)^{n - r} } (q - 1)^r \\
-            &amp;= (q - 1)^r \left(\frac{n}{r} \right)^r \left(\frac{n}{n - r} \right)^{n - r} \sqrt{ \frac{2 \pi n }{e^4 r (n - r)} } \\
-            &amp;= q^{n h_q ( r / n) - O(\log n) }
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>Hence, the upper bound is rather tight.</p>
-<h1 id="reference">Reference</h1>
-<p>[1] Anup Rao, <a target="_blank" rel="noopener" href="https://homes.cs.washington.edu/~anuprao/pubs/codingtheory/lecture3.pdf">Coding Theory Lecture 3: The Volume Bound and Finite Fields</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/31/Sparse-Recovery/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/31/Sparse-Recovery/" class="post-title-link" itemprop="url">Sparse Recovery</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-31 09:45:57" itemprop="dateCreated datePublished" datetime="2021-03-31T09:45:57+11:00">2021-03-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-08 23:55:01" itemprop="dateModified" datetime="2021-04-08T23:55:01+10:00">2021-04-08</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="model">Model</h1>
-<p>The focus of this article is recovering a sparse vector <span class="math inline">\(x \in \mathbb{R}^n\)</span> in the streaming setting. Initially, <span class="math inline">\(x = 0\)</span>. Then we see a sequence of updates <span class="math inline">\((i, \Delta)\)</span> each causing the change <span class="math inline">\(x_i \leftarrow x_i + \Delta\)</span>. There are three popular studied models</p>
 <ol type="1">
-<li><strong>insertion only:</strong> <span class="math inline">\(\Delta = 1\)</span> for each update.<br />
-</li>
-<li><strong>strict turnstile:</strong> <span class="math inline">\(\Delta\)</span> can be negative, but it is guaranteed that <span class="math inline">\(x \ge 0\)</span> all the time.<br />
-</li>
-<li><strong>general turnstile:</strong> <span class="math inline">\(\Delta\)</span> can be negative, and entries of <span class="math inline">\(x\)</span> can be negative.</li>
+<li><p>For all <span class="math inline">\(\vec x \in \mathbb{R}^d\)</span>, <span class="math inline">\(\Vert \vec x \Vert_S \ge 0\)</span>.<br />
+</p></li>
+<li><p>For all <span class="math inline">\(c \in \mathbb{R}, \vec x \in \mathbb{R}^d\)</span>, <span class="math inline">\(\Vert c \vec x \Vert_S = |c| \cdot \Vert \vec x \Vert_S\)</span>.<br />
+</p></li>
+<li><p>For all <span class="math inline">\(\vec x, \vec y \in \mathbb{R}^d\)</span>, <span class="math inline">\(\Vert \vec x + \vec y \Vert_S \le \Vert \vec x \Vert_S + \Vert \vec y \Vert_S\)</span>.</p>
+<p>The claim is trivial if <span class="math inline">\(\Vert \vec x \Vert_S\)</span> or <span class="math inline">\(\Vert \vec y \Vert_S = 0\)</span>. Otherwise, <span class="math display">\[
+     \begin{aligned}
+         &amp;\Vert \vec x + \vec y \Vert_S 
+             \le \Vert \vec x \Vert_S + \Vert \vec y \Vert_S \\
+         \Longleftrightarrow 
+         &amp;\left\Vert \frac{ \Vert \vec x \Vert_S }{ \Vert \vec x \Vert_S + \Vert \vec y \Vert_S } \cdot \frac{ \vec x }{ \Vert \vec x \Vert_S } + \frac{ \Vert \vec y \Vert_S }{ \Vert \vec x \Vert_S + \Vert \vec y \Vert_S } \cdot \frac{ \vec y }{ \Vert \vec y \Vert_S } \right\Vert_S 
+             &amp;\le 1 \\
+     \end{aligned}
+ \]</span></p>
+<p>It suffices to assume that <span class="math inline">\(\Vert \vec x \Vert_S = \Vert \vec y \Vert_S = 1\)</span>. But this implies that <span class="math inline">\(x , y \in S\)</span>. Since <span class="math inline">\(S\)</span> is convex, for <span class="math inline">\(a, b \in \mathbb{R}_{\ge 0}\)</span>, s.t., <span class="math inline">\(a + b = 1\)</span>, we have <span class="math display">\[
+         a \cdot \vec x + b \cdot \vec y \in S. 
+ \]</span></p></li>
 </ol>
-<p>Let <span class="math inline">\(\text{supp}(x) \subset [n]\)</span> be the set of nonzero indices of <span class="math inline">\(x\)</span>. The vector <span class="math inline">\(x\)</span> is called <span class="math inline">\(k\)</span> sparse if <span class="math inline">\(\text{supp}(x) \le k\)</span>.</p>
-<blockquote>
-<p><strong>Goal.</strong> Given an integer <span class="math inline">\(k\)</span>, design a data structure such that, if <span class="math inline">\(x\)</span> is <span class="math inline">\(k\)</span> sparse, the structure returns <span class="math inline">\(x\)</span> exactly; otherwise, the return can be arbitrary.</p>
-</blockquote>
-<p>As we can't actually store real numbers, we use the following assumption:</p>
-<blockquote>
-<p>The updates are integers and the entries of <span class="math inline">\(x\)</span> are bounded by <span class="math inline">\(\pm M\)</span>.</p>
-</blockquote>
-<p>With this restriction, it suffices to solve this problem in a finite field <span class="math inline">\(\mathbb{F}_p\)</span> where <span class="math inline">\(p \ge \max \{ n, M \}\)</span>. As opposed to the naive solution that keeps all entries of <span class="math inline">\(x\)</span> and uses <span class="math inline">\(O(n \log M)\)</span> bits of memory, we show that the memory can be reduced to <span class="math inline">\(O( k \log (nM) )\)</span> bits.</p>
-<h1 id="algorithm">Algorithm</h1>
-<p>The problem is easy to solve in the insertion only model. We can use a hash set that keeps the first <span class="math inline">\(k\)</span> occurrence of the indices. If the we detect the <span class="math inline">\(k + 1\)</span> new index, we can just report error.</p>
-<p>The scenario is a little more complicated for the other two models. E.g., let <span class="math inline">\(n = 4\)</span> and <span class="math inline">\(k = 1\)</span>. Consider the following stream <span class="math display">\[
-    (1, 1), (2, 1), (3, -1), (4, 1), (1, -1), (2, -1), (3, 1). 
+<p><strong>Remark:</strong> More rigorously, we require that <span class="math inline">\(\vec 0\)</span> is an inner point of <span class="math inline">\(S\)</span>, so that <span class="math display">\[
+    \Vert \vec x \Vert_S = 0 \iff \vec x = \vec 0.
 \]</span></p>
-<p>The vector <span class="math inline">\(x\)</span> is finally <span class="math inline">\(1\)</span>-sparse and the only non-zero index is revealed at the end of the stream.</p>
-<h2 id="solution-1">Solution 1</h2>
-<h3 id="encode">Encode</h3>
-<p>In the first approach, we use a matrix <span class="math inline">\(H \in \mathbb{F}_p^{m \times n}\)</span> (<span class="math inline">\(m\)</span> to be determined) and encode <span class="math inline">\(x\)</span> as <span class="math inline">\(\mathbb{Enc}(x) = H x\)</span>. If the following property holds, we are guaranteed to recover <span class="math inline">\(x\)</span> if it is <span class="math inline">\(k\)</span> sparse.</p>
-<blockquote>
-<p>For every <span class="math inline">\(k\)</span> sparse <span class="math inline">\(x, x&#39; \in \mathbb{F}_p^n\)</span>, if <span class="math inline">\(x \neq x&#39;\)</span>, then <span class="math inline">\(Hx \neq H x&#39;\)</span>.</p>
-</blockquote>
-<p>If <span class="math inline">\(H x \neq Hx&#39;\)</span>, then <span class="math inline">\(H (x - x&#39;) \neq 0\)</span>. Observe that <span class="math inline">\(x - x&#39;\)</span> is a <span class="math inline">\(2k\)</span> sparse vector. This is equivalent to that <span class="math inline">\(H z \neq 0\)</span> for every nonzero <span class="math inline">\(2k\)</span> sparse vector <span class="math inline">\(z \in \mathbb{F}_p^n\)</span>.</p>
-<p>Such <span class="math inline">\(H\)</span> does exists, with <span class="math inline">\(m = 2k\)</span>. Let <span class="math inline">\(a_1, a_2, ..., a_n \in \mathbb{F}_p\)</span> be different integers. Then <span class="math inline">\(H\)</span> is given as <span class="math display">\[
-    H = \begin{bmatrix}
-        1   &amp;1  &amp;...    &amp;1  &amp;...    &amp;1 \\
-        a_1 &amp;a_2    &amp;...    &amp;a_i    &amp;...    &amp;a_n    \\
-        a_1^2   &amp;a_2^2  &amp;...    &amp;a_i^2  &amp;...    &amp;a_n^2  \\
-        ...\\
-        a_1^{2k - 1}    &amp;a_2^{2k - 1}   &amp;...    &amp;a_i^{2k - 1}   &amp;...    &amp;a_n^{2k - 1}
-    \end{bmatrix}
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="dual-norm">Dual Norm</h1>
+<p>The polar body <span class="math inline">\(S^*\)</span> of <span class="math inline">\(S\)</span> is defined as<br />
+<span class="math display">\[
+    \{ \vec u \in \mathbb{R}^d : \left&lt; \vec u, \vec v \right&gt; \le 1 \, \forall \vec v \in S \}.   
 \]</span></p>
-<p>Let <span class="math inline">\(S = \text{supp}(z) \subset [n]\)</span> be a set of size <span class="math inline">\(2k\)</span>. Denote <span class="math inline">\(z_S\)</span> be the vector by keeping only the nonzero dimensions of <span class="math inline">\(z\)</span> and <span class="math inline">\(H_S\)</span> be an <span class="math inline">\(2k \times 2k\)</span> matrix by keeping only columns indexed by <span class="math inline">\(S\)</span>. Then <span class="math inline">\(H z = H_S z_S\)</span>. We show that the rows of <span class="math inline">\(H_S\)</span> are linearly independently, hence its columns. It follows that if <span class="math inline">\(z_S \neq 0 \Longrightarrow H_S z_S \neq 0\)</span>.</p>
-<p>It is left to show that <span class="math inline">\(\forall c \in \mathbb{F}_p^{2k}\)</span>, <span class="math inline">\(c \neq 0 \rightarrow H_S^T c \neq 0\)</span>. Define the polynomial in <span class="math inline">\(\mathbb{F}_p\)</span> <span class="math display">\[
-    f(x) = c_{2k} x^{2k - 1} + c_{2k - 1} x^{2k - 1} + ... + c_1. 
+<p><img src="https://raw.githubusercontent.com/wuhao-wu-jiang/BlogImgs/master/DualNorm/DualNorm.png" /></p>
+<blockquote>
+<p><strong>Fact.</strong> If <span class="math inline">\(S\)</span> is convex and symmetric, so is <span class="math inline">\(S^*\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> For all <span class="math inline">\(\vec y, \vec z \in S^*\)</span>, and <span class="math inline">\(a, b \in [0, 1]\)</span>, such that <span class="math inline">\(a + b = 1\)</span>, we have <span class="math display">\[
+    \sup_{ \vec v \in S} \left&lt; \vec v, a \cdot \vec y + b \cdot \vec z \right&gt; \le \sup_{ \vec v \in S} \left&lt; \vec v, a \cdot \vec y \right&gt; + \sup_{ \vec v \in S} \left&lt; \vec v,  b \cdot \vec z \right&gt; \le a + b = 1. 
 \]</span></p>
-<p>Then <span class="math inline">\(H_S^T c = ( f(a_i ) )_{i \in [S] }\)</span>. As <span class="math inline">\(f(x)\)</span> has at most <span class="math inline">\(2k - 1\)</span> distinct roots, and the <span class="math inline">\((a_i)_{i \in [S] }\)</span> are different, there exists some <span class="math inline">\(i \in [S]\)</span> such that <span class="math inline">\(f(a_i) \neq 0\)</span>.</p>
-<h3 id="decode">Decode</h3>
-<p>Given <span class="math inline">\(y = \mathbb{Enc}(x) = H x\)</span>, how can we recover <span class="math inline">\(x\)</span>? We can loop over every subset <span class="math inline">\(S \subset [n ]\)</span> of size <span class="math inline">\(2k\)</span> and compute <span class="math inline">\(x&#39; = H_S^{-1} y\)</span>. If <span class="math inline">\(x&#39;\)</span> is <span class="math inline">\(k\)</span> sparse, by the property of <span class="math inline">\(H\)</span>, it is the unique <span class="math inline">\(k\)</span>-sparse vector such that <span class="math inline">\(H_S x&#39; = y\)</span>.</p>
-<p><strong>Remark:</strong> The proposed method is exponential respect to <span class="math inline">\(k\)</span>. However, there is an algorithm (called <em>syndrome decoding</em>) to perform the recovery in <span class="math inline">\(O(k^2 poly(\log p))\)</span> time.</p>
-<h4 id="space-and-time">Space and Time</h4>
+<p>It is trivial to prove that <span class="math inline">\(S^*\)</span> is also symmetric.</p>
+<p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(k \log (nM))\)</span> bits.</p>
-</blockquote>
-<p>This is because we don't store <span class="math inline">\(H\)</span>. For the finite field <span class="math inline">\(\mathbb{F}_p\)</span>, there exists at least one primitive element whose powers give all nonzero elements. We can pick such a primitive element <span class="math inline">\(a\)</span>, and set <span class="math inline">\(a_1 = a\)</span>, <span class="math inline">\(a_2 = a^2\)</span>, ..., <span class="math inline">\(a_n = a^n\)</span>. Storing <span class="math inline">\(y = Hx\)</span> requires only <span class="math inline">\(O(k \log (nM))\)</span> bits.</p>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> in the stream takes <span class="math inline">\(O(k)\)</span> time.</p>
-</blockquote>
-<h2 id="solution-2">Solution 2</h2>
-<p>We first show how to recover an <span class="math inline">\(1\)</span> sparse vector when negative updates are allowed, then use it as a black box to recover <span class="math inline">\(k\)</span> sparse vector.</p>
-<h3 id="sparse-recovery">1 sparse recovery</h3>
-<p>We show an algorithm that successes with probability <span class="math inline">\(n / p\)</span>.</p>
-<p>First, we pick a non-zero integer <span class="math inline">\(z\)</span> uniformly at random from <span class="math inline">\(\mathbb{F}_p\)</span>. Let <span class="math display">\[
-    H = \begin{bmatrix}
-        1   &amp;1  &amp;1  &amp;...    &amp;1  \\
-        1   &amp;2  &amp;3  &amp;...    &amp;n  \\
-        z   &amp;z^2    &amp;z^3    &amp;...    &amp;z^n
-    \end{bmatrix}.
+<p><strong>Definition.</strong> The Minkowski norm induced by <span class="math inline">\(S^*\)</span> (if it is convex and symmetric) is the dual norm of <span class="math inline">\(\Vert \cdot \Vert_S\)</span>, and is defined as <span class="math display">\[
+\Vert \vec y \Vert_{S^*} \doteq \sup_{ \vec x \in S } \left&lt; \vec x, \vec y \right&gt;,   
+\]</span> or equivalently, <span class="math display">\[
+\Vert \vec y \Vert_{S^*} \doteq \sup \left&lt; \vec x, \vec y \right&gt;, \, \text{ s.t., }  \Vert \vec x \Vert_S = 1.
 \]</span></p>
-<p>The algorithm consists of 3 parts.</p>
-<blockquote>
-<p><strong>Initialize:</strong><br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow \{ 0 \}^3\)</span><br />
-<span class="math inline">\(\qquad\)</span> Sample <span class="math inline">\(z\)</span> uniformly from <span class="math inline">\(1, ..., p - 1\)</span>.</p>
 </blockquote>
-<blockquote>
-<p><strong>Updates</strong>: <span class="math inline">\((i, \Delta)\)</span><br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow w + \Delta \cdot H_i\)</span>, where <span class="math inline">\(H_i\)</span> is the <span class="math inline">\(i\)</span>th column of <span class="math inline">\(H\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Output:</strong><br />
-<span class="math inline">\(\qquad\)</span> If <span class="math inline">\(w_1 = 0\)</span> or <span class="math inline">\(w_3 \neq w_1 \cdot z^{w_2 / w_1}\)</span>:<br />
-<span class="math inline">\(\qquad\qquad\)</span> <strong>Return</strong> <span class="math inline">\(x\)</span> is not <span class="math inline">\(1\)</span> sparse;<br />
-<span class="math inline">\(\qquad\)</span> Else:<br />
-<span class="math inline">\(\qquad\qquad\)</span> <strong>Return</strong> <span class="math inline">\(j \doteq w_2 / w_1\)</span></p>
-</blockquote>
-<h4 id="failure-analysis">Failure Analysis</h4>
-<blockquote>
-<p><strong>Theorem.</strong> The algorithm fails with probability <span class="math inline">\(n / p\)</span>.</p>
-</blockquote>
-<p>Observe that <span class="math display">\[
-    w_1 = \sum_{i \in [n] } x_i, \qquad
-    w_2 = \sum_{i \in [n] } i \cdot x_i, \qquad
-    w_3 = \sum_{i \in [n] } z^i \cdot x_i.
-\]</span></p>
-<p>If <span class="math inline">\(w_1 = 0\)</span>, either <span class="math inline">\(x = 0\)</span> or there is cancellation. Conditioned on <span class="math inline">\(w_1 \neq 0\)</span>, if <span class="math inline">\(x\)</span> is <span class="math inline">\(1\)</span> sparse, then <span class="math display">\[
-    w_1 = x_j, \qquad w_2 = j \cdot x_j, \qquad w_3 = z^j \cdot x_j. 
-\]</span></p>
-<p>Hence, <span class="math inline">\(j = w_2 / w_1\)</span> is exactly the non-zero index, and <span class="math inline">\(w_3 = w_1 \cdot z^{j}\)</span>.</p>
-<p>If <span class="math inline">\(x\)</span> is not <span class="math inline">\(1\)</span> sparse, then <span class="math display">\[
-    w_3 - w_1 \cdot z^{j} 
-\]</span> is a polynomial of degree at most <span class="math inline">\(n\)</span>. It has at most <span class="math inline">\(n\)</span> distinct roots with one of them being <span class="math inline">\(0\)</span>. The probability that <span class="math inline">\(z\)</span> being a root is at most <span class="math inline">\((n - 1) / (p - 1) \le n / p\)</span>.</p>
-<h4 id="space-and-time-1">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(\log (nM))\)</span> bits.</p>
-</blockquote>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> takes <span class="math inline">\(O(1)\)</span> time.</p>
-</blockquote>
-<h3 id="k-sparse-recovery"><span class="math inline">\(k\)</span> sparse recovery</h3>
-<p>To apply the <span class="math inline">\(1\)</span> sparse recovery data structure, we partition <span class="math inline">\(x\)</span> into <span class="math inline">\(2k\)</span> subsets randomly. In particular, we use a pairwise hash function that maps each <span class="math inline">\(i \in [n]\)</span> to <span class="math inline">\([2k]\)</span> uniformly at random. For <span class="math inline">\(\ell \in [2k]\)</span>, let <span class="math inline">\(S_\ell\)</span> be the set of indices mapped to <span class="math inline">\(\ell\)</span>: <span class="math display">\[
-    S_\ell \doteq \{ i \in [n]: h(i) = \ell \}. 
-\]</span></p>
-<p>Then we run <span class="math inline">\(1\)</span> sparse recovery on each partition. If some partition contains only one nonzero index, then we recover it successfully.</p>
-<blockquote>
-<p><strong>Theorem.</strong> If <span class="math inline">\(x\)</span> is <span class="math inline">\(k\)</span> sparse, an nonzero dimension <span class="math inline">\(i\)</span> is recovered with probability <span class="math inline">\(1 / 2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> It suffices to prove that <span class="math inline">\(i\)</span> is the only nonzero index in <span class="math inline">\(S_{h (i) }\)</span>. For <span class="math inline">\(j \in \text{supp}(x)\)</span>, define the indicator variable <span class="math inline">\(X_j\)</span> which equals <span class="math inline">\(1\)</span> if <span class="math inline">\(h(j) = h(i)\)</span> and equals 0 otherwise. By Markov's inequality and linearity of expectation, <span class="math display">\[
-    \Pr\left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \ge 1 \right] \le \mathbb{E} \left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \right] = \sum_{ i \neq j \in \text{supp}(x) } \mathbb{E} \left[  X_j \right] \le \frac{k - 1}{2k} \le \frac{1}{2}.  
-\]</span></p>
-<p><strong>Remark.</strong> The Markov's inequality is rather tight here. Even if we have a fully independent hash function <span class="math inline">\(h\)</span>, the probability that none of the nonzero indices collides with <span class="math inline">\(i\)</span> is given by <span class="math display">\[
-    \left( 1 - \frac{1}{2k} \right)^{k - 1} \lessapprox \exp \left( - \frac{k - 1}{2k} \right) \approx \exp \left( - \frac{1}{2} \right) \approx 0.60653. 
+<p><strong>Proof.</strong> To verify the norm is well defined, we need to prove that</p>
+<ol type="1">
+<li>For all <span class="math inline">\(\vec y \in \mathbb{R}^d\)</span>, <span class="math inline">\(\Vert \vec y \Vert_{S^*} \ge 0\)</span>.<br />
+</li>
+<li>For all <span class="math inline">\(c \in \mathbb{R}, \vec y \in \mathbb{R}^d\)</span>, <span class="math inline">\(\Vert c \vec y \Vert_{S^*} = |c| \cdot \Vert \vec y \Vert_{S^*}\)</span>.<br />
+</li>
+<li>For all <span class="math inline">\(\vec y, \vec z \in \mathbb{R}^d\)</span>, <span class="math inline">\(\Vert \vec y + \vec z \Vert_{S^*} \le \Vert \vec y \Vert_{S^*} + \Vert \vec z \Vert_{S^*}\)</span>.</li>
+</ol>
+<p>The first two properties are obvious. The triangle inequality follows from that <span class="math display">\[
+    \sup_{ \Vert x \Vert_S  = 1} \left&lt; x, \vec y + \vec z \right&gt; \le \sup_{ \Vert x \Vert_S = 1} \left&lt; x, \vec y \right&gt;  + \sup_{ \Vert x \Vert_S = 1} \left&lt; x, \vec z \right&gt;. 
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><strong>Corollary.</strong> Running <span class="math inline">\(\log (k / \delta)\)</span> independent copies of the above structure reduce the failure probability to <span class="math inline">\(\delta\)</span>.</p>
+<p><strong>Fact.</strong> For <span class="math inline">\(p, q \in [1, \infty]\)</span>, s.t., <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>, <span class="math inline">\(\Vert \cdot \Vert_p\)</span> is the dual norm of <span class="math inline">\(\Vert \cdot \Vert_q\)</span>.</p>
 </blockquote>
-<h4 id="space-and-time-2">Space and Time</h4>
+<p><strong>Proof.</strong> Let <span class="math display">\[
+    S \doteq \Big\{ \vec x \in \mathbb{R}^d : \Big( \sum_{i \in [d] } |x_i|^p \Big)^{1 / p} \le 1 \Big\}.
+\]</span></p>
+<p>By definition, we need to prove that for all <span class="math inline">\(\vec y \in \mathbb{R}^d\)</span>, <span class="math display">\[
+    \sup_{ \vec x \in S } \Big\{ \left&lt; \vec x, \vec y \right&gt; \Big\} = \Vert \vec y \Vert_q.
+\]</span></p>
+<p>Consider <span class="math display">\[
+    \max \left&lt; \vec x, \vec y \right&gt;  \, s.t., \, \Vert \vec x \Vert_S = 1.
+\]</span></p>
+<p>Define <span class="math display">\[
+    f(\vec x, \lambda) = \left&lt; \vec x, \vec y \right&gt; - \lambda( \Vert \vec x \Vert_p - 1).
+\]</span></p>
+<p>WLOG, assume that <span class="math inline">\(\vec y \ge 0\)</span>. Then <span class="math inline">\(\vec x \ge 0\)</span>. Setting <span class="math display">\[
+    \frac{\partial f}{ \partial x_i} = y_i - \lambda \frac{ p x_i^{ p - 1 } }{ \Big( \sum_{ j \in [d] } x_i^p \Big)^{ 1 - 1 / p} } = 0.
+\]</span></p>
+<p>As <span class="math inline">\(\Vert \vec x \Vert_p = 1\)</span> and <span class="math inline">\(1 / q = (p - 1) / p\)</span>, we have <span class="math display">\[
+    \begin{aligned}
+        x_i 
+        &amp;= 
+        \left( \frac{ y_i }{ \lambda p} \right)^{1 / (p - 1)} = \left( \frac{ y_i }{ \lambda p} \right)^{ q / p} ,\\
+        \Vert \vec x \Vert_p^p 
+        &amp;= 
+        \frac{1}{ (\lambda p)^q } \sum_{i \in [d] } y_i^q = 1. 
+    \end{aligned}
+\]</span></p>
+<p>Finally, <span class="math display">\[
+    \begin{aligned}
+        \left&lt; \vec x, \vec y \right&gt; 
+            &amp;=  \frac{1}{ (\lambda p)^{ q / p} } \sum_{j \in [d] } y_i^{ q / p + 1 } \\
+            &amp;= \frac{1}{ (\lambda p)^{ q / p} } \sum_{j \in [d] } y_i^{ q } \\
+            &amp;= \left( \sum_{j \in [d] } y_i^{ q }  \right)^{ 1 - \frac{1}{p} } \\
+            &amp;= \Vert \vec y \Vert_q.
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>The following fact provides geometric interpretation of Holder Inequality.</p>
 <blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(k (\log (k / \delta)) \log (nM))\)</span> bits.</p>
+<p><strong>Fact (Generalized Holder Inequality).</strong><br />
+<span class="math display">\[
+\left&lt; \vec x, \vec  y \right&gt; \le \Vert \vec x \Vert_S \cdot \Vert \vec y \Vert_{S^*}
+\]</span></p>
 </blockquote>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> takes <span class="math inline">\(O(\log (k / \delta))\)</span> time.</p>
-</blockquote>
+<p><strong>Proof.</strong> If <span class="math inline">\(\Vert \vec x \Vert_S \le 1\)</span>, then <span class="math inline">\(\vec x \in S\)</span>. Hence, <span class="math display">\[
+      \Vert \vec y \Vert_{S^*} \doteq \sup_{ \vec v \in S } \left&lt; \vec v, \vec y \right&gt; \ge \left&lt; \frac{\vec x}{ \Vert \vec x \Vert_S }, \vec  y \right&gt;.
+\]</span></p>
+<p>We can also see that if <span class="math inline">\(\Vert \vec x \Vert_S = 1\)</span> and <span class="math inline">\(\Vert \vec y \Vert_{S^*} = 1\)</span>, then <span class="math display">\[
+    \left&lt; \vec x, \vec y \right&gt; \le 1. 
+\]</span></p>
+<p>This is trivially true by the definition of <span class="math inline">\(S^*\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1]. Jelani Nelson, Chapter 4, <a target="_blank" rel="noopener" href="https://www.sketchingbigdata.org/fall20/lec/notes.pdf">Sketching Algorithms</a>, 2020.</p>
-<p>[2]. Moses Charikar, <a target="_blank" rel="noopener" href="http://web.stanford.edu/class/cs369g/files/lectures/lec11.pdf"><span class="math inline">\(\ell_{0}\)</span> Sampling and Sketching Distances</a>, CS369G: Algorithmic Techniques for Big Data, 2016</p>
+<p>[1] <em>Ryan Tibshirani, 10-725/36-725: Convex Optimization Fall 2018, Lecture 13: Duality: Uses and Correspondences.</em><br />
+[2] <em>A.A. Ahmadi, ORF 523 Lecture 2 Spring 2016.</em></p>
 
       
     </div>
@@ -748,7 +516,7 @@ H(X \mid Y) = H(X, Y) - H(Y) \le H(X).
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/54/">54</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -814,7 +582,7 @@ H(X \mid Y) = H(X, Y) - H(Y) \le H(X).
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">166</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
