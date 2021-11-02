@@ -146,6 +146,167 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/21/Karger%20Algorithm%20I/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/21/Karger%20Algorithm%20I/" class="post-title-link" itemprop="url">Karger Algorithm I</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-21 12:53:14" itemprop="dateCreated datePublished" datetime="2018-07-21T12:53:14+10:00">2018-07-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-09-04 01:30:08" itemprop="dateModified" datetime="2018-09-04T01:30:08+10:00">2018-09-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Karger Algorithm</p>
+<p>The Karger algorithm was proposed by David R. Karger [<em>Global Min-cuts in RNC, and Other Ramifications of a Simple Min-Cut Algorithm</em>]. It is a randomized algorithm to find a min-cut of an undirected connected graph.</p>
+<p>The idea of the algorithm is simple -- randomly pick an edge from the graph, and merge the endpoints of this edge into one. The edges incident on two merged endpoints is now incident on the new endpoint. Repeat this process until two nodes are left on the graph. We show that the probability that the number of edges remained between the two nodes equals the value of min-cut is at least <span class="math inline">\(\frac{2}{n(n - 1)}\)</span>.</p>
+<p>Formally, suppose we are given an undirected graph <span class="math inline">\(G = (V, E)\)</span> with <span class="math inline">\(n = |V|\)</span> vertices, <span class="math inline">\(m = |E|\)</span> edges, and <span class="math inline">\(c^*=\)</span> <em>size of the min-cut</em>.</p>
+<h4 id="karger-algorithm">Karger Algorithm</h4>
+<ol type="1">
+<li>Select an edge <span class="math inline">\(e = (u,v) \in E\)</span> uniformly with probability <span class="math inline">\(1/|E|\)</span>.<br />
+</li>
+<li>Contract <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> into a new vertex <span class="math inline">\(w\)</span>, and all edges -- except <span class="math inline">\(e\)</span>-- incident on <span class="math inline">\(u\)</span> or <span class="math inline">\(v\)</span> are now incident on <span class="math inline">\(w\)</span>. In other words,</li>
+</ol>
+<p><span class="math display">\[
+ \begin{aligned}
+  V  \leftarrow &amp; V /  \{u,v\} \cup \{w\}, \\
+  E  \leftarrow &amp; E /  \{(x, y) | (x,y) \in E \ and \ x \in \{u, v\} \}  \\
+   &amp; \cup \{(w,y) | \exists  (x,y) \in E \ and \ x \in \{u, v\} \ and \ y \notin \{u,v\} \}
+ \end{aligned}
+\]</span></p>
+<ol start="3" type="1">
+<li>Repeat the above process until |V| = 2.</li>
+</ol>
+<p>In the end, there is only one cut between the remaining two vertices, whose size we denote as <span class="math inline">\(c\)</span>. If follows that <span class="math inline">\(P(c = c^*) = \frac{2}{n ( n - 1)}\)</span>.</p>
+<p>By repeating the process <span class="math inline">\(\frac{n (n - 1)}{2} \log n\)</span> times, the probability we don't find the size of min-cut is at most</p>
+<p><span class="math display">\[
+\big( 1 - \frac{2}{n (n - 1)} \big)^{\frac{n (n - 1)}{2} \log n} \le e^{log n} = \frac{1}{n}
+\]</span></p>
+<p>Now we prove that <span class="math inline">\(P(c = c^*) = \frac{2}{n ( n - 1)}\)</span>.</p>
+<p>The key observation is that the degree each vertex is at least <span class="math inline">\(c^*\)</span>. Therefore there are at least <span class="math inline">\(\frac{c^* n}{2}\)</span> edges for a graph with <span class="math inline">\(n\)</span> vertices. Given a particular min-cut, which has <span class="math inline">\(c^*\)</span> edges, the probability that any of its edges is selected during the contraction operation is at most</p>
+<p><span class="math display">\[
+\frac{c^*}{|E|} \le \frac{c^*}{ \frac{c^* n}{2} } = \frac{2} { n }
+\]</span></p>
+<p>The second observation is that, if the edges of a min-cut are not selected during contraction, then the min-cut value of the contracted graph remains the same. After <span class="math inline">\(i\)</span> contractions, there are <span class="math inline">\(n - i\)</span> vertices and the probability a min-cut survives the <span class="math inline">\(i + 1\)</span> contraction is most <span class="math inline">\(\frac{2}{n - i}\)</span>. After <span class="math inline">\(n - 1\)</span> round, the min-cut remains with probability at least <span class="math display">\[
+(1 - \frac{2}{n})(1 - \frac{2}{n - 1})...(1 - \frac{2}{3}) = \binom{n}{2}^{-1}
+\]</span> Some interesting corollaries could be derived from this.</p>
+<h4 id="corollary-one">Corollary one</h4>
+<blockquote>
+<p>There are <span class="math inline">\(\frac{n (n - 1)}{ 2 }\)</span> min-cuts in the graph, since the events of outputting each min-cut are disjoint.</p>
+</blockquote>
+<p>By slightly modifying the algorithm, we can give another fact.</p>
+<p><strong>Definition</strong>. A <span class="math inline">\(\alpha\)</span>-min-cut is a cut with no more than <span class="math inline">\(\alpha c^*\)</span> edges.</p>
+<h4 id="corollary-two">Corollary two</h4>
+<p>For any <span class="math inline">\(\alpha\)</span> s.t. <span class="math inline">\(2 \alpha\)</span> is an integer, the number of <span class="math inline">\(\alpha\)</span>-min-cuts is at most <span class="math inline">\(n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2}\)</span>, which is less than <span class="math inline">\(n^{2 \alpha}\)</span>.</p>
+<p><strong>Proof</strong>: We perform the contraction as before but stop when there are <span class="math inline">\(2\alpha\)</span> vertexes left. Then we output one the <span class="math inline">\(2^{2\alpha - 1}\)</span> cuts uniformly at random.</p>
+<p>The probability a <span class="math inline">\(\alpha\)</span>-min-cut is outputted with probability at least <span class="math display">\[
+\begin{aligned}
+&amp; (1 - \frac{2 \alpha }{n})(1 - \frac{ 2 \alpha }{ n-1 })...(1 - \frac{2 \alpha }{ 2\alpha + 1 }) \cdot \frac{1}{2^{2 \alpha - 1}}  \\
+&amp;=2 \frac{ (n - 2 \alpha)! (2 \alpha)! }{ 2^{2\alpha} n!  } \\
+&amp;\ge \frac{ 2 } { 2^{2\alpha} } 
+\sqrt{2 \pi (n - 2 \alpha)} \frac{(n - 2\alpha)^{(n - 2\alpha)} }{e ^{(n - 2\alpha)} }
+\sqrt{2 \pi (2 \alpha)} \frac{(2\alpha)^{(2\alpha)} }{e ^{(2\alpha)} } 
+\frac{1}{e \sqrt n} \frac{e ^{n} }{ n^{n} } \\
+&amp;= \frac{ 2 \cdot 2\pi } { e \cdot 2^{2\alpha} } 
+\sqrt \frac{(n - 2\alpha) 2\alpha}{n} 
+\frac{ (2\alpha)^{(2\alpha)} (n - 2\alpha)^{(n - 2\alpha)} }{ n^n }
+\end{aligned}
+\]</span> As <span class="math inline">\(\frac{(n - 2\alpha) 2\alpha}{n}\)</span> is minimized to <span class="math inline">\(\frac{1}{2}\)</span> for <span class="math inline">\(n \ge 2, \ 1 \le 2 \alpha \le n - 1\)</span>, the above inequality becomes <span class="math display">\[
+\ge \frac{ \sqrt{2} \cdot 2\pi \cdot (2\alpha)^{(2\alpha)}} { e \cdot 2^{2\alpha} } 
+\frac{ 1 }{ n^{(2\alpha)} }
+\]</span> The number of <span class="math inline">\(\alpha\)</span>-min-cuts is bounded by <span class="math display">\[
+n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2} 
+\]</span> <strong>Remark</strong>: For <span class="math inline">\(k \in N\)</span>, we have <span class="math display">\[
+\sqrt{2 \pi k} \cdot \frac{k^k}{e^k} \le k! \le e \sqrt k \cdot \frac{k^k}{e^k}
+\]</span></p>
+<h4 id="corollary-three">Corollary three</h4>
+<p>The number of <span class="math inline">\(\alpha\)</span>-min-cuts is at most <span class="math inline">\(e^{7/6} n^{2\alpha} \frac{2^{ 2 \alpha} }{( 2 \alpha + 1 )^ {2 \alpha} }\)</span> for any <span class="math inline">\(\alpha \ge 1\)</span>.</p>
+<p><strong>Proof</strong>: We perform the contraction as before but stop when there are <span class="math inline">\(\lceil 2\alpha \rceil\)</span> vertexes left. Then we output one the <span class="math inline">\(2^{\lceil 2\alpha \rceil - 1}\)</span> cuts uniformly at random.</p>
+<p>The probability a <span class="math inline">\(\alpha\)</span>-min-cut is outputted with probability at least <span class="math display">\[
+\begin{aligned}
+&amp; (1 - \frac{2 \alpha}{n }) (1 - \frac{2 \alpha}{n - 1 }) ... (1 - \frac{2 \alpha}{\lceil 2 \alpha \rceil + 1 }) 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+&amp;= \frac{(n - 2 \alpha) (n - 1 - 2 \alpha) ... (\lceil 2 \alpha \rceil + 1 - 2 \alpha)}{ n (n - 1) ...(\lceil 2 \alpha \rceil + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+&amp;= \frac{\Gamma(n - 2 \alpha + 1)}{ \Gamma(\lceil 2 \alpha \rceil + 1 - 2 \alpha) } \frac{\Gamma(\lceil 2 \alpha \rceil + 1)}{\Gamma(n + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+&amp;\ge \sqrt{2\pi} \frac{1}{\sqrt {n - 2 \alpha + 1} }(\frac{n - 2 \alpha + 1}{e})^ {n - 2 \alpha + 1} \\ 
+&amp;\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (\lceil 2 \alpha \rceil + 1 - 2 \alpha ) } } \sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha)} (\frac{e}{\lceil 2 \alpha \rceil + 1 - 2 \alpha})^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha} \\
+&amp;\ \ \cdot \sqrt{2\pi} \frac{1}{ \sqrt{\lceil 2 \alpha \rceil + 1} }(\frac{ \lceil 2 \alpha \rceil + 1 }{e})^ {\lceil 2 \alpha \rceil + 1} \\
+&amp;\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (n + 1) } } \sqrt{(n + 1)} (\frac{e}{n + 1})^ {n + 1} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+&amp;= \frac{1}{e^{2 / 12}} \frac{\sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha} }{ \sqrt {n - 2 \alpha + 1} } \frac{\sqrt{(n + 1)} }{\sqrt{\lceil 2 \alpha \rceil + 1}} 
+e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\lceil 2 \alpha \rceil + 1)} \\
+&amp;\ \ \cdot (\frac{n - 2 \alpha + 1}{n + 1})^ {n - 2 \alpha + 1} (\frac{1}{n + 1})^{2\alpha} \cdot 
+\frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+&amp;\ge  \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
+\frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1 / 2} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 / 2 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+&amp;\ge \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
+\frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+&amp;= \frac{1}{e^{1 / 6}} \frac{1}{n^{2\alpha}} \frac{1}{(1 + 1/n)^{2\alpha}}
+\frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+&amp;\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+&amp;\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( 2 \alpha + 1 )^ {2 \alpha} }{2^{ 2 \alpha} }
+\end{aligned}
+\]</span></p>
+<p>To bound the inequality, we need the stirling formula for Gamma functions.</p>
+<p><strong>Lemma</strong>. <span class="math inline">\(\forall x \ge 0\)</span>, <span class="math display">\[
+\Gamma(x + 1) = x \Gamma(x) \\
+\sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x 
+\le 
+\Gamma(x)
+\le
+\sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x e^{\frac{1}{12 x}}
+\]</span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/20/Random-Points-on-Shpere/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -358,96 +519,6 @@ Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/17/Sampling-Probability/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/17/Sampling-Probability/" class="post-title-link" itemprop="url">Sampling Probability</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-07-17 21:34:45" itemprop="dateCreated datePublished" datetime="2018-07-17T21:34:45+10:00">2018-07-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-07-18 00:19:26" itemprop="dateModified" datetime="2018-07-18T00:19:26+10:00">2018-07-18</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Suppose we have a set of number <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> and we would like to estimate its sum <span class="math inline">\(s = \sum_i x_i\)</span>. However, we can only access the set <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> by sampling an element <span class="math inline">\(x_i, 1 \le i \le n\)</span> randomly. Let <span class="math inline">\(p_i\)</span> be the probability that we get <span class="math inline">\(x_i\)</span>. If <span class="math inline">\(p_i\)</span> is known (either before sampling or the moment we get a sampled element, depending on application), then we can still construct an unbiased estimator of <span class="math inline">\(s\)</span>. To see this, define</p>
-<p><span class="math display">\[
-y_i = \frac{x_i} {p_i}
-\]</span></p>
-<p>and <span class="math inline">\(Y\)</span> a random variable that takes value <span class="math inline">\(y_i\)</span> with probability <span class="math inline">\(p_i\)</span>. The mean of <span class="math inline">\(Y\)</span> is given by</p>
-<p><span class="math display">\[
-E[Y] = \sum_i p_i y_i = \sum_i p_i \frac{x_i} {p_i} = \sum_i x_i = s. 
-\]</span></p>
-<p>Moreover, the variance of <span class="math inline">\(Y\)</span> is minimized when <span class="math inline">\(p_i = \frac{x_i} { s }\)</span> for all <span class="math inline">\(i\)</span>. It follows that <span class="math inline">\(y_i = \frac{ x_i } { x_i / s } = s\)</span> is a constant and <span class="math inline">\(Y\)</span> has variance <span class="math inline">\(0\)</span> (which is the smallest variance possible as its must be non-negative).</p>
-<blockquote>
-<p>Remark: we can also verify this by formulating this as an optimization problem then using Lagrangian method.</p>
-</blockquote>
-<p>In some applications, some elements in <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> may have same value. Suppose there are <span class="math inline">\(m\)</span> different value in <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> and define <span class="math inline">\(X_j ( 1 \le j \le m)\)</span> the set of elements with the <span class="math inline">\(j\)</span>-th largest value. Denote the sum of probability of elements in <span class="math inline">\(X_j\)</span> as <span class="math inline">\(P_j = \sum_{x \in X_j} p_x\)</span>. Also, let <span class="math inline">\(f(x_i)\)</span> denote the group that element <span class="math inline">\(x_i\)</span> belongs to, i.e., <span class="math inline">\(x_i \in X_{ f( x_i ) }\)</span>. Consider</p>
-<p><span class="math display">\[
-y&#39;_i = \frac{ x_i |X_{ f(x_i) }| } { P_{ f(x_i) } }
-\]</span></p>
-<p>and <span class="math inline">\(Y&#39;\)</span> a random variable that takes value <span class="math inline">\(y&#39;_i\)</span> with probability <span class="math inline">\(p_i\)</span>. The mean of <span class="math inline">\(Y&#39;\)</span> is also an unbiased estimator of <span class="math inline">\(s\)</span>:</p>
-<p><span class="math display">\[
-\begin{aligned}
-E[Y&#39;] 
-&amp;= \sum_{i = 1}^n p_i y&#39;_i \\
-&amp;= \sum_{i = 1}^n p_i \frac{ x_i |X_{ f(x_i) }| } { P_{ f(x_i) } } \\
-&amp;= \sum_{j = 1}^m \sum_{x \in X_j} p_x \frac{ x |X_{ f(x) }| } { P_j } \\
-&amp;= s
-\end{aligned}
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -517,7 +588,7 @@ E[Y&#39;]
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">166</span>
+          <span class="site-state-item-count">167</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

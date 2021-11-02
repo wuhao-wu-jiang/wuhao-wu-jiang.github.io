@@ -146,6 +146,238 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/16/L0-Sampling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/16/L0-Sampling/" class="post-title-link" itemprop="url">L0 Sampling</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-04-16 18:53:42" itemprop="dateCreated datePublished" datetime="2021-04-16T18:53:42+10:00">2021-04-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-05-15 12:15:01" itemprop="dateModified" datetime="2021-05-15T12:15:01+10:00">2021-05-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(x \in \mathbb{R}^n\)</span> be a vector initialized with all zeros. There is a stream <span class="math inline">\(S\)</span> of updates, each of which is a pair <span class="math inline">\((t, \Delta) \in [n] \times \mathbb{R}\)</span>, causing <span class="math inline">\(x_t \leftarrow x_t + \Delta\)</span>.</p>
+<p>Define the support <span class="math inline">\(\mathbb{Supp}(x)\)</span> to be the set of all non-zero indexes of <span class="math inline">\(x\)</span>: <span class="math display">\[
+    \mathbb{Supp}(x) \doteq \{ i \in [n] : x_i \neq 0 \}. 
+\]</span></p>
+<blockquote>
+<p><strong><span class="math inline">\(\ell_0\)</span> sampling</strong>: output an index uniformly at random from the support <span class="math inline">\(\mathbb{Supp}(x)\)</span>.</p>
+</blockquote>
+<p>We assume that at any time, <span class="math inline">\(\forall t \in [n], x_t \le M\)</span> for some <span class="math inline">\(M \in \mathbb{R}\)</span>.</p>
+<h2 id="naive-solutions">Naive Solutions</h2>
+<p>We can uses an array to keep <span class="math inline">\(x\)</span> explicitly. But this has size <span class="math inline">\(O( n \cdot \log M)\)</span> bits.</p>
+<blockquote>
+<p>Goal: design an algorithm for <span class="math inline">\(\ell_0\)</span> sampling with space less than <span class="math inline">\(O( n \cdot \log M)\)</span> bits.</p>
+</blockquote>
+<p>If there are only insertion updates, i.e., <span class="math inline">\(\forall (t, \Delta) \in S\)</span>, it holds that <span class="math inline">\(\Delta &gt; 0\)</span>, then we can use a hash set to keep the non-zero elements and their frequencies, which has size <span class="math inline">\(O( |\mathbb{Supp}(x) | \cdot \log M)\)</span>. If <span class="math inline">\(x\)</span> is dense, i.e., <span class="math inline">\(|\mathbb{Supp}(x)|\)</span> is large, this is still infeasible.</p>
+<h2 id="sampling-game">Sampling Game</h2>
+<p>We discuss one sampling game that illustrates the key ideas used in <span class="math inline">\(\ell_0\)</span>-sampling.</p>
+<p>In this game, we want to sample one integer uniformly at random from <span class="math inline">\([k]\)</span>. Instead of sampling it directly, we choose some <span class="math inline">\(p \in (0, 1]\)</span> and perform the following two steps:</p>
+<ol type="1">
+<li>First, we sample each <span class="math inline">\(i \in [k]\)</span> uniformly and independent at random with probability <span class="math inline">\(p\)</span>. Denote <span class="math inline">\(B\)</span> the set of sampled elements.<br />
+</li>
+<li>If <span class="math inline">\(B \neq \emptyset\)</span>, then output one element from <span class="math inline">\(B\)</span> uniformly at random.</li>
+</ol>
+<blockquote>
+<p><strong>Property.</strong> <span class="math inline">\(\mathbb{E} [ |B| ] = kp\)</span>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Property.</strong> <span class="math inline">\(\Pr[ |B| &gt; 0 ] = (1 - p)^k \le \exp(-kp)\)</span>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Property.</strong> By Bernstein's Inequality, <span class="math inline">\(\forall \delta \in (0, 1)\)</span>, with probability at least <span class="math inline">\(1 - \delta\)</span>, we have <span class="math display">\[
+|B| - \mathbb{E} [ |B| ] \le \sqrt{2 \cdot k \cdot p \cdot (1 - p) \cdot \ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta} }{3}.
+\]</span></p>
+</blockquote>
+<blockquote>
+<p><strong>Theorem.</strong> Each element in <span class="math inline">\([k]\)</span> is outputted with equal probability <span class="math display">\[
+\frac{1 - \left(1 - p \right)^k }{ k }. 
+\]</span></p>
+</blockquote>
+<p><strong>Remark: when <span class="math inline">\(p = 1\)</span>, this reduces to sampling an element uniformly at random from <span class="math inline">\([k]\)</span>.</strong></p>
+<p><strong>Proof.</strong> The probability that <span class="math inline">\(B = \emptyset\)</span> is given by <span class="math inline">\((1 - p)^k\)</span>. Conditioned on that <span class="math inline">\(B \neq \emptyset\)</span>, by symmetry, each element is sampled with equal probability.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark:</strong> We can also have a proof by algebra. For evert <span class="math inline">\(i \in [k]\)</span>, the probability that it is sampled is given by <span class="math display">\[
+\begin{aligned}
+    \sum_{t = 1}^k \frac{1}{t} \cdot \Pr [ i \in B \mid |B| = t] \cdot \Pr[ |B| = t]
+         &amp;= \sum_{t = 1}^k  \frac{1}{t} \frac{ \binom{k - 1}{t - 1} }{ \binom{k}{t} } \binom{k}{t} p^t (1 - p)^{k - t} \\
+         &amp;= \sum_{t = 1}^k  \frac{1}{t} \binom{k - 1}{t - 1} p^t (1 - p)^{k - t} \\
+         &amp;= \frac{1}{k} \sum_{t = 1}^k  \binom{k}{t} p^t (1 - p)^{k - t} \\
+         &amp;= \frac{1}{k} \left( 1 - \binom{k}{0} p^0 (1 - p)^{k - 0} \right) \\
+         &amp;= \frac{1 - \left(1 - p \right)^k }{ k }. 
+\end{aligned}
+\]</span></p>
+<h1 id="sampling-with-known-support-size">Sampling With Known Support Size</h1>
+<p>We use the technique developed in the <em>Sampling Game</em> section, to avoid using <span class="math inline">\(O( | \mathbb{Supp}(x) | \log M)\)</span> bits. We have seen that <span class="math inline">\(p\)</span> controls the tradeoff between the size of <span class="math inline">\(B\)</span>, and the successful probability of sampling an element (<span class="math inline">\(B \neq \emptyset\)</span>).</p>
+<p>We begin with the assumption that the size of <span class="math inline">\(\mathbb{Supp}(x)\)</span> is known.</p>
+<h2 id="insertion-only">Insertion Only</h2>
+<p>As before, we consider insertion only model first.</p>
+<blockquote>
+<p><strong>Claim.</strong> There is an algorithm such that 1. with probability <span class="math inline">\(1 - \delta\)</span>, it returns an element from <span class="math inline">\(\mathbb{Supp}(x)\)</span> uniformly at random;<br />
+2. with probability <span class="math inline">\(\delta\)</span>, it returns nothing.</p>
+<p>Further, the space usage is <span class="math inline">\(O \left( \ln \frac{1}{\delta} \right)\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
+</blockquote>
+<p>For simplicity, we assume a perfect hash function <span class="math inline">\(h\)</span> that maps elements in <span class="math inline">\([n]\)</span> to <span class="math inline">\(\{0, 1\}\)</span> independently with probability <span class="math inline">\(p\)</span> (to be determined). For each update <span class="math inline">\((t, \Delta)\)</span> in the stream, we process it only if <span class="math inline">\(h(t) = 1\)</span>. As we are dealing with insertion only model, we can use a hashset to maintain the elements with hash value 1.</p>
+<p>Let <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. As analysed before, with probability <span class="math inline">\((1 - p)^k\)</span>, the algorithm fails. To make the failure probability as small as <span class="math inline">\(\delta\)</span>, we have that <span class="math inline">\((1 - p)^k = \delta\)</span>, i.e., <span class="math display">\[
+    p = 1 - \delta^{ \frac{1}{k} } \le -\ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}. 
+\]</span></p>
+<p>The last inequality holds since the function <span class="math inline">\(y = - \ln x\)</span> is convex, and <span class="math inline">\(y = 1 - x\)</span> is the tangent line of <span class="math inline">\(y = - \ln x\)</span> at the point <span class="math inline">\((1, 0)\)</span>. By previous analysis, with probability at least <span class="math inline">\(1 - \delta\)</span>, the size of <span class="math inline">\(B\)</span> is bounded by <span class="math display">\[
+    \left( kp + \sqrt{2 k p (1 - p) \ln \frac{1}{\delta} } + \frac{2}{3} \ln \frac{1}{\delta} \right) \in O \left( \ln \frac{1}{\delta} \right). 
+\]</span></p>
+<h2 id="handling-deletion">Handling Deletion</h2>
+<p>When deletions are possible, we can't use a hashset to keep the sampled updates. E.g., suppose we have a sequence <span class="math inline">\((1, 6), (1, -6), (2, 5), (3, 7), (4, 9)\)</span>, and that <span class="math inline">\(h(1) = h(2) = 1, h(3) = h(4) = 0\)</span>. We need a hashset of size 2 to keep both the frequencies of element 1 and element 2. Even through the frequency of element <span class="math inline">\(1\)</span> is 0 finally, we don't this before we see the entire string.</p>
+<p>In general, <span class="math inline">\(h\)</span> maps <span class="math inline">\(np\)</span> elements in <span class="math inline">\([n]\)</span> to <span class="math inline">\(1\)</span>. If we use a hashset, its size can grow to <span class="math inline">\(O(n p)\)</span>.</p>
+<p>However, there is data structure that can handle deletions while using less than <span class="math inline">\(O(np)\)</span> space.</p>
+<blockquote>
+<p><strong>Sparse Recovery.</strong> Given an integer <span class="math inline">\(d\)</span> at the beginning of the stream, if <span class="math inline">\(\mathbb{Supp}(x) \le d\)</span> when the stream stops, there is a data structure that returns</p>
+<ol type="1">
+<li>indices in <span class="math inline">\(\mathbb{Supp}(x)\)</span>;</li>
+<li>and their values,</li>
+</ol>
+<p>using <span class="math inline">\(O(d (\log n + \log M) ) \subset O( d \log (nM) )\)</span> bits. It processes each update <span class="math inline">\((t, \Delta)\)</span> in the stream in <span class="math inline">\(O(d)\)</span> time and recovers <span class="math inline">\(x\)</span> in <span class="math inline">\(O(d^2 polylog(nM))\)</span> time. Its recovery can be wrong if <span class="math inline">\(\mathbb{Supp}(x) &gt; d\)</span>.</p>
+</blockquote>
+<p>It suffices to use such a data structure for the sampled set <span class="math inline">\(B\)</span> with <span class="math inline">\(d \in O( \ln \frac{1}{\delta} )\)</span>. We have seen that if we sampled each element in <span class="math inline">\(\mathbb{Supp}(x)\)</span> with probability <span class="math inline">\(p = 1 - \delta^{1 / k}\)</span>, then with probability at least <span class="math inline">\(1 - \delta\)</span>, we obtain a sampled set <span class="math inline">\(B\)</span> with size at most <span class="math inline">\(d\)</span>. Then we return one element from <span class="math inline">\(B\)</span> uniformly at random.</p>
+<p>Analyzing the probability of sampling an element is more subtle than the previous section. In previous section, each element is under-sampled with probability <span class="math inline">\(\frac{1 - \left(1 - p \right)^k }{ k }\)</span>. Here, conditioned on <span class="math inline">\(|B|\le d\)</span>, each element is sampled equally likely. However, <span class="math inline">\(|B| &gt; d\)</span>, the recovery of sampled elements fails, some element can be returned more frequently and some can be returned less frequently (the recovery behavior is un-defined). As the failure probability is bounded by <span class="math inline">\(\delta\)</span>, each element is returned with probability <span class="math display">\[
+    \left[ \frac{1 - \left(1 - p \right)^k }{ k } \pm \delta \right] \subseteq \left[ 1 - \left( 1 + \frac{ 1 }{ k } \right) \cdot \delta, 1 + \left( 1 - \frac{ 1 }{ k } \right) \cdot \delta \right]. 
+\]</span></p>
+<h1 id="sampling-with-unknown-support-size">Sampling With UnKnown Support Size</h1>
+<p>Previously, we want to sample each element in <span class="math inline">\([n]\)</span> with probability <span class="math inline">\(1 - \delta^{ \frac{1}{k} } \le \ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}\)</span>, where <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. When this information is unavailable, we can guess by trying the values <span class="math display">\[
+    1 / 2, \quad 1 / 4, \quad 1 / 8, \quad 1 / 16,  ...
+\]</span></p>
+<p>We don't need to guess the value of <span class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta}\)</span> exactly. In order that the sparse recovery data structure works, any guess within a constant factor suffices.</p>
+<p>For simplicity, assume that <span class="math inline">\(n\)</span> is some power of <span class="math inline">\(2\)</span>. Now, instead of using one sampling set <span class="math inline">\(B\)</span>, we use <span class="math inline">\(\log n + 2\)</span> of them <span class="math inline">\(B_1, B_2, B_3, ...\)</span>, each associated with a sparse recovery structure with parameter <span class="math inline">\(d \in \Theta( \ln \frac{1}{\delta} )\)</span>. Assume that we have a perfect hash function <span class="math inline">\(h: [n] \rightarrow [\log n + 2]\)</span> such that it holds independently for every <span class="math inline">\(t \in [n]\)</span>, <span class="math display">\[
+\begin{aligned}
+    &amp;\Pr[ h(t) = i ]         = \frac{1}{2^i}, \forall i \in [\log n + 1], \\
+    &amp;\Pr[ h(t) = \log n + 2] = \frac{1}{ 2^{\log n + 1} }.   
+\end{aligned}
+\]</span></p>
+<p>The distribution is well defined, as <span class="math inline">\(\sum_{i \in [\log n + 1] } 1 / 2^i + 1 / 2^{ \log n + 1} = 1 - 1 / 2^{ \log n + 1} + 1 / 2^{ \log n + 1} = 1\)</span>.</p>
+<p>If <span class="math inline">\(k = 1\)</span>, some <span class="math inline">\(B_i\)</span> must recovers <span class="math inline">\(x\)</span> successfully.</p>
+<p>Otherwise, <span class="math inline">\(\exists i \in [\log n]\)</span>, such that <span class="math inline">\(\frac{1}{2^i} \ge \frac{1}{k} \ln \frac{1}{\delta} &gt; \frac{1}{2^{i + 1} }\)</span>. We study the following good events:</p>
+<blockquote>
+<p><strong>Event</strong> <span class="math inline">\(E_1:\)</span> for all <span class="math inline">\(j \ge i\)</span>, it holds that <span class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) = j \}| \le d\)</span>.</p>
+</blockquote>
+<p>Under <span class="math inline">\(E_1\)</span>, the sparse recovery structure associated with <span class="math inline">\(B_j\)</span> recovers <span class="math inline">\(B_j\)</span> successfully for all <span class="math inline">\(j \ge i\)</span>.</p>
+<blockquote>
+<p><strong>Event</strong> <span class="math inline">\(E_2:\)</span> <span class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) \ge i \}| &gt; 0\)</span>.</p>
+</blockquote>
+<p>Under <span class="math inline">\(E_2\)</span>, there exists at least one element that is mapped to <span class="math inline">\(B_j\)</span> for some <span class="math inline">\(j \ge i\)</span>.</p>
+<p>Under these two good events, we sample one element as follows:</p>
+<blockquote>
+<p>For <span class="math inline">\(j \leftarrow \log n + 2\)</span> downto <span class="math inline">\(1\)</span> do<br />
+<span class="math inline">\(\qquad\)</span> recover <span class="math inline">\(B_j\)</span>;<br />
+<span class="math inline">\(\qquad\)</span> if <span class="math inline">\(B_j \neq \emptyset\)</span> then<br />
+<span class="math inline">\(\qquad\qquad\)</span> return one element from <span class="math inline">\(B_j\)</span> uniformly at random.</p>
+</blockquote>
+<p><strong>Analysis the probability of <span class="math inline">\(E_1\)</span>:</strong></p>
+<p>For <span class="math inline">\(j \ge i\)</span>, it holds that <span class="math inline">\(\mathbb{E} [ |B_j| ] = k / 2^j\)</span>. Suppose that <span class="math inline">\(d = 2 \cdot C_d \cdot \ln \frac{1}{\delta}\)</span> for some constant <span class="math inline">\(C_d\)</span> (to be determined). Since <span class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta} \ge 1 / 2^{i + 1}\)</span>, we have that <span class="math display">\[
+    \frac{d}{\mathbb{E} [ |B_j| ]} \ge \frac{ 2^j }{ k } \cdot 2 \cdot C_d \cdot \ln \frac{1}{\delta} \ge C_d \cdot 2^{j - i}. 
+\]</span></p>
+<p>By Chernoff bound, <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ |B_j| \ge d \right] 
+            &amp;\le \left( \frac{e^{ \left( {d} / { \mathbb{E}  [ |B_j| ] } \right) - 1 } }{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right)^{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right) }  } \right)^{ \mathbb{E}  [ |B_j| ]} \\
+            &amp;\le \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d \left( \frac{1}{e} \right)^{ \mathbb{E}  [ |B_j| ]}.
+    \end{aligned}
+\]</span></p>
+<p>By union bound, when <span class="math inline">\(C_d \ge e^2\)</span>, it holds that <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ \exists j \ge i : |B_j| \ge d \right] 
+            &amp;\le \sum_{j \ge i} \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d \\
+            &amp;\le \left( \frac{e}{C_d } \right)^d \sum_{j = 0}^\infty \left( \frac{1}{2^{d} } \right)^j \\
+            &amp;\le \left( \frac{e}{C_d } \right)^d \frac{1}{1 - \frac{1}{2^{d} } } \\
+            &amp;\le 2 \cdot \delta^{2 e^2}. 
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Analysis the probability of <span class="math inline">\(E_2\)</span>:</strong></p>
+<p>For each <span class="math inline">\(t \in \mathbb{Supp}(x)\)</span>, we have <span class="math display">\[
+    \Pr[ h(t) &lt; i ] = \left( 1 - \frac{1}{2^i} \right).
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    \Pr[ h(t) &lt; i : \forall t \in \mathbb{Supp}(x)  ] = \left( 1 - \frac{1}{2^i} \right)^k \le \left( 1 - \frac{1}{k} \ln \frac{1}{\delta} \right)^k \le \delta.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- 
+By Bernstein's inequality, with probability at least $1 - \delta$, it holds that 
+$$
+    |B_i| - \mathbb{E} \big[ |B_i| \big] \le \sqrt{2 k \frac{1}{2^i} \ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta } }{ 3 }. 
+$$
+
+And for $j > i$, let $\delta_j = \delta / 2^{ j- i}$. It holds with probability $1 - \delta_j$ that
+$$
+    \begin{aligned}
+        |B_j| - \mathbb{E} \big[ |B_j| \big] 
+        &\le \sqrt{2 k \frac{1}{2^j} \ln \frac{1}{\delta_j} } + \frac{2 \ln \frac{1}{\delta_j } }{ 3 } \\
+        &= \sqrt{2 k \frac{1}{2^j} \left( (j - i）\cdot \ln 2 + \ln \frac{1}{\delta} \right) } + \frac{2 \ln \frac{1}{\delta } }{ 3 } \\
+    \end{aligned}
+$$
+
+Suppose that $d = C_d \cdot \ln \frac{1}{\delta}$. For $j \ge i$, as $\frac{1}{k} \ln \frac{1}{\delta} > \frac{1}{2^{i + 1} }$, we have that $2^{i - j + 2} \ln \frac{1}{\delta} \ge \frac{2k}{2^j}$
+
+$$
+    \begin{aligned}
+        \Pr \left[ |B_j| - \mathbb{E} \big[ |B_j| \big]  \ge  d \right] 
+            &\le \exp \left( - \frac{d^2}{ \frac{2k }{2^j} + \frac{2 d}{3} }\right) \\
+            &\le \exp \left( -\frac{ d^2 }{ 2^{i - j + 2} \cdot \frac{1}{C_d} \cdot d + \frac{2}{3} d } \right) \\
+            &= \exp(- \Theta(d) )
+    \end{aligned}
+$$ -->
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/14/AMS-Sketch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -554,205 +786,6 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/31/Sparse-Recovery/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/31/Sparse-Recovery/" class="post-title-link" itemprop="url">Sparse Recovery</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-31 09:45:57" itemprop="dateCreated datePublished" datetime="2021-03-31T09:45:57+11:00">2021-03-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-08 23:55:01" itemprop="dateModified" datetime="2021-04-08T23:55:01+10:00">2021-04-08</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="model">Model</h1>
-<p>The focus of this article is recovering a sparse vector <span class="math inline">\(x \in \mathbb{R}^n\)</span> in the streaming setting. Initially, <span class="math inline">\(x = 0\)</span>. Then we see a sequence of updates <span class="math inline">\((i, \Delta)\)</span> each causing the change <span class="math inline">\(x_i \leftarrow x_i + \Delta\)</span>. There are three popular studied models</p>
-<ol type="1">
-<li><strong>insertion only:</strong> <span class="math inline">\(\Delta = 1\)</span> for each update.<br />
-</li>
-<li><strong>strict turnstile:</strong> <span class="math inline">\(\Delta\)</span> can be negative, but it is guaranteed that <span class="math inline">\(x \ge 0\)</span> all the time.<br />
-</li>
-<li><strong>general turnstile:</strong> <span class="math inline">\(\Delta\)</span> can be negative, and entries of <span class="math inline">\(x\)</span> can be negative.</li>
-</ol>
-<p>Let <span class="math inline">\(\text{supp}(x) \subset [n]\)</span> be the set of nonzero indices of <span class="math inline">\(x\)</span>. The vector <span class="math inline">\(x\)</span> is called <span class="math inline">\(k\)</span> sparse if <span class="math inline">\(\text{supp}(x) \le k\)</span>.</p>
-<blockquote>
-<p><strong>Goal.</strong> Given an integer <span class="math inline">\(k\)</span>, design a data structure such that, if <span class="math inline">\(x\)</span> is <span class="math inline">\(k\)</span> sparse, the structure returns <span class="math inline">\(x\)</span> exactly; otherwise, the return can be arbitrary.</p>
-</blockquote>
-<p>As we can't actually store real numbers, we use the following assumption:</p>
-<blockquote>
-<p>The updates are integers and the entries of <span class="math inline">\(x\)</span> are bounded by <span class="math inline">\(\pm M\)</span>.</p>
-</blockquote>
-<p>With this restriction, it suffices to solve this problem in a finite field <span class="math inline">\(\mathbb{F}_p\)</span> where <span class="math inline">\(p \ge \max \{ n, M \}\)</span>. As opposed to the naive solution that keeps all entries of <span class="math inline">\(x\)</span> and uses <span class="math inline">\(O(n \log M)\)</span> bits of memory, we show that the memory can be reduced to <span class="math inline">\(O( k \log (nM) )\)</span> bits.</p>
-<h1 id="algorithm">Algorithm</h1>
-<p>The problem is easy to solve in the insertion only model. We can use a hash set that keeps the first <span class="math inline">\(k\)</span> occurrence of the indices. If the we detect the <span class="math inline">\(k + 1\)</span> new index, we can just report error.</p>
-<p>The scenario is a little more complicated for the other two models. E.g., let <span class="math inline">\(n = 4\)</span> and <span class="math inline">\(k = 1\)</span>. Consider the following stream <span class="math display">\[
-    (1, 1), (2, 1), (3, -1), (4, 1), (1, -1), (2, -1), (3, 1). 
-\]</span></p>
-<p>The vector <span class="math inline">\(x\)</span> is finally <span class="math inline">\(1\)</span>-sparse and the only non-zero index is revealed at the end of the stream.</p>
-<h2 id="solution-1">Solution 1</h2>
-<h3 id="encode">Encode</h3>
-<p>In the first approach, we use a matrix <span class="math inline">\(H \in \mathbb{F}_p^{m \times n}\)</span> (<span class="math inline">\(m\)</span> to be determined) and encode <span class="math inline">\(x\)</span> as <span class="math inline">\(\mathbb{Enc}(x) = H x\)</span>. If the following property holds, we are guaranteed to recover <span class="math inline">\(x\)</span> if it is <span class="math inline">\(k\)</span> sparse.</p>
-<blockquote>
-<p>For every <span class="math inline">\(k\)</span> sparse <span class="math inline">\(x, x&#39; \in \mathbb{F}_p^n\)</span>, if <span class="math inline">\(x \neq x&#39;\)</span>, then <span class="math inline">\(Hx \neq H x&#39;\)</span>.</p>
-</blockquote>
-<p>If <span class="math inline">\(H x \neq Hx&#39;\)</span>, then <span class="math inline">\(H (x - x&#39;) \neq 0\)</span>. Observe that <span class="math inline">\(x - x&#39;\)</span> is a <span class="math inline">\(2k\)</span> sparse vector. This is equivalent to that <span class="math inline">\(H z \neq 0\)</span> for every nonzero <span class="math inline">\(2k\)</span> sparse vector <span class="math inline">\(z \in \mathbb{F}_p^n\)</span>.</p>
-<p>Such <span class="math inline">\(H\)</span> does exists, with <span class="math inline">\(m = 2k\)</span>. Let <span class="math inline">\(a_1, a_2, ..., a_n \in \mathbb{F}_p\)</span> be different integers. Then <span class="math inline">\(H\)</span> is given as <span class="math display">\[
-    H = \begin{bmatrix}
-        1   &amp;1  &amp;...    &amp;1  &amp;...    &amp;1 \\
-        a_1 &amp;a_2    &amp;...    &amp;a_i    &amp;...    &amp;a_n    \\
-        a_1^2   &amp;a_2^2  &amp;...    &amp;a_i^2  &amp;...    &amp;a_n^2  \\
-        ...\\
-        a_1^{2k - 1}    &amp;a_2^{2k - 1}   &amp;...    &amp;a_i^{2k - 1}   &amp;...    &amp;a_n^{2k - 1}
-    \end{bmatrix}
-\]</span></p>
-<p>Let <span class="math inline">\(S = \text{supp}(z) \subset [n]\)</span> be a set of size <span class="math inline">\(2k\)</span>. Denote <span class="math inline">\(z_S\)</span> be the vector by keeping only the nonzero dimensions of <span class="math inline">\(z\)</span> and <span class="math inline">\(H_S\)</span> be an <span class="math inline">\(2k \times 2k\)</span> matrix by keeping only columns indexed by <span class="math inline">\(S\)</span>. Then <span class="math inline">\(H z = H_S z_S\)</span>. We show that the rows of <span class="math inline">\(H_S\)</span> are linearly independently, hence its columns. It follows that if <span class="math inline">\(z_S \neq 0 \Longrightarrow H_S z_S \neq 0\)</span>.</p>
-<p>It is left to show that <span class="math inline">\(\forall c \in \mathbb{F}_p^{2k}\)</span>, <span class="math inline">\(c \neq 0 \rightarrow H_S^T c \neq 0\)</span>. Define the polynomial in <span class="math inline">\(\mathbb{F}_p\)</span> <span class="math display">\[
-    f(x) = c_{2k} x^{2k - 1} + c_{2k - 1} x^{2k - 1} + ... + c_1. 
-\]</span></p>
-<p>Then <span class="math inline">\(H_S^T c = ( f(a_i ) )_{i \in [S] }\)</span>. As <span class="math inline">\(f(x)\)</span> has at most <span class="math inline">\(2k - 1\)</span> distinct roots, and the <span class="math inline">\((a_i)_{i \in [S] }\)</span> are different, there exists some <span class="math inline">\(i \in [S]\)</span> such that <span class="math inline">\(f(a_i) \neq 0\)</span>.</p>
-<h3 id="decode">Decode</h3>
-<p>Given <span class="math inline">\(y = \mathbb{Enc}(x) = H x\)</span>, how can we recover <span class="math inline">\(x\)</span>? We can loop over every subset <span class="math inline">\(S \subset [n ]\)</span> of size <span class="math inline">\(2k\)</span> and compute <span class="math inline">\(x&#39; = H_S^{-1} y\)</span>. If <span class="math inline">\(x&#39;\)</span> is <span class="math inline">\(k\)</span> sparse, by the property of <span class="math inline">\(H\)</span>, it is the unique <span class="math inline">\(k\)</span>-sparse vector such that <span class="math inline">\(H_S x&#39; = y\)</span>.</p>
-<p><strong>Remark:</strong> The proposed method is exponential respect to <span class="math inline">\(k\)</span>. However, there is an algorithm (called <em>syndrome decoding</em>) to perform the recovery in <span class="math inline">\(O(k^2 poly(\log p))\)</span> time.</p>
-<h4 id="space-and-time">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(k \log (nM))\)</span> bits.</p>
-</blockquote>
-<p>This is because we don't store <span class="math inline">\(H\)</span>. For the finite field <span class="math inline">\(\mathbb{F}_p\)</span>, there exists at least one primitive element whose powers give all nonzero elements. We can pick such a primitive element <span class="math inline">\(a\)</span>, and set <span class="math inline">\(a_1 = a\)</span>, <span class="math inline">\(a_2 = a^2\)</span>, ..., <span class="math inline">\(a_n = a^n\)</span>. Storing <span class="math inline">\(y = Hx\)</span> requires only <span class="math inline">\(O(k \log (nM))\)</span> bits.</p>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> in the stream takes <span class="math inline">\(O(k)\)</span> time.</p>
-</blockquote>
-<h2 id="solution-2">Solution 2</h2>
-<p>We first show how to recover an <span class="math inline">\(1\)</span> sparse vector when negative updates are allowed, then use it as a black box to recover <span class="math inline">\(k\)</span> sparse vector.</p>
-<h3 id="sparse-recovery">1 sparse recovery</h3>
-<p>We show an algorithm that successes with probability <span class="math inline">\(n / p\)</span>.</p>
-<p>First, we pick a non-zero integer <span class="math inline">\(z\)</span> uniformly at random from <span class="math inline">\(\mathbb{F}_p\)</span>. Let <span class="math display">\[
-    H = \begin{bmatrix}
-        1   &amp;1  &amp;1  &amp;...    &amp;1  \\
-        1   &amp;2  &amp;3  &amp;...    &amp;n  \\
-        z   &amp;z^2    &amp;z^3    &amp;...    &amp;z^n
-    \end{bmatrix}.
-\]</span></p>
-<p>The algorithm consists of 3 parts.</p>
-<blockquote>
-<p><strong>Initialize:</strong><br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow \{ 0 \}^3\)</span><br />
-<span class="math inline">\(\qquad\)</span> Sample <span class="math inline">\(z\)</span> uniformly from <span class="math inline">\(1, ..., p - 1\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Updates</strong>: <span class="math inline">\((i, \Delta)\)</span><br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow w + \Delta \cdot H_i\)</span>, where <span class="math inline">\(H_i\)</span> is the <span class="math inline">\(i\)</span>th column of <span class="math inline">\(H\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Output:</strong><br />
-<span class="math inline">\(\qquad\)</span> If <span class="math inline">\(w_1 = 0\)</span> or <span class="math inline">\(w_3 \neq w_1 \cdot z^{w_2 / w_1}\)</span>:<br />
-<span class="math inline">\(\qquad\qquad\)</span> <strong>Return</strong> <span class="math inline">\(x\)</span> is not <span class="math inline">\(1\)</span> sparse;<br />
-<span class="math inline">\(\qquad\)</span> Else:<br />
-<span class="math inline">\(\qquad\qquad\)</span> <strong>Return</strong> <span class="math inline">\(j \doteq w_2 / w_1\)</span></p>
-</blockquote>
-<h4 id="failure-analysis">Failure Analysis</h4>
-<blockquote>
-<p><strong>Theorem.</strong> The algorithm fails with probability <span class="math inline">\(n / p\)</span>.</p>
-</blockquote>
-<p>Observe that <span class="math display">\[
-    w_1 = \sum_{i \in [n] } x_i, \qquad
-    w_2 = \sum_{i \in [n] } i \cdot x_i, \qquad
-    w_3 = \sum_{i \in [n] } z^i \cdot x_i.
-\]</span></p>
-<p>If <span class="math inline">\(w_1 = 0\)</span>, either <span class="math inline">\(x = 0\)</span> or there is cancellation. Conditioned on <span class="math inline">\(w_1 \neq 0\)</span>, if <span class="math inline">\(x\)</span> is <span class="math inline">\(1\)</span> sparse, then <span class="math display">\[
-    w_1 = x_j, \qquad w_2 = j \cdot x_j, \qquad w_3 = z^j \cdot x_j. 
-\]</span></p>
-<p>Hence, <span class="math inline">\(j = w_2 / w_1\)</span> is exactly the non-zero index, and <span class="math inline">\(w_3 = w_1 \cdot z^{j}\)</span>.</p>
-<p>If <span class="math inline">\(x\)</span> is not <span class="math inline">\(1\)</span> sparse, then <span class="math display">\[
-    w_3 - w_1 \cdot z^{j} 
-\]</span> is a polynomial of degree at most <span class="math inline">\(n\)</span>. It has at most <span class="math inline">\(n\)</span> distinct roots with one of them being <span class="math inline">\(0\)</span>. The probability that <span class="math inline">\(z\)</span> being a root is at most <span class="math inline">\((n - 1) / (p - 1) \le n / p\)</span>.</p>
-<h4 id="space-and-time-1">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(\log (nM))\)</span> bits.</p>
-</blockquote>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> takes <span class="math inline">\(O(1)\)</span> time.</p>
-</blockquote>
-<h3 id="k-sparse-recovery"><span class="math inline">\(k\)</span> sparse recovery</h3>
-<p>To apply the <span class="math inline">\(1\)</span> sparse recovery data structure, we partition <span class="math inline">\(x\)</span> into <span class="math inline">\(2k\)</span> subsets randomly. In particular, we use a pairwise hash function that maps each <span class="math inline">\(i \in [n]\)</span> to <span class="math inline">\([2k]\)</span> uniformly at random. For <span class="math inline">\(\ell \in [2k]\)</span>, let <span class="math inline">\(S_\ell\)</span> be the set of indices mapped to <span class="math inline">\(\ell\)</span>: <span class="math display">\[
-    S_\ell \doteq \{ i \in [n]: h(i) = \ell \}. 
-\]</span></p>
-<p>Then we run <span class="math inline">\(1\)</span> sparse recovery on each partition. If some partition contains only one nonzero index, then we recover it successfully.</p>
-<blockquote>
-<p><strong>Theorem.</strong> If <span class="math inline">\(x\)</span> is <span class="math inline">\(k\)</span> sparse, an nonzero dimension <span class="math inline">\(i\)</span> is recovered with probability <span class="math inline">\(1 / 2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> It suffices to prove that <span class="math inline">\(i\)</span> is the only nonzero index in <span class="math inline">\(S_{h (i) }\)</span>. For <span class="math inline">\(j \in \text{supp}(x)\)</span>, define the indicator variable <span class="math inline">\(X_j\)</span> which equals <span class="math inline">\(1\)</span> if <span class="math inline">\(h(j) = h(i)\)</span> and equals 0 otherwise. By Markov's inequality and linearity of expectation, <span class="math display">\[
-    \Pr\left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \ge 1 \right] \le \mathbb{E} \left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \right] = \sum_{ i \neq j \in \text{supp}(x) } \mathbb{E} \left[  X_j \right] \le \frac{k - 1}{2k} \le \frac{1}{2}.  
-\]</span></p>
-<p><strong>Remark.</strong> The Markov's inequality is rather tight here. Even if we have a fully independent hash function <span class="math inline">\(h\)</span>, the probability that none of the nonzero indices collides with <span class="math inline">\(i\)</span> is given by <span class="math display">\[
-    \left( 1 - \frac{1}{2k} \right)^{k - 1} \lessapprox \exp \left( - \frac{k - 1}{2k} \right) \approx \exp \left( - \frac{1}{2} \right) \approx 0.60653. 
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary.</strong> Running <span class="math inline">\(\log (k / \delta)\)</span> independent copies of the above structure reduce the failure probability to <span class="math inline">\(\delta\)</span>.</p>
-</blockquote>
-<h4 id="space-and-time-2">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(k (\log (k / \delta)) \log (nM))\)</span> bits.</p>
-</blockquote>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> takes <span class="math inline">\(O(\log (k / \delta))\)</span> time.</p>
-</blockquote>
-<h1 id="reference">Reference</h1>
-<p>[1]. Jelani Nelson, Chapter 4, <a target="_blank" rel="noopener" href="https://www.sketchingbigdata.org/fall20/lec/notes.pdf">Sketching Algorithms</a>, 2020.</p>
-<p>[2]. Moses Charikar, <a target="_blank" rel="noopener" href="http://web.stanford.edu/class/cs369g/files/lectures/lec11.pdf"><span class="math inline">\(\ell_{0}\)</span> Sampling and Sketching Distances</a>, CS369G: Algorithmic Techniques for Big Data, 2016</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -822,7 +855,7 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">166</span>
+          <span class="site-state-item-count">167</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
