@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/01/Coupling-Lemma/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/16/Range-Min-Query/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/01/Coupling-Lemma/" class="post-title-link" itemprop="url">Coupling Lemma</a>
+            <a href="/2021/12/16/Range-Min-Query/" class="post-title-link" itemprop="url">Range Min Query</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-11-01 23:07:54" itemprop="dateCreated datePublished" datetime="2021-11-01T23:07:54+11:00">2021-11-01</time>
+              <time title="Created: 2021-12-16 23:36:24" itemprop="dateCreated datePublished" datetime="2021-12-16T23:36:24+11:00">2021-12-16</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-11-02 12:20:03" itemprop="dateModified" datetime="2021-11-02T12:20:03+11:00">2021-11-02</time>
+                <time title="Modified: 2022-01-08 12:00:46" itemprop="dateModified" datetime="2022-01-08T12:00:46+11:00">2022-01-08</time>
               </span>
 
           
@@ -191,67 +191,305 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Let <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\nu\)</span> be two probability measures over a finite set <span class="math inline">\(\Omega\)</span>. A probability measure <span class="math inline">\(\omega\)</span> over <span class="math inline">\(\Omega \times \Omega\)</span> is a coupling of <span class="math inline">\((\mu, \nu)\)</span> if its marginals are <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\nu\)</span>; that is</p>
+          <h1 id="problem">Problem</h1>
+<blockquote>
+<p><strong>Definition (Range Min Query).</strong> Let <span class="math inline">\(a_1, \ldots, a_n \in \R\)</span>. Given <span class="math inline">\(\ell, r \in [n]\)</span>, <span class="math inline">\(\ell \le r\)</span>, return <span class="math inline">\(\min \{ a_\ell, \ldots, a_r \}\)</span>.</p>
+</blockquote>
+<h1 id="basic-solutions">Basic Solutions</h1>
+<p>A data structure for the <strong>Range Min Query (RMQ)</strong> has complexity <span class="math inline">\(\left&lt; p(n), q(n) \right&gt;\)</span> if it has pre-processing and query-answering time <span class="math inline">\(p(n)\)</span> and <span class="math inline">\(q(n)\)</span> on input instance of size <span class="math inline">\(n\)</span>, respectively.</p>
+<h2 id="mathcala_1-precompute-none"><span class="math inline">\(\mathcal{A}_1\)</span> Precompute-None</h2>
+<blockquote>
+<p>Scan <span class="math inline">\(a_\ell, \ldots, a_r\)</span> to find the min. * This is an <span class="math inline">\(\left&lt; 0, O(n) \right&gt;\)</span> solution.</p>
+</blockquote>
+<h2 id="mathcala_2-complete-binary-tree"><span class="math inline">\(\mathcal{A}_2\)</span> Complete Binary Tree</h2>
+<blockquote>
+<p>Construct a complete binary tree with <span class="math inline">\(a_1, \ldots, a_n\)</span> being the leaf nodes. Each internal node of the tree is augmented with the minimum value of its subtree.<br />
+* This is an <span class="math inline">\(\left&lt; O(n), O(\log n) \right&gt;\)</span> solution.</p>
+</blockquote>
+<h2 id="mathcala_3-precompute-all"><span class="math inline">\(\mathcal{A}_3\)</span> Precompute-All</h2>
+<blockquote>
+<p>Create a <span class="math inline">\(n \times n\)</span> table <span class="math inline">\(M\)</span>. For each <span class="math inline">\(\ell, r \in [n]\)</span>, <span class="math inline">\(\ell \le r\)</span>, the <span class="math inline">\((\ell, r)\)</span>-th entry records <span class="math inline">\(\min \{ a_\ell, \ldots, a_r \}\)</span>.<br />
+* This is an <span class="math inline">\(\left&lt; O(n^2), O(1) \right&gt;\)</span> solution.</p>
+</blockquote>
+<ul>
+<li><p><span class="math inline">\(p(n) = O(n^2)\)</span>.</p>
+<ul>
+<li>Dynamic Programming.</li>
+<li><span class="math inline">\(\forall \ell, r \in [n], \ell \le r\)</span>, <span class="math display">\[
+    M[\ell, r] = 
+        \begin{cases}            
+            a_\ell  &amp; \ell = r, \\
+            \min \{ M[\ell, r - 1], M[\ell + 1, r] \}, &amp; \ell &lt; r.
+        \end{cases}
+\]</span></li>
+</ul></li>
+<li><p><span class="math inline">\(q(n) = O(1)\)</span>.</p></li>
+</ul>
+<h2 id="mathcala_4-sparse-table"><span class="math inline">\(\mathcal{A}_4\)</span> Sparse Table</h2>
+<blockquote>
+<p>Create a <span class="math inline">\(n \times \lfloor \log n \rfloor\)</span> table <span class="math inline">\(M\)</span>. For each <span class="math inline">\(\ell \in [n], k \in \big[ \lfloor \log n \rfloor \big]\)</span>, <span class="math inline">\(r \doteq \ell + \big( 2^k - 1 \big) \le n\)</span>, the <span class="math inline">\((\ell, k)\)</span>-th entry records <span class="math inline">\(\min \{ a_\ell, \ldots, a_{\ell + 2^k - 1} \}\)</span>.<br />
+* This is an <span class="math inline">\(\left&lt; O(n \log n), O(1) \right&gt;\)</span> solution.</p>
+</blockquote>
+<ul>
+<li><p><span class="math inline">\(p(n) = O(n \log n)\)</span>.</p>
+<ul>
+<li>Dynamic Programming.</li>
+<li>For each <span class="math inline">\(\ell \in [n], k \in \big[ \lfloor \log n \rfloor \big]\)</span>, <span class="math inline">\(r \doteq \ell + \big( 2^k - 1 \big) \le n\)</span>, let <span class="math display">\[
+    M[\ell, k] = 
+        \begin{cases}            
+            \min \{ a_\ell, a_{\ell + 1} \}  &amp;   k = 1, \\
+            \min \{ M[\ell, \ell + 2^{k - 1} - 1], M[r -  2^{k - 1} + 1, r] \}, &amp; \ell &lt; r.
+        \end{cases}
+\]</span></li>
+</ul></li>
+<li><p><span class="math inline">\(q(n) = O(1)\)</span>.</p></li>
+</ul>
+<h1 id="divide-and-conquer">Divide and Conquer</h1>
+<h2 id="preprocessing">Preprocessing</h2>
 <ol type="1">
-<li><span class="math inline">\(\forall x \in \Omega\)</span>, <span class="math inline">\(\sum_{y \in \Omega} \omega(x, y) = \mu(x)\)</span>,</li>
-<li><span class="math inline">\(\forall y \in \Omega\)</span>, <span class="math inline">\(\sum_{x \in \Omega} \omega(x, y) = \nu(x)\)</span>.</li>
+<li><p>Pick <span class="math inline">\(s \in \N_+\)</span>, and let <span class="math inline">\(m = n / s\)</span>.</p></li>
+<li><p>Partition <span class="math inline">\(a_1, \ldots, a_n\)</span> into <span class="math inline">\(m\)</span> blocks <span class="math inline">\(B_1, \ldots B_m\)</span>, such that <span class="math inline">\(B_1\)</span> contains the first <span class="math inline">\(s\)</span> elements, <span class="math inline">\(B_2\)</span> contains the next <span class="math inline">\(s\)</span> elements, and so on. In general,<br />
+<span class="math display">\[
+ B_i \doteq \{ a_{ (i - 1) \cdot s + 1 },  \ldots, a_{i \cdot s} \}, \quad \forall i \in [m].  
+\]</span></p></li>
+<li><p>Denote <span class="math inline">\(b_1, \ldots, b_m\)</span> be the minimum element in <span class="math inline">\(B_1, \ldots B_m\)</span>, respectively.</p></li>
+</ol>
+<h2 id="query">Query</h2>
+<ol start="4" type="1">
+<li><p>Given <span class="math inline">\(\ell, r \in [n]\)</span>, <span class="math inline">\(\ell \le r\)</span>, consider</p>
+<ul>
+<li><p><span class="math inline">\(C_1\)</span> be the collection of indexes of the blocks <span class="math inline">\(B_i \subset \{ a_\ell, \ldots, a_r \}\)</span>: <span class="math display">\[
+      C_1 \doteq \{ i \in [m] : B_i \subset \{ a_\ell, \ldots, a_r \} \}
+  \]</span> If <span class="math inline">\(C_1 \neq \emptyset\)</span>, let <span class="math inline">\(\ell&#39; = \min_{i \in C_1} i\)</span> and <span class="math inline">\(r&#39; = \max_{i \in C_1} i\)</span>.</p></li>
+<li><p><span class="math inline">\(C_2\)</span> be the collection of indexes of the blocks <span class="math inline">\(B_i\)</span> such that <span class="math inline">\(B_i \nsubseteq \{ a_\ell, \ldots, a_r \}\)</span> and <span class="math inline">\(B_i \cap \{ a_\ell, \ldots, a_r \} \neq \empty\)</span> <span class="math display">\[
+      C_2 \doteq \{  i \in [m] : B_i \cap \{ a_\ell, \ldots, a_r \} \neq \empty \wedge B_i \nsubseteq \{ a_\ell, \ldots, a_r \} \}.
+  \]</span> It must be that <span class="math inline">\(|C_2| \le 2\)</span>.</p></li>
+</ul></li>
+<li><p>To return <span class="math inline">\(\min \{ a_\ell, \ldots, a_r \}\)</span>, return the minimum of</p>
+<ul>
+<li><span class="math inline">\(\min_{i \in C_1} b_i\)</span>, if <span class="math inline">\(C_1 \neq \emptyset\)</span>.</li>
+<li><span class="math inline">\(\min_{i \in C_2} \min \big( B_i \cap \{ a_\ell, \ldots, a_r \}\big)\)</span>.</li>
+</ul>
+<p>Note that</p>
+<ul>
+<li>The first one is a range-min query on <span class="math inline">\(b_1, \ldots, b_m\)</span>.</li>
+<li>The second one consists of range-min queries on the blocks <span class="math inline">\(B_i\)</span> for <span class="math inline">\(i \in C_2\)</span></li>
+</ul></li>
+</ol>
+<h2 id="approach-one">Approach One</h2>
+<ol type="1">
+<li><p>Suppose we invoke an algorithm <span class="math inline">\(A_{up}\)</span> to answer the range-min query on <span class="math inline">\(b_1, \ldots, b_m\)</span>, with complexity <span class="math inline">\(\left&lt; p_1(m), q_1(m) \right&gt;\)</span>.</p></li>
+<li><p>Suppose we invoke an algorithm <span class="math inline">\(A_{down}\)</span> to answer the range-min query range-min queries on the blocks <span class="math inline">\(B_i\)</span> for <span class="math inline">\(i \in C_2\)</span>, with complexity <span class="math inline">\(\left&lt; p_2(s), q_2(s) \right&gt;\)</span>.<br />
+<!-- Suppose that it has pre-processing $p_1(m)$ and query-answering time $q_1(m)$ for a single block.  --></p></li>
+<li><p>Since the set <span class="math inline">\(C_2\)</span> depends on the range min query, to answer arbitrary range min query, we need to run the pre-processing of <span class="math inline">\(A_{down}\)</span> on each block <span class="math inline">\(B_i, i \in [m]\)</span>.</p></li>
+</ol>
+<p>This approach has complexity <span class="math display">\[
+    \begin{aligned}
+        &amp;\left&lt; O \big( n + p_1(m) + m \cdot p_2 (s) \big) , O \big( q_1(m) + q_2 (s) \big) \right&gt; \\
+        &amp;= 
+        \left&lt; O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big), O \big( q_1(n / s) + q_2 (s) \big) \right&gt;.
+    \end{aligned}
+\]</span></p>
+<h2 id="instantiation">Instantiation</h2>
+<h3 id="mathcala_5-two-level-precompute-none"><span class="math inline">\(\mathcal{A}_5\)</span> Two-Level Precompute-None</h3>
+<p>Choose Precompute-None <span class="math inline">\(\mathcal{A}_1\)</span> for both <span class="math inline">\(A_{up}\)</span> and <span class="math inline">\(A_{down}\)</span>.</p>
+<ul>
+<li>Total preprocessing time: <span class="math inline">\(O \big( n \big)\)</span>.<br />
+</li>
+<li>Total query time: <span class="math inline">\(O \big( m + s \big) = O \big( \sqrt{n} \big)\)</span>, if <span class="math inline">\(m = s = \sqrt{n}\)</span>.</li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \big), O \big( \sqrt{n} \big) \right&gt;\)</span>.</p>
+</blockquote>
+<h3 id="mathcala_6-two-level-binary-tree"><span class="math inline">\(\mathcal{A}_6\)</span> Two-Level Binary Tree</h3>
+<p>This is just a complete binary tree over <span class="math inline">\(a_1, \ldots, a_n\)</span>. Therefore,</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( n \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( \log n \big)\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \big), O \big( \log n \big) \right&gt;\)</span>.</p>
+</blockquote>
+<h3 id="mathcala_7-two-level-sparse-table"><span class="math inline">\(\mathcal{A}_7\)</span> Two-Level Sparse Table</h3>
+<p>We don't investigate Precompute-All, as the sparse table is always better.</p>
+<p>Choose sparse table <span class="math inline">\(\mathcal{A}_3\)</span> for both <span class="math inline">\(A_{up}\)</span> and <span class="math inline">\(A_{down}\)</span>.</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( m \log m + m \cdot s \log s \big)\)</span>.<br />
+Since <span class="math inline">\(m \cdot s = n\)</span>, we have <span class="math display">\[
+      O \Big( m \log m + m \cdot s \log s \Big) = O \Big( \frac{n}{s} \log \frac{n}{s} + n \log s \Big), 
+  \]</span> which is minimized when <span class="math display">\[
+      \begin{aligned}
+          \frac{n}{s} \log \frac{n}{s} = n \log s
+          &amp;\iff \log n - \log s = s \log s \\
+          &amp;\iff \log n = \Theta (s \log s ) \\
+          &amp;\iff \log \log n = \Theta (\log s). 
+      \end{aligned}
+  \]</span> Therefore, the pre-processing time is reduced to <span class="math display">\[
+      O \Big( n \log \log n \Big).
+  \]</span></p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( 1 + 1 \big) = O \big( 1 \big)\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \log \log n \big), O \big( 1 \big) \right&gt;\)</span>.</p>
+</blockquote>
+<p><strong>Remark:</strong> <em>Personally I suspect this approach is fast in practice. Since <span class="math inline">\(A_{down}\)</span> involves a linear scan of at most two blocks with size <span class="math inline">\(O(\log n)\)</span>, and linear scan is cache-friendly.</em></p>
+<p><strong>Remark:</strong> If we apply two level <span class="math inline">\(\mathcal{A}_7\)</span>, then the preprocessing time is <span class="math display">\[
+    O \Big( m \log \log m + m \cdot s \log \log s \Big) = O \Big( \frac{n}{s} \log \log \frac{n}{s} + n \log \log s \Big), 
+\]</span> Choosing <span class="math inline">\(s = \log \log s\)</span> minimized this to <span class="math display">\[
+    O \Big( n \log \log \log \log s\Big).
+\]</span></p>
+<p>Further, the query time remains <span class="math inline">\(O(1)\)</span>.</p>
+<h3 id="mathcala_8-hybrid-sparse-table-and-precompute-none"><span class="math inline">\(\mathcal{A}_8\)</span> Hybrid-Sparse Table and Precompute-None</h3>
+<p>Choose sparse table <span class="math inline">\(\mathcal{A}_3\)</span> for <span class="math inline">\(A_{up}\)</span> and Precompute-None <span class="math inline">\(\mathcal{A}_1\)</span> for <span class="math inline">\(A_{down}\)</span>.</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( (n / s) \log (n / s) \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( 1 + s \big)\)</span>.</p></li>
+</ul>
+<p>If we choose <span class="math inline">\(s = \log n\)</span>, then</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( n \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( \log n \big)\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \big), O \big( \log n \big) \right&gt;\)</span>.</p>
+</blockquote>
+<h3 id="mathcala_9-hybrid-sparse-table-and-binary-tree"><span class="math inline">\(\mathcal{A}_9\)</span> Hybrid-Sparse Table and Binary Tree</h3>
+<p>Choose sparse table <span class="math inline">\(\mathcal{A}_3\)</span> for <span class="math inline">\(A_{up}\)</span> and complete binary tree <span class="math inline">\(\mathcal{A}_2\)</span> for <span class="math inline">\(A_{down}\)</span>.</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( (n / s) \log (n / s) + (n / s)\cdot s \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( 1 + \log s \big)\)</span>.</p></li>
+</ul>
+<p>If we choose <span class="math inline">\(s = \log n\)</span>, then</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( n \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( \log \log n \big)\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \big), O \big( \log \log n \big) \right&gt;\)</span>.</p>
+</blockquote>
+<p><strong>Remark:</strong> If we apply two level <span class="math inline">\(\mathcal{A}_9\)</span>, then the preprocessing time is <span class="math display">\[
+    O \big( n + n / s + n / s \cdot s \big) = O(n),
+\]</span></p>
+<p>Further, the query time is <span class="math display">\[
+    O \big( \log \log (n / s) + \log \log s \big).
+\]</span></p>
+<p>Unfortunately, this is still <span class="math inline">\(\log \log n\)</span>.</p>
+<h2 id="approach-two">Approach Two</h2>
+<!-- Can we achieve $O(n)$ preprocessing time and $O(1)$ under the hybrid framework? 
+Recall that it has
+* Total preprocessing time: $O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big)$.   
+* Total query time: $O \big( q_1(n / s) + q_2 (s) \big)$.    -->
+<p>Can we achieve <span class="math inline">\(\left&lt; O \big( n \big), O \big( 1 \big) \right&gt;\)</span> under approach one? Recall that approach one has complexity <span class="math display">\[
+    \begin{aligned}
+        \left&lt; O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big), O \big( q_1(n / s) + q_2 (s) \big) \right&gt;.
+    \end{aligned}
+\]</span></p>
+<p>Suppose we want to achieve preprocessing time <span class="math inline">\(O(n)\)</span> and query time <span class="math inline">\(O(1)\)</span>, then <span class="math inline">\(p_2(s)\)</span> and <span class="math inline">\(q_2(s)\)</span> needs to satisfy that <span class="math inline">\(p_2(s) = s\)</span> and <span class="math inline">\(q_2(s) = 1\)</span>. But this is exactly the property we want to achieve!</p>
+<p>It seems to be impossible to achieve the desired complexity under the divide and conquer framework.</p>
+<p>The key is to observe that the following are two different problems.</p>
+<blockquote>
+<ol type="1">
+<li>Finding a <strong>RMQ</strong> algorithm with complexity <span class="math inline">\(\left&lt; O(n), O(1) \right&gt;\)</span>.<br />
+</li>
+<li>Finding an algorithm that preprocess the all block <span class="math inline">\(B_i\)</span> in <span class="math inline">\(O(n)\)</span> time, such that the range-min query on each <span class="math inline">\(B_i\)</span> can be answered in <span class="math inline">\(O(1)\)</span> time.</li>
+</ol>
+</blockquote>
+<p>For the divide-and-conquer framework to work to achieve complexity <span class="math inline">\(\left&lt; O(n), O(1) \right&gt;\)</span>, it suffices to find an algorithm for the second problem.</p>
+<!-- ### **Construction** -->
+<blockquote>
+<p><strong>Theorem.</strong> There exists some <span class="math inline">\(s \in \Theta(\log n)\)</span>, such that we can find an algorithm that preprocess the all block <span class="math inline">\(B_i\)</span> in <span class="math inline">\(O(n)\)</span> time, such that the range-min query on each <span class="math inline">\(B_i\)</span> can be answered in <span class="math inline">\(O(1)\)</span> time.</p>
+</blockquote>
+<p>Denote such an algorithm as <span class="math inline">\(\mathcal{A}^*\)</span>. Since <span class="math inline">\(s \in \Theta(\log n)\)</span>, choosing sparse table algorithm <span class="math inline">\(\mathcal{A}_3\)</span> to answer the range-min query on <span class="math inline">\(b_1, \ldots, b_m\)</span> incurs additional preprocessing time <span class="math inline">\(O( n / s \cdot \log (n / s) ) = O(n)\)</span>. Further, answering a query requires only <span class="math inline">\(O(1)\)</span> time.</p>
+<p>It is left to show the construction of <span class="math inline">\(\mathcal{A}^*\)</span>.</p>
+<h3 id="block-type"><strong>Block Type</strong></h3>
+<p>W.L.O.G., consider the first block <span class="math inline">\(B_1 = \{ a_{ 1 }, \ldots, a_{ s} \}\)</span> be a block of <span class="math inline">\(s\)</span> elements. We can construct a binary tree over the elements, such that it satisfies</p>
+<blockquote>
+<ol type="1">
+<li><strong>Min Heap Property:</strong> <em>each node of the tree is the smallest one in the subtree rooted at this node.</em><br />
+</li>
+<li>The in-order traversal of the tree gives the array <span class="math inline">\(B_1\)</span>.</li>
+</ol>
+</blockquote>
+<p>Such a binary tree is called a <strong>Cartesian Tree</strong> and the <strong><em>type</em></strong> of the block.</p>
+<p>On the other hand, suppose we are given a <strong>Cartesian Tree</strong> tree constructed on <span class="math inline">\(B_1\)</span>, and suppose that the value of each node of the tree is hidden. Hence, we only know the topology or shape of the binary tree. For all <span class="math inline">\(1 \le \ell \le r \le s\)</span>, we can still return the index of the minimum element among <span class="math inline">\(a_\ell, \ldots, a_s\)</span>, purely based on the topology of the binary tree.</p>
+<p>In this sense, the answers to the RMQ on <span class="math inline">\(B_1\)</span> is entirely determined by its corresponding <strong>Cartesian Tree</strong>.</p>
+<h3 id="enumeration"><strong>Enumeration</strong></h3>
+<p>This motivates the following strategy.</p>
+<ol type="1">
+<li><p>Enumerate all possible <strong>Cartesian Trees</strong>.</p></li>
+<li><p>For each <strong>Cartesian Tree</strong>, invoke the sparse table algorithm <span class="math inline">\(\mathcal{A}_3\)</span> algorithm on this tree, so that all possible range min query for this tree can be answer in <span class="math inline">\(O(1)\)</span> time.</p></li>
+<li><p>For each block <span class="math inline">\(B_i, i \in [m]\)</span>, determine its <strong>Cartesian Trees</strong>. To answer a RMQ on <span class="math inline">\(B_i\)</span>, access the pre-computed result on its corresponding <strong>Cartesian Trees</strong>.</p></li>
 </ol>
 <blockquote>
-<p><strong>Lemma</strong> 1. For any coupling <span class="math inline">\(\omega\)</span> of <span class="math inline">\((\mu, \nu)\)</span>, if the random variable <span class="math inline">\((X, Y)\)</span> is distributed according to <span class="math inline">\(\omega\)</span>, then <span class="math display">\[
-\Pr[ X \neq Y ] \ge \Vert \mu - \nu \Vert_{TV}. 
-\]</span> 2. There exists a coupling <span class="math inline">\(\omega^*\)</span> of <span class="math inline">\((\mu, \nu)\)</span> for which <span class="math display">\[
-\Pr[ X \neq Y ] = \Vert \mu - \nu \Vert_{TV}.
+<p><strong>Fact.</strong> The number of distinct <strong>Cartesian Trees</strong> with size <span class="math inline">\(s\)</span> is given by <span class="math display">\[
+\frac{1}{1 + s}\binom{2s}{s}. 
 \]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> First, observe that for every measurable set <span class="math inline">\(S \subset \Omega\)</span>, it holds that <span class="math display">\[
-    \begin{aligned}
-        \mu(S) - \nu(S) 
-            = \Pr [ X \in S ] - \Pr [ Y \in S ]
-            \le \Pr[ X \in S, Y \notin S ] 
-            \le \Pr[ X \neq Y ].
-    \end{aligned}
-\]</span> It follows that <span class="math display">\[
-    \Vert \mu - \nu \Vert_{TV} = \max_{ \text{ measurable } S \subset \Omega} \big( \mu(S) - \nu(S) \big) \le \Pr[ X \neq Y ]. 
+<p>Therefore, enumerating the <strong>Cartesian Trees</strong>, and constructing sparse tables on them for <strong>RMQ</strong>, take time and space <span class="math display">\[
+    \frac{1}{1 + s}\binom{2s}{s} \cdot s \cdot \log s 
+    = \Theta \left( \frac{s \cdot \log s}{1 + s} \frac{ \sqrt{2s} \cdot \big( 2s / e \big)^{2s} }{ \Big( \sqrt{s} \cdot \big( s / e \big)^{s} \Big)^2 } \right)
+    = \Theta \left( \frac{\log s}{\sqrt{s}} \cdot 2^{2s} \right). 
 \]</span></p>
-<p>Next, we show how to construct <span class="math inline">\(\omega^*\)</span>. For each <span class="math inline">\(z \in \Omega\)</span>, define <span class="math display">\[
-    \omega^*(z, z) = \min \{ \mu(z), \nu(z) \}. 
-\]</span> Clearly it holds that <span class="math display">\[
-    \begin{aligned}
-        \Pr[ X \neq Y ] 
-            = 1 - \sum_{ z \in \Omega } \min \{ \mu(z), \nu(z) \}
-            = \Vert \mu - \nu \Vert_{TV}.
-    \end{aligned}
-\]</span></p>
-<p>It is left to assign the probability mass <span class="math inline">\(\Vert \mu - \nu \Vert_{TV}\)</span> to <span class="math inline">\((x, y) \in \Omega \times \Omega\)</span>, for <span class="math inline">\(x \neq y\)</span>.</p>
-<p><strong>Case 1 <span class="math inline">\(\big( \Vert \mu - \nu \Vert_{TV} = 0 \big)\)</span>.</strong> Then we can set <span class="math inline">\(\omega^*(x, y) = 0\)</span> for all <span class="math inline">\(x \neq y\)</span>. Further, it holds that <span class="math inline">\(\mu(z) = \nu(z)\)</span> for all <span class="math inline">\(z \in \Omega\)</span>. Therefore, <span class="math display">\[
-    \begin{aligned}
-        \sum_{ y \in \Omega } w^* (x, y) = w^*(x, x) = \min \{ \mu(x), \nu(x) \} = \mu( x ), \\
-        \sum_{ x \in \Omega } w^* (x, y) = w^*(y, y) = \min \{ \mu(y), \nu(y) \} = \nu( y )\,. 
-    \end{aligned}
-\]</span></p>
-<p><strong>Case 2 <span class="math inline">\(\big( \Vert \mu - \nu \Vert_{TV} \neq 0 \big)\)</span>.</strong> Denote <span class="math inline">\(S_+ \doteq \{ z \in \Omega: \mu(z) \ge \nu(z) \}\)</span>. Define two probability mass functions <span class="math display">\[
-    \lambda_1 \doteq \frac{ \mu(z) - \nu(z) }{ \Vert \mu - \nu \Vert_{TV} } \cdot \mathbf{1}[z \in S_+],\,
-    \lambda_2 \doteq \frac{ \nu(z) - \mu(z) }{ \Vert \mu - \nu \Vert_{TV} } \cdot \mathbf{1}[z \notin S_+].
-\]</span></p>
-<p>Then <span class="math inline">\(\lambda_1 ( \Omega ) = \lambda_1 (S_+) = \lambda_2 (\Omega) = \lambda_2 ( \bar S_+ ) = 1\)</span>.</p>
-<p>Now, for <span class="math inline">\(x, y \in \Omega, x \neq y\)</span>, define <span class="math display">\[
-    \omega^*(x, y) = \Vert \mu - \nu \Vert_{TV} \cdot \lambda_1 (x) \cdot \lambda_2 (y) .
-\]</span></p>
-<p>Also note that for all <span class="math inline">\(z \in \Omega\)</span>, <span class="math inline">\(\Vert \mu - \nu \Vert_{TV} \cdot \lambda_1 (z) \cdot \lambda_2 (z) = 0\)</span>. Therefore, <span class="math display">\[
-    \begin{aligned}
-        \sum_{ y \in \Omega } w^* (x, y) 
-            &amp;= w^*(x, x) + \sum_{ x \neq y } w^* (x, y) \\
-            &amp;= \min \{ \mu(x), \nu(x) \} + \sum_{ y \in \Omega } \Vert \mu - \nu \Vert_{TV} \cdot \lambda_1 (x) \cdot \lambda_2 (y) \\
-            &amp;= \min \{ \mu(x), \nu(x) \} + \big( \mu(x) - \nu(x) \big) \cdot \mathbf{1}[x \in S_+] \\
-            &amp;= \mu(x). 
-    \end{aligned}
-\]</span></p>
-<p>Similarly, we can verify that for each <span class="math inline">\(y \in \Omega\)</span>, <span class="math display">\[
-    \sum_{y \in \Omega} \omega^*(x, y) = \nu(y).
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p><strong>Reference</strong></p>
-<p>[1] <em>Constantinos Daskalakis, <a target="_blank" rel="noopener" href="https://people.csail.mit.edu/costis/6896sp11/lec3s.pdf">6.896 Probability and Computation, Lecture 3</a>, 2011.</em></p>
+<p>Choosing <span class="math inline">\(s = \big( 0.5 \cdot \log n \big)\)</span> gives <span class="math inline">\(\Theta( n \cdot \big( \log \log n \big) / \sqrt{\log n}) \subset O(n)\)</span>.</p>
+<h3 id="determining-the-block-type"><strong>Determining the Block Type</strong></h3>
+<p>In this section, we show how to construct the corresponding Cartesian Tree given the block <span class="math inline">\(B_1\)</span>, and to create a unique identifier <span class="math inline">\(\in O(n)\)</span> for the Cartesian Tree.</p>
+<p>We illustrate the idea with an example. In this example, <span class="math inline">\(B_1 = (2, 4, 3, 1)\)</span>. We will construct the Cartesian Tree, by including the elements from <span class="math inline">\(B_1\)</span> one by one. Further, we maintain a <em>stack</em> and a <em>stack operation sequence</em>, both of which are initially empty. The stack keeps elements from the right spine of the tree, and the stack operation sequence records the "in stack" and "out stack" operations as we include more elements from <span class="math inline">\(B_1\)</span> into the tree.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/01.png?raw=true" width="250" height="" /></p>
+</div>
+<p>We first include the element <span class="math inline">\(2\)</span> into the tree. Since the tree consists of only one node, it is the root of the tree. It is also the only node in the right spine of the tree, so we put <span class="math inline">\(2\)</span> into the stack, and append <span class="math inline">\(1\)</span> to the stack operation sequence, to record the in-stack operation.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/02.png?raw=true" width="250" height="" /></p>
+</div>
+<p>Next we include the element <span class="math inline">\(4\)</span> into the tree. Since the tree satisfies min-heap property, <span class="math inline">\(4\)</span> must be the child of <span class="math inline">\(2\)</span>. Since the in-order traversal of the tree gives the array <span class="math inline">\(2, 4\)</span>, the node <span class="math inline">\(4\)</span> must be the right child of <span class="math inline">\(2\)</span>. We put <span class="math inline">\(4\)</span> into the stack, and append <span class="math inline">\(1\)</span> to the stack operation sequence, to record the in-stack operation.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/03.png?raw=true" width="250" height="" /></p>
+</div>
+<p>We want to include the element <span class="math inline">\(3\)</span> into the existing tree. Since after inclusion, the in-order traversal of the tree gives the array <span class="math inline">\(2, 4, 3\)</span>, the node <span class="math inline">\(3\)</span> must be in the right spine of the tree. Indeed, this is a general principle for adding a new element into the tree.</p>
+<blockquote>
+<p><strong>Lemma (In the Right Spine).</strong> For each <span class="math inline">\(j \in [s]\)</span>, let <span class="math inline">\(T_j\)</span> be the Cartesian tree constructed on <span class="math inline">\(a_1, \ldots, a_j\)</span>. Then <span class="math inline">\(a_j\)</span> be must in the right spine of <span class="math inline">\(T_j\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<ol type="1">
+<li>If <span class="math inline">\(a_j\)</span> has right-child in <span class="math inline">\(T_j\)</span>, then it is not the last element visited by the in-order traversal of <span class="math inline">\(T_j\)</span>.</li>
+<li>If <span class="math inline">\(a_j\)</span> has a parent node in <span class="math inline">\(T_j\)</span> and is the left-child of its parent, then it is not the last element visited by the in-order traversal of <span class="math inline">\(T_j\)</span>.</li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<p>In this case, the right spine consists of <span class="math inline">\(2\)</span> and <span class="math inline">\(4\)</span>. We compare <span class="math inline">\(3\)</span> with <span class="math inline">\(4\)</span>. As it is smaller than <span class="math inline">\(4\)</span>, we pop <span class="math inline">\(4\)</span> out of the stack. We compare <span class="math inline">\(3\)</span> with <span class="math inline">\(2\)</span>. As it is larger than <span class="math inline">\(2\)</span>, we put <span class="math inline">\(3\)</span> into the stack. We include <span class="math inline">\(3\)</span> as the right-child of <span class="math inline">\(2\)</span>, and set <span class="math inline">\(4\)</span> as the left child of <span class="math inline">\(3\)</span>. We see that after these operations, the stack still contains the nodes in the right spine of the tree. Further, the min-heap property of the tree is maintained. We append <span class="math inline">\(01\)</span> to the stack operation sequence, to record the out-stack and in-stack operations performed.</p>
+<p>We now formally states the rules for adding an element to the right spine.</p>
+<blockquote>
+<p><strong>Incremental Construction Rule.</strong> For each <span class="math inline">\(1 \le j &lt; s\)</span>, let <span class="math inline">\(T_j\)</span> be the Cartesian tree constructed on <span class="math inline">\(a_1, \ldots, a_j\)</span>, and suppose that <span class="math inline">\(a_1&#39; \le a_2&#39; \ldots \le a_k&#39;\)</span> are the elements in the right spine of <span class="math inline">\(T_j\)</span>. Then <span class="math inline">\(a_{j + 1}\)</span> is added to <span class="math inline">\(T_j\)</span> as follows:</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(a_{j + 1} &lt; a_1&#39;\)</span>, then set <span class="math inline">\(a_1&#39;\)</span> as the left child of <span class="math inline">\(a_{j + 1}\)</span>.</p></li>
+<li><p>If <span class="math inline">\(a_{j + 1} &gt; a_k&#39;\)</span>, then set <span class="math inline">\(a_{j + 1}\)</span> as the right child of <span class="math inline">\(a_k&#39;\)</span>.</p></li>
+<li><p>Otherwise, there exists <span class="math inline">\(1 \le i &lt; k\)</span>, such that <span class="math inline">\(a_i&#39; \le a_{j + 1} &lt; a_{i + 1}&#39;\)</span>. Replace <span class="math inline">\(a_{i + 1}&#39;\)</span> by <span class="math inline">\(a_{j + 1}\)</span> as the right child of <span class="math inline">\(a_i&#39;\)</span>, and set <span class="math inline">\(a_{i + 1}&#39;\)</span> as the left child of <span class="math inline">\(a_{j + 1}\)</span>.</p></li>
+</ol>
+</blockquote>
+<p>It is easy to verify that after the construction</p>
+<ol type="1">
+<li><span class="math inline">\(a_{j + 1}\)</span> is in the right spine of the tree.<br />
+</li>
+<li>The min-heap property is maintained.</li>
+</ol>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/04.png?raw=true" width="400" height="" /></p>
+</div>
+<p>We want to include the element <span class="math inline">\(1\)</span> into the existing tree. Since after inclusion, the in-order traversal of the tree gives the array <span class="math inline">\(2, 4, 3, 1\)</span>, the node <span class="math inline">\(1\)</span> must be in the right spine of the tree. In this case, the right spine consists of <span class="math inline">\(2\)</span> and <span class="math inline">\(3\)</span>. As <span class="math inline">\(1\)</span> is smaller than <span class="math inline">\(2\)</span>, we pop <span class="math inline">\(3\)</span> and <span class="math inline">\(2\)</span> out of the stack, put <span class="math inline">\(1\)</span> into the stack, and set <span class="math inline">\(2\)</span> as the left child of <span class="math inline">\(1\)</span>. We append <span class="math inline">\(001\)</span> to the stack operation sequence, to record the stack operations performed.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/05.png?raw=true" width="460" height="" /></p>
+</div>
+<p>Finally, we pop <span class="math inline">\(1\)</span> out of the stack, and append <span class="math inline">\(0\)</span> to the stack operation sequence, to record the stack operation performed. We perform this operation, so that whatever sequence of <span class="math inline">\(a_1, \ldots, a_s\)</span>, the stack operation sequence corresponding to the Cartesian Tree construction procedure stated as above has length <span class="math inline">\(2s\)</span>.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/06.png?raw=true" width="300" height="" /></p>
+</div>
+<blockquote>
+<p>The construction also reveal an interesting fact: each Cartesian Tree with <span class="math inline">\(s\)</span> node corresponding a <span class="math inline">\(0\)</span>-<span class="math inline">\(1\)</span> sequence with length <span class="math inline">\(2s\)</span>, such that each prefix of the sequence contains no less <span class="math inline">\(1\)</span>'s than <span class="math inline">\(0\)</span>'s.</p>
+</blockquote>
+<p>We know that <span class="math display">\[
+    | \{ t \in \{0, 1\}^{2s} : \text{each prefix of } t \text{ contains no less } 1 \text{ than } 0 \} | = \frac{1}{1 + s} \binom{2s}{s}, 
+\]</span> which gives a construct proof of the number of binary trees with <span class="math inline">\(s\)</span> nodes.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] Stanford, CS 166, <a target="_blank" rel="noopener" href="https://web.stanford.edu/class/cs166/lectures/00/Slides00.pdf">Range Minimum Queries</a></p>
 
       
     </div>
@@ -271,7 +509,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/06/Sum-of-Independent-Laplacian-Random-Variables/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/22/Random-Variable/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -285,7 +523,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/06/Sum-of-Independent-Laplacian-Random-Variables/" class="post-title-link" itemprop="url">Sum of Independent Laplacian Random Variables</a>
+            <a href="/2021/11/22/Random-Variable/" class="post-title-link" itemprop="url">Random Variable</a>
         </h2>
 
         <div class="post-meta">
@@ -295,14 +533,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-09-06 22:33:15" itemprop="dateCreated datePublished" datetime="2021-09-06T22:33:15+10:00">2021-09-06</time>
+              <time title="Created: 2021-11-22 23:57:05" itemprop="dateCreated datePublished" datetime="2021-11-22T23:57:05+11:00">2021-11-22</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-09-07 23:30:47" itemprop="dateModified" datetime="2021-09-07T23:30:47+10:00">2021-09-07</time>
+                <time title="Modified: 2022-01-08 17:28:45" itemprop="dateModified" datetime="2022-01-08T17:28:45+11:00">2022-01-08</time>
               </span>
 
           
@@ -316,130 +554,253 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Let <span class="math inline">\(X_i \sim Laplace(0, b_i)\)</span>, <span class="math inline">\(i \in [n]\)</span> be independent random variables that follow Laplacian distributions, i.e., for each <span class="math inline">\(i \in [n]\)</span>, the probability density function of <span class="math inline">\(X_i\)</span> is <span class="math display">\[
-    p(X_i = x) = \frac{1}{ 2 b_i } \exp \left( - \frac{ |x| }{ b_i }\right),\, \forall x \in \mathbb{R}.
-\]</span></p>
-<h1 id="moment-generating-function">Moment Generating Function</h1>
+          <h1 id="random-variable">Random Variable</h1>
+<p>Let <span class="math inline">\((\Omega, \mathcal{F}, \mathbb{P})\)</span> be a probability space, and let <span class="math inline">\(\mathcal{B}\)</span> be the collection of Borel sets in <span class="math inline">\(\mathbb{R}\)</span>.</p>
 <blockquote>
-<p><strong>Fact.</strong> For each <span class="math inline">\(i \in [n]\)</span>, the moment generating function of <span class="math inline">\(X_i\)</span> is <span class="math display">\[
-\mathbb{E} [ \exp ( t X_i) ] = \frac{1}{1 - b_i^2 \cdot t^2 },\, \text{where } |t| &lt; 1 / b_i.
+<p><strong>Definition.</strong> A random variable <span class="math inline">\(Y: \Omega \rightarrow \mathbb{R}\)</span> on <span class="math inline">\((\Omega, \mathcal{F}, \mathbb{P})\)</span> is a function that is <span class="math inline">\(\mathcal{F} / \mathcal{B}\)</span> measurable, i.e., <span class="math display">\[
+Y^{-1}(E) \doteq \{ \omega \in \Omega : Y(\omega) \in E \} \in \mathcal{F}, \quad \forall E \in \mathcal{B}. 
 \]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(|t| &lt; 1 / b_i\)</span>. Via the definition of moment generating function, we get <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[ \exp (t X_i) ] 
-            &amp;= \int \exp ( t x) \cdot \frac{1}{ 2 b_i } \exp \left( - \frac{ |x| }{ b_i } \right) \\
-            &amp;= 
-            \frac{1}{ 2 b_i } \left( \int_{ -\infty }^0 \exp \left( tx + \frac{ x }{ b_i }\right)
-            +
-            \int_0^{ \infty } \exp \left( tx - \frac{ x }{ b_i }\right) \right) \\
-            &amp;= 
-            \frac{1}{ 2 b_i } \left( \frac{1}{t + 1 / b_i }\exp \left( tx + \frac{ x }{ b_i } \right) \mid_{-\infty}^0
-            +
-            \frac{1}{t - 1 / b_i } \exp \left( tx - \frac{ x }{ b_i } \right) \mid_0^\infty \right) \\
-            &amp;= 
-            \frac{1}{ 2 b_i } \left( \frac{1}{t + 1 / b_i }
-            -
-            \frac{1}{t - 1 / b_i }  \right) \\
-            &amp;= 
-            \frac{1}{ 2 b_i } \left( \frac{ - 2 / b_i }{t^2 - 1 / b_i^2 } \right) \\
-            &amp;= \frac{1}{ 1 - b_i^2 \cdot t^2  }. 
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<h1 id="concentration-inequalities">Concentration Inequalities</h1>
-<p>Define <span class="math inline">\(X = \sum_{i \in [n] } X_i\)</span>. There are various ways to obtains concentration inequalities for <span class="math inline">\(X\)</span>.</p>
-<h2 id="one">One</h2>
+<p>It is not easy to verify the property for each <span class="math inline">\(E \in \mathcal{B}\)</span>. It suffices to check one of the following equivalent conditions:</p>
+<ol type="1">
+<li><span class="math inline">\(Y^{-1}( (-\infty, a] ) \in \mathcal{F}, \forall a \in \R\)</span>.</li>
+<li><span class="math inline">\(Y^{-1}( (-\infty, a) ) \in \mathcal{F}, \forall a \in \R\)</span>.</li>
+<li><span class="math inline">\(Y^{-1}( [a, \infty) ) \in \mathcal{F}, \forall a \in \R\)</span>.</li>
+<li><span class="math inline">\(Y^{-1}( (a, \infty) ) \in \mathcal{F}, \forall a \in \R\)</span>.</li>
+</ol>
+<p>The correctness follows from the following theorem.</p>
 <blockquote>
-<p><strong>Theorem.</strong> If <span class="math inline">\(0 \le \lambda \le \big( 2 \sqrt{2} \cdot \sum_{i \in [n] } b_i^2 \big) \cdot \min_{i \in [n] } 1 / b_i\)</span>, then <span class="math display">\[
-\Pr[ X \ge \lambda ] \le \exp \left( - \frac{\lambda^2}{8 \cdot \sum_{i \in [n] } b_i^2 } \right).
-\]</span> If <span class="math inline">\(\big( 2 \sqrt{2} \cdot \sum_{i \in [n] } b_i^2 \big) \cdot \min_{i \in [n] } 1 / b_i \le \lambda\)</span>, then <span class="math display">\[
-\Pr[ X \ge \lambda ] \le \exp \left( - \frac{\lambda}{2} \cdot \left( \min_{i \in [n] } \frac{ 1 }{ b_i \cdot \sqrt{2} } \right) \right).
-\]</span></p>
+<p><strong>Theorem.</strong> If there exists a subset <span class="math inline">\(\mathcal{S}\)</span> that generates <span class="math inline">\(\mathcal{B}\)</span>, i.e., <span class="math inline">\(\sigma(\mathcal{S}) = \mathcal{B}\)</span>, such that for each <span class="math inline">\(E \in \mathcal{S}\)</span>, <span class="math inline">\(Y^{-1}(E) \in \mathcal{F}\)</span>, then <span class="math inline">\(Y\)</span> is measurable.</p>
 </blockquote>
-<p>The proof applies similar techniques to the ones in the proofs of Chernoff Bounds.</p>
-<p><em>The inequalities state that when <span class="math inline">\(\lambda\)</span> is small, we have Gaussian like bounds. When <span class="math inline">\(\lambda\)</span> is large, we have a exponential tail bound, which is much fatter than the Gaussian one.</em></p>
-<p>The second one seems counter intuitive at the first glance. Consider the special case where the <span class="math inline">\(b_i\)</span> are identical, and <span class="math inline">\(b_i = b\)</span> for all <span class="math inline">\(i \in [n]\)</span>. Then the RHS of the inequality becomes <span class="math inline">\(\exp( - \lambda / (2 \sqrt{2} \cdot b) )\)</span>. It seems that the tail bound does not depend on <span class="math inline">\(n\)</span>! However it does. To apply the second tail bound, we need that <span class="math display">\[
-    \lambda \ge \big( 2 \sqrt{2} \cdot \sum_{i \in [n] } b^2 \big) \cdot \min_{i \in [n] } 1 / b = 2 \sqrt{2} \cdot n \cdot b. 
-\]</span></p>
-<p>Before proving the theorem, we need the following lemma.</p>
-<blockquote>
-<p><strong>Lemma.</strong> For each <span class="math inline">\(i \in [n]\)</span>, when <span class="math inline">\(0 \le t \le 1 / (b_i \cdot \sqrt{2})\)</span>, it holds that <span class="math display">\[
-\frac{1}{ 1 - b_i^2 \cdot t^2  } \le \exp( 2 \cdot b_i^2 \cdot t^2 ).
-\]</span></p>
-</blockquote>
-<p><img src="https://raw.githubusercontent.com/wuhao-wu-jiang/BlogImgs/master/Sum-of-Independent-Laplacian-Random-Variables/pic.png" /></p>
-<p><em>Proof.</em> For <span class="math inline">\(x \in [0, 1 / 2]\)</span>, <span class="math display">\[
-    1 + x \le e^x \le \frac{1}{1 - x} \le 1 + 2 x \le \exp(2  x). 
-\]</span></p>
-<p>The tangent line of the function <span class="math inline">\(y = 1 / (1 - x)\)</span> at <span class="math inline">\(x = 0\)</span> is given by <span class="math inline">\(y = 1 + x\)</span>. As <span class="math inline">\(y = 1 / (1 - x)\)</span> is a convex function, it is above the line <span class="math inline">\(y = 1 + x\)</span> for <span class="math inline">\(x \le 1\)</span>. If we increase the slope of <span class="math inline">\(y = 1 + x\)</span> a little bit, then the new line should lie above <span class="math inline">\(y = 1 / (1 - x)\)</span>, if <span class="math inline">\(x\)</span> is not "too far" away from <span class="math inline">\(0\)</span>. As <span class="math inline">\(x \rightarrow 1\)</span>, the function <span class="math inline">\(y = 1 / (1 - x)\)</span> approaches infty, we can't hope to upper bound it by a linear nor even exponential function.</p>
+<p><strong>Proof.</strong></p>
+<ol type="1">
+<li><p>If <span class="math inline">\(Y^{-1}(E) \in \mathcal{F}\)</span>, then <span class="math inline">\(Y^{-1}(\R - E) = \Omega - Y^{-1}(E) \in \mathcal{F}\)</span>.</p></li>
+<li><p>If <span class="math inline">\(Y^{-1}(E_n) \in \mathcal{F}\)</span> for disjoint <span class="math inline">\(E_n, n \in \N_+\)</span>, then <span class="math display">\[
+     Y^{-1}( \cup_{n \in \N_+} E_n ) = \cup_{n \in \N_+} Y^{-1}( E_n ) \in \mathcal{F}. 
+ \]</span></p></li>
+</ol>
+<p>Let <span class="math inline">\(\mathcal{L} \doteq \{ E \in \mathcal{B} : Y^{-1}(E) \in \mathcal{F} \}\)</span>. Since <span class="math inline">\(\mathcal{L}\)</span> is closed under complement and countable union, it is a <span class="math inline">\(\sigma\)</span>-field in <span class="math inline">\(\R\)</span>. If <span class="math inline">\(\mathcal{L} \supset \mathcal{S}\)</span>, then <span class="math inline">\(\mathcal{L} \supset \sigma(\mathcal{S})\)</span>, the theorem follows.</p>
 <p><span class="math inline">\(\square\)</span></p>
-<p><strong>Proof of the Theorem.</strong></p>
-<p>Let <span class="math inline">\(0 \le t \le \min_{i \in [n] } 1 / (b_i \cdot \sqrt{2} )\)</span>, <span class="math display">\[
+<h2 id="distribution">Distribution</h2>
+<blockquote>
+<p><strong>Definition.</strong> The distribution <span class="math inline">\(\mu: \mathcal{B} \rightarrow \mathbb{R}_{\ge 0}\)</span> of <span class="math inline">\(Y\)</span> is a probability measure on <span class="math inline">\((\mathbb{R}, \mathcal{B})\)</span> defined by <span class="math display">\[
+\mu(E) = \mathbb{P}[ Y \in E ] = \mathbb{P} \circ Y^{-1} (E), \quad \forall E \in \mathcal{B}, 
+\]</span> where <span class="math inline">\(Y \in E\)</span> is a shorthand for <span class="math inline">\(Y^{-1}(E)\)</span>.</p>
+</blockquote>
+<p>We verify that <span class="math inline">\(\mu\)</span> is a probability measure. Note that <span class="math inline">\(\mu(\emptyset) = 0\)</span>, and <span class="math inline">\(\mu(\mathbb{R}) = 1\)</span>. <span class="math inline">\(\mu\)</span> is countably additive: consider disjoint <span class="math inline">\(E_1, E_2, \ldots \in \mathcal{B}\)</span>, <span class="math display">\[
     \begin{aligned}
-        \Pr[ X \ge \lambda ] 
-            &amp;= \Pr[ \exp( t X) \ge \exp( t \lambda ) ] \\
-            &amp;\le \exp( - t \lambda) \cdot \mathbb{E}[ \exp(t X) ] \\
-            &amp;= \exp( - t \lambda) \cdot \prod_{i \in [n] } \mathbb{E}[ \exp(t X_i) ] \\
-            &amp;\le \exp \left( - t \lambda + \sum_{i \in [n] } 2 \cdot b_i^2 \cdot t^2 \right) 
+        \mu( \cup_{n \ge 1} E_n ) 
+            &amp;= \mathbb{P}\big[ Y^{-1} \big( \cup_{n \ge 1} E_n \big) \big] \\
+            &amp;= \mathbb{P}\big[ \cup_{n \ge 1} Y^{-1} \big( E_n \big) \big] \\
+            &amp;= \sum_{n \ge 1} \mathbb{P}\big[  Y^{-1} \big( E_n \big) \big]\\
+            &amp;= \sum_{n \ge 1} \mu( E_n ).
     \end{aligned}
-\]</span> The function <span class="math inline">\(f(t) \doteq \left( \sum_{i \in [n] } 2 \cdot b_i^2 \right) \cdot t^2 - \lambda t\)</span> decreases when <span class="math display">\[
-    t \le \frac{\lambda}{4 \cdot \sum_{i \in [n] } b_i^2  }, 
-\]</span> and increases afterwards. If <span class="math inline">\(\min_{i \in [n] } 1 / (b_i \cdot \sqrt{2} ) \ge \lambda / \big( 4 \cdot \sum_{i \in [n] } b_i^2 \big)\)</span>, then <span class="math display">\[
+\]</span></p>
+<p>Hence, <span class="math inline">\((\mathbb{R}, \mathcal{B}, \mu)\)</span> constitutes a probability space.</p>
+<h3 id="properties"><strong>Properties</strong></h3>
+<blockquote>
+<p><strong>Theorem.</strong> There can't be an uncountable collection of disjoint sets in <span class="math inline">\(\mathcal{B}\)</span> with positive <span class="math inline">\(\mu\)</span>-measure.</p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(\mathcal{C} \subset \mathcal{B}\)</span> be a disjoint collection of sets with positive <span class="math inline">\(\mu\)</span>-measure. Consider <span class="math inline">\((0, 1]\)</span>. For each <span class="math inline">\(k \in \mathbb{N}_+\)</span>, let <span class="math display">\[
+    \mathcal{D}_{1, k} \doteq \{ E \in \mathcal{C}, \mu \big( E \cap (0, 1] \big) \ge 1 /  k \}. 
+\]</span> Then <span class="math inline">\(|\mathcal{D}_{1, k}| \le k\)</span>, since <span class="math inline">\(1 / k \cdot |\mathcal{D}_{1, k}| \le \sum_{E \in \mathcal{D}_{1, k} } \mu(x) \le 1\)</span>. Therefore the set <span class="math inline">\(\mathcal{C}_0 \doteq \cup_{k \ge 1} \mathcal{D}_{1, k}\)</span> is countable.</p>
+<p>Similarly we can define <span class="math inline">\(\mathcal{C}_n\)</span>, for each interval <span class="math inline">\((n, n + 1]\)</span>. If <span class="math inline">\(E \in \mathcal{C}\)</span>, then there exists at least one <span class="math inline">\(n \in \mathbb{Z}\)</span>, such that <span class="math inline">\(E \in \mathcal{C}_n\)</span>. So <span class="math inline">\(\mathcal{C} = \cup_{n \in \mathbb{Z} } \mathcal{C}_n\)</span> is countable.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Comment:</strong> <em>what would be the value of <span class="math inline">\(1 / k \cdot |\mathcal{D}_{1, k}|\)</span> if <span class="math inline">\(\mathcal{D}_{1, k}\)</span> is uncountable? One possible way to avoid such multiplication is by applying the axiom of choice. Suppose that the set <span class="math inline">\(\mathcal{D}_{1, k}\)</span> contains more than <span class="math inline">\(k\)</span> elements, then by the axiom of choice we can iteratively pick at most <span class="math inline">\(k\)</span> element (without replacement) from the set. We can not find more item from the set, since the intersection of <span class="math inline">\((0,1]\)</span> with each element has <span class="math inline">\(\mu\)</span>-measure at least <span class="math inline">\(1 / k\)</span>.</em></p>
+<h2 id="expectation">Expectation</h2>
+<blockquote>
+<p><strong>Definition.</strong> Let <span class="math inline">\((\Omega, \mathcal{F}, \mathbb{P})\)</span> be a probability space and <span class="math inline">\(Y\)</span> is a random variable defined on it. The expectation of <span class="math inline">\(Y\)</span> is defined by <span class="math display">\[
+\mathbb{E}[ Y ] 
+\doteq \int Y \, d \mathbb{P}
+= \int_{ \Omega } Y(\omega) \, \mathbb{P} ( d \omega ).
+\]</span></p>
+</blockquote>
+<p>For nonnegative <span class="math inline">\(Y\)</span>, <span class="math inline">\(\mathbb{E}[ Y ]\)</span> is always defined. For general <span class="math inline">\(Y\)</span>, <span class="math inline">\(\mathbb{E}[ Y ]\)</span> is defined if at least one of <span class="math inline">\(\mathbb{E}[ X_+ ]\)</span> or <span class="math inline">\(\mathbb{E}[ X_- ]\)</span> is finite. <span class="math inline">\(Y\)</span> is integrable if <span class="math inline">\(\mathbb{E}[ |Y| ] &lt; \infty\)</span>.</p>
+<h2 id="composition">Composition</h2>
+<blockquote>
+<p><strong>Theorem.</strong> Consider a function <span class="math inline">\(f: \mathbb{R} \rightarrow \mathbb{R}\)</span> is that is <span class="math inline">\(\mathcal{B} / \mathcal{B}\)</span> measurable. The composition of <span class="math inline">\(f\)</span> and <span class="math inline">\(Y\)</span>, denoted by <span class="math inline">\(f \circ Y\)</span> or <span class="math inline">\(f(Y)\)</span>, is a random variable.</p>
+</blockquote>
+<p><strong>Proof.</strong> For each Borel set <span class="math inline">\(E \in \mathcal{B}\)</span>,</p>
+<ol type="1">
+<li>Its inverse image <span class="math inline">\(f^{-1} (E)\)</span> is a Borel set since <span class="math inline">\(f\)</span> is measurable <span class="math inline">\(\mathcal{B} / \mathcal{B}\)</span>.</li>
+<li>The inverse image of <span class="math inline">\(f^{-1} (E)\)</span> belongs to <span class="math inline">\(\mathcal{F}\)</span> since <span class="math inline">\(Y\)</span> is a random variable.</li>
+</ol>
+<p>It concludes that <span class="math inline">\(\big( f \circ Y \big)^{-1}(E) \in \mathcal{F}\)</span>. <!-- $$
     \begin{aligned}
-        \min_{ 0 \le t \le \min_{i \in [n] } 1 / (b_i \cdot \sqrt{2} ) } f(t) 
-        &amp;= \left( \sum_{i \in [n] } 2 \cdot b_i^2 \right) \cdot \left( \frac{\lambda}{4 \cdot \sum_{i \in [n] } b_i^2  } \right)^2 - \lambda \cdot \frac{\lambda}{4 \cdot \sum_{i \in [n] } b_i^2  } \\
-        &amp;= - \frac{\lambda^2}{8 \cdot \sum_{i \in [n] } b_i^2  }.
+        \big( f \circ Y \big)^{-1}(E) 
+            &\doteq \left\{ \omega \in \Omega : f \big( Y(\omega) \big) \in E \right\} \\
+            &= \left\{ \omega \in \Omega : Y(\omega) \in f^{-1} \big( E \big) \right\} 
+            \in \mathcal{F}.
     \end{aligned}
-\]</span> Otherwise, <span class="math inline">\(\min_{i \in [n] } 1 / (b_i \cdot \sqrt{2} ) \le \lambda / \big( 4 \cdot \sum_{i \in [n] } b_i^2 \big)\)</span>, then <span class="math display">\[
-    \begin{aligned}  
-        \min_{ 0 \le t \le \min_{i \in [n] } 1 / (b_i \cdot \sqrt{2} ) } f(t) 
-        &amp;= \left( \sum_{i \in [n] } 2 \cdot b_i^2 \right) \cdot \left( \min_{i \in [n] } \frac{ 1 }{ b_i \cdot \sqrt{2} } \right)^2 - \lambda \cdot \left( \min_{i \in [n] } \frac{ 1 }{ b_i \cdot \sqrt{2} } \right) \\
-        &amp;= \left( \left( \sum_{i \in [n] } 2 \cdot b_i^2 \right) \cdot \left( \min_{i \in [n] } \frac{ 1 }{ b_i \cdot \sqrt{2} } \right) - \lambda \right) \cdot \left( \min_{i \in [n] } \frac{ 1 }{ b_i \cdot \sqrt{2} } \right) \\
-        &amp;\le \left( \frac{\lambda}{2} - \lambda \right) \cdot \left( \min_{i \in [n] } \frac{ 1 }{ b_i \cdot \sqrt{2} } \right) \\
-        &amp;= - \frac{\lambda}{2} \cdot \left( \min_{i \in [n] } \frac{ 1 }{ b_i \cdot \sqrt{2} } \right).
+$$ --> <span class="math inline">\(\square\)</span></p>
+<h3 id="expectation-under-composition">Expectation Under Composition</h3>
+<p>On the one hand, <span class="math inline">\(f \circ Y\)</span> is random variable on <span class="math inline">\((\Omega, \mathcal{F}, \mathbb{P})\)</span>. It expectation is given by <span class="math display">\[
+    \mathbb{E}[ f(Y) ] = \int_{ \Omega } f( Y(\omega) ) \, \mathbb{P} ( d \omega ).
+\]</span></p>
+<p>Let <span class="math inline">\(\mu\)</span> be the distribution of <span class="math inline">\(Y\)</span>. Since <span class="math inline">\((\mathbb{R}, \mathcal{B}, \mu)\)</span> constitutes a probability space, and <span class="math inline">\(f\)</span> is <span class="math inline">\(\mathcal{B} / \mathcal{B}\)</span> measurable, it is a random variable defined on <span class="math inline">\((\mathbb{R}, \mathcal{B}, \mu)\)</span>. By definition, its expectation is given by <span class="math display">\[
+    \mathbb{E}[ f ] = \int_{ \mathbb{R} } f(x) \, \mu (d x). 
+\]</span></p>
+<p>It is therefore of interest whether these two definitions are consistent, i.e., whether two integrals are equal.</p>
+<blockquote>
+<p><strong>Theorem.</strong> If <span class="math inline">\(f\)</span> is nonnegative and measurable <span class="math inline">\(\mathcal{B} / \mathcal{B}\)</span>, then <span class="math display">\[
+\mathbb{E}[ f(Y) ] 
+= \int_{ \Omega } f( Y(\omega) ) \, \mathbb{P} ( d \omega ) 
+= \int_{ \mathbb{R} } f(x) \, \mu (d x) 
+= \mathbb{E}[ f ]. 
+\]</span> Further, <span class="math inline">\(f\)</span> (not necessarily nonnegative) is integrable with respect to <span class="math inline">\(\mu = \mathbb{P} \circ Y^{-1}\)</span> if and only if <span class="math inline">\(f \circ Y = f(Y)\)</span> is integrable with respect to <span class="math inline">\(\mathbb{P}\)</span>, in which case the above equation holds.</p>
+</blockquote>
+<p><strong>Proof.</strong><br />
+1. Suppose <span class="math inline">\(f = \mathbb{1}_{A}\)</span> is an indicator function for a measurable set, then <span class="math display">\[
+        \begin{aligned}
+            \mathbb{E}[ f(Y) ] 
+                &amp;= \int_{ \Omega } f( Y(\omega) ) \, \mathbb{P} ( d \omega )  = \int_{ \Omega } \mathbb{1}_{A} ( Y(\omega) ) \, \mathbb{P} ( d \omega )  = \mathbb{P} [ Y \in A],\, \\
+            \mathbb{E}[ f ]  
+                &amp;= \int_{ \mathbb{R} } f(x) \, \mu (d x) = \int_{ \mathbb{R} } \mathbb{1}_{A} (x) \, \mu (d x) = \mu (A) = \mathbb{P} [ Y \in A]. 
+        \end{aligned}
+    \]</span> Therefore, <span class="math inline">\(\mathbb{E}[ f(Y) ] = \mathbb{E}[ f ]\)</span>.</p>
+<ol start="2" type="1">
+<li><p>By linearity, this holds for nonnegative simple functions.</p></li>
+<li><p>Suppose that <span class="math inline">\(f\)</span> is a non-negative function that is measurable <span class="math inline">\(\mathcal{B} / \mathcal{B}\)</span>, then there is a sequence of non-negative simple functions <span class="math inline">\(f_n \uparrow f\)</span>. Hence <span class="math inline">\(f_n(Y) \uparrow f(Y)\)</span>. For each <span class="math inline">\(n \in \mathbb{N}_+\)</span>, it holds that <span class="math display">\[
+     \mathbb{E}[ f_n(Y) ] = \mathbb{E}[ f_n ].
+ \]</span> The claim follows by monotone convergence theorem.</p></li>
+</ol>
+<p>For general function <span class="math inline">\(f\)</span> that is measurable <span class="math inline">\(\mathcal{B} / \mathcal{B}\)</span>, applying the above claim to <span class="math inline">\(|f|\)</span> establishes integrability. Decomposing <span class="math inline">\(f\)</span> into positive part and negative parts proves the claim.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- **Second Proof.**  
+
+If $Y$ is nonnegative, then 
+$$
+    \int_{ \Omega } f( Y ) \, d \mathbb{P}
+        = \sup \left\{ 
+            \sum_{i \in [n] } a_i \mathbb{P} (A_i):    
+            \begin{array}{l}
+                \sum_{i \in [n] } a_i \mathbf{1}_{A_i} \text{ is simple}, \\
+                0 \le \sum_{i \in [n] } a_i \mathbf{1}_{A_i} (\omega) \le f( Y(\omega) )
+            \end{array} 
+        \right\}. 
+$$
+and 
+$$
+   \int_{ \mathbb{R} } f(x) \, d \mu
+        = \sup \left\{ 
+            \sum_{i \in [n] } b_i \mu (B_i):    
+            \begin{array}{l}
+                \sum_{i \in [n] } b_i \mathbf{1}_{B_i} \text{ is simple}, \\
+                0 \le \sum_{i \in [n] } b_i \mathbf{1}_{B_i} (x) \le f(x)
+            \end{array} 
+        \right\}.
+$$
+
+If $\sum_{i \in [n] } a_i \mathbf{1}_{A_i} \text{ is simple}$ and $0 \le \sum_{i \in [n] } a_i \mathbf{1}_{A_i} (\omega) \le f( Y(\omega) )$, 
+
+
+$\square$ -->
+<blockquote>
+<p><strong>Example.</strong> Taking <span class="math inline">\(f(x) = x, \forall x \in \mathbb{R}\)</span>, we see <span class="math display">\[
+\mathbb{E}[ Y ] = \int_{ \Omega } Y (\omega) \, \mathbb{P} (d \omega) = \int_{ \mathbb{R} } x \, \mu (d x). 
+\]</span></p>
+</blockquote>
+<h1 id="density">Density</h1>
+<p>Let <span class="math inline">\((\Psi, \mathcal{M}, \lambda)\)</span> be arbitrary measurable space.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(\delta: \Psi \rightarrow \mathbb{R}_{\ge 0}\)</span> be a function that is measurable <span class="math inline">\(\mathcal{M} / \mathcal{B}\)</span>. Then we can define a measure by <span class="math display">\[
+\nu(E) \doteq \int_{E} \delta d \lambda, \quad \forall E \in \mathcal{M}.
+\]</span> <span class="math inline">\(\nu\)</span> is said to have <em>density</em> <span class="math inline">\(\delta\)</span> with respect to <span class="math inline">\(\lambda\)</span>.</p>
+</blockquote>
+<p><em>Note that <span class="math inline">\(\nu(E)\)</span> can be <span class="math inline">\(\infty\)</span>.</em></p>
+<p><strong>Proof.</strong> Clearly <span class="math inline">\(\nu(\emptyset) = 0\)</span>. Let <span class="math inline">\(E_n \in \mathcal{M}, n \in \mathbb{N}_+\)</span> be disjoint. Then via monotone convergence theorem, <span class="math display">\[
+    \begin{aligned}
+        \nu(\cup_{n \ge 1} E_n) 
+            &amp;= \int \delta \cdot \mathbb{1}_{ \cup_{n \ge 1} E_n} d \lambda \\
+            &amp;= \lim_{n \ge 1} \int \delta \cdot \left( \sum_{k \in [n] }\mathbb{1}_{ E_k } \right) d \lambda \\
+            &amp;= \sum_{k \ge 1} \int \delta \cdot \mathbb{1}_{ E_k }  d \lambda \\
+            &amp;= \sum_{k \ge 1} \nu(E_k). 
     \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
-<h2 id="two">Two</h2>
-<p>There is a trick to combine the two cases into to one. We can choose arbitrary <span class="math inline">\(\nu \in \mathbb{R}\)</span>, such that <span class="math display">\[
-    \nu \ge \sqrt{\sum_{i \in [n] } b_i^2 },\, \quad\, \nu \ge \sqrt{ \frac{\lambda }{ 2 } \cdot \max_{i \in [n] } (b_i \cdot \sqrt{2}) }.
-\]</span> Then, for <span class="math inline">\(0 \le t \le \min_{i \in [n] } 1 / (b_i \cdot \sqrt{2} )\)</span>, <span class="math display">\[
+<blockquote>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(Y: \Psi \rightarrow \mathbb{R}_{\ge 0}\)</span> be measurable <span class="math inline">\(\mathcal{M} / \mathcal{B}\)</span>. Then <span class="math display">\[
+\int Y \, d \nu = \int Y \cdot \delta \, d \lambda.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> 1. If <span class="math inline">\(Y = \mathbb{1}_{A}\)</span> for <span class="math inline">\(A \in \mathcal{M}\)</span>, then <span class="math display">\[
+        \begin{aligned}
+            \int Y \, d \nu 
+                = \int \mathbb{1}_{A} \, d \nu 
+                = \nu(A) 
+                = \int_A \delta \, d \lambda
+                = \int \mathbb{1}_{A} \cdot \delta \, d \lambda.
+        \end{aligned}
+    \]</span></p>
+<ol start="2" type="1">
+<li><p>Via linearity of expectation, this holds for all non-negative simple functions.</p></li>
+<li><p>Let <span class="math inline">\(X_n, n \in \mathbb{N}_+\)</span> be non-negative simple functions such that <span class="math inline">\(X_n \uparrow Y\)</span>. Then <span class="math inline">\(X_n \cdot \delta \uparrow Y \cdot \delta\)</span>. Via monotone convergence theorem, we get <span class="math display">\[
+     \int Y \, d \nu = \lim_n \int X_n \, d \nu = \lim_n \int X_n \cdot \delta \, d \lambda = \int Y \cdot \delta \, d \lambda.
+ \]</span></p></li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Corollary.</strong> Let <span class="math inline">\(Y: \Psi \rightarrow \mathbb{R}\)</span> be measurable <span class="math inline">\(\mathcal{M} / \mathcal{B}\)</span>. It is integrable with respect to <span class="math inline">\(\nu\)</span> if and only if <span class="math inline">\(Y \cdot f\)</span> is integrable with respect to <span class="math inline">\(\lambda\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>By applying the previous theorem to <span class="math inline">\(|Y|\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="equality">Equality</h1>
+<blockquote>
+<p><strong>Theorem.</strong> If <span class="math inline">\(Y\)</span> is non-negative, then <span class="math display">\[
+\mathbb{E}[ Y ] 
+= \int_{ \mathbb{R} } x \, d \mu 
+= \int_{ \mathbb{R} } \mathbb{P}[ Y &gt; t ] \, d t
+= \int_{ \mathbb{R} } \mathbb{P}[ Y \ge t ] \, d t, 
+\]</span> where <span class="math inline">\(\int_{ \mathbb{R} } \cdot \, d t\)</span> is the Lebesgue integral.</p>
+</blockquote>
+<p><strong>Proof.</strong> Since there are countably many of points in <span class="math inline">\(\mathbb{R}\)</span> for which <span class="math inline">\(\mathbb{P}(Y = x) \neq 0\)</span>, therefore the set for which <span class="math inline">\(\mathbb{P}(Y \ge t) \neq \mathbb{P}(Y &gt; t)\)</span> has Lebesgue measure 0. It holds that <span class="math display">\[
+    \int_{ \mathbb{R} } \mathbb{P}[ Y &gt; t ] \, d t
+     = \int_{ \mathbb{R} } \mathbb{P}[ Y \ge t ] \, d t.      
+\]</span></p>
+<p><strong>Case One: <span class="math inline">\(Y\)</span> is simple.</strong></p>
+<p>If <span class="math inline">\(Y = \sum_{i \in [n] } a_i \mathbf{1}_{A_i}\)</span> is a simple non-negative function such that the <span class="math display">\[
+    a_0 \doteq 0 \le a_1 &lt; \ldots &lt; a_n
+\]</span> are distinct, and the <span class="math inline">\(A_i\)</span> are disjoint. For each <span class="math inline">\(i \in [n]\)</span>, define <span class="math inline">\(\Delta_i = a_i - a_{i - 1}\)</span>. Then <span class="math display">\[
     \begin{aligned}
-        \Pr[ X \ge \lambda ] 
-            &amp;\le \exp \left( - t \lambda + \sum_{i \in [n] } 2 \cdot b_i^2 \cdot t^2 \right) \\
-            &amp;\le \exp \left( - t \lambda + 2 \cdot \nu^2 \cdot t^2 \right) 
+        \mathbb{E}[ Y ] 
+            &amp;= \sum_{i \in [n] } a_i \mathbb{P}(Y = a_i) \\
+            &amp;= \sum_{i \in [n] } \sum_{j \in [i] } \Delta_j \mathbb{P}(Y = a_i) \\
+            &amp;= \sum_{j \in [n] } \sum_{i = j }^n  \Delta_j \mathbb{P}(Y = a_i) \\
+            &amp;= \sum_{j \in [n] } \Delta_j \mathbb{P}(Y \ge a_i)
     \end{aligned}
-\]</span> We can always set <span class="math display">\[
-    t = \frac{\lambda}{4 \cdot \nu^2  } \le \min_{i \in [n] } \frac{1}{ b_i \cdot \sqrt{2} },
 \]</span></p>
-<p>and obtain <span class="math display">\[
-    \Pr[ X \ge \lambda ] \le \exp \left( - \frac{\lambda^2}{ 8 \nu^2 } \right).
-\]</span></p>
-<p>To make the bound as tight as possible, we would like <span class="math inline">\(\nu\)</span> to be as small as possible. Therefore, the best choice would be <span class="math display">\[
-    \nu = \max \left\{ \sqrt{ \sum_{i \in [n] } b_i^2 }, \sqrt{ \frac{\lambda }{ 2 } \cdot \max_{i \in [n] } (b_i \cdot \sqrt{2}) }  \right\}.
-\]</span></p>
-<p>The bound is indeed equivalent to the one in the previous section.</p>
-<h2 id="can-we-do-better">Can We Do Better</h2>
-<p>Can we improve the bound, if we have better approximation of <span class="math inline">\(y = 1 / (1 - x)\)</span>? Observe that <span class="math display">\[
+<p>Since for each <span class="math inline">\(t \in (a_{i - 1}, a_i]\)</span>, it holds that <span class="math inline">\(\mathbb{P}[Y \ge t] = \mathbb{P}[ Y \ge a_i]\)</span>, and for each <span class="math inline">\(t &gt; a_n\)</span>, it holds that <span class="math inline">\(\mathbb{P}[Y \ge t] = 0\)</span>, we get <span class="math display">\[
     \begin{aligned}
-        \exp( - t \lambda) \cdot \prod_{i \in [n] } \mathbb{E}[ \exp(t X_i) ] 
-        &amp;= \exp( - t \lambda) \cdot \prod_{i \in [n] } \frac{1}{1 - b_i^2 \cdot t^2 } 
+        \mathbb{E}[ Y ] 
+            &amp;= \sum_{j \in [n] } \Delta_j \mathbb{P}(Y \ge a_i) \\
+            &amp;= \sum_{j \in [n] } \int_{ t \in (a_{i - 1}, a_i] } \mathbb{P}(Y \ge t) \, d t \\
+            &amp;= \int_{ t \in (a_0, a_n] } \mathbb{P}(Y \ge t) \, d t \\
+            &amp;= \int_{ t = 0 }^\infty \mathbb{P}(Y \ge t) \, d t.
     \end{aligned}
-\]</span> Previously, we apply the approximation <span class="math inline">\(1 / (1 - x) \le \exp(2 x)\)</span> to upper bound the RHS.</p>
-<p>On the other hand, as <span class="math inline">\(1 / (1 - x) \ge e^x\)</span> for <span class="math inline">\(x \in [0, 1]\)</span>, any upper bound for the RHS is lower bounded by <span class="math display">\[
+\]</span></p>
+<p>Since <span class="math inline">\(\mathbb{P}(Y \ge t) = \mathbb{P} (Y &gt; t)\)</span> almost everywhere <span class="math display">\[
+    \mathbb{E}[ Y ] 
+          = \int_{ t = 0 }^\infty \mathbb{P}(Y \ge t) \, d t.
+          = \int_{ t = 0 }^\infty \mathbb{P}(Y &gt; t) \, d t.
+\]</span></p>
+<p><strong>Case Two: <span class="math inline">\(Y\)</span> is general non-negative measurable function.</strong></p>
+<p>If <span class="math inline">\(Y\)</span> is non-negative, then there is an increasing sequence of simple random variables <span class="math inline">\(\{ X_n \} \uparrow Y\)</span>. Hence <span class="math display">\[
     \begin{aligned}
-        \exp \left( - t \lambda + \sum_{i \in [n] } b_i^2 \cdot t^2 \right) 
+        \mathbb{P}( X_n &gt; t) 
+        &amp;= \mathbb{P} \left( \{ \omega \in \Omega : X_n(\omega) &gt; t \} \right)  \\
+        &amp;\uparrow \mathbb{P} (Y &gt; t)
+        = \mathbb{P} \left( \{ \omega \in \Omega : Y(\omega) &gt; t \} \right). 
     \end{aligned}
+\]</span> As <span class="math display">\[
+    \mathbb{E}[ X_n ] = \int_{ t = 0 }^\infty \mathbb{P}(X_n &gt; t) \, d t.
+\]</span> By applying monotone convergence theorem to both hand side,<br />
+<span class="math display">\[
+    \mathbb{E}[ Y ] 
+          = \int_{ t = 0 }^\infty \mathbb{P}(Y &gt; t) \, d t.
 \]</span></p>
-<p>Even if we give maximum freedom to <span class="math inline">\(t\)</span> by allowing it to take any value in <span class="math inline">\([0, \min_{i \in [n] } 1/ b_i ]\)</span>, the above term is minimized to <span class="math display">\[
-    \begin{cases}
-        \exp \left( - \lambda^2 / \big( 4 \cdot \sum_{i \in [n] } b_i^2  \big) \right), &amp; \lambda / \big( 2 \cdot \sum_{i \in [n] } b_i^2  \big) \le \min_{i \in [n] } 1/ b_i \\
-        \exp \left( - \lambda \cdot ( \min_{i \in [n] } 1 / b_i ) + \sum_{i \in [n] } b_i^2 \cdot ( \min_{i \in [n] } 1 / b_i )^2 \right), &amp; \lambda / \big( 2 \cdot \sum_{i \in [n] } b_i^2  \big) &gt; \min_{i \in [n] } 1/ b_i
-    \end{cases}
-\]</span></p>
-<p>This implies that, even if we find some better approximation for <span class="math inline">\(y = 1 / (1 - x)\)</span> to derive a concentration inequality, we can only improve it by a constant (in the exponent), compared to the ones we prove in the previous section.</p>
-<h1 id="reference">Reference</h1>
-<p>[1]. <em>Chan, T.H.H., Shi, E. and Song, D., 2011. Private and continual release of statistics. ACM Transactions on Information and System Security (TISSEC), 14(3), pp.1-24.</em></p>
+<p><strong>Remark:</strong> <em>We can't argue that <span class="math inline">\(\mathbb{P}(X_n \ge t) \uparrow \mathbb{P}(Y \ge t)\)</span>, even though <span class="math inline">\(X_n \uparrow Y\)</span>. For example, the functions <span class="math inline">\(X_n = (1 - 1 / n) \cdot \mathbb{1}_{[0, 1]}\)</span> increases to <span class="math inline">\(Y = \mathbb{1}_{[0, 1]}\)</span>. But <span class="math inline">\(\mathbb{P}(X_n \ge 1) = 0\)</span> and <span class="math inline">\(\mathbb{P}(Y \ge 1) = 1\)</span>.</em></p>
+<p><span class="math inline">\(\square\)</span></p>
 
       
     </div>
@@ -459,7 +820,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/03/The-Number-of-Binary-Trees/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/16/Total-Variation-Distance-and-Product-Measure/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -473,7 +834,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/09/03/The-Number-of-Binary-Trees/" class="post-title-link" itemprop="url">The Number of Binary Trees</a>
+            <a href="/2021/11/16/Total-Variation-Distance-and-Product-Measure/" class="post-title-link" itemprop="url">Total Variation Distance and Product Measure</a>
         </h2>
 
         <div class="post-meta">
@@ -484,7 +845,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-09-03 15:24:49 / Modified: 18:20:42" itemprop="dateCreated datePublished" datetime="2021-09-03T15:24:49+10:00">2021-09-03</time>
+              <time title="Created: 2021-11-16 11:02:49 / Modified: 11:38:05" itemprop="dateCreated datePublished" datetime="2021-11-16T11:02:49+11:00">2021-11-16</time>
             </span>
 
           
@@ -498,59 +859,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote>
-<p><strong>Definition.</strong> A binary tree is either empty, or consists of a vertex called the root, plus an ordered pair of binary trees called the left-subtree and right-subtree.</p>
-</blockquote>
-<p>For each <span class="math inline">\(n \in \mathbb{N}\)</span>, let <span class="math inline">\(b_n\)</span> be the number of binary trees with <span class="math inline">\(n\)</span> vertices.</p>
-<blockquote>
-<p><strong>Theorem.</strong> For all <span class="math inline">\(n \in \mathbb{N}\)</span>, we have <span class="math display">\[
-b_n = \frac{1}{1 + n} \cdot \binom{2 n}{n}.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> When <span class="math inline">\(n = 0\)</span>, <span class="math inline">\(b_0 = 1 = \frac{1}{1 + 1} \binom{2}{1}\)</span>.</p>
-<p>For all <span class="math inline">\(n \ge 1\)</span>, by enumerating the possible numbers of vertices in the left-subtrees and right-subtrees, we see that, <span class="math display">\[
-    b_n = \sum_{ k = 0 }^{n - 1} b_k \cdot b_{n - 1 - k}. 
-\]</span></p>
-<p>Define the generating function of <span class="math inline">\((b_0, b_1, \ldots )\)</span> as <span class="math display">\[
-    b(x) \doteq b_0 + b_1 x + b_2 x^2 + \ldots
-\]</span></p>
-<p>It holds that <span class="math inline">\(b_n\)</span> is the coefficient of <span class="math inline">\(x^{n - 1}\)</span> in the product <span class="math inline">\(b(x) \cdot b(x)\)</span>. Hence it is the coefficient of <span class="math inline">\(x^n\)</span> in the product <span class="math inline">\(x \cdot b(x) \cdot b(x)\)</span>. We can write the following equality: <span class="math display">\[
-    b(x) = b_0 + x \cdot (b (x) )^2  = 1 + x \cdot (b (x) )^2.
-\]</span></p>
-<p>There are two possible closed form solution for <span class="math inline">\(b(x)\)</span>: <span class="math display">\[
-    b(x) = \frac{ 1 \pm \sqrt{1 -4 x} }{ 2 x }.
-\]</span></p>
-<p>As <span class="math inline">\(b(0)= b_0 = 1\)</span>, and <span class="math inline">\((1 + \sqrt{1 - 4 \cdot 0} ) / (2 \cdot 0) = \infty\)</span>, we must have <span class="math display">\[
-    b(x) = \frac{ 1 - \sqrt{ 1 - 4 x} }{ 2 x }.
-\]</span></p>
-<p>The Taylor's expansion <span class="math inline">\(\sqrt{1 - 4 \cdot x}\)</span> at <span class="math inline">\(x = 0\)</span> is given by <span class="math display">\[
+          <p>Let <span class="math inline">\(\mu_i, \nu_i\)</span> be probability measures on the finite space <span class="math inline">\((\Omega_i, 2^{\Omega_i} )\)</span>, <span class="math inline">\(i \in [n]\)</span>. Define <span class="math inline">\(\mu = \prod_{i \in [n]} \mu_i\)</span> and <span class="math inline">\(\nu = \prod_{i \in [n]} \nu_i\)</span> be the product measure on the product space <span class="math inline">\((\Omega, 2^{\Omega})\)</span>. Then <span class="math display">\[
+    \Vert \mu - \nu \Vert_{TV} \le \sum_{i \in [n] } \Vert \mu_i - \nu_i \Vert_{TV}, 
+\]</span> where <span class="math inline">\(\Vert \cdot \Vert_{TV}\)</span> is the total variation distance.</p>
+<p><strong>Proof.</strong> Consider an <span class="math inline">\(x = (x_1, \ldots, x_n) \in \Omega\)</span>.</p>
+<p>For each <span class="math inline">\(i \in 0, \ldots, n\)</span>, let <span class="math display">\[
+    s(i) \doteq \mu_1 (x_1) \cdots \mu_i(x_i) \cdot \nu_{i + 1} (x_{i + 1} ) \cdots \nu_n (x_n).
+\]</span> So <span class="math inline">\(s(0) = \nu(x)\)</span> and <span class="math inline">\(s(n) = \mu(x)\)</span>. It follows that <span class="math display">\[
     \begin{aligned}
-        \sqrt{1 - 4 \cdot x} 
-            &amp;= 1 + \binom{1 / 2}{1} \cdot (4x) + \binom{1 / 2}{2}  \cdot (4x)^2 + ... \\
-            &amp;= \sum_{k \in \mathbb{N}} \binom{1 / 2}{ k } (-4)^k x^k.
+        \nu(x) - \mu(x)
+            &amp;= \sum_{i \in [n]} \left( s(i - 1) - s(i) \right) \\
+            &amp;= \sum_{i \in [n]} \left( \big( \nu_i(x_i) - \mu_i(x_i) \big) \cdot \mu_1 (x_1) \cdots \mu_{i - 1} (x_{i - 1}) \cdot \nu_{i + 1} (x_{i + 1} ) \cdots \nu_n (x_n)\right).
     \end{aligned}
-\]</span> where <span class="math display">\[
-    \binom{1 / 2}{ k } \doteq \frac{ (1 / 2) \cdot (1 / 2 - 1) \cdot (1 /2 - 2) \ldots \cdot (1 / 2 - k + 1) }{ k! }. 
-\]</span></p>
-<p>We conclude that <span class="math display">\[
-    b(x) = \sum_{k \in \mathbb{N} } \left( -\frac{1}{2} \right) \cdot \binom{1 / 2}{k + 1} (-4)^{k + 1} x^k.
-\]</span> From this, we can also verify that <span class="math inline">\((1 - \sqrt{ 1 - 4 x} ) / ( 2 x ) = 1\)</span>.</p>
-<p>Finally, for <span class="math inline">\(k \ge 1\)</span>, <span class="math display">\[
+\]</span> Hence, <span class="math display">\[
     \begin{aligned}
-        &amp;\left( -\frac{1}{2} \right) \cdot \binom{1 / 2}{k + 1} \cdot ( -4 )^{k + 1} \\
-        =&amp; \left( -\frac{1}{2} \right) \cdot \frac{ (1 / 2 - k) \cdot (1 / 2 - k + 1) \cdot ... \cdot  (- 1 / 2) \cdot (1 / 2) }{ (k + 1)! } \cdot ( -4 )^{k + 1} \\
-        =&amp; \frac{ (1 / 2 - k) \cdot (1 / 2 - k + 1) \cdot ... \cdot (- 1 / 2) }{ (k + 1)! } \cdot  ( -4 )^{k} \\
-        =&amp; \frac{ (2k - 1) \cdot (2k - 3) \cdot ... \cdot 1 }{ (k + 1)! } \cdot 2^k \\
-        =&amp; \frac{ (2k)!  }{ (k + 1)! \cdot k! \cdot 2^k } \cdot 2^k \\
-        =&amp; \frac{1}{k + 1} \binom{2k}{k}.
+        2 \cdot \Vert \mu - \nu \Vert_{TV} 
+            &amp;= \sum_{x \in \Omega} \vert \nu(x) - \mu(x) \vert \\
+            &amp;= \sum_{x \in \Omega} \left\vert \sum_{i \in [n]} \big( \nu_i(x_i) - \mu_i(x_i) \big) \cdot \mu_1 (x_1) \cdots \mu_{i - 1} (x_{i - 1}) \cdot \nu_{i + 1} (x_{i + 1} ) \cdots \nu_n (x_n)\right\vert \\
+            &amp;\le \sum_{x \in \Omega} \sum_{i \in [n]} \left\vert \nu_i(x_i) - \mu_i(x_i) \right\vert \cdot \mu_1 (x_1) \cdots \mu_{i - 1} (x_{i - 1}) \cdot \nu_{i + 1} (x_{i + 1} ) \cdots \nu_n (x_n) \\
+            &amp;= \sum_{i \in [n]} \sum_{x_i \in \Omega_i} \left\vert \nu_i(x_i) - \mu_i(x_i) \right\vert \\
+            &amp;= \sum_{i \in [n]} 2 \cdot \Vert \mu_i - \nu_i \Vert_{TV}. 
     \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
-<p><strong>Remark:</strong> We reach an interesting equality that <span class="math display">\[
-    \Big( (2k - 1) \cdot (2k - 3) \cdot \ldots \cdot 1 \Big) \cdot 2^k = (2k) \cdot (2k - 1) \cdot \ldots \cdot (k + 1).
-\]</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1] <em>J. Matoušek and J. Nešetřil, Invitation to discrete mathematics, 2nd ed. Oxford ; New York: Oxford University Press, 2009.</em></p>
 
       
     </div>
@@ -569,7 +900,7 @@ b_n = \frac{1}{1 + n} \cdot \binom{2 n}{n}.
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/57/">57</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -635,7 +966,7 @@ b_n = \frac{1}{1 + n} \cdot \binom{2 n}{n}.
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">167</span>
+          <span class="site-state-item-count">170</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -667,7 +998,7 @@ b_n = \frac{1}{1 + n} \cdot \binom{2 n}{n}.
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

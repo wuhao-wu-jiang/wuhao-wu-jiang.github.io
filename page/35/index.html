@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/28/Minimax-Theorem/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/02/Frequency-Estimators/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/10/28/Minimax-Theorem/" class="post-title-link" itemprop="url">Minimax Theorem</a>
+            <a href="/2019/11/02/Frequency-Estimators/" class="post-title-link" itemprop="url">Frequency Estimators</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-10-28 18:54:52" itemprop="dateCreated datePublished" datetime="2019-10-28T18:54:52+11:00">2019-10-28</time>
+              <time title="Created: 2019-11-02 20:47:52" itemprop="dateCreated datePublished" datetime="2019-11-02T20:47:52+11:00">2019-11-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-15 00:18:42" itemprop="dateModified" datetime="2021-07-15T00:18:42+10:00">2021-07-15</time>
+                <time title="Modified: 2021-03-12 12:28:57" itemprop="dateModified" datetime="2021-03-12T12:28:57+11:00">2021-03-12</time>
               </span>
 
           
@@ -191,63 +191,118 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>A zero-sum game is a game in which a player's payoff implies the loss of another player. There is a payoff a matrix <span class="math inline">\(A \in \mathbb{R}^{n \times m}\)</span>. One player chooses from rows <span class="math inline">\(\{1, 2, ..., n\}\)</span> and the other chooses from columns <span class="math inline">\(\{1, 2, ..., m\}\)</span>. The former is called the row player and the later is called the column player. The entry <span class="math inline">\(a_{ij}\)</span> of <span class="math inline">\(A\)</span> is the payoff when the row player chooses <span class="math inline">\(i\)</span> and the column player chooses <span class="math inline">\(j\)</span>. In such case the column player loses <span class="math inline">\(a_{ij}\)</span>.</p>
-<p>If one player makes a choice first and the other play follows, then the second player can always respond according the first player choice, to maximize its payoff or minimize its loss.</p>
-<p>To make the game more fair, suppose that there are two huge black boxes. We require the row player to go into one black box, and write down her choice <span class="math inline">\(i\)</span> on a note, and then leave the black box. We require the column player to do the same in another black box. Suppose the row player chooses his row index according to some distribution <span class="math inline">\(x \in \mathbb{R}^n\)</span>, and the column player chooses according to distribution <span class="math inline">\(y \in \mathbb{R}^m\)</span>. The <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are called strategies and the expected payoff is (for the row player) is <span class="math display">\[
-    x^T A y.
+          <h1 id="problem">Problem</h1>
+<p>A stream <span class="math inline">\(S\)</span> (viewed as a multi-set) of <span class="math inline">\(n\)</span> elements each from a domain <span class="math inline">\(U = [1, , 2, ..., u]\)</span>. Estimate the number of times each element appears in the <span class="math inline">\(S\)</span>.</p>
+<p>If we use a balanced binary search, this can be done in <span class="math inline">\(O(n \log \min\{n, u\})\)</span> time and <span class="math inline">\(\Theta(\min\{n, u\})\)</span> space. If we use a hash table, this can be done in <span class="math inline">\(\Theta(\min\{n, u\})\)</span> time and space.</p>
+<p><strong><em>Question to ponder</em></strong>: can we do it with sub-linear space?</p>
+<p>By allowing errors, this is possible. Let <span class="math inline">\(a = \left&lt; a_1, a_2, ..., a_{u} \right&gt;\)</span> be the frequency of elements in <span class="math inline">\(U\)</span> and <span class="math inline">\(b = \left&lt; b_1, ..., b_{u} \right&gt;\)</span> be our estimation. Our goal is to minimize the <span class="math inline">\(\ell_\infty\)</span> error: <span class="math display">\[
+    || a - b ||_\infty \doteq \max_i |b_i - a_i|.
 \]</span></p>
-<p>What is one player knows the other's strategy? In this scenario, the row player choose its strategy <span class="math inline">\(x\)</span> first and the column player responds by a strategy <span class="math inline">\(y\)</span>, or vise versa. Obvious, the strategy of the player who plays first can not be deterministic, i.e., have probability <span class="math inline">\(1\)</span> on one index and <span class="math inline">\(0\)</span> on others.</p>
-<p>The question is, whether the order of choosing a strategy results in different expected payoff.</p>
-<p>First we write down what the expected payoff is. If the row player commit to a strategy <span class="math inline">\(x\)</span> first, the column player will choose a distribution <span class="math inline">\(y\)</span> minimize it expected loss: <span class="math display">\[
-    \min_y x^T A y.
+<h1 id="count-min-sketch">Count-Min Sketch</h1>
+<p>We use array <span class="math inline">\(A\)</span> with size <span class="math inline">\(m &lt; \min\{n, u\}\)</span> such that each element in <span class="math inline">\(U\)</span> is allocated a bucket in <span class="math inline">\(A\)</span> to keep its frequency. Some elements must share the buckets. Now we apply the following strategy:</p>
+<blockquote>
+<ol type="1">
+<li>Pick a perfect hash function <span class="math inline">\(h : U \rightarrow [m]\)</span> (this condition can be weaken, but for convenience of discussion, we assume perfectness here), that maps the elements uniformly to every bucket in the array.<br />
+</li>
+<li>For <span class="math inline">\(\forall s \in S\)</span>,<br />
+<span class="math inline">\(\qquad A[h(s)] \leftarrow A[h(s)] + 1\)</span> .</li>
+<li>Return <span class="math inline">\(b_i = A[h(i)]\)</span> as the estimation of <span class="math inline">\(a_i\)</span>.</li>
+</ol>
+</blockquote>
+<p>Intuitively, each slot obtains <span class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass <span class="math inline">\(\sum_i a_i = |a|\)</span> (where <span class="math inline">\(|\cdot |\)</span> denotes the <span class="math inline">\(\ell_1\)</span> norm). Conditioned on <span class="math inline">\(i\)</span>-th element is hashed to the <span class="math inline">\(h(i)\)</span> slots, <span class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass <span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is hashed to the <span class="math inline">\(h(i)\)</span>-th slot. Therefore, in expectation, <span class="math display">\[
+0 \le \mathbb{E}[b_i - a_i] \le \frac{|a|}{m}
 \]</span></p>
-<p>As <span class="math inline">\(x\)</span> is known, this is equivalent to choosing the column with minimum value: <span class="math display">\[
-    \min_{j \in [m]} x^T A e_j.
+<p>An interesting property is that, if some <span class="math inline">\(a_j\)</span> (<span class="math inline">\(j \neq i\)</span>) (or a small subset of <span class="math inline">\(a_j\)</span>'s) constitutes, say <span class="math inline">\(0.99\)</span> percent of the mass <span class="math inline">\(|a|\)</span>, as long as it is not hashed to <span class="math inline">\(h(i)\)</span>, then the expected error is less than <span class="math inline">\(0.01 \frac{|a|}{m}\)</span>.</p>
+<p>Formally, define the binary random variables <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \neq i\)</span> such that <span class="math display">\[
+X_j = \begin{cases}
+    a_j     &amp;\quad \text{if} \quad h(i) = h(j)\\
+    0       &amp;\quad \text{otherwise}
+\end{cases}
+\]</span> Then by perfectness of <span class="math inline">\(h\)</span>, <span class="math inline">\(\Pr[X_j = a_j] = \frac{1}{m}\)</span> and <span class="math inline">\(\mathbb{E}[X_j] = \frac{a_j}{m}\)</span>. (Indeed, pairwise independence of <span class="math inline">\(h\)</span> suffices to guarantee this condition).</p>
+<p>Then <span class="math display">\[
+    \mathbb{E} [b_i - a_i] = \mathbb{E} \left[ \sum_{j \neq i} X_j \right] = \sum_{j \neq i} \mathbb{E}[X_j] \le \frac{|a|}{m}
 \]</span></p>
-<p>Understanding the expected behavior of the column player, the row player should choose a strategy <span class="math inline">\(x\)</span>, such that in the worst case, its expected payoff is maximized: <span class="math display">\[
-    \max_{x} (\min_y x^T A y) = \max_{x} (\min_{j \in [m]} x^T A e_j).
+<p>As <span class="math inline">\(b_i - a_i\)</span> is non-negative, by Markov inequality, <span class="math display">\[
+\Pr \left[ b_i - a_i \ge \epsilon |a| \right] \le \frac{\mathbb{E}[b_i - a_i]}{\epsilon |a|}  \le \frac{1}{\epsilon m}
+\]</span> If we would like to achieve failure probability <span class="math inline">\(\delta\)</span>, we can set <span class="math inline">\(m = \epsilon^{-1} \delta^{-1}\)</span>.</p>
+<p>Question to ponder: can we improve this?</p>
+<p>Yes, by repetition. Instead of using just one array, we set <span class="math inline">\(d\)</span> arrays (to be set latter) and choose <span class="math inline">\(d\)</span> hash functions independently. Then the probability that all estimations deviate more than <span class="math inline">\(\epsilon |a|\)</span> is at most <span class="math display">\[
+\left( \frac{1}{\epsilon m} \right)^d
 \]</span></p>
-<p>Similarly, if the column player play first, the expected payoff is <span class="math display">\[
-    \min_y (\max_{x} x^T A y) = \min_{y} (\max_{i \in [n]} e_i^T A y).
+<p>When <span class="math inline">\(d = \ln{\delta} / \ln \frac{1}{\epsilon m} = \ln{ \frac{1}{\delta} } / \ln \epsilon m\)</span>, the failure probability decreases to <span class="math inline">\(\delta\)</span>. To minimize the space usage, we solve the following optimization problem: <span class="math display">\[
+\begin{aligned}
+    &amp;\min           &amp;\ln \frac{1} {\delta} \frac{m}{\ln m + \ln \epsilon} \\
+    &amp;\text{s.t. }   &amp;m \ge \frac{1}{\epsilon}
+\end{aligned}
 \]</span></p>
-<p>The minimax-theorem states that <span class="math display">\[
-    \begin{aligned}
-        \max_{x} (\min_y x^T A y) 
-        = &amp;\min_y (\max_{x} x^T A y). 
+<p>Solving the equation gives <span class="math inline">\(m = e \epsilon^{-1}\)</span>. The space consumption is <span class="math inline">\(\frac{e}{\epsilon} \ln \frac{1}{\delta}\)</span>.</p>
+<p>Note: suppose that <span class="math inline">\(|a| = 10000\)</span> and <span class="math inline">\(\epsilon = 0.1\)</span>, <span class="math inline">\(\delta = 0.01\)</span>, then with <span class="math inline">\(10 \cdot e \ln 100 \approx 125\)</span> words, we can estimate a particular <span class="math inline">\(a_i\)</span> with the absolute error less than <span class="math inline">\(1000\)</span>. If <span class="math inline">\(a_i = 9000\)</span>, the relative error is small. However, if <span class="math inline">\(a_i = 1\)</span>, basically our estimation if rather inaccurate.</p>
+<p>Question to ponder: what if we analyze this by Chernoff style inequality?</p>
+<p>If we make <span class="math inline">\(d\)</span> repetition, then the confidence interval of the mean estimation is given by (Hoeffding's inequality) <span class="math display">\[
+|a|\sqrt{\frac{\log \frac{2}{\delta} }{2 d} }
+\]</span> If we want this interval to be smaller than <span class="math inline">\(\epsilon |a|\)</span>, then we need <span class="math inline">\(d = \frac{ \log \frac{2}{\delta} }{2 \epsilon^2}\)</span>, which is a <span class="math inline">\(\frac{1}{\epsilon }\)</span> worse than the above analysis. Intuitively, we require stronger condition for concentration of mean value than that for existence of near-min value.</p>
+<h1 id="count-sketch">Count-Sketch</h1>
+<p>One drawback of Count-Min Sketch is that the estimator constructed is one-sided and not unbiased. This can be fixed by introducing an additional function <span class="math inline">\(g : U \rightarrow \{ - 1, 1 \}\)</span> that gives each elements in <span class="math inline">\(U\)</span> a sign ("+" or "-") independently and uniformly at random. Now,</p>
+<ol start="2" type="1">
+<li>For each element <span class="math inline">\(s \in S\)</span>, we increase the counter <span class="math inline">\(h(s)\)</span> in the array by 1 if <span class="math inline">\(g(s) &gt; 0\)</span> or <span class="math inline">\(-1\)</span> if <span class="math inline">\(g(s) &lt; 0\)</span>.</li>
+<li>Finally, we set <span class="math inline">\(b_i = A[h(i)] \cdot g(i)\)</span> as the estimation of <span class="math inline">\(a_i\)</span>.</li>
+</ol>
+<p>In expectation, each slot obtains <span class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass <span class="math inline">\(\sum_i a_i = |a|\)</span>. But as each element "flips" it sign randomly, the expected value obtained is 0. Now, conditioned on <span class="math inline">\(i\)</span>-th element is hashed to the <span class="math inline">\(h(i)\)</span> slots, <span class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass <span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is hashed to the <span class="math inline">\(h(i)\)</span>-th slot. With their signs flipped randomly, they contribute 0 to the <span class="math inline">\(h(i)\)</span>-th slot. Hence, <span class="math display">\[
+\mathbb{E}[b_i - a_i] = 0
+\]</span> Formally, define the binary random variables <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \neq i\)</span> such that <span class="math display">\[
+X_j = \begin{cases}
+    a_j     &amp;\text{if} \quad h(i) = h(j) \wedge g(j) = g(i) \\
+    - a_j   &amp;\text{if} \quad h(i) = h(j) \wedge g(j) \neq g(i) \\
+    0       &amp;\text{otherwise}
+\end{cases}
+\]</span> Then by perfectness and independence of <span class="math inline">\(h\)</span> and <span class="math inline">\(g\)</span>,</p>
+<p><span class="math display">\[
+    \Pr[X_j = a_j] = \frac{1}{2m} \\
+    \Pr[X_j = -a_j] = \frac{1}{2m} \\
+    \Pr[X_j = 0] = 1 - \frac{1}{m}
+\]</span></p>
+<p>and <span class="math display">\[
+\begin{aligned}
+    \mathbb{E}[X_j] 
+    &amp;= 0 \\
+    \mathbb{E}[b_i - a_i] 
+    &amp;= \mathbb{E}[\sum_{j \neq i} X_j] 
+    = \sum_{j \neq i} \mathbb{E}[X_j] 
+    = 0 \\
+    \mathbb{Var} \left[ X_j \right] 
+    &amp;= \mathbb{E} [X_j^2] - (\mathbb{E}[X_j])^2 
+    = \frac{a_j^2}{m} \\
+    \mathbb{Var} \left[ \sum_{j \neq i} X_j \right] 
+    &amp;= \sum_{j \neq i} \mathbb{Var} [X_j] 
+    = \sum_{j \neq i} \frac{a_j^2}{m} 
+    \le \frac{|a|_2^2}{m}
     \end{aligned}
 \]</span></p>
-<p>The proof is not difficult -- by formulating the two optimizing problems as linear programming, and observing that they are dual to each other. If the row player goes first, <span class="math display">\[
-    \begin{array}{lr}
-        \max v \\
-        v  -  \sum_{i = 1}^n a_{ij} x_i \le 0 \,,  &amp; \forall j \in [m] \\
-        \sum_{i = 1}^n x_i = 1 \\
-        x_i \ge 0 \,,   &amp; \forall i \in [n]
-    \end{array}
+<p>where <span class="math inline">\(|a|_2^2\)</span> is the <span class="math inline">\(l_2\)</span> norm of <span class="math inline">\(a\)</span>. Note that the above analysis requires only pair independence. The random variable <span class="math inline">\(X_j\)</span> is two sided, therefore we can not use Markov Inequality for analysis.</p>
+<p>Question to ponder: is it possible to analyze this directly by Chernoff style inequality?</p>
+<p>The tool we resort to is Chebyshev's inequality: <span class="math display">\[
+\Pr \left[ |\sum_{j \neq i} X_j - 0| \ge \epsilon |a|_2 \right] \le \frac{\mathbb{Var} [\sum_{j \neq i} X_j]}{\epsilon^2 |a|_2^2 } \le \frac{1}{m\epsilon^2 }
+\]</span> we take <span class="math inline">\(m = k\epsilon^{-2}\)</span> for some integer <span class="math inline">\(k&gt; 2\)</span>.</p>
+<p>How do we amplify the successful probability? We repeat the experiment <span class="math inline">\(d\)</span> times, and take the median. The only way that the median makes a mistake is when more than half of the estimations deviate more <span class="math inline">\(\epsilon |a|_2\)</span>. Denote <span class="math inline">\(Y\)</span> the number of estimation such that the error is more than <span class="math inline">\(\epsilon |a|_2\)</span>. By Chernoff, <span class="math display">\[
+\begin{aligned}
+    \Pr \left[ Y - \frac{d}{k}\ge \frac{d}{2} - \frac{d}{k} \right] 
+    &amp;= \Pr \left[ Y - \frac{d}{k}\ge (\frac{1}{2} - \frac{1}{k})\cdot k \cdot \frac{d}{k} \right] \\
+    &amp;\le \exp \big( -\frac{d}{3 k} (\frac{k}{2} - 1)^2  \big) \\
+    &amp;= \delta 
+\end{aligned}
 \]</span></p>
-<p>The first constraint just says that <span class="math inline">\(v\)</span> should be smaller than each column of <span class="math inline">\(x^T A\)</span>.</p>
-<p>To upper bound <span class="math inline">\(v\)</span>, we introduce a variable <span class="math inline">\(u \in \mathbb{R}\)</span> (that is associated with constraint <span class="math inline">\(\sum_{i = 1}^n x_i = 1\)</span>). Then <span class="math display">\[ 
-    \begin{array}{ll}
-        u   &amp;= u \left( \sum_{i = 1}^n x_i \right) \\
-            &amp;\ge u \left( \sum_{i = 1}^n x_i \right) + \sum_{j = 1}^m y_j \left( v  -  \sum_{i = 1}^n a_{ij} x_i \right) \\
-            &amp;= v \left( \sum_{j = 1}^m y_j \right) + \sum_{i = 1}^n x_i \left( u - \sum_{j = 1}^m a_{ij} y_j \right) \\
-            &amp;= v + \sum_{i = 1}^n x_i \left( u - \sum_{j = 1}^m a_{ij} y_j \right) \\
-    \end{array}
-\]</span></p>
-<p>The first equality follows from that <span class="math inline">\(\sum_{i = 1}^n x_i = 1\)</span>. The second inequality follows from that <span class="math inline">\(y_j \ge 0\)</span> and <span class="math inline">\(v - \sum_{i = 1}^n a_{ij} x_i \le 0\)</span>. The last equality follows from that <span class="math inline">\(\sum_{j = 1}^m y_j = 1\)</span>.</p>
-<p>If it holds that <span class="math inline">\(u - \sum_{j = 1}^m a_{ij} y_j \ge 0\)</span> for all <span class="math inline">\(i \in [n]\)</span>, as <span class="math inline">\(x_i \ge 0\)</span>, then <span class="math inline">\(u\)</span> is an upper bound of <span class="math inline">\(v\)</span>: <span class="math display">\[ 
-    \begin{array}{ll}
-        u  \ge v + \sum_{i = 1}^n x_i \left( u - \sum_{j = 1}^m a_{ij} y_j \right) \ge v. 
-    \end{array}
-\]</span></p>
-<p>Minimizing <span class="math inline">\(u\)</span> gives the following linear program: <span class="math display">\[
-    \begin{array}{lr}
-        \min u \\
-        u  -  \sum_{j = 1}^m a_{ij} y_j \ge 0 \,,  &amp; \forall i \in [n] \\
-        \sum_{i = 1}^m y_j = 1 \\
-        y_j \ge 0 \,, &amp; \forall j \in [m]
-    \end{array}
-\]</span></p>
-<p>Observe this is exactly <span class="math inline">\(\min_y \max_x x^T A y\)</span>. Further, by strong duality, we know that the optimal values of the two program are equal.</p>
+<p>which solves to <span class="math display">\[
+d= \frac{3k}{(k/2  -1)^2} \log \frac{1}{\delta}
+\]</span> The overall space usage is therefore <span class="math display">\[
+md = \frac{3k^2}{\epsilon^2 (k/2  -1)^2} \log \frac{1}{\delta} 
+= \frac{3}{\epsilon^2 (1/2  - \frac{1}{k} )^2} \log \frac{1}{\delta}
+\]</span> Question to ponder: the expression is wired, which implies that <span class="math inline">\(k \rightarrow \infty\)</span>, the space usage converges to <span class="math inline">\(\frac{12}{\epsilon^2} \log \frac{1}{\delta}\)</span>, which is worse than count-min hash than a <span class="math inline">\(\frac{1}{\epsilon}\)</span> factor.</p>
+<h4 id="relation-between-a_1-and-a_2.">Relation between <span class="math inline">\(|a|_1\)</span> and <span class="math inline">\(|a|_2\)</span>.</h4>
+<p>Their relation is given as follows (by concavity of the <span class="math inline">\(\sqrt \cdot\)</span> function) <span class="math display">\[
+|a|_2 \le |a|_1 \le \sqrt{ |u| } |a|_2
+\]</span> In particular, when <span class="math inline">\(|u| = 2\)</span>, the inequality becomes <span class="math display">\[
+|a_1 + a_2| \le \sqrt 2 \sqrt{a_1^2 + a_2^2 }
+\]</span> When the dimension is higher than <span class="math inline">\(2\)</span>, the factor in the RHS can not bounded to <span class="math inline">\(\sqrt 2\)</span>.</p>
 
       
     </div>
@@ -267,7 +322,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/08/Balanced-Binary-Search-Tree/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/02/AM-GM-Inequality/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -281,7 +336,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/10/08/Balanced-Binary-Search-Tree/" class="post-title-link" itemprop="url">Balanced Binary Search Tree</a>
+            <a href="/2019/11/02/AM-GM-Inequality/" class="post-title-link" itemprop="url">AM-GM Inequality</a>
         </h2>
 
         <div class="post-meta">
@@ -291,14 +346,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-10-08 11:49:33" itemprop="dateCreated datePublished" datetime="2019-10-08T11:49:33+11:00">2019-10-08</time>
+              <time title="Created: 2019-11-02 10:48:17" itemprop="dateCreated datePublished" datetime="2019-11-02T10:48:17+11:00">2019-11-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-10-11 12:17:57" itemprop="dateModified" datetime="2019-10-11T12:17:57+11:00">2019-10-11</time>
+                <time title="Modified: 2019-12-03 10:18:10" itemprop="dateModified" datetime="2019-12-03T10:18:10+11:00">2019-12-03</time>
               </span>
 
           
@@ -312,141 +367,217 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>It is the depth of the binary search that affects the performance of it. We say that a binary search tree with <span class="math inline">\(n\)</span> nodes is balanced if its depth is of order <span class="math inline">\(O(\log n)\)</span> (hence we can perform find, insert and delete operations in time <span class="math inline">\(O(\log n)\)</span>).</p>
-<p>If a tree is unbalanced, we can maintain the balance by rotation. Further, we need some criteria to guide the rotation. In what's follows we discuss some of the popular design of the criteria.</p>
-<h4 id="by-the-number-of-elements-of-the-subtree.">By the number of elements of the subtree.</h4>
-<p>Denote a note <span class="math inline">\(v\)</span> and its left and right child <span class="math inline">\(v.left\)</span> and <span class="math inline">\(v.right\)</span> respectively. Define the size of <span class="math inline">\(v\)</span> (<span class="math inline">\(s(v)\)</span>) the number of elements contained in the subtree rooted at <span class="math inline">\(v\)</span>.</p>
-<p>A critical observation is that, if for each node <span class="math inline">\(v\)</span> of the tree, the size of each of it subtrees is at most a constant fraction <span class="math inline">\(\big(\)</span> denoted as <span class="math inline">\(\epsilon \in (\frac{1}{2}, 1)\)</span>; Exercise: why can't we pick <span class="math inline">\(\epsilon \in [0, \frac{1}{2}] \big)\)</span> of its size, i.e., <span class="math display">\[
-s(v.left) \le \epsilon s(v) \\
-s(v.right) \le \epsilon s(v) 
-\]</span> then the depth of the tree is in the order of <span class="math inline">\(O(\log n)\)</span>. The reason is obvious: let <span class="math inline">\(r = v_0, v_1, v_2, ..., v_k\)</span> be any root-to-leaf path of the tree, then <span class="math display">\[
-s(v_1) \le \epsilon s(v_0) \\
-s(v_2) \le \epsilon s(v_1) \\
-...\\
-s(v_k) \le \epsilon s(v_{k - 1})
-\]</span> it follows that <span class="math inline">\(1 = s(v_k) \le \epsilon^k s(v_0) = \epsilon^k n\)</span> and <span class="math inline">\(k \le \log_\epsilon \frac{1}{n} = O(\log n)\)</span>.</p>
-<p>Therefore, we can pick arbitrary <span class="math inline">\(\epsilon \in (\frac{1}{2}, 1)\)</span> and maintain this criteria explicitly and recursively.</p>
-<p>WLOG, suppose a new element is inserted into the left subtree of a vertex <span class="math inline">\(v\)</span>. Denote the new size function <span class="math inline">\(s\)</span> as <span class="math inline">\(s&#39;\)</span> after insertion. If after insertion, <span class="math inline">\(s&#39;(v.left) \le \epsilon s&#39;(v)\)</span>, we do nothing and check the balance of <span class="math inline">\(v\)</span>'s parent (if there is any). Otherwise, we may try a right rotation on <span class="math inline">\(v\)</span>: <span class="math display">\[
-\begin{aligned}
-&amp;\qquad \qquad v \\
-&amp;/           &amp;\setminus \\
-&amp;v.left      &amp;&amp;v.right \\
-/           &amp;\setminus \\
-v.left.left &amp; \quad v.left.right
-\end{aligned}
-\]</span> the subtree transform into: <span class="math display">\[
-\begin{aligned}
-&amp;\qquad \qquad v.left \\
-&amp;/         &amp;\setminus \\
-v.left.left     &amp;&amp; v\\
-           &amp;&amp;/  &amp;\setminus \\
- &amp;&amp; v.left.right &amp; \quad v.right
-\end{aligned}
-\]</span> Since before insertion, <span class="math inline">\(s(v.left) \le \epsilon s(v)\)</span>, it holds that <span class="math inline">\(s&#39;(v.left.left) \le \epsilon s&#39;(v.left) = \epsilon (s(v) + 1)\)</span>. Therefore, the left subtree no longer violate the balance constraint. However, the constraint could be violated by the right subtree. Since it is possible that <span class="math display">\[
-s&#39;(v.left.right) + s&#39;(v.right) + 1 &gt; \epsilon s&#39;(v.left) = \epsilon (s(v)  + 1)
-\]</span> For example, suppose that <span class="math inline">\(\epsilon = 0.8\)</span> and <span class="math inline">\(s(v.left.right) = 0.8 s(v.left) = 0.64 s(v)\)</span> and <span class="math inline">\(s(v.right) = 0.2 s(v) - 1\)</span>, then <span class="math display">\[
-s(v.left.right) + s(v.right) + 1 = 0.84 s(v)
-\]</span> The reason is that there is so much weight that <span class="math inline">\(v.left.right\)</span> has. Therefore, we don't want to rotate it to the right subtree. An alternative is to perform a left rotate on the left subtree first <span class="math display">\[
-\begin{aligned}
-&amp;\qquad \qquad v \\
-&amp;/           &amp;\setminus \\
-&amp;v.left.right      &amp;&amp;v.right \\
-/           &amp;\setminus \\
-v.left &amp; \quad v.left.right.right \\
-/ \setminus &amp; \\
-v.left.left &amp; \quad v.left.right.left
-\end{aligned}
-\]</span> Followed by a right rotation on <span class="math inline">\(v\)</span>: <span class="math display">\[
-\begin{aligned}
-&amp;\qquad \qquad v.left.right  \\
-&amp;/           &amp;\setminus \\
-&amp;v.left     &amp;&amp;v \\
-/ &amp;\setminus   &amp;&amp;/ \setminus\\
-v.left.left &amp;\quad v.left.right.left&amp; \quad v.left.right.right &amp;\quad v.right\\ 
-\end{aligned}
+          <p>The AM-GM inequality states that for <span class="math inline">\(x_1, x_2, ..., x_n &gt;0\)</span> and <span class="math inline">\(\lambda_1, \lambda_2, ..., \lambda_n \ge 0\)</span>, such that <span class="math inline">\(\sum_{i = 1}^n \lambda_i = 1\)</span>, we have <span class="math display">\[
+\prod_{i} x_i^{\lambda_i} \le \sum_i \lambda_i x_i 
+\]</span> If particular, when <span class="math inline">\(\lambda_i = \frac{1}{n}\)</span>, the inequality becomes <span class="math display">\[
+ \sqrt[^n]{\prod_i x_i} \le \frac{\sum_i x_i}{n}
+\]</span> Replaying <span class="math inline">\(x_i = \frac{1}{y_i}\)</span>, we obtain <span class="math display">\[
+ \frac{n}{\sum_i \frac{1}{y_i}} \le \sqrt[^n]{\prod_i y_i} 
+\]</span> Another famous case is <span class="math inline">\(n = 2\)</span> and <span class="math inline">\(\lambda_1 = \frac{1}{p}\)</span>, <span class="math inline">\(\lambda_2 = \frac{1}{q}\)</span> and <span class="math inline">\(x_1 = x^p\)</span>, <span class="math inline">\(x_2 = y^q\)</span>, we get the Young's inequality <span class="math display">\[
+xy = (x^p)^\frac{1}{p} (y^q)^\frac{1}{q} \le \frac{x^p}{p} + \frac{y^q}{q}
+\]</span> The proof of AM-GM inequality is rather simple and follows immediately from the concavity of <span class="math inline">\(\log\)</span> function: <span class="math display">\[
+\sum_i \lambda_i \log x_i \le \log \sum_i \lambda_i x_i
 \]</span></p>
-<p>To satisfy the balance requirement, we require that</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/31/Polynomials/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/31/Polynomials/" class="post-title-link" itemprop="url">Polynomials</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-31 21:38:36" itemprop="dateCreated datePublished" datetime="2019-10-31T21:38:36+11:00">2019-10-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-10 22:37:37" itemprop="dateModified" datetime="2021-03-10T22:37:37+11:00">2021-03-10</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="introduction">Introduction</h1>
+<p>Polynomials constitute of a rich class of functions. A polynomial in a single variable defined on a field <span class="math inline">\(F\)</span> is a function of the form: <span class="math display">\[
+p(x) = c_d x^d + c_{d - 1} x^{d - 1} + ... + c_1 x + c_0
+\]</span> where the variable <span class="math inline">\(x\)</span> and coefficients <span class="math inline">\(c_i \in F, \forall i \in [d]\)</span>. The integer <span class="math inline">\(d\)</span> is called the degree of <span class="math inline">\(p(x)\)</span>.</p>
+<h1 id="properties">Properties</h1>
+<p>Polynomials have two fundamental properties:</p>
+<blockquote>
 <ol type="1">
-<li><span class="math inline">\(s&#39;&#39;(v.left.right.left) = s&#39;(v.left.right.left) \le \epsilon s&#39;&#39;(v.left) = \epsilon (s&#39;(v.left) - s&#39;(v.left.right.right) -1 )\)</span>.</li>
-<li><span class="math inline">\(s&#39;(v.left.left) \le s&#39;(v.left)\)</span></li>
-<li><span class="math inline">\(s&#39;(v.left.right.right) + s&#39;(v.right) + 1 \le \epsilon s&#39;(v.left.right)\)</span></li>
+<li><strong>A non-zero polynomial of degree <span class="math inline">\(d\)</span> has at most <span class="math inline">\(d\)</span> distinct roots.</strong><br />
+</li>
+<li><strong>Given <span class="math inline">\(d + 1\)</span> pairs <span class="math inline">\(\{ (a_i, b_i) \in F^2 : i \in [d + 1] \}\)</span>, such that <span class="math inline">\(a_i \neq a_j\)</span> for <span class="math inline">\(i \neq j\)</span>, there is a unique polynomial <span class="math inline">\(p(x)\)</span> with degree at most <span class="math inline">\(d\)</span> that goes through all these points.</strong></li>
 </ol>
-<p>Condition 1 implies that <span class="math inline">\(s&#39;(v.left.right.right)\)</span> can take up too much weight of <span class="math inline">\(s&#39;(v.left)\)</span>, which imposes an upper bound on <span class="math inline">\(\epsilon\)</span> by <span class="math display">\[
- (1 - \epsilon) \epsilon s&#39;(v.left) - 1 \le \epsilon (s&#39;(v.left) - \epsilon^2s&#39;(v.left) - 1)
+</blockquote>
+<h2 id="number-of-distinct-roots">Number of Distinct Roots</h2>
+<p>We prove claim 1 by induction.</p>
+<ol type="1">
+<li><p>The base case is <span class="math inline">\(d = 0\)</span>. As the polynomial is non-zero, it does not have any root.</p></li>
+<li><p>Suppose the claim holds for non-negative integers <span class="math inline">\(\le d\)</span> and <span class="math inline">\(p(x)\)</span> is a polynomial of degree <span class="math inline">\(d + 1\)</span>. If <span class="math inline">\(p(x)\)</span> has a root <span class="math inline">\(z\)</span>, by polynomial division, we can rewrite <span class="math inline">\(p(x)\)</span> as <span class="math display">\[
+ p(x) = (x - a)^k q(x)
+ \]</span> where <span class="math inline">\(k \ge 1\)</span> is the largest integer such that <span class="math inline">\((x - a )^k | p(x)\)</span>. Hence <span class="math inline">\(q(x)\)</span> has degree <span class="math inline">\(d + 1 - k\)</span>. For any <span class="math inline">\(z \neq a\)</span>, if <span class="math inline">\(p(z) = (z - a)^k q( z ) = 0\)</span>, then <span class="math inline">\(q(z) = 0\)</span>, which implies that <span class="math inline">\(z\)</span> is a root of <span class="math inline">\(q(x)\)</span>. By the inductive hypothesis, it has at most <span class="math inline">\(d + 1 - k\)</span> distinct roots.</p></li>
+</ol>
+<p><strong>Remark:</strong> <em>We don't claim that <span class="math inline">\(p(x)\)</span> must have a root, but it has at most <span class="math inline">\(d\)</span> distinct roots, if it has degree <span class="math inline">\(d\)</span>.</em></p>
+<h2 id="unique-interpolation">Unique Interpolation</h2>
+<p>We first prove the existence of the interpolation, then prove its uniqueness.</p>
+<h3 id="existence-of-interpolation">Existence of Interpolation</h3>
+<p>The method is called Lagrange Interpolation. Our basic building blocks are a collection of special polynomials <span class="math inline">\(\{ \delta_i( x ) : i \in [d + 1] \}\)</span>, which we call signal functions, such that <span class="math inline">\(\forall i \in [d + 1]\)</span>,</p>
+<ol type="1">
+<li><p>The polynomial <span class="math inline">\(\delta_i( x )\)</span> has degree <span class="math inline">\(d\)</span>.</p></li>
+<li><p>The polynomial takes value 1 at <span class="math inline">\(a_i\)</span>, i.e., <span class="math inline">\(\delta_i(a_i) = 1\)</span>.</p></li>
+<li><p>The polynomial takes value 0 at <span class="math inline">\(a_j\)</span> for <span class="math inline">\(j \neq i\)</span>, i.e., <span class="math inline">\(\delta_i(a_j) = 0\)</span>.</p></li>
+</ol>
+<p>First, define <span class="math inline">\(\delta_i&#39;(x) = \prod_{j \neq i} (x - a_j)\)</span>. It equals to <span class="math inline">\(0\)</span> on <span class="math inline">\(a_j, \forall j \neq i\)</span>. We normalize its value at <span class="math inline">\(a_i\)</span>, to obtain</p>
+<p><span class="math display">\[
+    \delta_i(x) = \frac{\delta_i&#39;(x)}{\delta_i&#39;(a_i)} = \frac{\prod_{j \neq i} (x - a_j) }{ \prod_{j \neq i} (a_i - a_j) }. 
 \]</span></p>
-<h4 id="by-the-height-of-the-subtree-avl-tree">By the height of the subtree (AVL Tree)</h4>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/18/Divided-by-Three/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/18/Divided-by-Three/" class="post-title-link" itemprop="url">Divided by Three</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-09-18 21:51:17" itemprop="dateCreated datePublished" datetime="2019-09-18T21:51:17+10:00">2019-09-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-09-22 11:44:19" itemprop="dateModified" datetime="2019-09-22T11:44:19+10:00">2019-09-22</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Given a number <span class="math inline">\(x = (x_1x_2x_3...x_n)_{10}\)</span> in decimal form, what is reminder divided by 3.</p>
-<p>Note that for any positive integer <span class="math inline">\(k\)</span>, <span class="math display">\[
-10^k \equiv 1^k \equiv 1 \mod 3
+<p>With proper scaling and summation, <span class="math inline">\(p(x)\)</span> is given by <span class="math display">\[
+    p(x) = \sum_{i = 1}^{d + 1} b_i \cdot \delta_i(x)
 \]</span></p>
-<p>Therefore, <span class="math display">\[
-x = x_1 10^{n - 1} + x_2 10^{n - 2} + ... + x^n \equiv x_1 + x_2 + ... + x_n \mod 3
+<h3 id="uniqueness-of-interpolation">Uniqueness of Interpolation</h3>
+<p>Suppose for contradiction that there is another polynomial <span class="math inline">\(q(x)\)</span>, s.t., <span class="math inline">\(p(a_i) = q(a_i), \forall i \in [d + 1]\)</span>. Let <span class="math inline">\(r(x) = p(x) - q(x)\)</span>. If <span class="math inline">\(r(x) \equiv 0\)</span>, then the claim holds trivially. Otherwise, <span class="math inline">\(r(x)\)</span> is a non-zero polynomial with degree at most <span class="math inline">\(d\)</span>. Claim 1 asserts that <span class="math inline">\(r(x)\)</span> has at most <span class="math inline">\(d\)</span> distinct roots, contradicting that <span class="math inline">\(r(a_i) = 0\)</span> for <span class="math inline">\(i \in [d + 1]\)</span>.</p>
+<!-- *Question to ponder*: does claim 2 implies claim 1?  -->
+<p><em>Remark</em>: uniqueness can also be proven by showing the following equation has unique solution <span class="math inline">\([ c_d, c_{d - 1}, ..., c_0]\)</span>: <span class="math display">\[
+    \begin{bmatrix}
+        a_1^d &amp; a_1^{d - 1} &amp; ... &amp;  a_1 &amp; 1\\
+        a_2^d &amp; a_2^{d - 1} &amp; ... &amp;  a_2 &amp; 1\\
+        ...\\
+        a_{d + 1}^d &amp; a_{d + 1}^{d - 1} &amp; ... &amp;  a_{d + 1} &amp; 1
+    \end{bmatrix}
+    \begin{bmatrix}
+        c_d         \\
+        c_{d - 1}   \\
+        ...         \\
+        c_0
+    \end{bmatrix} =
+    \begin{bmatrix}
+    b_1 \\
+    b_{1} \\
+    ...\\
+    b_{d + 1}
+    \end{bmatrix} \\
 \]</span></p>
-<p><span class="math inline">\(\square\)</span>.</p>
+<p>The left matrix is called Vandermonde Matrix, whose determinant is <span class="math display">\[
+    \begin{aligned}
+        &amp;\det 
+            \begin{bmatrix}
+            a_1^d &amp; a_1^{d - 1} &amp; ... &amp;  a_1 &amp; 1\\
+            a_2^d &amp; a_2^{d - 1} &amp; ... &amp;  a_2 &amp; 1\\
+            ...\\
+            a_{d + 1}^d &amp; a_{d + 1}^{d - 1} &amp; ... &amp;  a_{d + 1} &amp; 1
+            \end{bmatrix}  \\
+        =&amp;
+        \det 
+            \begin{bmatrix}
+            0&amp; 0 &amp; ... &amp;  0 &amp; 1\\
+            a_2^d - a_1 a_2^{d - 1} &amp; a_2^{d - 1} - a_1 a_2^{d - 2}&amp; ... &amp;  a_2 - a_1 &amp; 1\\
+            ...\\
+            a_{d + 1}^d - a_1 a_{d + 1}^{d - 1} &amp;  a_{d + 1}^{d - 1} - a_1 a_{d + 1}^{d - 2}&amp; ... &amp;  a_{d + 1} - a_ 1&amp; 1
+            \end{bmatrix}  \\
+        =&amp;\prod_{i = 1}^{d + 1} (a_i - a_1) \det 
+            \begin{bmatrix}
+            a_2^d &amp; a_2^{d - 1} &amp; ... &amp;  a_2 &amp; 1\\
+            ...\\
+            a_{d + 1}^d &amp; a_{d + 1}^{d - 1} &amp; ... &amp;  a_{d + 1} &amp; 1
+            \end{bmatrix}  \\
+            ...\\ 
+        =&amp; \prod_{i &lt; j} (a_j - a_i)
+    \end{aligned}
+\]</span> which is non-zero when <span class="math inline">\(a_i \neq a_j\)</span>.</p>
+<h1 id="applications">Applications</h1>
+<h2 id="pairwise-independent-hash-function.">Pairwise Independent Hash Function.</h2>
+<p>Assume that we want to map a set of elements <span class="math inline">\(\mathcal{U} \doteq \{0, 1, ..., u - 1\}\)</span> into some set <span class="math inline">\(\mathcal{F}\)</span>, by picking a function <span class="math inline">\(h\)</span> uniformly at random from a family of functions <span class="math inline">\(\mathcal{H} \doteq \{ h : \mathcal{U} \rightarrow \mathcal{F} \}\)</span>. For an <span class="math inline">\(i \in \mathcal{U}\)</span>, the value <span class="math inline">\(Y_i \doteq h(i)\)</span> is a random variable. The <span class="math inline">\(Y_i\)</span>'s are called pairwise independent, if for <span class="math inline">\(i, j \in \mathcal{U}, i \neq j\)</span> and <span class="math inline">\(b_i, b_j \in \mathcal{F}\)</span>, <span class="math display">\[
+    \Pr_{h \in \mathcal{H} } [Y_i = b_i, Y_j = b_j] = \Pr_{h \in \mathcal{H} } [Y_i = b_i] \Pr_{h \in \mathcal{H} } [Y_j = b_j]. 
+\]</span></p>
+<p>Similarly we can define <span class="math inline">\(k\)</span>-wise independence. For any <span class="math inline">\(0 \le i_1 &lt; i_2 &lt;... &lt; i_k &lt; u\)</span>, and <span class="math inline">\(b_{i_1} , b_{i_2}, ..., b_{i_k} \in \mathcal{F}\)</span>, we have <span class="math display">\[
+    \Pr_{h \in \mathcal{H} } [ Y_{i_1} = b_{i_1}, ... Y_{i_k} = b_{i_k} ] = \prod_{j} \Pr_{h \in \mathcal{H} } [ Y_{i_j} = b_{i_j}].
+\]</span></p>
+<h3 id="finite-field-f_p"><em>Finite Field</em> <span class="math inline">\(F_p\)</span></h3>
+<p>Now we restrict our discussion to the finite field <span class="math inline">\(F_p = \{0, 1, ..., p - 1\}\)</span>, where <span class="math inline">\(p\)</span> is a prime larger than <span class="math inline">\(u\)</span>.</p>
+<blockquote>
+<p>Theorem. The set of all possible functions from <span class="math inline">\(\mathcal{U}\)</span> to <span class="math inline">\(F_p\)</span> is pairwise independent.</p>
+</blockquote>
+<p><em>Proof:</em> <span class="math display">\[
+    \begin{aligned}
+        \Pr[Y_i = a, Y_j = b] 
+        = \frac{p^{u - 2}}{p^u} 
+        = \frac{1}{p^2} 
+        = \Pr[Y_i = a] \cdot \Pr[Y_j = b]. 
+    \end{aligned} \\
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>However, each of the functions takes <span class="math inline">\(u \log p\)</span> bits to represent. To reduce the space, we restrict to the family: <span class="math display">\[
+    \mathcal{H_1} = \{ p(x) = c_1 x + c_0 \mid c_1, c_0 \in F_p \}
+\]</span></p>
+<p>which contains all polynomials with degree at most 1 in the field <span class="math inline">\(F_p\)</span>, i.e., all lines in <span class="math inline">\(F_p\)</span>. There are <span class="math inline">\(p^2\)</span> such functions.</p>
+<p>We know that, for given <span class="math inline">\(x_1, x_2 \in \mathcal{U}, x_1 \neq x_2\)</span>, then <span class="math inline">\(\forall y_1, y_2 \in F_p\)</span>, there is a unique line that goes through <span class="math inline">\((x_1, y_1), (x_2, y_2)\)</span>. If we pick a line uniformly at random from <span class="math inline">\(\mathcal{H}_1\)</span>, then the probability that it goes through this pair of points is <span class="math inline">\({1} / {p^2}\)</span>.</p>
+<p>This already implies pairwise independence, as <span class="math display">\[
+    \Pr[h(x_1) = y_1 ] = \sum_{y_2 = 0}^{p - 1} \Pr[h(x_1) = y_1, h(x_2) = y_2] = \frac{1}{p}
+\]</span></p>
+<p>In a similar manner, we can construct a <span class="math inline">\(k\)</span>-wise independent family: <span class="math display">\[
+    \mathcal{H_{k - 1}} = \{ p(x) = c_{k - 1} x^{k - 1} + c_{k - 2} x^{k - 2} + ... + c_1 x_1 + c_0 \mid c_{k - 1}, ..., c_0 \in F_p \}. 
+\]</span></p>
+<p>Note that <span class="math inline">\(|\mathcal{H}| = p^{k}\)</span>. For <span class="math inline">\(0 \le x_1 &lt; x_2 &lt; ... &lt; x_k &lt; u\)</span>, and <span class="math inline">\(y_1, y_2, ..., y_k \in F_p\)</span>, there is a unique polynomial that goes through the points <span class="math inline">\((x_1, y_1), (x_2, y_2), ..., (x_k, y_k)\)</span>.</p>
+<h2 id="key-sharing">Key-Sharing</h2>
+<p>Suppose that we have <span class="math inline">\(n\)</span>-candidates who knows some information about the key and we require that only when no less than <span class="math inline">\(k\)</span> of them aggragate their information can they figure the actual key. No group of less than <span class="math inline">\(k\)</span> candidates can achieve this. The way we do it is as follows:</p>
+<ol type="1">
+<li>Select a large prime number <span class="math inline">\(p\)</span>.<br />
+</li>
+<li>Select <span class="math inline">\(k+1\)</span> random numbers <span class="math inline">\(y_0, y_1, ..., y_k\)</span> from <span class="math inline">\([p-1]\)</span>.<br />
+</li>
+<li>Generate the unique polynomial <span class="math inline">\(p(x)\)</span> with degree <span class="math inline">\(k\)</span> that goes through <span class="math inline">\((0, y_0), (1, y_1), ..., (k, y_k)\)</span>.<br />
+</li>
+<li>Inform the value of <span class="math inline">\(p(1)\)</span> to the first person, <span class="math inline">\(p(2)\)</span> to the second one, ... and <span class="math inline">\(p(n)\)</span> to the <span class="math inline">\(n\)</span>-th person.</li>
+</ol>
+<p>If <span class="math inline">\(k - 1\)</span> people pool their keys together, then there are <span class="math inline">\(p\)</span> possible polynomials that goes through all their keys, each has different value at point 0. The probability of guessing the correct key is given by <span class="math inline">\(\frac{1}{p}\)</span>.</p>
+<h1 id="reference">Reference:</h1>
+<p>[1]. CS 70. Discrete Mathematics and Probability Theory.</p>
 
       
     </div>
@@ -465,7 +596,7 @@ x = x_1 10^{n - 1} + x_2 10^{n - 2} + ... + x^n \equiv x_1 + x_2 + ... + x_n \mo
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/34/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/34/">34</a><span class="page-number current">35</span><a class="page-number" href="/page/36/">36</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/36/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/34/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/34/">34</a><span class="page-number current">35</span><a class="page-number" href="/page/36/">36</a><span class="space">&hellip;</span><a class="page-number" href="/page/57/">57</a><a class="extend next" rel="next" href="/page/36/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -531,7 +662,7 @@ x = x_1 10^{n - 1} + x_2 10^{n - 2} + ... + x^n \equiv x_1 + x_2 + ... + x_n \mo
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">167</span>
+          <span class="site-state-item-count">170</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -563,7 +694,7 @@ x = x_1 10^{n - 1} + x_2 10^{n - 2} + ... + x^n \equiv x_1 + x_2 + ... + x_n \mo
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

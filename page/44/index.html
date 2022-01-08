@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/21/RSA/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/01/17/Farkas-Lemma/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/11/21/RSA/" class="post-title-link" itemprop="url">RSA</a>
+            <a href="/2019/01/17/Farkas-Lemma/" class="post-title-link" itemprop="url">Farkas' Lemma</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-11-21 21:52:18" itemprop="dateCreated datePublished" datetime="2018-11-21T21:52:18+11:00">2018-11-21</time>
+              <time title="Created: 2019-01-17 22:42:53" itemprop="dateCreated datePublished" datetime="2019-01-17T22:42:53+11:00">2019-01-17</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-04 20:52:46" itemprop="dateModified" datetime="2019-12-04T20:52:46+11:00">2019-12-04</time>
+                <time title="Modified: 2020-01-31 17:31:04" itemprop="dateModified" datetime="2020-01-31T17:31:04+11:00">2020-01-31</time>
               </span>
 
           
@@ -191,196 +191,65 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence <span class="math inline">\(x\)</span>, the encrypt message is <span class="math inline">\(y\)</span>.</p>
-<p>One solution is to perform XOR operation. Suppose there is a key <span class="math inline">\((k)_2\)</span> that is known both to the sender the receiver. Then the sender encrypt the message by <span class="math display">\[
-(y)_2 = (x)_2 \oplus k
-\]</span> The receiver can decrypt the message by <span class="math display">\[
-(x)_2 = (y)_2 \oplus k
-\]</span> Given <span class="math inline">\(x\)</span> with length <span class="math inline">\(n\)</span>, if <span class="math inline">\(k\)</span> is chosen uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, then <span class="math inline">\((y)_2\)</span> is a sequence uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>. If the message is sent only one time, the eavesdropper can't get more information about <span class="math inline">\(x\)</span> after seeing <span class="math inline">\(y\)</span>.</p>
-<p>Two drawbacks exists. First, how can the sender exchange the key <span class="math inline">\(k\)</span> with the receiver without meeting each other. Second, if the many messages are sent, there are frequency pattern associated with <span class="math inline">\(y\)</span>, making it breakable.</p>
-<p>RSA encryption algorithm overcomes the first issue by generating two keys for the receiver: the secrete key and the public key. The public key is distributed across the internet. The sender encrypts the message <span class="math inline">\(x\)</span> with the public key. Only the receiver who has the secret key can decrypt the message. The mathematics behind is explained as follows.</p>
-<p>Question to ponder: can we attack RSA by the frequency pattern?</p>
-<p>First generate two prime number <span class="math inline">\(p, q\)</span> and let <span class="math inline">\(N = pq\)</span>. Further, we find a integer <span class="math inline">\(e\)</span>, such that</p>
+          <p>Given <span class="math inline">\(A \in R^{m \times n}\)</span> and <span class="math inline">\(b \in R^n\)</span>, the Farkas Lemma states that exactly one of the following holds:</p>
 <ol type="1">
-<li><span class="math inline">\(e\)</span> is coprime to <span class="math inline">\((p - 1)(q - 1)\)</span>, i.e., <span class="math inline">\(\exists d\)</span>, such that <span class="math inline">\(ed \equiv 1 \mod (p - 1)(q - 1)\)</span>.</li>
-<li><span class="math inline">\(e \neq p\)</span>, <span class="math inline">\(e \neq q\)</span>.</li>
+<li><span class="math inline">\(\exists x \in R^n​ : Ax = b\)</span>, <span class="math inline">\(x \ge 0\)</span>,</li>
+<li><span class="math inline">\(\exists y \in R^m : y^T A \le 0\)</span>, <span class="math inline">\(y^T b &gt; 0\)</span>.</li>
 </ol>
-<p>Question to ponder: does such <span class="math inline">\(e\)</span> exists?</p>
-<p>Answer: YES. There are <span class="math inline">\(O(\frac{(p - 1)(q - 1) }{ \log (p - 1)(q - 1) } - \frac{ \sqrt{ (p - 1)(q - 1) } }{ \log \sqrt { (p - 1)(q - 1) } } )\)</span> prime numbers in <span class="math inline">\((\sqrt{(p - 1)(q - 1)}, (p - 1)(q - 1))\)</span>, which can not be prime factors of <span class="math inline">\((q - 1)(p - 1)\)</span>.</p>
-<p>Then we give out the pair as <em>public key</em>: <span class="math display">\[
-(n, e)
+<p>Geometrically, the first statements says that <span class="math inline">\(b\)</span> is a non-negative linear combination of columns of <span class="math inline">\(A\)</span>. Denote the conic combination of columns of <span class="math inline">\(A\)</span> as <span class="math inline">\(P = \{ Ax: \forall x \ge 0\} \subset R^m\)</span>. Note that it is a subset of the columns space of <span class="math inline">\(A\)</span>.</p>
+<p>If <span class="math inline">\(b \notin P\)</span>, the second statement is equivalent to that</p>
+<ol start="3" type="1">
+<li><span class="math inline">\(\exists y \in R^m\)</span>, such that <span class="math inline">\(y^T b &gt; 0\)</span> and <span class="math inline">\(\forall z \in P\)</span>, we have <span class="math inline">\(y^T z \le 0\)</span>.</li>
+</ol>
+<p>When (3) holds, clearly (2) holds, as columns of <span class="math inline">\(A\)</span> belong to <span class="math inline">\(P\)</span>. On the other hand, every element in <span class="math inline">\(P\)</span> is conic combination of columns of <span class="math inline">\(A\)</span>, then <span class="math inline">\(\forall z = Ax \in P\)</span>, then <span class="math inline">\(y^T z = y^T (A x) = (y^T A) x \le 0\)</span> by the fact that <span class="math inline">\(y^T A \le 0 \wedge x \ge 0\)</span>.</p>
+<figure>
+<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Farkas&#39;%20Lemma.jpg?raw=true" alt="Geometry Interpretation" /><figcaption aria-hidden="true">Geometry Interpretation</figcaption>
+</figure>
+<p>The existence of <span class="math inline">\(y\)</span> is justified as follows: as <span class="math inline">\(P\)</span> is convex and closed, the <a target="_blank" rel="noopener" href="https://wuhao-wu-jiang.github.io/2018/12/01/Separation-Plane-Theorem/">Separation Theorem</a> states that we can find a point <span class="math inline">\(z^* = A x^*\)</span> in <span class="math inline">\(P\)</span> that satisfies</p>
+<p><span class="math display">\[
+(b - z^*)^T(z - z^*) \le 0​
 \]</span></p>
-<p>And keep in secrete the triple as <em>private key</em>: <span class="math display">\[
-(p, q, d)
-\]</span></p>
-<p>The algorithm for encryption and decryption is as follows:</p>
-<p>Encryption: <span class="math display">\[
-y = f(x) = x^e \pmod N
-\]</span></p>
-<p>Decryption: <span class="math display">\[
-g(y) = y^d \pmod N
-\]</span></p>
-<p>The key theorem states:</p>
-<p><em>Theorem</em>: <span class="math display">\[
-g(y) = x
-\]</span></p>
-<p><em>Proof 1:</em> the first proof relies on a result derived from the Chinese Reminder Theorem, which i that for any integer <span class="math inline">\(a &lt; b\)</span>, we have <span class="math display">\[
-a \equiv b \mod p \vee a \equiv b \mod q
-\]</span> Then, <span class="math inline">\(p | (b - a)\)</span> and <span class="math inline">\(q | (b - a)\)</span>. If follows that <span class="math inline">\(N | (b - a)\)</span>, since <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> are primes and <span class="math inline">\(N\)</span> is their least common multiple.</p>
-<p>Now define <span class="math inline">\(m = x^{ed} = x^{k(p - 1)(q - 1) + 1}\)</span>. By Fermat's Little Theorem, <span class="math display">\[
-m \equiv x  \mod p \wedge m \equiv x \mod q
-\]</span></p>
-<p>Hence <span class="math inline">\(N | (m - x)\)</span> and <span class="math inline">\(m \equiv x \mod N\)</span>.</p>
-<p><em>Proof 2:</em> <span class="math display">\[
-y^d = x^{ed} = x^{k(p - 1)(q - 1) + 1} \pmod N
-\]</span></p>
-<p>Case 1: this is the easy case in which <span class="math inline">\(x\)</span> is coprime to <span class="math inline">\(N\)</span>. Then by Fermat-Euler theorem, <span class="math inline">\(x^{\varphi(N)} = 1 \pmod N\)</span>. It follows immediately that <span class="math inline">\(x^{ed} = x \pmod N\)</span>.</p>
-<p>Case 2: otherwise, <span class="math inline">\(x = lp\)</span> for some <span class="math inline">\(1 \le l \le q\)</span> or <span class="math inline">\(x = lq\)</span> for some <span class="math inline">\(1\le l \le p\)</span>. WLOG, we just consider the former case. Now <span class="math inline">\(y^d = (lp)^{k(p - 1)(q - 1) + 1} \pmod N\)</span>. On the other hand, as <span class="math inline">\((lp)^{k(p - 1)}\)</span> is relative prime to <span class="math inline">\(q\)</span>, we conclude that <span class="math inline">\(((lp)^{k(p-1)})^{q- 1} = mq + 1\)</span> for some integer <span class="math inline">\(m\)</span>, by Fermat's little theorem. Therefore, <span class="math inline">\(y^d = (mq + 1) x = (mq + 1) (lp) = mlpq + lp = lp = x \pmod N\)</span> , which finishes our proof.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/20/Fermat-s-Little-Theorem/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/11/20/Fermat-s-Little-Theorem/" class="post-title-link" itemprop="url">Fermat's Little Theorem</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-11-20 22:55:39" itemprop="dateCreated datePublished" datetime="2018-11-20T22:55:39+11:00">2018-11-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 17:02:27" itemprop="dateModified" datetime="2021-03-18T17:02:27+11:00">2021-03-18</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="fermats-little-theorem">Fermat's Little Theorem</h1>
-<p>It is a fundamental result in number theory. It states that given a prime number <span class="math inline">\(p\)</span>, for every positive integer <span class="math inline">\(a \in \mathbb{N}^+\)</span>, if <span class="math inline">\(a \neq 0 \pmod p\)</span>, we have <span class="math display">\[
-a^{p - 1} = 1 \quad \pmod p
-\]</span></p>
-<p>It suffices to prove the theorem for numbers in <span class="math inline">\(\mathbb{F}_p^+ \doteq \{ 1, 2, ..., p - 1\}\)</span>.</p>
-<h1 id="proof-one">Proof One</h1>
-<p>Define the function <span class="math inline">\(f : \mathbb{F}_p^+ \rightarrow \mathbb{F}_p^+\)</span> to be <span class="math display">\[
-    f(x) = ax \pmod p. 
-\]</span></p>
-<p>For every <span class="math inline">\(x \neq x&#39; \in \mathbb{F}_p^+\)</span>, <span class="math inline">\(ax \neq ax&#39; \mod p\)</span>, otherwise <span class="math inline">\((x - x&#39;) \mid p\)</span>. Hence <span class="math inline">\(f\)</span> is a bijection and <span class="math display">\[
-\{f(1), f(2), ..., f(p - 1)\} = \mathbb{F}_p^+.
-\]</span></p>
-<p>Now we take product over all number in these two sets to obtain <span class="math display">\[
-(p - 1)! = \prod_{i = 1}^{p - 1} (ai) = a^{p - 1} (p - 1)! \pmod p
-\]</span></p>
-<p>As <span class="math inline">\(p\)</span> is a prime, every non-zero integer has a multiplicative inverse mod <span class="math inline">\(p\)</span>. Therefore we can cancel out <span class="math inline">\((p - 1)!\)</span> from both side and get <span class="math display">\[
-    1 = a^{p - 1} \pmod p. 
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>Remark: Fermat-Euler theorem relaxes the condition of <span class="math inline">\(p\)</span> being prime. It states that <span class="math inline">\(\forall p, a \in \mathbb{N}^+\)</span> with <span class="math inline">\(\gcd(a, p) = 1\)</span> (i.e., <span class="math inline">\(a\)</span> and <span class="math inline">\(p\)</span> are coprime), we have <span class="math display">\[
-a^{\varphi(p)} = 1 \pmod p,
-\]</span></p>
-<p>where <span class="math inline">\(\varphi(p)\)</span> is the number of elements that are coprime to <span class="math inline">\(p\)</span> in <span class="math inline">\(\{1, 2, .., p - 1\}\)</span>. When <span class="math inline">\(p\)</span> is prime, <span class="math inline">\(\varphi(p) = p - 1\)</span>.</p>
-<p>The proof for the theorem is similar to the previous one. Let <span class="math display">\[
-    S \subset \{1, 2, .., p - 1\}
-\]</span></p>
-<p>be the set of numbers coprime to <span class="math inline">\(p\)</span> and define <span class="math inline">\(f: S \rightarrow S\)</span> to be <span class="math display">\[
-    f(x) = ax \pmod p
-\]</span></p>
-<p>which is a bijection. Therefore, <span class="math display">\[
-    \prod_{x \in S} x = a^{\varphi(p)} \prod_{x \in S} x \pmod p
-\]</span> Cancelling out the factor <span class="math inline">\(\prod_{x \in S} x\)</span> from both side gives the desired result.</p>
-<h1 id="proof-two">Proof Two</h1>
-<p>This proof uses the binomial expansion as follows: <span class="math display">\[
-\begin{aligned}
-    (a + 1)^p 
-    &amp;= a^p + \binom{p}{1} a^{p - 1} + ... + \binom{p}{p - 1} a + 1  &amp;\pmod p \\
-    &amp;= a^{p} + 1 &amp;\pmod p \\
-    &amp;= (a - 1)^{p} + 1 + 1 &amp;\pmod p \\
-    &amp;= ... \\
-    &amp;= \begin{matrix} \underbrace{1 + 1 + ... + 1} \\ a + 1 \end{matrix} &amp;\pmod p  \\
-    &amp;= a + 1 &amp;\pmod p
-\end{aligned}
-\]</span> The second equality holds since for <span class="math inline">\(1 \le i \le p - 1\)</span>, the coefficient <span class="math inline">\(\binom{p}{i} = \frac{p (p - 1) ... (p - i + 1)}{i !}\)</span> divides <span class="math inline">\(p\)</span>, as <span class="math inline">\(p\)</span> is relative prime to all integers <span class="math inline">\(1, 2, ..., i\)</span>. The third equality follows from respectively applying the previous expansion. Finally, we get Fermat's Little Theorem by multiplying both sides of <span class="math inline">\((a + 1)^p = (a + 1) \pmod p\)</span> by the inverse of <span class="math inline">\(a + 1\)</span> module <span class="math inline">\(p\)</span>.</p>
-<h1 id="proof-three">Proof Three</h1>
-<p>Let <span class="math inline">\(a \in \mathbb{F}_p^+\)</span>. Consider the following numbers in <span class="math inline">\(\mathbb{F}_p^+\)</span>: <span class="math display">\[
-    a, a^2, a^3, a^4, a^5, ...
-\]</span></p>
-<p>As there are only <span class="math inline">\(p - 1\)</span> distinct numbers in <span class="math inline">\(\mathbb{F}_p^+\)</span>, it holds that there exits a smallest <span class="math inline">\(h \in \mathbb{N}_+\)</span>, such that <span class="math display">\[
-    a^h = 1 \pmod p. 
-\]</span></p>
-<p>Now consider the following procedure:</p>
-<blockquote>
+<p>Let <span class="math inline">\(y = (b - z^*) \in R^m\)</span>. Note that <span class="math inline">\(y &gt; 0\)</span> as <span class="math inline">\(b \notin P\)</span> and <span class="math inline">\(P\)</span> is closed. Consider the plane <span class="math inline">\(y^T (x - z^*) = 0\)</span>. It has the following properties:</p>
 <ol type="1">
-<li><span class="math inline">\(\mathcal{U} \leftarrow \mathbb{F}_p^+;\)</span><br />
-</li>
-<li><span class="math inline">\(\mathcal{C} \leftarrow \{ \}, i \leftarrow 0\)</span>;<br />
-</li>
-<li>while <span class="math inline">\(\mathcal{U} \neq \emptyset\)</span> do:<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(i \leftarrow i + 1\)</span>;<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> let <span class="math inline">\(b\)</span> be an element in <span class="math inline">\(\mathcal{U}\)</span>;<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> let <span class="math inline">\(S_i \leftarrow \{ b, ab, a^2b, ..., a^{h - 1} b\}\)</span>;<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\mathcal{U} \leftarrow \mathcal{U} \setminus S_i\)</span>;<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\mathcal{C} \leftarrow \mathcal{C} \cup \{ S_i \}\)</span>;</li>
+<li>Points in <span class="math inline">\(P\)</span> lies on the negative side of the plane, that is <span class="math inline">\(z \in P\)</span>, we have <span class="math inline">\(y^T (z - z^*) \le 0\)</span>.</li>
+<li><span class="math inline">\(b\)</span> is on the positive side of the plane. As <span class="math inline">\(y^T (b - z^*) = y^T y &gt; 0\)</span>.</li>
+<li>It holds that <span class="math inline">\(y^T z^* = 0\)</span>, which implies that either <span class="math inline">\(z^* = 0\)</span> or <span class="math inline">\(y\)</span> is normal to <span class="math inline">\(z^*\)</span>. To verify this, we move along the line that pass through the vector <span class="math inline">\(z^*\)</span> and note that for any <span class="math inline">\(k \ge 0\)</span>, we have <span class="math inline">\(kz^* \in P\)</span>, hence <span class="math inline">\(y^T (kz^* - z^*) \le 0\)</span>. Replace <span class="math inline">\(k\)</span> with <span class="math inline">\(0\)</span> and <span class="math inline">\(2\)</span> respectively, we have the desired result.</li>
+<li>It concludes that <span class="math inline">\(z \in P\)</span>, <span class="math inline">\(y^T z \le 0\)</span> and <span class="math inline">\(y^T b &gt; 0\)</span>.</li>
 </ol>
-</blockquote>
-<p>Suppose that <span class="math inline">\(\mathcal{C} = \{ S_1, ..., S_m \}\)</span>. We claim that</p>
+<p>An equivalent form states that</p>
+<ol type="1">
+<li><span class="math inline">\(\exists x \in R^n : Ax \le b\)</span></li>
+<li><span class="math inline">\(\exists y \in R^m : y^T A = 0\)</span>, <span class="math inline">\(y^T b &gt; 0\)</span>, <span class="math inline">\(y \le 0\)</span>.</li>
+</ol>
+<p>We can prove this by converting statement (2) into an equivalent one:</p>
+<ol start="3" type="1">
+<li><span class="math inline">\(\exists y \in R^m : y^T A = 0\)</span>, <span class="math inline">\(y^T b = 1\)</span>, <span class="math inline">\(y \le 0\)</span>.</li>
+</ol>
+<p>and hence</p>
+<ol start="4" type="1">
+<li><span class="math inline">\(\exists y \in R^m : (-y)^T [A, b] = [0, -1]\)</span>, <span class="math inline">\(-y \ge 0\)</span>.</li>
+</ol>
+<p>If this doesn't hold, by previous result, we have <span class="math inline">\(\exists (x, \lambda) \in R^{n + 1}\)</span>, s,t., <span class="math inline">\([A, b] (x, \lambda) = Ax + \lambda b \le 0\)</span> and <span class="math inline">\([0, 1](x, -\lambda) = -\lambda &gt; 0\)</span>, which implies that<span class="math inline">\(A \frac{x}{-\lambda} \le b\)</span>.</p>
+<p>But this can also be verified via their geometrical meanings. We are not going to give all details here, just an example in <span class="math inline">\(R^2\)</span>:</p>
+<figure>
+<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Farkas&#39;%20Lemma%202.jpg?raw=true" alt="Geometry Interpretation 2" /><figcaption aria-hidden="true">Geometry Interpretation 2</figcaption>
+</figure>
+<p>Another equivalent form of Farkas Lemma is written as</p>
+<ol type="1">
+<li><span class="math inline">\(\exists x \in R^n : Ax \le b\)</span>, <span class="math inline">\(x \ge 0\)</span>.</li>
+<li><span class="math inline">\(\exists y \in R^m : y^T A \le 0\)</span>, <span class="math inline">\(y^T b &gt; 0\)</span>, <span class="math inline">\(y \le 0\)</span>.</li>
+</ol>
+<p>Define <span class="math inline">\(P = \{ z \mid \exists x \in R^n : z \ge Ax, x \ge 0\} \subset R^m\)</span>.</p>
+<ol type="1">
+<li>Statement 1 says <span class="math inline">\(b \in Z\)</span>.</li>
+<li>Otherwise, as <span class="math inline">\(P\)</span> is convex and closed
 <ul>
-<li><p>The elements in <span class="math inline">\(S_i\)</span> are distinct. Otherwise, <span class="math display">\[
-      a^k b = a^\ell b \pmod p \Longrightarrow a^{k - \ell} b= 0 \pmod p, 
-  \]</span> a contradiction. If follows that <span class="math inline">\(|S_i| = h\)</span>.</p></li>
-<li><p>For <span class="math inline">\(i \neq j\)</span>, <span class="math inline">\(S_i \cap S_j = \emptyset\)</span>. Otherwise, let <span class="math inline">\(b \in S_i \cap S_j\)</span>. Then every element in <span class="math inline">\(S_i \cup S_j\)</span> can be expressed as <span class="math inline">\(a^k b\)</span> for some integer <span class="math inline">\(k\)</span>.</p></li>
-</ul>
-<p>It follows that <span class="math inline">\(\mathcal{C}\)</span> is a partition of <span class="math inline">\(\mathbb{F}_p^+\)</span>. As each set in <span class="math inline">\(\mathcal{C}\)</span> has the same size, we have <span class="math inline">\(h \mid (p - 1)\)</span> and <span class="math display">\[
-    a^{p - 1} = 1 \pmod p. 
-\]</span></p>
+<li><p><span class="math inline">\(z_1, z_2 \in P \rightarrow \exists x_1, x_2 \ge 0, z_1 \ge Ax_1, z_2 \ge Ax_2\)</span>, then <span class="math inline">\(\mu_1 z_1 + \mu_2 z_2 \ge A(\mu_1 x_1 + \mu_2 x_2), \forall \mu_1, \mu_2 \ge 0, \mu_1 + \mu_2 = 1\)</span>,</p></li>
+<li><p>Closeness follows from <span class="math inline">\(\ge\)</span> in the definition of <span class="math inline">\(P\)</span>. There is a unique point <span class="math inline">\(z^*\)</span> that minimize <span class="math inline">\(||z - b||\)</span> for <span class="math inline">\(z \in Z\)</span>. Let <span class="math inline">\(y = (b - z^*) \neq 0\)</span>. Then it holds <span class="math inline">\(y^T (b - z^*) = y^T y &gt; 0\)</span> and <span class="math inline">\(y^T(z - z^*) \le 0\)</span> for any <span class="math inline">\(z \in Z\)</span>.</p></li>
+<li><p>Similarly, <span class="math inline">\(z^* \in P \rightarrow \exists x \ge 0, z^* \ge Ax \rightarrow k \ge 0, k z^* \ge A (kx) \rightarrow kz \in P\)</span>. Then <span class="math inline">\(0 \in P\)</span> and <span class="math inline">\(2z^* \in P\)</span>, which implies <span class="math inline">\(- y^T z^* \le 0\)</span> and <span class="math inline">\(y^T z^* \le 0\)</span>. Hence <span class="math inline">\(y^T z^* = 0\)</span> and <span class="math inline">\(y^T b = y^T y + y^T z^* &gt; 0\)</span>.</p></li>
+<li><p>Further, the fact <span class="math inline">\(z^* + e_i \in Z\)</span> gives <span class="math inline">\(y^T e_i \le 0\)</span> for arbitrary <span class="math inline">\(i\)</span>. Therefore <span class="math inline">\(y \le 0\)</span>. The <span class="math inline">\(y^T b &lt; 0\)</span> and <span class="math inline">\(y^T A \le 0\)</span> follow from the same proof given above.</p></li>
+</ul></li>
+</ol>
 
       
     </div>
@@ -400,7 +269,7 @@ a^{\varphi(p)} = 1 \pmod p,
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/08/Euclidean-Algorithm/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/12/13/Complex-Integration/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -414,7 +283,7 @@ a^{\varphi(p)} = 1 \pmod p,
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2018/11/08/Euclidean-Algorithm/" class="post-title-link" itemprop="url">Euclidean Algorithm</a>
+            <a href="/2018/12/13/Complex-Integration/" class="post-title-link" itemprop="url">Complex Integral</a>
         </h2>
 
         <div class="post-meta">
@@ -424,14 +293,14 @@ a^{\varphi(p)} = 1 \pmod p,
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2018-11-08 20:08:51" itemprop="dateCreated datePublished" datetime="2018-11-08T20:08:51+11:00">2018-11-08</time>
+              <time title="Created: 2018-12-13 22:26:11" itemprop="dateCreated datePublished" datetime="2018-12-13T22:26:11+11:00">2018-12-13</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-18 15:54:31" itemprop="dateModified" datetime="2021-03-18T15:54:31+11:00">2021-03-18</time>
+                <time title="Modified: 2021-10-26 22:04:58" itemprop="dateModified" datetime="2021-10-26T22:04:58+11:00">2021-10-26</time>
               </span>
 
           
@@ -445,85 +314,291 @@ a^{\varphi(p)} = 1 \pmod p,
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>We discuss the Euclidean algorithm and use it to compute the multiplicative inverse.</p>
+          <p>We establish complex integral step by step in this article. We first review the classical Riemann integral and see how this motivates complex integral.</p>
+<h1 id="riemann-sums">Riemann Sums</h1>
+<p>Given an interval <span class="math inline">\([a, b]\)</span> and a function <span class="math inline">\(f : [a, b] \rightarrow \R\)</span>, the Riemann integration divides <span class="math inline">\([a, b]\)</span> into many small intervals, and computes the sum of the products of the length of each interval and value of <span class="math inline">\(f\)</span> at an arbitrary chosen point on the interval. Such a sum is well-defined if it converges when the chosen partition is "refined" enough.</p>
 <blockquote>
-<p><strong>Multiplicative Inverse.</strong> Given <span class="math inline">\(x, y \in \mathbb{N}^+\)</span>, <span class="math inline">\(z\)</span> is called the multiplicative inverse of <span class="math inline">\(x\)</span> (module <span class="math inline">\(y\)</span>) if <span class="math display">\[
-xz \equiv 1 \pmod y. 
-\]</span></p>
+<p><strong>DEFINITION.</strong> A finite sequence <span class="math inline">\(P = \{x_0, x_1, \ldots, x_n \}\)</span> is a partition of <span class="math inline">\([a, b]\)</span>, if <span class="math display">\[
+a = x_0 &lt; x_1 &lt; \ldots &lt; x_n = b.
+\]</span> The length of <span class="math inline">\(P\)</span>, denoted as <span class="math inline">\(\Vert P \Vert\)</span>, is given by <span class="math display">\[
+\Vert P \Vert \doteq \max_{i \in [n] } \Delta_i
+\]</span> where <span class="math inline">\(\Delta_i \doteq x_i - x_{i - 1}\)</span> for each <span class="math inline">\(i \in [n]\)</span>.</p>
 </blockquote>
-<h1 id="theorem-1">Theorem 1</h1>
 <blockquote>
-<p><span class="math inline">\(x\)</span> has a multiplicative inverse module <span class="math inline">\(y \iff \gcd(x, y) = 1\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong><br />
-Define the set <span class="math inline">\(S = \{ ax + by \mid a, b \in Z\}\)</span>. Let <span class="math inline">\(d = a^* x + b^* y\)</span> be the smallest positive integer in <span class="math inline">\(S\)</span>. Our proof relies on the following lemma.</p>
-<blockquote>
-<p><strong>Lemma</strong>: <span class="math inline">\(\gcd(x,y) = d\)</span>.</p>
-<p>First, as <span class="math inline">\(d\)</span> is a linear combination of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, <span class="math inline">\(\gcd(x, y) | d\)</span> and <span class="math inline">\(\gcd(x, y) \le d\)</span>.</p>
-</blockquote>
-<p>Second, we claim that <span class="math inline">\(d | x\)</span> and <span class="math inline">\(d | y\)</span>. By symmetry, we prove only the former. If not, suppose that <span class="math inline">\(d \nmid x\)</span>. Then <span class="math inline">\(\exists k \in \mathbb{Z}, \ell \in [1, d - 1]\)</span>, s.t.,<br />
+<p><strong>DEFINITION.</strong> A number <span class="math inline">\(J \in \R\)</span> is the definite integral of <span class="math inline">\(f\)</span> over <span class="math inline">\([a, b]\)</span>, if<br />
+<span class="math inline">\(\forall \epsilon &gt; 0\)</span>, <span class="math inline">\(\exists \delta &gt; 0\)</span> s.t., for every partition <span class="math inline">\(P = \{x_0, x_1, \ldots, x_n \}\)</span> of <span class="math inline">\([a, b]\)</span> with <span class="math inline">\(\Vert P \Vert &lt; \delta\)</span>, and <span class="math inline">\(\forall c_k \in [x_{k - 1}, x_k]\)</span>, it holds that<br />
 <span class="math display">\[
-    x = k d + \ell. 
+\left| \sum_{k = 1}^n f(c_k) \Delta_k - J \right| &lt; \epsilon
 \]</span></p>
-<p>Since <span class="math inline">\(\ell = x - k d\)</span> is a linear combination of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>, it holds that <span class="math inline">\(\ell \in S\)</span>, contradicting <span class="math inline">\(d\)</span> being the smallest positive element in <span class="math inline">\(S\)</span>.</p>
-<p>It concludes that <span class="math inline">\(d\)</span> equals to <span class="math inline">\(\gcd(x, y)\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>The proof of the above theorem immediately follows from the lemma.</p>
-<ol type="1">
-<li><p><span class="math inline">\(\gcd(x, y) = 1 \rightarrow x\)</span> has a multiplicative inverse.<br />
-In this case, <span class="math inline">\(d = a^* x + b^* y = 1\)</span>. <span class="math inline">\(a^*\)</span> is th multiplicative inverse of <span class="math inline">\(x\)</span> module <span class="math inline">\(y\)</span>.</p></li>
-<li><p><span class="math inline">\(x\)</span> has a multiplicative inverse <span class="math inline">\(\rightarrow \gcd(x, y) = 1\)</span>.<br />
-If <span class="math inline">\(x\)</span> has a multiplicative inverse, there exists some <span class="math inline">\(z\)</span> and <span class="math inline">\(l\)</span>, such that <span class="math inline">\(zx = ly + 1\)</span>.</p></li>
-</ol>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h1 id="theorem-2">Theorem 2</h1>
-<blockquote>
-<p>If <span class="math inline">\(x\)</span> has a multiplicative inverse module <span class="math inline">\(y\)</span>, it is unique.</p>
 </blockquote>
-<p><strong>Proof.</strong><br />
-Let <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> both be the multiplicative inverse of <span class="math inline">\(x\)</span> module <span class="math inline">\(y\)</span>, then <span class="math display">\[
-    a \equiv a (xb) \equiv (ax) b \equiv b \pmod y
+<p>There is a dedicated notation for the limit of Riemann sum <span class="math display">\[
+    \int_a^b f(x) dx = \lim_{\Vert P \Vert  \rightarrow 0} \sum_{k = 1}^n f(c_k) \Delta_{k}.
 \]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h1 id="basic-euclidean-algorithm">Basic Euclidean Algorithm</h1>
-<p>Euclidean algorithm computes <span class="math inline">\(\gcd(x, y)\)</span> as follows:</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="title">gcd</span><span class="params">(<span class="keyword">unsigned</span> x, <span class="keyword">unsigned</span> y)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(y == <span class="number">0</span>) <span class="keyword">return</span> x;</span><br><span class="line">    <span class="keyword">return</span> gcd(y, x % y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="correctness">Correctness</h2>
-<p>If <span class="math inline">\(y =0\)</span>, whether <span class="math inline">\(x = 0\)</span> or not, we have <span class="math inline">\(\gcd(x, y) = x\)</span>.</p>
-<p>If <span class="math inline">\(x &lt; y\)</span>, <span class="math inline">\(x \mod y = x\)</span>. The algorithm exchanges <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> at the first recursion. It suffices to consider only <span class="math inline">\(x \ge y &gt; 0\)</span>.</p>
-<p>If <span class="math inline">\(x \ge y &gt; 0\)</span>, then <span class="math inline">\(\gcd(x, y) = \gcd(y, x \mod y)\)</span>. Let <span class="math inline">\(d = \gcd(x, y)\)</span>. Clearly <span class="math inline">\(d | x\)</span> and <span class="math inline">\(d | y\)</span>. We claim that <span class="math display">\[
-    d | (x \mod y)
-\]</span><br />
-Suppose <span class="math inline">\(x = k d\)</span> and <span class="math inline">\(y = \ell d\)</span>, then <span class="math inline">\(x \mod y = d \cdot (k \mod \ell)\)</span>, which finishes proof.</p>
-<h2 id="time">Time</h2>
+<h1 id="complex-integral">Complex Integral</h1>
+<h2 id="real-to-complex-function">Real to complex function</h2>
+<p>How do we extend integral in real line to complex plane. The most simplest extension is of a real to complex function <span class="math inline">\(\gamma(t) = x(t) + i y(t)\)</span>, whose integral on a interval is obtained by integrating its real part and imaginary part respectively.</p>
 <blockquote>
-<p>Let <span class="math inline">\(n\)</span> be the the total number of bits to represent <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>. Then the algorithm stops after <span class="math inline">\(O(n)\)</span> recursions.</p>
+<p><strong>DEFINITION.</strong> Let <span class="math inline">\(\gamma(t) = x(t) + i y(t)\)</span> be a function defined on <span class="math inline">\([a, b]\)</span>. If both <span class="math inline">\(x(x)\)</span> and <span class="math inline">\(y(t)\)</span> are Riemann integrable, then the integral of <span class="math inline">\(\gamma\)</span> over <span class="math inline">\([a, b]\)</span> is defined as <span class="math display">\[
+\int_a^b \gamma(t) dt = \int_a^b x(t) dt + i\int_a^b y(t) dt,
+\]</span></p>
 </blockquote>
-<p><strong>Proof.</strong></p>
-<p>We can assume <span class="math inline">\(x \ge y\)</span>. Otherwise, they are swapped by a recursive call.</p>
-<p>The key observation is that, after every two recursive calls, the first argument <span class="math inline">\(x\)</span> shrinks at least by a factor of two.</p>
+<h2 id="complex-to-complex-function">Complex to complex function</h2>
+<p>Another natural idea is to consider a smooth path <span class="math inline">\(\mathbb{C}\)</span> with endpoints <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> on the complex plane and a complex function <span class="math inline">\(f\)</span> whose domain contains the path.</p>
+<p>Note we do not even require <span class="math inline">\(a \neq b\)</span>; but in case <span class="math inline">\(a = b\)</span>, we must specify an orientation for the closed path <span class="math inline">\(\mathbb{C}\)</span>.</p>
+<p>Next, we repeat the partition and product idea: let <span class="math inline">\(P = \{z_0, z_1, \ldots, z_n\}\)</span> be a partition of the curve such that <span class="math inline">\(z_0 = a\)</span> and <span class="math inline">\(z_n = b\)</span>. A Riemann sum associated with <span class="math inline">\(P\)</span> is just what it is in the real case: <span class="math inline">\(J\)</span> is the limit of the <span class="math inline">\(\sum_{k = 1}^n f(z_k) \Delta_{k}\)</span> (where <span class="math inline">\(\Delta \doteq |z_k - z_{k - 1}| = \sqrt{ \mathbb{Re}(z_k - z_{k - 1} )^2 + \mathbb{Im}(z_k - z_{k - 1} )^2}\)</span>) if the following condition is satisfied</p>
+<p>Given any number <span class="math inline">\(\epsilon &gt; 0\)</span>, there is a corresponding number <span class="math inline">\(\delta &gt; 0\)</span> such that for every partition <span class="math inline">\(P = \{z_0, z_1, \ldots, z_n\}\)</span> of <span class="math inline">\([a, b]\)</span> with <span class="math inline">\(\Vert P \Vert &lt; \delta\)</span> and any choice of <span class="math inline">\(d_k\)</span> in <span class="math inline">\([z_{k - 1}, z_k]\)</span>, we have<br />
+<span class="math display">\[
+    | \sum_{k = 1}^n f(d_k) \Delta_{k} - J | &lt; \epsilon
+\]</span></p>
+<p>When the limit exists we write it as the definite integral<br />
+<span class="math display">\[
+    J = \lim_{\Vert P \Vert  \rightarrow 0} \sum_{k = 1}^n f(d_k) \Delta_{k}
+\]</span> There is a specified notation for this limit of Riemann sums <span class="math display">\[
+    \int_C f(x) dx = \lim_{\Vert P \Vert  \rightarrow 0} \sum_{k = 1}^n f(d_k) \Delta_{k}
+\]</span></p>
+<h2 id="rules-satisfied-by-the-integrals">Rules satisfied by the integrals</h2>
 <ol type="1">
-<li>If <span class="math inline">\(y \le x / 2\)</span>, the observation holds after the first call.<br />
-</li>
-<li>If <span class="math inline">\(y &gt; x / 2\)</span>, then after two recursive call, the first argument becomes <span class="math inline">\(x \mod y\)</span>, which is smaller than <span class="math inline">\(x / 2\)</span>.</li>
+<li>Constant Multiple: <span class="math inline">\(\int_C k f(x) dx = k \int_C f(x) dx\)</span>.</li>
+<li>Sum: <span class="math inline">\(\int_C f(x) + g(x) dx = \int_C f(x) dx + \int_C g(x) dx\)</span></li>
 </ol>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="extended-euclidean-algorithm">Extended Euclidean Algorithm</h1>
-<p>We extend the basic version to return a pair <span class="math inline">\(a^*, b^* \in \mathbb{N}\)</span> s.t. <span class="math inline">\(\gcd(x, y) = d = a^* x + b^* y\)</span>.</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">std::pair&lt;unsigned, unsigned&gt; gcd(unsigned x, unsigned y) &#123;</span><br><span class="line">    <span class="keyword">if</span>(y == <span class="number">0</span>) <span class="keyword">return</span> &#123;<span class="number">1</span>, <span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">auto</span> (a<span class="number">&#x27;</span>, b<span class="number">&#x27;</span>) = gcd(y, x mod y);</span><br><span class="line">    <span class="keyword">return</span> (b<span class="number">&#x27;</span>, a<span class="number">&#x27;</span> - b<span class="number">&#x27;</span> * (x / y));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="correctness-1">Correctness</h2>
-<p>Suppose <span class="math inline">\(s = a&#39; y + b&#39; \cdot (x \mod y)\)</span>. Then <span class="math display">\[
-    s = a&#39; y + b&#39;(x - \lfloor x / y \rfloor \cdot y) =b&#39; x + (a&#39; - b&#39; \cdot \lfloor x / y \rfloor) \cdot y
-\]</span> This is why the algorithm work.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h2 id="example">Example</h2>
+<p><strong>Proof.</strong> For any partition <span class="math inline">\(P\)</span> of <span class="math inline">\(\mathbb{C}\)</span> and for every choice of the points <span class="math inline">\(z_k\)</span>,<br />
+<span class="math display">\[
+    \sum_{j = 1}^n kf(z_j) \Delta_{z_j} = k \sum_{j = 1}^n f(z_j) \Delta_{z_j} \\
+    \sum_{j = 1}^n (f(z_j) + g(z_j) )\Delta_{z_j} = \sum_{j = 1}^n f(z_j) \Delta_{z_j} + \sum_{j = 1}^n g(z_j) \Delta_{z_j}
+\]</span> Taking limit of both side, we get the desired answer. Remark: given two sequence <span class="math inline">\(\{ a_1, a_2, \ldots, \}\)</span> and <span class="math inline">\(\{b_1, b_2, \ldots, \}\)</span>, if <span class="math inline">\(a_i = b_i\)</span> for arbitrary <span class="math inline">\(i \ge 0\)</span> and <span class="math inline">\(\lim_i b_i = S\)</span>, then <span class="math inline">\(\lim_i a_i\)</span> exits and <span class="math inline">\(\lim_i a_i = S\)</span>.</p>
+<h2 id="evaluation">Evaluation</h2>
+<p>To evaluate such integral, we can choose a description <span class="math inline">\(\gamma(t) = x(t) + i y(t) : [a, b] \rightarrow \mathbb{C}\)</span> of curve <span class="math inline">\(\mathbb{C}\)</span>. We partition <span class="math inline">\(\mathbb{C}\)</span> by partitioning the interval <span class="math inline">\([a, b]\)</span> in usual way <span class="math inline">\(P_t = \{ a = t_0 &lt; t_1&lt; \ldots &lt; t_n = b \}\)</span>. Then <span class="math inline">\(\gamma(P_t) \doteq \{ \gamma(t_0), \gamma(t_1), \ldots, \gamma(t_n) \}\)</span> is a partition of <span class="math inline">\(\mathbb{C}\)</span>.</p>
+<p>If <span class="math inline">\(\gamma\)</span> is continuous, it is uniformly continuous on <span class="math inline">\([a, b]\)</span>. Therefore, as <span class="math inline">\(\Vert P_t\Vert \rightarrow 0\)</span>, <span class="math inline">\(\Vert \gamma(P_t)\Vert \rightarrow 0\)</span>. If <span class="math inline">\(\int_C f(z) dz\)</span> exists, then</p>
+<p><span class="math display">\[
+    \int_C f(z) dz = \lim_{\Vert P_t\Vert  \rightarrow 0} \sum_{j = 1}^n f(\gamma(e_j) ) \big(\gamma(t_j) - \gamma(t_{j - 1} ) \big)
+\]</span></p>
+<p>for arbitrary choice <span class="math inline">\(e_j \in [t_{j - 1}, t_j]\)</span>.</p>
+<p>When the derivative of <span class="math inline">\(\gamma\)</span> exists and is continuous, it is uniformly continuous on the closed bounded interval <span class="math inline">\([a, b]\)</span>. We now can rewrite the Riemann sum as</p>
+<p><span class="math display">\[
+    \sum_{j = 1}^n f(\gamma(e_j) ) \frac{\gamma(t_j) - \gamma(t_{j - 1} ) }{t_j - t_{j - 1} }(t_j - t_{j - 1} )  
+    = \sum_{j = 1}^n f(\gamma(e_j) ) \frac{x(t_j) - x(t_{j - 1} )+ i (y(t_j) - y_(t_{j - 1} ) ) }{t_j - t_{j - 1} }(t_j - t_{j - 1} )
+\]</span></p>
+<p>By intermediate value theorem, as <span class="math inline">\(x&#39;(t)\)</span> and <span class="math inline">\(y&#39;(t)\)</span> exist, there are some <span class="math inline">\(e_j&#39; \in [t_{j - 1}, t_j]\)</span> and <span class="math inline">\(e_j&#39;&#39; \in [t_{j - 1}, t_j]\)</span>, such that</p>
+<p><span class="math display">\[
+    \frac{x(t_j) - x(t_{j - 1} ) }{t_j - t_{j - 1} } = x&#39;(e_j&#39;) \quad \wedge \frac{y(t_j) - y(t_{j - 1} ) }{t_j - t_{j - 1} } = x&#39;(e_j&#39;&#39;)
+\]</span></p>
+<p>On the other hand, as <span class="math inline">\(x&#39;(t)\)</span> and <span class="math inline">\(y&#39;(t)\)</span> are uniformly continuous, for arbitrary <span class="math inline">\(\epsilon &gt; 0\)</span>, there is a <span class="math inline">\(\delta\)</span> such that if <span class="math inline">\(\Vert P_t\Vert &lt; \delta\)</span>, <span class="math inline">\(|x&#39;(e_j&#39;) - x&#39;(e_j)| &lt; \epsilon\)</span> and <span class="math inline">\(|y&#39;(e_j&#39;&#39;) - y&#39;(e_j)| &lt; \epsilon\)</span>. It follows that</p>
+<p><span class="math display">\[
+    \frac{x(t_j) - x(t_{j - 1} )+ i (y(t_j) - y_(t_{j - 1} ) ) }{t_j - t_{j - 1} } = x&#39;(e_j) + i y&#39;(e_j) \pm \epsilon(1 + i)\\
+    \sum_{j = 1}^n f(\gamma(e_j) ) \frac{\gamma(t_j) - \gamma(t_{j - 1} ) }{t_j - t_{j - 1} }(t_j - t_{j - 1} )  
+    = \sum_{j = 1}^n f(\gamma(e_j) ) \gamma&#39;(e_j) (t_j - t_{j - 1} ) \pm \epsilon (1 + i)|\mathbb{C}|
+\]</span></p>
+<p>where <span class="math inline">\(|\mathbb{C}|\)</span> is the length of the path <span class="math inline">\(\mathbb{C}\)</span>.</p>
+<p>Taking the limit of <span class="math inline">\(\Vert P_t\Vert \rightarrow 0\)</span>, we get<br />
+<span class="math display">\[
+\int_C f(z) dz = \int_a^b f(\gamma(t) )\gamma&#39;(t) dt
+\]</span></p>
+<p><strong>Remark 1:</strong> <em>Can we relax the condition that <span class="math inline">\(\gamma&#39;(t)\)</span> is continuous and that <span class="math inline">\([a, b]\)</span> is a closed interval?</em></p>
+<p><strong>Remark 2:</strong> <em>We have also showed that the integration is independent of the choice of <span class="math inline">\(\gamma\)</span>, i.e., any representation of <span class="math inline">\(\mathbb{C}\)</span> that is continuously differentiable gives the same integration value</em>.</p>
+<h2 id="anti-derivative">Anti-derivative</h2>
+<p>Now suppose that <span class="math inline">\(F(z) = u(x, y) + i v(x, y)\)</span> and <span class="math inline">\(F&#39;(z) = f(z)\)</span>. We claim that <span class="math inline">\(\int_C f(z) dz = F(b) - F(a)\)</span>.</p>
+<p>First, <span class="math inline">\(F&#39;(\gamma(t) ) = \frac{\partial u}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial u}{\partial y} \frac{\partial y}{\partial t} + i ( \frac{\partial v}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial v}{\partial y} \frac{\partial y}{\partial t} )\)</span>. Therefore,<br />
+<span class="math display">\[
+    \int_C f(z) dz = \int_a^b (\frac{\partial u}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial u}{\partial y} \frac{\partial y}{\partial t} ) dt + i \int_a^b (  \frac{\partial v}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial v}{\partial y} \frac{\partial y}{\partial t}  ) dt
+\]</span></p>
+<p>But<br />
+<span class="math display">\[
+    \begin{aligned}
+        &amp;u(x(b), y(b) ) - u(x(a), y(a) ) \\
+        &amp;= \sum_{j = 1}^n [u(x(t_j), y(t_j) ) - u(x(t_{j - 1} ), y(t_{j - 1} ) ) ] \\
+        &amp;= \sum_{j = 1}^n [u(x(t_j), y(t_j) ) - u(x(t_j), y(t_{j - 1} ) ) + u(x(t_j), y(t_{j - 1} ) ) - u(x(t_{j - 1} ), y(t_{j - 1} ) ) ] \\
+        &amp;= \sum_{j = 1}^n \frac{u(x(t_j), y(t_j) ) - u(x(t_j), y(t_{j - 1} ) ) }{y(t_j) - y(t_{j - 1} ) } \frac{y(t_j) - y(t_{j - 1} ) }{ t_j - t_{j - 1} }(t_j - t_{j - 1} )\\
+        &amp;\quad +\sum_{j = 1}^n \frac{u(x(t_j), y(t_{j - 1} ) ) - u(x(t_{j - 1} ), y(t_{j - 1} ) ) }{x(t_j) - x(t_{j - 1} ) } \frac{x(t_j) - x(t_{j - 1} ) }{t_j - t_{j - 1} } (t_j - t_{j - 1} ) \\
+        &amp;= \sum_{j = 1}^n [u_y&#39; (x(t_j), y^*_j) y&#39;(e_j&#39;) + u_x&#39; (x^*_j, y(t_{j - 1} ) ) x&#39;(e_j&#39;&#39;) ] (t_j - t_{j - 1} )\\
+    \end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(y^*_j \in [ y( t_{j - 1} ), y( t_j ) ]\)</span>, <span class="math inline">\(x^*_j \in [ x( t_{j - 1} ), x( t_j ) ]\)</span>, <span class="math inline">\(e_j&#39;, e_j&#39;&#39; \in [ t_{j - 1}, t_j ]\)</span>. If <span class="math inline">\(u&#39;_x, u&#39;_y, x&#39;(t), y&#39;(t)\)</span> are continuous, then as <span class="math inline">\(\Vert P_t\Vert \rightarrow 0\)</span>, <span class="math display">\[
+    \begin{aligned}
+        &amp;\sum_{j = 1}^n [u_y&#39; ( x( t_j ), y( t_j ) ) y&#39;( t_j ) + u_x&#39; ( x( t_j ), y( t_j ) ) x&#39;( t_j ) ] ( t_j - t_{j - 1} ) \\
+        &amp;= \sum_{j = 1}^n \frac{\partial u}{\partial t} ( t_j - t_{j - 1} ) \rightarrow u(x(b), y(b) ) - u(x(a), y(a) ).
+    \end{aligned}
+\]</span> An immediate consequence is that</p>
+<p><span class="math display">\[
+    F(\gamma(b) ) - F(\gamma(a) ) = \int_C F&#39;(\gamma(t) ) dt
+\]</span></p>
+<p>On the other hand, since <span class="math inline">\(F(z)\)</span> is differential, <span class="math inline">\(\lim_{h \rightarrow 0} \frac{F(z + h) - F(z) }{h} = \frac{\partial u}{\partial x} + i \frac{\partial v}{\partial x} = \lim_{ih \rightarrow 0} \frac{F(z + ih) - F(z) }{ih} = -i \frac{\partial u}{\partial y} + \frac{\partial v}{\partial y}\)</span>. It holds that <span class="math inline">\(\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y}\)</span> and <span class="math inline">\(\frac{\partial v}{\partial x} = -\frac{\partial u}{\partial y}\)</span>. Therefore,<br />
+<span class="math display">\[
+    F&#39;(\gamma(t) ) = \frac{\partial u}{\partial x} \frac{\partial x}{\partial t} - \frac{\partial v}{\partial x} \frac{\partial y}{\partial t} + i (  \frac{\partial v}{\partial x} \frac{\partial x}{\partial t} + \frac{\partial u}{\partial x} \frac{\partial y}{\partial t}  ) = (\frac{\partial u}{\partial x} + i \frac{\partial v}{\partial x} ) ( \frac{\partial x}{\partial t} + i \frac{\partial y}{\partial t} ) = F&#39;(\gamma(t) ) \gamma&#39;(t) = f(\gamma(t) ) \gamma&#39;(t)
+\]</span></p>
+<p>and<br />
+<span class="math display">\[
+    F(\gamma(b) ) - F(\gamma(a) ) = \int_C f(\gamma(t) ) \gamma&#39;(t) dt
+\]</span></p>
+<p>Remark: That <span class="math inline">\(u_x&#39;, u_y&#39;\)</span> are continuous is a strong condition. What we need in the proof is just that *</p>
+<p><span class="math display">\[
+    \begin{aligned}
+        u(x(t_j), y(t_j) )  
+            &amp;= u(x(t_{j - 1} ), y(t_{j - 1} ) ) \\
+            &amp;+ u_x&#39;(x(t_{j - 1} ), y(t_{j - 1} ) ) (x(t_j) -  x(t_{j - 1} ) ) \\
+            &amp;+ u_y&#39;(x(t_{j - 1} ), y(t_{j - 1} ) ) (y(t_j) -  y(t_{j - 1} ) ) \\
+            &amp;+ o(x(t_j) -  x(t_{j - 1} ), y(t_j) -  y(t_{j - 1} ) )
+    \end{aligned}
+\]</span></p>
+<p>or</p>
 <p><span class="math display">\[
 \begin{aligned}
-&amp; \gcd(9, 6) = (3, 1, -1)  \quad [-1 = 0 - 1 * 9 / 6] \\
-&amp; \rightarrow \gcd(6, 3) = (3, 0, 1) \quad [1 = 1 - 0 * 6 / 3]\\
-&amp; \quad \rightarrow \gcd(3, 0) = (3, 1, 0) \\
+    u(x(t_{j - 1} ) + \delta_x, y(t_{j - 1} ) + \delta_y)  
+        &amp;= u(x(t_{j - 1} ), y(t_{j - 1} ) ) \\
+        &amp;+ u_x&#39;(x(t_{j - 1} ), y(t_{j - 1} ) ) \delta_x \\
+        &amp;+ u_y&#39;(x(t_{j - 1} ), y(t_{j - 1} ) ) \delta_y \\
+        &amp;+ o(\delta_x, \delta_y)
 \end{aligned}
 \]</span></p>
+<p><em>i.e., <span class="math inline">\(u\)</span> is differentiable at every point in the domain.</em></p>
+<p>Question: Is is possible that <span class="math inline">\(u\)</span> is differentiable but its partial derivatives are not continuous? The answer is NO. First we consider an one dimension counter example:<br />
+<span class="math display">\[
+    f(x) =  
+    \begin{cases}
+    x^2 \sin \frac{1}{x} \quad \forall x \neq 0, \\
+    0, \quad if \quad x = 0
+    \end{cases}
+\]</span> To show <span class="math inline">\(f(x)\)</span> is differential at <span class="math inline">\(0\)</span>, we use the definition of derivative:<br />
+<span class="math display">\[
+    f&#39;(0) = \lim_{h \rightarrow } \frac{f(h) - f(0) }{h - 0} = \lim_{h \rightarrow 0} h \sin \frac{1}{h} = 0
+\]</span> On the other hand, <span class="math inline">\(f(x)\)</span> is always differentiable from <span class="math inline">\(0\)</span>:<br />
+<span class="math display">\[
+    f&#39;(x) = 2x \sin \frac{1}{x} + x^2 ( -1 / x^2) cos \frac{1}{x} = 2x \sin \frac{1}{x} -cos \frac{1}{x}
+\]</span> Hence, <span class="math inline">\(f(x)\)</span> is differentiable everywhere, but <span class="math inline">\(f&#39;(x)\)</span> is not continuous at <span class="math inline">\(0\)</span>.</p>
+<p>The above example can be easily extended to two dimension case:<br />
+<span class="math display">\[
+f(x, y) =  
+    \begin{cases}
+        (x^2 + y^2) \sin \frac{1}{ \sqrt{x^2 + y^2} } \quad \forall (x, y) \neq (0, 0) \\
+        0 \qquad \qquad \qquad \qquad \quad if \quad  (x, y) = (0, 0)  
+    \end{cases}
+\]</span> By definition, <span class="math inline">\(f(x, y)\)</span> is differential at <span class="math inline">\((0, 0)\)</span>,<br />
+<span class="math display">\[
+    \lim_{\Vert (x, y)\Vert  \rightarrow 0} \frac{\Vert f(x, y) - f(0) - (0,0) \cdot (x, y)\Vert }{\Vert (x, y)\Vert } 
+    \le \lim_{\Vert (x, y)\Vert  \rightarrow 0} \frac{\Vert x^2 + y^2\Vert }{\Vert (x, y)\Vert } 
+    = \lim_{\Vert (x, y)\Vert  \rightarrow 0} \Vert (x, y)\Vert = 0
+\]</span> However, it partial derivative from <span class="math inline">\((0, 0)\)</span> <span class="math display">\[
+    \frac{\partial f}{\partial x} = 2x \sin \frac{1}{ \sqrt{x^2 + y^2} } + (x^2 + y^2) (-\frac{ 2x }{ \sqrt{ x^2 + y^2 }^{3} } ) \cos \frac{1}{ \sqrt{x + y} } = 2x \sin \frac{1}{ \sqrt{x^2 + y^2} } - \frac{ 2x }{ \sqrt{ x^2 + y^2 } } \cos \frac{1}{ \sqrt{x^2 + y^2 } }
+\]</span></p>
+<p>and<br />
+<span class="math display">\[
+    \frac{\partial f}{\partial x}(0, 0) = \lim_{h \rightarrow} \frac{h^2 \sin \frac{1}{|h|} }{h} = 0
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\partial f / \partial x\)</span> is not continuous.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/12/01/Separation-Plane-Theorem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/12/01/Separation-Plane-Theorem/" class="post-title-link" itemprop="url">Separation Plane Theorem</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-12-01 20:17:53" itemprop="dateCreated datePublished" datetime="2018-12-01T20:17:53+11:00">2018-12-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-13 16:02:41" itemprop="dateModified" datetime="2021-07-13T16:02:41+10:00">2021-07-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><strong>Separation Theorem</strong>. Given a convex and closed set <span class="math inline">\(S \subset \mathbb{R}^d\)</span> and a point <span class="math inline">\(p \notin S\)</span>, there is a separation plane between <span class="math inline">\(S\)</span> and <span class="math inline">\(p\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Define <span class="math inline">\(\delta = \min \{ \Vert s - p \Vert : s \in S \}\)</span>, where <span class="math inline">\(\Vert \cdot \Vert\)</span> is the <span class="math inline">\(\ell_2\)</span> norm.</p>
+<blockquote>
+<p><strong>Lemma.</strong> There is a point <span class="math inline">\(s^\star \in S\)</span> that achieves <span class="math inline">\(\Vert s^\star - p \Vert = \delta\)</span>.</p>
+</blockquote>
+<p><em>Proof</em>:</p>
+<ol type="1">
+<li>Pick arbitrary point <span class="math inline">\(s \in S\)</span> and let <span class="math inline">\(r = \Vert s - p \Vert\)</span>.</li>
+<li>Define <span class="math inline">\(S&#39; = S \cap \{\Vert x - p \Vert \le r \}\)</span>. Observe that <span class="math inline">\(S&#39;\)</span> is nonempty, bounded, and closed.</li>
+<li>Define a function <span class="math inline">\(f: S&#39; \rightarrow R\)</span> as <span class="math inline">\(f(s) = \Vert s - p \Vert\)</span>, which is a continuous.</li>
+<li>Since <span class="math inline">\(S&#39;\)</span> is bounded and closed, there exists a point <span class="math inline">\(s^\star\)</span> that minimizes <span class="math inline">\(f(s)\)</span>.</li>
+<li>We claim that <span class="math inline">\(f(s^\star) = \delta\)</span>. Otherwise, there is a point <span class="math inline">\(s&#39;&#39; \in S\)</span>, s.t., <span class="math inline">\(f(s^\star) &gt; \Vert s&#39;&#39; - p\Vert &gt; \delta\)</span>. But this implies <span class="math inline">\(s&#39;&#39; \in S&#39;\)</span>, a contradicting <span class="math inline">\(s^\star = \min_{s \in S&#39;} f(s)\)</span>.</li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Lemma.</strong> <span class="math inline">\(s^\star\)</span> is unique.</p>
+</blockquote>
+<p><em>Proof:</em> The uniqueness results from the convexity of <span class="math inline">\(S\)</span>. If not, let <span class="math inline">\(s&#39;&#39;\)</span> be another optimal point. Now <span class="math inline">\(\Vert q - s&#39;\Vert = \delta\)</span> and <span class="math inline">\(\Vert q - s&#39;&#39;\Vert = \delta\)</span>. The middle point between <span class="math inline">\(s&#39;\)</span> and <span class="math inline">\(s&#39;&#39;\)</span> is clearly closer to <span class="math inline">\(p\)</span> than both <span class="math inline">\(s&#39;\)</span> and <span class="math inline">\(s&#39;&#39;\)</span>, as<br />
+<span class="math display">\[
+    \Vert p - (s&#39; + s&#39;&#39;) / 2\Vert  = \Vert  (p - s&#39;) / 2 + (p - s&#39;&#39;) / 2\Vert  \le 1/2 \Vert p - s&#39;\Vert  + 1/2 \Vert p - s&#39;&#39;\Vert  = \delta
+\]</span> The inequality is tight if <span class="math inline">\(s&#39; \neq s&#39;&#39;\)</span>. Therefore, we use <span class="math inline">\(s^\star\)</span> to indicate the unique point.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Lemma.</strong> <span class="math inline">\((p - s^\star)^T(x - s^\star) = 0\)</span> is a separation plane between <span class="math inline">\(S\)</span> and <span class="math inline">\(p\)</span>.</p>
+</blockquote>
+<p><em>Proof</em>.</p>
+<p>First, observe that <span class="math inline">\((p - s^\star)^T(p - s^\star) = \delta^2 &gt; 0\)</span> since <span class="math inline">\(p \notin S\)</span> and <span class="math inline">\(S\)</span> is closed.</p>
+<p>Further, for each <span class="math inline">\(s \in S​\)</span>, let * <span class="math inline">\(a = s^\star - p\)</span>, and * <span class="math inline">\(b = s - s^\star\)</span>.</p>
+<p>We claim that <span class="math inline">\(\left&lt; b, a \right&gt; \ge 0\)</span>.</p>
+<p>For all <span class="math inline">\(\lambda \in (0, 1)​\)</span>, by convexity, <span class="math inline">\(\lambda \cdot (s - s^\star) + s^\star \in S​\)</span>. By the definition of <span class="math inline">\(s^\star​\)</span>, <span class="math display">\[
+    \Vert \lambda(s - s^\star) + s^\star - p\Vert ^2 \ge \Vert p - s^\star\Vert ^2 = \Vert   a \Vert ^2. 
+\]</span> On the other hand, <span class="math display">\[
+    \Vert \lambda(s - s^\star) + s^\star - p\Vert ^2 = \lambda^2 \Vert   b \Vert ^2 + 2 \lambda \left&lt;   b,   a \right&gt; + \Vert   a \Vert ^2
+\]</span> Therefore, <span class="math inline">\(\lambda^2 \Vert b \Vert ^2 + 2 \lambda \left&lt; b, a \right&gt; \ge 0\)</span>. As <span class="math inline">\(\lambda\rightarrow 0\)</span>, we obtained the desired result.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Corollary</strong>. Given a convex and closed set <span class="math inline">\(S \subset \mathbb{R}^d\)</span> and a point <span class="math inline">\(p \in \partial S\)</span> (the boundary of <span class="math inline">\(S\)</span>), there is supporting hyperplane passing through <span class="math inline">\(p\)</span> and containing <span class="math inline">\(S\)</span> in one of its half-spaces.</p>
+</blockquote>
+<p><strong>Proof.</strong> Since <span class="math inline">\(p \in \partial S\)</span>, there is a countable, bounded sequence of points <span class="math inline">\(p_k\)</span> such that <span class="math inline">\(p_k \notin S\)</span> and <span class="math inline">\(p_k \rightarrow p\)</span>.</p>
+<p>Let <span class="math inline">\(s_k\)</span> be the projection of <span class="math inline">\(p_k\)</span> to <span class="math inline">\(S\)</span>. Clearly <span class="math inline">\(\Vert s_k - p_k \Vert \le \Vert p - p_k \Vert\)</span>. By triangle inequality, <span class="math display">\[
+    \Vert s_k - p \Vert \le \Vert s_k - p_k \Vert + \Vert p_k - p \Vert \le 2 \Vert p - p_k \Vert \rightarrow 0. 
+\]</span> It follows that <span class="math inline">\(s_k \rightarrow p\)</span>.</p>
+<p>For each <span class="math inline">\(p_k\)</span>, we can find a supporting hyperplane <span class="math inline">\(f_k (x) = \left&lt; a_k, x - p_k \right&gt;\)</span>, such that 1. <span class="math inline">\(\Vert a_k \Vert \neq 0\)</span> and, 2. <span class="math inline">\(\left&lt; a_k, s - s_k \right&gt; \ge 0\)</span> for all <span class="math inline">\(s \in S\)</span>, where <span class="math inline">\(s_k\)</span> is the projection of <span class="math inline">\(p_k\)</span> to <span class="math inline">\(S\)</span>.</p>
+<p>Replacing <span class="math inline">\(a_k\)</span> by <span class="math inline">\(a_k / \Vert a_k \Vert\)</span>, we can assume without lose of generality that <span class="math inline">\(\Vert a_k \Vert = 1\)</span>.</p>
+<p>The sequence <span class="math inline">\(\{ a_k \}\)</span> is therefore bounded. There is a converging subsequence <span class="math inline">\(\{ a_\ell \}\)</span> of <span class="math inline">\(\{ a_k \}\)</span> such that <span class="math inline">\(a_\ell \rightarrow a\)</span>.<br />
+Finally, <span class="math display">\[
+    \lim \left&lt; a_\ell, s - s_\ell \right&gt; = \left&lt; a, s - p\right&gt; \ge 0.
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
 
       
     </div>
@@ -542,7 +617,7 @@ Suppose <span class="math inline">\(x = k d\)</span> and <span class="math inlin
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/43/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><span class="page-number current">44</span><a class="page-number" href="/page/45/">45</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/45/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/43/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/43/">43</a><span class="page-number current">44</span><a class="page-number" href="/page/45/">45</a><span class="space">&hellip;</span><a class="page-number" href="/page/57/">57</a><a class="extend next" rel="next" href="/page/45/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -608,7 +683,7 @@ Suppose <span class="math inline">\(x = k d\)</span> and <span class="math inlin
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">167</span>
+          <span class="site-state-item-count">170</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -640,7 +715,7 @@ Suppose <span class="math inline">\(x = k d\)</span> and <span class="math inlin
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

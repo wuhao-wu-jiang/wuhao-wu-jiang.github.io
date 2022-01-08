@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Problem  Definition (Range Min Query). Let \(a_1, \ldots, a_n \in \R\). Given \(\ell, r \in [n]\), \(\ell \le r\), return \(\min \{ a_\ell, \ldots, a_r \}\).  Basic Solutions A data structure for">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Range Min Query">
+<meta property="og:url" content="http://example.com/2021/12/16/Range-Min-Query/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Problem  Definition (Range Min Query). Let \(a_1, \ldots, a_n \in \R\). Given \(\ell, r \in [n]\), \(\ell \le r\), return \(\min \{ a_\ell, \ldots, a_r \}\).  Basic Solutions A data structure for">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/01.png?raw=true">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/02.png?raw=true">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/03.png?raw=true">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/04.png?raw=true">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/05.png?raw=true">
+<meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/06.png?raw=true">
+<meta property="article:published_time" content="2021-12-16T12:36:24.000Z">
+<meta property="article:modified_time" content="2022-01-08T01:00:46.058Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/01.png?raw=true">
+
+<link rel="canonical" href="http://example.com/2021/12/16/Range-Min-Query/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Range Min Query | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/16/Range-Min-Query/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Range Min Query
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-16 23:36:24" itemprop="dateCreated datePublished" datetime="2021-12-16T23:36:24+11:00">2021-12-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-01-08 12:00:46" itemprop="dateModified" datetime="2022-01-08T12:00:46+11:00">2022-01-08</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="problem">Problem</h1>
+<blockquote>
+<p><strong>Definition (Range Min Query).</strong> Let <span class="math inline">\(a_1, \ldots, a_n \in \R\)</span>. Given <span class="math inline">\(\ell, r \in [n]\)</span>, <span class="math inline">\(\ell \le r\)</span>, return <span class="math inline">\(\min \{ a_\ell, \ldots, a_r \}\)</span>.</p>
+</blockquote>
+<h1 id="basic-solutions">Basic Solutions</h1>
+<p>A data structure for the <strong>Range Min Query (RMQ)</strong> has complexity <span class="math inline">\(\left&lt; p(n), q(n) \right&gt;\)</span> if it has pre-processing and query-answering time <span class="math inline">\(p(n)\)</span> and <span class="math inline">\(q(n)\)</span> on input instance of size <span class="math inline">\(n\)</span>, respectively.</p>
+<h2 id="mathcala_1-precompute-none"><span class="math inline">\(\mathcal{A}_1\)</span> Precompute-None</h2>
+<blockquote>
+<p>Scan <span class="math inline">\(a_\ell, \ldots, a_r\)</span> to find the min. * This is an <span class="math inline">\(\left&lt; 0, O(n) \right&gt;\)</span> solution.</p>
+</blockquote>
+<h2 id="mathcala_2-complete-binary-tree"><span class="math inline">\(\mathcal{A}_2\)</span> Complete Binary Tree</h2>
+<blockquote>
+<p>Construct a complete binary tree with <span class="math inline">\(a_1, \ldots, a_n\)</span> being the leaf nodes. Each internal node of the tree is augmented with the minimum value of its subtree.<br />
+* This is an <span class="math inline">\(\left&lt; O(n), O(\log n) \right&gt;\)</span> solution.</p>
+</blockquote>
+<h2 id="mathcala_3-precompute-all"><span class="math inline">\(\mathcal{A}_3\)</span> Precompute-All</h2>
+<blockquote>
+<p>Create a <span class="math inline">\(n \times n\)</span> table <span class="math inline">\(M\)</span>. For each <span class="math inline">\(\ell, r \in [n]\)</span>, <span class="math inline">\(\ell \le r\)</span>, the <span class="math inline">\((\ell, r)\)</span>-th entry records <span class="math inline">\(\min \{ a_\ell, \ldots, a_r \}\)</span>.<br />
+* This is an <span class="math inline">\(\left&lt; O(n^2), O(1) \right&gt;\)</span> solution.</p>
+</blockquote>
+<ul>
+<li><p><span class="math inline">\(p(n) = O(n^2)\)</span>.</p>
+<ul>
+<li>Dynamic Programming.</li>
+<li><span class="math inline">\(\forall \ell, r \in [n], \ell \le r\)</span>, <span class="math display">\[
+    M[\ell, r] = 
+        \begin{cases}            
+            a_\ell  &amp; \ell = r, \\
+            \min \{ M[\ell, r - 1], M[\ell + 1, r] \}, &amp; \ell &lt; r.
+        \end{cases}
+\]</span></li>
+</ul></li>
+<li><p><span class="math inline">\(q(n) = O(1)\)</span>.</p></li>
+</ul>
+<h2 id="mathcala_4-sparse-table"><span class="math inline">\(\mathcal{A}_4\)</span> Sparse Table</h2>
+<blockquote>
+<p>Create a <span class="math inline">\(n \times \lfloor \log n \rfloor\)</span> table <span class="math inline">\(M\)</span>. For each <span class="math inline">\(\ell \in [n], k \in \big[ \lfloor \log n \rfloor \big]\)</span>, <span class="math inline">\(r \doteq \ell + \big( 2^k - 1 \big) \le n\)</span>, the <span class="math inline">\((\ell, k)\)</span>-th entry records <span class="math inline">\(\min \{ a_\ell, \ldots, a_{\ell + 2^k - 1} \}\)</span>.<br />
+* This is an <span class="math inline">\(\left&lt; O(n \log n), O(1) \right&gt;\)</span> solution.</p>
+</blockquote>
+<ul>
+<li><p><span class="math inline">\(p(n) = O(n \log n)\)</span>.</p>
+<ul>
+<li>Dynamic Programming.</li>
+<li>For each <span class="math inline">\(\ell \in [n], k \in \big[ \lfloor \log n \rfloor \big]\)</span>, <span class="math inline">\(r \doteq \ell + \big( 2^k - 1 \big) \le n\)</span>, let <span class="math display">\[
+    M[\ell, k] = 
+        \begin{cases}            
+            \min \{ a_\ell, a_{\ell + 1} \}  &amp;   k = 1, \\
+            \min \{ M[\ell, \ell + 2^{k - 1} - 1], M[r -  2^{k - 1} + 1, r] \}, &amp; \ell &lt; r.
+        \end{cases}
+\]</span></li>
+</ul></li>
+<li><p><span class="math inline">\(q(n) = O(1)\)</span>.</p></li>
+</ul>
+<h1 id="divide-and-conquer">Divide and Conquer</h1>
+<h2 id="preprocessing">Preprocessing</h2>
+<ol type="1">
+<li><p>Pick <span class="math inline">\(s \in \N_+\)</span>, and let <span class="math inline">\(m = n / s\)</span>.</p></li>
+<li><p>Partition <span class="math inline">\(a_1, \ldots, a_n\)</span> into <span class="math inline">\(m\)</span> blocks <span class="math inline">\(B_1, \ldots B_m\)</span>, such that <span class="math inline">\(B_1\)</span> contains the first <span class="math inline">\(s\)</span> elements, <span class="math inline">\(B_2\)</span> contains the next <span class="math inline">\(s\)</span> elements, and so on. In general,<br />
+<span class="math display">\[
+ B_i \doteq \{ a_{ (i - 1) \cdot s + 1 },  \ldots, a_{i \cdot s} \}, \quad \forall i \in [m].  
+\]</span></p></li>
+<li><p>Denote <span class="math inline">\(b_1, \ldots, b_m\)</span> be the minimum element in <span class="math inline">\(B_1, \ldots B_m\)</span>, respectively.</p></li>
+</ol>
+<h2 id="query">Query</h2>
+<ol start="4" type="1">
+<li><p>Given <span class="math inline">\(\ell, r \in [n]\)</span>, <span class="math inline">\(\ell \le r\)</span>, consider</p>
+<ul>
+<li><p><span class="math inline">\(C_1\)</span> be the collection of indexes of the blocks <span class="math inline">\(B_i \subset \{ a_\ell, \ldots, a_r \}\)</span>: <span class="math display">\[
+      C_1 \doteq \{ i \in [m] : B_i \subset \{ a_\ell, \ldots, a_r \} \}
+  \]</span> If <span class="math inline">\(C_1 \neq \emptyset\)</span>, let <span class="math inline">\(\ell&#39; = \min_{i \in C_1} i\)</span> and <span class="math inline">\(r&#39; = \max_{i \in C_1} i\)</span>.</p></li>
+<li><p><span class="math inline">\(C_2\)</span> be the collection of indexes of the blocks <span class="math inline">\(B_i\)</span> such that <span class="math inline">\(B_i \nsubseteq \{ a_\ell, \ldots, a_r \}\)</span> and <span class="math inline">\(B_i \cap \{ a_\ell, \ldots, a_r \} \neq \empty\)</span> <span class="math display">\[
+      C_2 \doteq \{  i \in [m] : B_i \cap \{ a_\ell, \ldots, a_r \} \neq \empty \wedge B_i \nsubseteq \{ a_\ell, \ldots, a_r \} \}.
+  \]</span> It must be that <span class="math inline">\(|C_2| \le 2\)</span>.</p></li>
+</ul></li>
+<li><p>To return <span class="math inline">\(\min \{ a_\ell, \ldots, a_r \}\)</span>, return the minimum of</p>
+<ul>
+<li><span class="math inline">\(\min_{i \in C_1} b_i\)</span>, if <span class="math inline">\(C_1 \neq \emptyset\)</span>.</li>
+<li><span class="math inline">\(\min_{i \in C_2} \min \big( B_i \cap \{ a_\ell, \ldots, a_r \}\big)\)</span>.</li>
+</ul>
+<p>Note that</p>
+<ul>
+<li>The first one is a range-min query on <span class="math inline">\(b_1, \ldots, b_m\)</span>.</li>
+<li>The second one consists of range-min queries on the blocks <span class="math inline">\(B_i\)</span> for <span class="math inline">\(i \in C_2\)</span></li>
+</ul></li>
+</ol>
+<h2 id="approach-one">Approach One</h2>
+<ol type="1">
+<li><p>Suppose we invoke an algorithm <span class="math inline">\(A_{up}\)</span> to answer the range-min query on <span class="math inline">\(b_1, \ldots, b_m\)</span>, with complexity <span class="math inline">\(\left&lt; p_1(m), q_1(m) \right&gt;\)</span>.</p></li>
+<li><p>Suppose we invoke an algorithm <span class="math inline">\(A_{down}\)</span> to answer the range-min query range-min queries on the blocks <span class="math inline">\(B_i\)</span> for <span class="math inline">\(i \in C_2\)</span>, with complexity <span class="math inline">\(\left&lt; p_2(s), q_2(s) \right&gt;\)</span>.<br />
+<!-- Suppose that it has pre-processing $p_1(m)$ and query-answering time $q_1(m)$ for a single block.  --></p></li>
+<li><p>Since the set <span class="math inline">\(C_2\)</span> depends on the range min query, to answer arbitrary range min query, we need to run the pre-processing of <span class="math inline">\(A_{down}\)</span> on each block <span class="math inline">\(B_i, i \in [m]\)</span>.</p></li>
+</ol>
+<p>This approach has complexity <span class="math display">\[
+    \begin{aligned}
+        &amp;\left&lt; O \big( n + p_1(m) + m \cdot p_2 (s) \big) , O \big( q_1(m) + q_2 (s) \big) \right&gt; \\
+        &amp;= 
+        \left&lt; O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big), O \big( q_1(n / s) + q_2 (s) \big) \right&gt;.
+    \end{aligned}
+\]</span></p>
+<h2 id="instantiation">Instantiation</h2>
+<h3 id="mathcala_5-two-level-precompute-none"><span class="math inline">\(\mathcal{A}_5\)</span> Two-Level Precompute-None</h3>
+<p>Choose Precompute-None <span class="math inline">\(\mathcal{A}_1\)</span> for both <span class="math inline">\(A_{up}\)</span> and <span class="math inline">\(A_{down}\)</span>.</p>
+<ul>
+<li>Total preprocessing time: <span class="math inline">\(O \big( n \big)\)</span>.<br />
+</li>
+<li>Total query time: <span class="math inline">\(O \big( m + s \big) = O \big( \sqrt{n} \big)\)</span>, if <span class="math inline">\(m = s = \sqrt{n}\)</span>.</li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \big), O \big( \sqrt{n} \big) \right&gt;\)</span>.</p>
+</blockquote>
+<h3 id="mathcala_6-two-level-binary-tree"><span class="math inline">\(\mathcal{A}_6\)</span> Two-Level Binary Tree</h3>
+<p>This is just a complete binary tree over <span class="math inline">\(a_1, \ldots, a_n\)</span>. Therefore,</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( n \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( \log n \big)\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \big), O \big( \log n \big) \right&gt;\)</span>.</p>
+</blockquote>
+<h3 id="mathcala_7-two-level-sparse-table"><span class="math inline">\(\mathcal{A}_7\)</span> Two-Level Sparse Table</h3>
+<p>We don't investigate Precompute-All, as the sparse table is always better.</p>
+<p>Choose sparse table <span class="math inline">\(\mathcal{A}_3\)</span> for both <span class="math inline">\(A_{up}\)</span> and <span class="math inline">\(A_{down}\)</span>.</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( m \log m + m \cdot s \log s \big)\)</span>.<br />
+Since <span class="math inline">\(m \cdot s = n\)</span>, we have <span class="math display">\[
+      O \Big( m \log m + m \cdot s \log s \Big) = O \Big( \frac{n}{s} \log \frac{n}{s} + n \log s \Big), 
+  \]</span> which is minimized when <span class="math display">\[
+      \begin{aligned}
+          \frac{n}{s} \log \frac{n}{s} = n \log s
+          &amp;\iff \log n - \log s = s \log s \\
+          &amp;\iff \log n = \Theta (s \log s ) \\
+          &amp;\iff \log \log n = \Theta (\log s). 
+      \end{aligned}
+  \]</span> Therefore, the pre-processing time is reduced to <span class="math display">\[
+      O \Big( n \log \log n \Big).
+  \]</span></p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( 1 + 1 \big) = O \big( 1 \big)\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \log \log n \big), O \big( 1 \big) \right&gt;\)</span>.</p>
+</blockquote>
+<p><strong>Remark:</strong> <em>Personally I suspect this approach is fast in practice. Since <span class="math inline">\(A_{down}\)</span> involves a linear scan of at most two blocks with size <span class="math inline">\(O(\log n)\)</span>, and linear scan is cache-friendly.</em></p>
+<p><strong>Remark:</strong> If we apply two level <span class="math inline">\(\mathcal{A}_7\)</span>, then the preprocessing time is <span class="math display">\[
+    O \Big( m \log \log m + m \cdot s \log \log s \Big) = O \Big( \frac{n}{s} \log \log \frac{n}{s} + n \log \log s \Big), 
+\]</span> Choosing <span class="math inline">\(s = \log \log s\)</span> minimized this to <span class="math display">\[
+    O \Big( n \log \log \log \log s\Big).
+\]</span></p>
+<p>Further, the query time remains <span class="math inline">\(O(1)\)</span>.</p>
+<h3 id="mathcala_8-hybrid-sparse-table-and-precompute-none"><span class="math inline">\(\mathcal{A}_8\)</span> Hybrid-Sparse Table and Precompute-None</h3>
+<p>Choose sparse table <span class="math inline">\(\mathcal{A}_3\)</span> for <span class="math inline">\(A_{up}\)</span> and Precompute-None <span class="math inline">\(\mathcal{A}_1\)</span> for <span class="math inline">\(A_{down}\)</span>.</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( (n / s) \log (n / s) \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( 1 + s \big)\)</span>.</p></li>
+</ul>
+<p>If we choose <span class="math inline">\(s = \log n\)</span>, then</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( n \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( \log n \big)\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \big), O \big( \log n \big) \right&gt;\)</span>.</p>
+</blockquote>
+<h3 id="mathcala_9-hybrid-sparse-table-and-binary-tree"><span class="math inline">\(\mathcal{A}_9\)</span> Hybrid-Sparse Table and Binary Tree</h3>
+<p>Choose sparse table <span class="math inline">\(\mathcal{A}_3\)</span> for <span class="math inline">\(A_{up}\)</span> and complete binary tree <span class="math inline">\(\mathcal{A}_2\)</span> for <span class="math inline">\(A_{down}\)</span>.</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( (n / s) \log (n / s) + (n / s)\cdot s \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( 1 + \log s \big)\)</span>.</p></li>
+</ul>
+<p>If we choose <span class="math inline">\(s = \log n\)</span>, then</p>
+<ul>
+<li><p>Total preprocessing time: <span class="math inline">\(O \big( n \big)\)</span>.</p></li>
+<li><p>Total query time: <span class="math inline">\(O \big( \log \log n \big)\)</span>.</p></li>
+</ul>
+<blockquote>
+<p>Hence, it has complexity <span class="math inline">\(\left&lt; O \big( n \big), O \big( \log \log n \big) \right&gt;\)</span>.</p>
+</blockquote>
+<p><strong>Remark:</strong> If we apply two level <span class="math inline">\(\mathcal{A}_9\)</span>, then the preprocessing time is <span class="math display">\[
+    O \big( n + n / s + n / s \cdot s \big) = O(n),
+\]</span></p>
+<p>Further, the query time is <span class="math display">\[
+    O \big( \log \log (n / s) + \log \log s \big).
+\]</span></p>
+<p>Unfortunately, this is still <span class="math inline">\(\log \log n\)</span>.</p>
+<h2 id="approach-two">Approach Two</h2>
+<!-- Can we achieve $O(n)$ preprocessing time and $O(1)$ under the hybrid framework? 
+Recall that it has
+* Total preprocessing time: $O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big)$.   
+* Total query time: $O \big( q_1(n / s) + q_2 (s) \big)$.    -->
+<p>Can we achieve <span class="math inline">\(\left&lt; O \big( n \big), O \big( 1 \big) \right&gt;\)</span> under approach one? Recall that approach one has complexity <span class="math display">\[
+    \begin{aligned}
+        \left&lt; O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big), O \big( q_1(n / s) + q_2 (s) \big) \right&gt;.
+    \end{aligned}
+\]</span></p>
+<p>Suppose we want to achieve preprocessing time <span class="math inline">\(O(n)\)</span> and query time <span class="math inline">\(O(1)\)</span>, then <span class="math inline">\(p_2(s)\)</span> and <span class="math inline">\(q_2(s)\)</span> needs to satisfy that <span class="math inline">\(p_2(s) = s\)</span> and <span class="math inline">\(q_2(s) = 1\)</span>. But this is exactly the property we want to achieve!</p>
+<p>It seems to be impossible to achieve the desired complexity under the divide and conquer framework.</p>
+<p>The key is to observe that the following are two different problems.</p>
+<blockquote>
+<ol type="1">
+<li>Finding a <strong>RMQ</strong> algorithm with complexity <span class="math inline">\(\left&lt; O(n), O(1) \right&gt;\)</span>.<br />
+</li>
+<li>Finding an algorithm that preprocess the all block <span class="math inline">\(B_i\)</span> in <span class="math inline">\(O(n)\)</span> time, such that the range-min query on each <span class="math inline">\(B_i\)</span> can be answered in <span class="math inline">\(O(1)\)</span> time.</li>
+</ol>
+</blockquote>
+<p>For the divide-and-conquer framework to work to achieve complexity <span class="math inline">\(\left&lt; O(n), O(1) \right&gt;\)</span>, it suffices to find an algorithm for the second problem.</p>
+<!-- ### **Construction** -->
+<blockquote>
+<p><strong>Theorem.</strong> There exists some <span class="math inline">\(s \in \Theta(\log n)\)</span>, such that we can find an algorithm that preprocess the all block <span class="math inline">\(B_i\)</span> in <span class="math inline">\(O(n)\)</span> time, such that the range-min query on each <span class="math inline">\(B_i\)</span> can be answered in <span class="math inline">\(O(1)\)</span> time.</p>
+</blockquote>
+<p>Denote such an algorithm as <span class="math inline">\(\mathcal{A}^*\)</span>. Since <span class="math inline">\(s \in \Theta(\log n)\)</span>, choosing sparse table algorithm <span class="math inline">\(\mathcal{A}_3\)</span> to answer the range-min query on <span class="math inline">\(b_1, \ldots, b_m\)</span> incurs additional preprocessing time <span class="math inline">\(O( n / s \cdot \log (n / s) ) = O(n)\)</span>. Further, answering a query requires only <span class="math inline">\(O(1)\)</span> time.</p>
+<p>It is left to show the construction of <span class="math inline">\(\mathcal{A}^*\)</span>.</p>
+<h3 id="block-type"><strong>Block Type</strong></h3>
+<p>W.L.O.G., consider the first block <span class="math inline">\(B_1 = \{ a_{ 1 }, \ldots, a_{ s} \}\)</span> be a block of <span class="math inline">\(s\)</span> elements. We can construct a binary tree over the elements, such that it satisfies</p>
+<blockquote>
+<ol type="1">
+<li><strong>Min Heap Property:</strong> <em>each node of the tree is the smallest one in the subtree rooted at this node.</em><br />
+</li>
+<li>The in-order traversal of the tree gives the array <span class="math inline">\(B_1\)</span>.</li>
+</ol>
+</blockquote>
+<p>Such a binary tree is called a <strong>Cartesian Tree</strong> and the <strong><em>type</em></strong> of the block.</p>
+<p>On the other hand, suppose we are given a <strong>Cartesian Tree</strong> tree constructed on <span class="math inline">\(B_1\)</span>, and suppose that the value of each node of the tree is hidden. Hence, we only know the topology or shape of the binary tree. For all <span class="math inline">\(1 \le \ell \le r \le s\)</span>, we can still return the index of the minimum element among <span class="math inline">\(a_\ell, \ldots, a_s\)</span>, purely based on the topology of the binary tree.</p>
+<p>In this sense, the answers to the RMQ on <span class="math inline">\(B_1\)</span> is entirely determined by its corresponding <strong>Cartesian Tree</strong>.</p>
+<h3 id="enumeration"><strong>Enumeration</strong></h3>
+<p>This motivates the following strategy.</p>
+<ol type="1">
+<li><p>Enumerate all possible <strong>Cartesian Trees</strong>.</p></li>
+<li><p>For each <strong>Cartesian Tree</strong>, invoke the sparse table algorithm <span class="math inline">\(\mathcal{A}_3\)</span> algorithm on this tree, so that all possible range min query for this tree can be answer in <span class="math inline">\(O(1)\)</span> time.</p></li>
+<li><p>For each block <span class="math inline">\(B_i, i \in [m]\)</span>, determine its <strong>Cartesian Trees</strong>. To answer a RMQ on <span class="math inline">\(B_i\)</span>, access the pre-computed result on its corresponding <strong>Cartesian Trees</strong>.</p></li>
+</ol>
+<blockquote>
+<p><strong>Fact.</strong> The number of distinct <strong>Cartesian Trees</strong> with size <span class="math inline">\(s\)</span> is given by <span class="math display">\[
+\frac{1}{1 + s}\binom{2s}{s}. 
+\]</span></p>
+</blockquote>
+<p>Therefore, enumerating the <strong>Cartesian Trees</strong>, and constructing sparse tables on them for <strong>RMQ</strong>, take time and space <span class="math display">\[
+    \frac{1}{1 + s}\binom{2s}{s} \cdot s \cdot \log s 
+    = \Theta \left( \frac{s \cdot \log s}{1 + s} \frac{ \sqrt{2s} \cdot \big( 2s / e \big)^{2s} }{ \Big( \sqrt{s} \cdot \big( s / e \big)^{s} \Big)^2 } \right)
+    = \Theta \left( \frac{\log s}{\sqrt{s}} \cdot 2^{2s} \right). 
+\]</span></p>
+<p>Choosing <span class="math inline">\(s = \big( 0.5 \cdot \log n \big)\)</span> gives <span class="math inline">\(\Theta( n \cdot \big( \log \log n \big) / \sqrt{\log n}) \subset O(n)\)</span>.</p>
+<h3 id="determining-the-block-type"><strong>Determining the Block Type</strong></h3>
+<p>In this section, we show how to construct the corresponding Cartesian Tree given the block <span class="math inline">\(B_1\)</span>, and to create a unique identifier <span class="math inline">\(\in O(n)\)</span> for the Cartesian Tree.</p>
+<p>We illustrate the idea with an example. In this example, <span class="math inline">\(B_1 = (2, 4, 3, 1)\)</span>. We will construct the Cartesian Tree, by including the elements from <span class="math inline">\(B_1\)</span> one by one. Further, we maintain a <em>stack</em> and a <em>stack operation sequence</em>, both of which are initially empty. The stack keeps elements from the right spine of the tree, and the stack operation sequence records the "in stack" and "out stack" operations as we include more elements from <span class="math inline">\(B_1\)</span> into the tree.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/01.png?raw=true" width="250" height="" /></p>
+</div>
+<p>We first include the element <span class="math inline">\(2\)</span> into the tree. Since the tree consists of only one node, it is the root of the tree. It is also the only node in the right spine of the tree, so we put <span class="math inline">\(2\)</span> into the stack, and append <span class="math inline">\(1\)</span> to the stack operation sequence, to record the in-stack operation.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/02.png?raw=true" width="250" height="" /></p>
+</div>
+<p>Next we include the element <span class="math inline">\(4\)</span> into the tree. Since the tree satisfies min-heap property, <span class="math inline">\(4\)</span> must be the child of <span class="math inline">\(2\)</span>. Since the in-order traversal of the tree gives the array <span class="math inline">\(2, 4\)</span>, the node <span class="math inline">\(4\)</span> must be the right child of <span class="math inline">\(2\)</span>. We put <span class="math inline">\(4\)</span> into the stack, and append <span class="math inline">\(1\)</span> to the stack operation sequence, to record the in-stack operation.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/03.png?raw=true" width="250" height="" /></p>
+</div>
+<p>We want to include the element <span class="math inline">\(3\)</span> into the existing tree. Since after inclusion, the in-order traversal of the tree gives the array <span class="math inline">\(2, 4, 3\)</span>, the node <span class="math inline">\(3\)</span> must be in the right spine of the tree. Indeed, this is a general principle for adding a new element into the tree.</p>
+<blockquote>
+<p><strong>Lemma (In the Right Spine).</strong> For each <span class="math inline">\(j \in [s]\)</span>, let <span class="math inline">\(T_j\)</span> be the Cartesian tree constructed on <span class="math inline">\(a_1, \ldots, a_j\)</span>. Then <span class="math inline">\(a_j\)</span> be must in the right spine of <span class="math inline">\(T_j\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<ol type="1">
+<li>If <span class="math inline">\(a_j\)</span> has right-child in <span class="math inline">\(T_j\)</span>, then it is not the last element visited by the in-order traversal of <span class="math inline">\(T_j\)</span>.</li>
+<li>If <span class="math inline">\(a_j\)</span> has a parent node in <span class="math inline">\(T_j\)</span> and is the left-child of its parent, then it is not the last element visited by the in-order traversal of <span class="math inline">\(T_j\)</span>.</li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<p>In this case, the right spine consists of <span class="math inline">\(2\)</span> and <span class="math inline">\(4\)</span>. We compare <span class="math inline">\(3\)</span> with <span class="math inline">\(4\)</span>. As it is smaller than <span class="math inline">\(4\)</span>, we pop <span class="math inline">\(4\)</span> out of the stack. We compare <span class="math inline">\(3\)</span> with <span class="math inline">\(2\)</span>. As it is larger than <span class="math inline">\(2\)</span>, we put <span class="math inline">\(3\)</span> into the stack. We include <span class="math inline">\(3\)</span> as the right-child of <span class="math inline">\(2\)</span>, and set <span class="math inline">\(4\)</span> as the left child of <span class="math inline">\(3\)</span>. We see that after these operations, the stack still contains the nodes in the right spine of the tree. Further, the min-heap property of the tree is maintained. We append <span class="math inline">\(01\)</span> to the stack operation sequence, to record the out-stack and in-stack operations performed.</p>
+<p>We now formally states the rules for adding an element to the right spine.</p>
+<blockquote>
+<p><strong>Incremental Construction Rule.</strong> For each <span class="math inline">\(1 \le j &lt; s\)</span>, let <span class="math inline">\(T_j\)</span> be the Cartesian tree constructed on <span class="math inline">\(a_1, \ldots, a_j\)</span>, and suppose that <span class="math inline">\(a_1&#39; \le a_2&#39; \ldots \le a_k&#39;\)</span> are the elements in the right spine of <span class="math inline">\(T_j\)</span>. Then <span class="math inline">\(a_{j + 1}\)</span> is added to <span class="math inline">\(T_j\)</span> as follows:</p>
+<ol type="1">
+<li><p>If <span class="math inline">\(a_{j + 1} &lt; a_1&#39;\)</span>, then set <span class="math inline">\(a_1&#39;\)</span> as the left child of <span class="math inline">\(a_{j + 1}\)</span>.</p></li>
+<li><p>If <span class="math inline">\(a_{j + 1} &gt; a_k&#39;\)</span>, then set <span class="math inline">\(a_{j + 1}\)</span> as the right child of <span class="math inline">\(a_k&#39;\)</span>.</p></li>
+<li><p>Otherwise, there exists <span class="math inline">\(1 \le i &lt; k\)</span>, such that <span class="math inline">\(a_i&#39; \le a_{j + 1} &lt; a_{i + 1}&#39;\)</span>. Replace <span class="math inline">\(a_{i + 1}&#39;\)</span> by <span class="math inline">\(a_{j + 1}\)</span> as the right child of <span class="math inline">\(a_i&#39;\)</span>, and set <span class="math inline">\(a_{i + 1}&#39;\)</span> as the left child of <span class="math inline">\(a_{j + 1}\)</span>.</p></li>
+</ol>
+</blockquote>
+<p>It is easy to verify that after the construction</p>
+<ol type="1">
+<li><span class="math inline">\(a_{j + 1}\)</span> is in the right spine of the tree.<br />
+</li>
+<li>The min-heap property is maintained.</li>
+</ol>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/04.png?raw=true" width="400" height="" /></p>
+</div>
+<p>We want to include the element <span class="math inline">\(1\)</span> into the existing tree. Since after inclusion, the in-order traversal of the tree gives the array <span class="math inline">\(2, 4, 3, 1\)</span>, the node <span class="math inline">\(1\)</span> must be in the right spine of the tree. In this case, the right spine consists of <span class="math inline">\(2\)</span> and <span class="math inline">\(3\)</span>. As <span class="math inline">\(1\)</span> is smaller than <span class="math inline">\(2\)</span>, we pop <span class="math inline">\(3\)</span> and <span class="math inline">\(2\)</span> out of the stack, put <span class="math inline">\(1\)</span> into the stack, and set <span class="math inline">\(2\)</span> as the left child of <span class="math inline">\(1\)</span>. We append <span class="math inline">\(001\)</span> to the stack operation sequence, to record the stack operations performed.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/05.png?raw=true" width="460" height="" /></p>
+</div>
+<p>Finally, we pop <span class="math inline">\(1\)</span> out of the stack, and append <span class="math inline">\(0\)</span> to the stack operation sequence, to record the stack operation performed. We perform this operation, so that whatever sequence of <span class="math inline">\(a_1, \ldots, a_s\)</span>, the stack operation sequence corresponding to the Cartesian Tree construction procedure stated as above has length <span class="math inline">\(2s\)</span>.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/06.png?raw=true" width="300" height="" /></p>
+</div>
+<blockquote>
+<p>The construction also reveal an interesting fact: each Cartesian Tree with <span class="math inline">\(s\)</span> node corresponding a <span class="math inline">\(0\)</span>-<span class="math inline">\(1\)</span> sequence with length <span class="math inline">\(2s\)</span>, such that each prefix of the sequence contains no less <span class="math inline">\(1\)</span>'s than <span class="math inline">\(0\)</span>'s.</p>
+</blockquote>
+<p>We know that <span class="math display">\[
+    | \{ t \in \{0, 1\}^{2s} : \text{each prefix of } t \text{ contains no less } 1 \text{ than } 0 \} | = \frac{1}{1 + s} \binom{2s}{s}, 
+\]</span> which gives a construct proof of the number of binary trees with <span class="math inline">\(s\)</span> nodes.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] Stanford, CS 166, <a target="_blank" rel="noopener" href="https://web.stanford.edu/class/cs166/lectures/00/Slides00.pdf">Range Minimum Queries</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/22/Random-Variable/" rel="prev" title="Random Variable">
+      <i class="fa fa-chevron-left"></i> Random Variable
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#basic-solutions"><span class="nav-number">2.</span> <span class="nav-text">Basic Solutions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mathcala_1-precompute-none"><span class="nav-number">2.1.</span> <span class="nav-text">\(\mathcal{A}_1\) Precompute-None</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mathcala_2-complete-binary-tree"><span class="nav-number">2.2.</span> <span class="nav-text">\(\mathcal{A}_2\) Complete Binary Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mathcala_3-precompute-all"><span class="nav-number">2.3.</span> <span class="nav-text">\(\mathcal{A}_3\) Precompute-All</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mathcala_4-sparse-table"><span class="nav-number">2.4.</span> <span class="nav-text">\(\mathcal{A}_4\) Sparse Table</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#divide-and-conquer"><span class="nav-number">3.</span> <span class="nav-text">Divide and Conquer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#preprocessing"><span class="nav-number">3.1.</span> <span class="nav-text">Preprocessing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#query"><span class="nav-number">3.2.</span> <span class="nav-text">Query</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#approach-one"><span class="nav-number">3.3.</span> <span class="nav-text">Approach One</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#instantiation"><span class="nav-number">3.4.</span> <span class="nav-text">Instantiation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mathcala_5-two-level-precompute-none"><span class="nav-number">3.4.1.</span> <span class="nav-text">\(\mathcal{A}_5\) Two-Level Precompute-None</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mathcala_6-two-level-binary-tree"><span class="nav-number">3.4.2.</span> <span class="nav-text">\(\mathcal{A}_6\) Two-Level Binary Tree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mathcala_7-two-level-sparse-table"><span class="nav-number">3.4.3.</span> <span class="nav-text">\(\mathcal{A}_7\) Two-Level Sparse Table</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mathcala_8-hybrid-sparse-table-and-precompute-none"><span class="nav-number">3.4.4.</span> <span class="nav-text">\(\mathcal{A}_8\) Hybrid-Sparse Table and Precompute-None</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mathcala_9-hybrid-sparse-table-and-binary-tree"><span class="nav-number">3.4.5.</span> <span class="nav-text">\(\mathcal{A}_9\) Hybrid-Sparse Table and Binary Tree</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#approach-two"><span class="nav-number">3.5.</span> <span class="nav-text">Approach Two</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#block-type"><span class="nav-number">3.5.1.</span> <span class="nav-text">Block Type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#enumeration"><span class="nav-number">3.5.2.</span> <span class="nav-text">Enumeration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#determining-the-block-type"><span class="nav-number">3.5.3.</span> <span class="nav-text">Determining the Block Type</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">170</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

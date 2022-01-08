@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/08/Q-Digest/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/16/Complex-Mapping/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/08/Q-Digest/" class="post-title-link" itemprop="url">Q-Digest</a>
+            <a href="/2021/07/16/Complex-Mapping/" class="post-title-link" itemprop="url">Complex Mapping</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-07-08 15:35:51" itemprop="dateCreated datePublished" datetime="2021-07-08T15:35:51+10:00">2021-07-08</time>
+              <time title="Created: 2021-07-16 23:40:14" itemprop="dateCreated datePublished" datetime="2021-07-16T23:40:14+10:00">2021-07-16</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-09 15:46:55" itemprop="dateModified" datetime="2021-07-09T15:46:55+10:00">2021-07-09</time>
+                <time title="Modified: 2021-07-23 23:18:16" itemprop="dateModified" datetime="2021-07-23T23:18:16+10:00">2021-07-23</time>
               </span>
 
           
@@ -191,451 +191,41 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="problem">Problem</h1>
-<p>Let <span class="math inline">\(d \in \mathbb{N}^+\)</span> be a positive integer and <span class="math inline">\(f = (0, \ldots, 0) \in \mathbb{R}^d\)</span> be an all-zero vector. There is a sequence <span class="math inline">\(S\)</span> of updates, each of which consists of a pair <span class="math inline">\((x, w) \in [d] \times \mathbb{R}^+\)</span>, increasing <span class="math inline">\(f[x]\)</span> by <span class="math inline">\(w\)</span>.</p>
-<blockquote>
-<p><strong>Model Description</strong><br />
-1. <span class="math inline">\(f \leftarrow (0, \ldots, 0) \in \mathbb{R}^d\)</span>;<br />
-2. For <span class="math inline">\((x, w) \in S\)</span> do<br />
-3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(f[x] \leftarrow f[x] + w\)</span>;</p>
-</blockquote>
-<p>After witnessing the stream <span class="math inline">\(S\)</span>, we call <span class="math inline">\(f\)</span> the frequency vector. We are interested in answering the following query.</p>
-<blockquote>
-<p><strong>Rank Query</strong><br />
-<strong>Input：</strong> <span class="math inline">\(x \in [d]\)</span><br />
-<strong>Returen:</strong> <span class="math inline">\(r[x] \leftarrow \sum_{i = 1}^{x - 1} f[i]\)</span>.</p>
-</blockquote>
-<p>We formally define the problem of approximate rank estimation.</p>
-<blockquote>
-<p><strong>Problem.</strong> Let <span class="math inline">\(\epsilon\)</span> be an error parameter. Design an algorithm, such that for a rank query with a given element <span class="math inline">\(x \in [d]\)</span>, the summary will return an approximate rank <span class="math inline">\(\hat r [x]\)</span>, such that <span class="math display">\[
-r[x] − \epsilon \cdot W  \le \hat r [x] \le r[x] + \epsilon \cdot W.
+          <p>Suppose we have complex mapping <span class="math inline">\(f : X \rightarrow Y\)</span>, where <span class="math inline">\(X, Y \subset \mathbb{C}\)</span>. How do we visualize it? As, we can't visualize four dimension data in a single plot, we split it into two, one for the domain and one for the codomain.</p>
+<p>For example, consider the unit cycle centered at <span class="math inline">\(2\)</span> <span class="math display">\[
+    S_1 \doteq \{ z \in \mathbb{C} : | z - 2 | &lt; 1 \}.
 \]</span></p>
-</blockquote>
-<h1 id="q-digest"><span class="math inline">\(Q\)</span>-Digest</h1>
-<p>The naive solution maintain the vector <span class="math inline">\(f \in \mathbb{R}^d\)</span> explicitly. Assuming that each entry of <span class="math inline">\(f\)</span> can always be stored in one word, the space usage of the is <span class="math inline">\(O(d)\)</span>.</p>
-<blockquote>
-<p><strong>Theorem.</strong> There exists an algorithm, <strong><em><span class="math inline">\(Q\)</span>-digest</em></strong>, that has space usage of <span class="math inline">\(O( \frac{1}{\epsilon} \log d)\)</span> words, insertion time <span class="math inline">\(O(\log d)\)</span> and query time of <span class="math inline">\(O(\log d)\)</span>.</p>
-</blockquote>
-<p>We first study a prototype which requires <span class="math inline">\(O(d)\)</span> words.</p>
-<h2 id="prototype">Prototype</h2>
-<p>The algorithm maintains an array of size <span class="math inline">\(d\)</span> to keep all values of <span class="math inline">\(f\)</span>. Further, it construct a binary tree on the array, such that</p>
-<ol type="1">
-<li>Each node <span class="math inline">\(v\)</span> keeps the sum of frequencies of leaves in its subtree, denote as <span class="math inline">\(s[v]\)</span>.</li>
-</ol>
-<p>By definition, if <span class="math inline">\(v\)</span> is a leaf node, then <span class="math inline">\(s[v]\)</span> equals the frequency of the node. For each node <span class="math inline">\(v\)</span>, denote <span class="math inline">\(L[v]\)</span> and <span class="math inline">\(R[v]\)</span> its left and right children respectively.</p>
-<p>The figure below is an example with <span class="math inline">\(d = 8\)</span> and <span class="math inline">\(f = (0, 1, 1, 0, 2, 1, 0, 1)\)</span>.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Q-Digest/Q-Digest.png" width="300" height="350" /></p>
-</div>
-<!-- ![](https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Q-Digest/Q-Digest.png) -->
-<h3 id="insertion"><strong>Insertion</strong></h3>
-<p>To construct the tree, we can initialize a tree built on the domain <span class="math inline">\([d]\)</span> with all counters <span class="math inline">\(s[v]\)</span> equal to <span class="math inline">\(0\)</span>. Then on each pair of update <span class="math inline">\((x, w) \in S\)</span>, we invoke the following algorithm.</p>
-<blockquote>
-<p><strong>Update:</strong> <span class="math inline">\((x, w)\)</span><br />
-1. <span class="math inline">\(v \leftarrow\)</span> root;<br />
-2. <strong>while</strong> <span class="math inline">\(v\)</span> is not a leaf <strong>do</strong><br />
-3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(s[v] \leftarrow s[v] + w\)</span>;<br />
-4. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span class="math inline">\(x\)</span> is in the left tree of <span class="math inline">\(v\)</span> <strong>then</strong><br />
-5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(v \leftarrow L[v]\)</span><br />
-6. <span class="math inline">\(\qquad\)</span> <strong>else</strong><br />
-7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(v \leftarrow R[v]\)</span><br />
-8. <span class="math inline">\(s[v] \leftarrow s[v] + w\)</span>;</p>
-</blockquote>
-<p>The update takes time <span class="math inline">\(O(\log d)\)</span>.</p>
-<h3 id="query"><strong>Query</strong></h3>
-<p>The query algorithm is also very simple. Given an input <span class="math inline">\(x\)</span>, the algorithm walks down the path from the root to the leaf that contains <span class="math inline">\(x\)</span>. The rank of <span class="math inline">\(x\)</span> equals the sum of of <span class="math inline">\(s[v]\)</span> for the <span class="math inline">\(v\)</span> such that</p>
-<ol type="1">
-<li>it is a left child of some node on the path;</li>
-<li>it is not on the path.</li>
-</ol>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Q-Digest/Query.png" width="400" height="350" /></p>
-</div>
-<!-- ![](https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Q-Digest/Query.png) -->
-<blockquote>
-<p><strong>Rank Query</strong><br />
-<strong>Input：</strong> <span class="math inline">\(x \in [d]\)</span> 1. <span class="math inline">\(v \leftarrow root\)</span>;<br />
-2. <span class="math inline">\(\hat r \leftarrow 0\)</span>;<br />
-3. <strong>while</strong> <span class="math inline">\(v\)</span> is not a leaf node <strong>do</strong><br />
-5. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span class="math inline">\(x\)</span> is in left subtree of <span class="math inline">\(v\)</span> <strong>then</strong><br />
-6. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(v \leftarrow L[v]\)</span><br />
-7. <span class="math inline">\(\qquad\)</span><strong>else</strong><br />
-8. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat r \leftarrow \hat r + s[ L[v] ]\)</span>;<br />
-9. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(v \leftarrow R[v]\)</span><br />
-10. <strong>return</strong> <span class="math inline">\(\hat r\)</span></p>
-</blockquote>
-<p>The query algorithm has time complexity <span class="math inline">\(O(\log d)\)</span>.</p>
-<h2 id="q-digest-1"><span class="math inline">\(Q\)</span>-Digest</h2>
-<p>In this section, we show how to reduce the space usage to <span class="math inline">\(O(\frac{1}{\epsilon} \log d)\)</span>.</p>
-<p>In the previous section, when the algorithm perform a rank query for <span class="math inline">\(x \in [d]\)</span>, it walks down a path <span class="math inline">\((v_1, \ldots, v_{\log d} )\)</span>, where <span class="math inline">\(v_1\)</span> is the root of the tree, and <span class="math inline">\(v_{\log d}\)</span> is the leaf node that contains <span class="math inline">\(x\)</span>.</p>
-<p>There are <span class="math inline">\(\log d\)</span> nodes in the path in total. If each node introduces an error of <span class="math inline">\(O(\epsilon W / \log d)\)</span> to the estimation of <span class="math inline">\(r[x]\)</span>, then the final estimation has error bounded by <span class="math inline">\(O(\epsilon W)\)</span>.</p>
-<p>This motivates to associate each node <span class="math inline">\(v\)</span> in the tree with an error counter <span class="math inline">\(c[v]\)</span>, which is interpreted as the maximum error it can introduce to the rank estimation to a given element <span class="math inline">\(x\)</span>. It is initialized with <span class="math inline">\(0\)</span> and is guaranteed to be bounded by some threshold <span class="math inline">\(C\)</span> (except the leaf node). The threshold <span class="math inline">\(C\)</span> is updated along with the insertion of elements into the tree. The algorithm maintains the invariant that <span class="math display">\[
-    \frac{\epsilon \cdot W}{2 \log d} \le C \le \frac{\epsilon \cdot W}{\log d}.
+<p>Let <span class="math inline">\(f(z) \doteq \frac{2}{z - 1}\)</span>. Then <span class="math inline">\(S_1\)</span> is mapped to the set <span class="math display">\[
+    S_2 \doteq \{ z \in \mathbb{C} : \text{Re}(z) &gt; 1 \}.
 \]</span></p>
-<p>Under this invariant, the estimation of <span class="math inline">\(r[x]\)</span> is always bounded by <span class="math inline">\(\epsilon \cdot W\)</span>.</p>
-<h3 id="insertion-1"><strong>Insertion</strong></h3>
-<p>The insertion algorithm is very simple. When an update <span class="math inline">\((x, w)\)</span> arrives, the algorithm walks through the path from the root to the leaf that contains <span class="math inline">\(x\)</span>. For each internal node <span class="math inline">\(v\)</span> in the path, the amount of additional error it can make is <span class="math inline">\(C - c[v]\)</span>. If this amount is greater than <span class="math inline">\(w\)</span>, then we just increase <span class="math inline">\(c[v]\)</span> by <span class="math inline">\(w\)</span>, and stops the algorithm. Intuitively, we insert <span class="math inline">\(x\)</span> into this node. On the other hand, if <span class="math inline">\(C - c[v]\)</span> is less than <span class="math inline">\(w\)</span>, then we can still partial insert <span class="math inline">\(x\)</span> into <span class="math inline">\(v\)</span>, detailed by the pseudo-code below. Doing so increase the rank estimation error only for the element greater than <span class="math inline">\(x\)</span>, but not for the elements less than or equal to <span class="math inline">\(x\)</span>. Finally, if the invariant of <span class="math inline">\(C\)</span> does not hold, we need to update <span class="math inline">\(C\)</span> and the tree.</p>
-<blockquote>
-<p><strong>Update:</strong> <span class="math inline">\((x, w)\)</span><br />
-1. <span class="math inline">\(W \leftarrow W + w\)</span>;<br />
-2. <span class="math inline">\(v \leftarrow\)</span> root;<br />
-3. <strong>while</strong> <span class="math inline">\(w &gt; 0\)</span> and <span class="math inline">\(v\)</span> is not a leaf <strong>do</strong><br />
-4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(s[v] \leftarrow s[v] + w\)</span>;<br />
-3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(t \leftarrow \min\{ C - c[v], w\}\)</span>;<br />
-4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(c[v] \leftarrow c[v] + t\)</span>;<br />
-5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow w - t\)</span>;<br />
-6. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span class="math inline">\(x\)</span> is in the left tree of <span class="math inline">\(v\)</span> <strong>then</strong><br />
-7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(v \leftarrow L[v]\)</span><br />
-8. <span class="math inline">\(\qquad\)</span> <strong>else</strong><br />
-9. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(v \leftarrow R[v]\)</span><br />
-10. <span class="math inline">\(s[v] \leftarrow s[v] + w\)</span>;<br />
-11. <span class="math inline">\(c[v] \leftarrow c[v] + w\)</span>;<br />
-12. <strong>if</strong> <span class="math inline">\(C \le \frac{\epsilon \cdot W}{2 \log d}\)</span> <strong>then</strong><br />
-13. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(C \leftarrow \frac{\epsilon \cdot W}{\log d}\)</span>;<br />
-14. <span class="math inline">\(\qquad\)</span> <strong>Compress</strong>(root, 0) // update the tree</p>
-</blockquote>
-<h3 id="query-1"><strong>Query</strong></h3>
-<p>The query algorithm is the same as the one in the previous section, except that if algorithm encounters a node <span class="math inline">\(v\)</span> with <span class="math inline">\(c[v] = 0\)</span>, then the algorithm can terminate earlier.</p>
-<!-- > **Rank Query**     
-> **Input：** $x \in [d]$
-> 1. $v \leftarrow root$;
-> 2. $\hat r \leftarrow 0$;
-> 3. **while** $c[v] > 0$ and $v$ is not a leaf node **do**
-> 5. $\qquad$ **if** $x$ is in left subtree of $v$ **then**
-> 6. $\qquad$ $\qquad$ $v \leftarrow L[v]$ 
-> 7. $\qquad$**else**
-> 8. $\qquad$ $\qquad$ $\hat r \leftarrow \hat r + s[ L[v] ]$; 
-> 9. $\qquad$ $\qquad$ $v \leftarrow R[v]$
-> 10. **return** $\hat r$ -->
-<h3 id="maintenance"><strong>Maintenance</strong></h3>
-<p>Finally, we discuss how to update the tree in a top-down approach. For a node <span class="math inline">\(v\)</span>, we try to increase <span class="math inline">\(c[v]\)</span> to <span class="math inline">\(C\)</span>, by borrowing weights from the its descendent. There are two possible cases. First, if <span class="math inline">\(s[v] \le C\)</span>, then we can set <span class="math inline">\(c[v] = C\)</span> and delete all descendants of <span class="math inline">\(v\)</span>. Otherwise, setting <span class="math inline">\(c[v] = C\)</span> incurs a "debt" of <span class="math inline">\(d \doteq C - c[v]\)</span> that <span class="math inline">\(v\)</span>'s descendants need to pay. We assign as much debt as possible to the left child.</p>
-<blockquote>
-<p><strong>Compress</strong> <span class="math inline">\((v,d)\)</span><br />
-1. <strong>if</strong> <span class="math inline">\(c[v] = 0\)</span> <strong>then</strong> <strong>return</strong>;<br />
-2. <strong>if</strong> v is a leaf node <strong>then</strong><br />
-3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(c[v] \leftarrow c[v] − d\)</span><br />
-4. <strong>else</strong><br />
-5. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span class="math inline">\(s[v] &gt; C + d\)</span> <strong>then</strong><br />
-6. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(d \leftarrow d + C - c[v]\)</span>;<br />
-7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(c[v] \leftarrow C\)</span>;<br />
-8. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(u \leftarrow L[v]\)</span>;<br />
-9. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <strong>Compress</strong> <span class="math inline">\((L[v], \min(d , s[u] ) )\)</span>;<br />
-10. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <strong>Compress</strong> <span class="math inline">\((R[v], \max(d − s[u] , 0 ) )\)</span>;<br />
-11. <span class="math inline">\(\qquad\)</span> <strong>else</strong><br />
-12. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(c[v] \leftarrow s[v] − d\)</span>;<br />
-13. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> Set weight of all descendants of <span class="math inline">\(v\)</span> to <span class="math inline">\(0\)</span>;</p>
-</blockquote>
-<p>By induction, we can show that <span class="math inline">\(d \le s[v]\)</span>.</p>
-<h3 id="space-usage"><strong>Space Usage</strong></h3>
-<p>A node is called "saturated" if <span class="math inline">\(c[v] = C\)</span>. By the invariant of <span class="math inline">\(C\)</span>, there are at most <span class="math inline">\(W / C = O((1 / \epsilon ) \log d)\)</span> "saturated" nodes. By the algorithm, each node <span class="math inline">\(v\)</span> in the tree with nonzero <span class="math inline">\(c[v]\)</span>, either "saturated", or has a "saturated" parent. However, each "saturated" can have at most two children. Therefore, the total number of nodes with nonzero <span class="math inline">\(c[v]\)</span> is bounded by <span class="math inline">\(O((1 / \epsilon ) \log d)\)</span>.</p>
-<h1 id="reference">Reference</h1>
-<p>[1] <em>G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</em></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/07/Basic-Entropy-Inequalities/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/07/07/Basic-Entropy-Inequalities/" class="post-title-link" itemprop="url">Basic Entropy Inequalities</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-07-07 11:08:27" itemprop="dateCreated datePublished" datetime="2021-07-07T11:08:27+10:00">2021-07-07</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-14 11:33:18" itemprop="dateModified" datetime="2021-07-14T11:33:18+10:00">2021-07-14</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> be two discrete random variables.</p>
-<h1 id="relative-entropy">Relative Entropy</h1>
-<p>Given a distribution <span class="math inline">\(p\)</span>, if we encode it with a distribution <span class="math inline">\(q\)</span> (with the same support), the expected coding length is roughly <span class="math display">\[
-    \sum_i p_i \log \frac{1}{q_i}
-\]</span></p>
-<p>The cost over the optimal coding is given by <span class="math display">\[
-    \mathbf{D} (p || q) \doteq \sum_i p_i \log \frac{1}{q_i} - \sum_i p_i \log \frac{1}{p_i} = \sum_i p_i \log \frac{p_i}{q_i}
-\]</span></p>
-<p>By definition, we know that this gap is always non-negative. We can prove it rigorously algebraically. We show two different approaches here.</p>
-<ol type="1">
-<li>By that <span class="math inline">\(f(x) = x \log x\)</span> is convex for <span class="math inline">\(x \ge 0\)</span>, we have <span class="math display">\[
-\begin{aligned}
-    \mathbf{D}(p || q) &amp;= \sum_i p_i \log \frac{p_i}{q_i} \\
-    &amp;= \sum_i q_i \cdot \frac{p_i}{q_i} \log \frac{p_i}{q_i} \\
-    &amp;\ge \left( \sum_i q_i \cdot \frac{p_i}{q_i} \right) \log \left( \sum_i q_i \cdot \frac{p_i}{q_i} \right) \\
-    &amp;= 0
-\end{aligned}
-\]</span></li>
-<li>By that <span class="math inline">\(f(x) = -\log x\)</span> is convex (for <span class="math inline">\(x \ge 0\)</span> ), we have <span class="math display">\[
-\begin{aligned}
-    \mathbf{D}(p || q) &amp;= \sum_i - p_i \log \frac{q_i}{p_i} \\
-    &amp;\ge  -\log \left( \sum_i p_i \cdot \frac{q_i}{p_i} \right) \\
-    &amp;= 0
-\end{aligned}
-\]</span></li>
-</ol>
-<blockquote>
-<p><strong>Theorem (Maximum Value).</strong> Let <span class="math inline">\(X\)</span> be a random variable taking values in an alphabet <span class="math inline">\(\Omega\)</span>. Then <span class="math display">\[
-\mathbf{H}(X) \le \log | \Omega | 
-\]</span> The inequality is saturated if and only if <span class="math inline">\(X\)</span> is a uniform random variable on <span class="math inline">\(\Omega\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(U\)</span> be a uniform random variable on <span class="math inline">\(\Omega\)</span>. Then <span class="math display">\[
-    \mathbf{D}( X \Vert U ) = \sum p(x) \log \frac{ p(x) }{ 1 / | \Omega | } = \log | \Omega | - \mathbf{H}(x) \ge 0. 
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="joint-entropy">Joint Entropy</h1>
-<blockquote>
-<p><strong>Definition.</strong> The joint entropy of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is <span class="math display">\[
-\mathbf{H}(X, Y) = \sum_{x, y} p(x, y) \log \frac{1}{ p(x, y) }
-\]</span></p>
-</blockquote>
-<p>If <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are independent, then <span class="math display">\[
-    \mathbf{H}(X, Y) = \mathbf{H}(X) + \mathbf{H}(Y). 
-\]</span></p>
-<h1 id="conditional-entropy">Conditional Entropy</h1>
-<blockquote>
-<p><strong>Definition.</strong> The conditional entropy of <span class="math inline">\(X\)</span> given <span class="math inline">\(Y = y\)</span> is the entropy of the probability distribution <span class="math inline">\(p(X \mid Y = y)\)</span> <span class="math display">\[
-\mathbf{H}(X \mid Y = y) = \sum_x p(x \mid y) \log \frac{1}{ p(x \mid y) }
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Definition.</strong> The conditional entropy of <span class="math inline">\(X\)</span> given <span class="math inline">\(Y\)</span>, is the average, over <span class="math inline">\(y\)</span>, the conditional entropy of <span class="math inline">\(X\)</span> given <span class="math inline">\(y\)</span> <span class="math display">\[
-\mathbf{H}(X \mid Y) = \sum_y p(y) \mathbf{H}(X \mid Y = y) = \sum_{x, y} p(x , y) \log \frac{1}{ p(x \mid y) }.
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Theorem (Zero Conditional Entropy).</strong> Suppose that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> have the same support. <span class="math inline">\(\mathbf{H}(X \mid Y) = 0\)</span> if and only if <span class="math inline">\(X\)</span> is a function of <span class="math inline">\(Y\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> If <span class="math display">\[
-    \mathbf{H}(X \mid Y) = \sum_y p(y) \mathbf{H}(X \mid Y = y) = 0. 
-\]</span></p>
-<p>Then either <span class="math inline">\(p(y) = 0\)</span> or <span class="math inline">\(\mathbf{H}(X \mid Y = y) = 0\)</span> for all <span class="math inline">\(y\)</span>. On the other hand, for each <span class="math inline">\(y\)</span>, if <span class="math inline">\(p(y) &gt; 0\)</span>, then <span class="math display">\[
-    \mathbf{H}(X \mid Y = y) = \sum_x p(x \mid y) \log \frac{1}{ p(x \mid y) } = 0, 
-\]</span> Then either <span class="math inline">\(p(x \mid y) = 0\)</span> or <span class="math inline">\(\log \frac{1}{ p(x \mid y) } = 0\)</span>. It follows that there is a unique <span class="math inline">\(x\)</span>, for which <span class="math inline">\(p(x \mid y) = 1\)</span>.</p>
-<p>Conversely, if <span class="math inline">\(X\)</span> is a function of <span class="math inline">\(Y\)</span>, for each <span class="math inline">\(y\)</span> such that <span class="math inline">\(p(y) &gt; 0\)</span>, there is a unique <span class="math inline">\(x\)</span> such that <span class="math inline">\(p(x \mid y) = 1\)</span>. Hence, <span class="math inline">\(\mathbf{H}(X \mid Y = y) = 0\)</span> and <span class="math inline">\(H(X \mid Y) = 0\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="mutual-information">Mutual Information</h1>
-<blockquote>
-<p><strong>Definition.</strong> The mutual information between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is <span class="math display">\[
-I(X; Y) = \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(x, y)}{p(x) p(y) } \right] = \mathbf{D}( p(x, y) \Vert p(x) p(y) ).
-\]</span></p>
-</blockquote>
-<p>The definition is symmetric and it holds that <span class="math inline">\(I(X; Y) = I(Y; X)\)</span>. If we know <span class="math inline">\(p(x,y)\)</span>, we use in expectation <span class="math inline">\(\mathbb{E}_{p(x, y) } \left[ \log \frac{1} { p(x, y)} \right]\)</span> bits to describe them. If we know only <span class="math inline">\(p(x)\)</span> and <span class="math inline">\(p(y)\)</span>, the mutual information measures the bits we waste.</p>
-<p><span class="math display">\[ \small
-\begin{aligned}
-    &amp;\sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } \\
-    =&amp;  \sum p(x, y) \left( \log \frac{ 1 }{p(x)} 
-    +  \log \frac{ 1 }{p(y)} 
-    -  \log \frac{ 1 }{p(x, y)}  \right) \\
-    =&amp; \mathbf{H} ( X ) + \mathbf{H} ( Y ) - \mathbf{H} ( X, Y )
-\end{aligned}
-\]</span></p>
-<p>Further, mutual information measures the average reduction of randomness of <span class="math inline">\(X\)</span> that results from learning the value of <span class="math inline">\(Y\)</span>. <span class="math display">\[ \small
-\begin{aligned}
-    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } 
-    &amp;=\sum p(x, y) \log \frac{ p(x | y)}{p(x)  } \\
-    &amp;= \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y).
-\end{aligned}
-\]</span></p>
-<p>In this sense, the mutual information quantifies the dependence between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. It measures how much knowing one random variable reduces the uncertainty about the other random variable.</p>
-<p>Similarly, we can prove that <span class="math display">\[ \small
-\begin{aligned}
-    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } 
-    &amp;=\sum p(x, y) \log \frac{ p(x | y)}{ p(x) }  \\
-    &amp;=\mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y). 
-\end{aligned}
-\]</span></p>
-<blockquote>
-<p><span class="math inline">\(\mathbf{I}(X; Y) \ge 0\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \mathbf{I}(X; Y) = \mathbf{D}( p(x, y) \mid p(x) p(y) ) \ge 0
-\]</span></p>
-<p>Or <span class="math display">\[
-\begin{aligned}
-    \sum p(x, y) \log \frac{ p(x, y)}{p(x) p(y) } 
-    &amp;= -\sum p(x, y) \log \frac{p(x) p(y) }{ p(x, y)} \\
-    &amp;\ge - \log \sum p(x, y) \frac{p(x) p(y) }{ p(x, y)} \\
-    &amp;=0   
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary.</strong> <span class="math inline">\(\mathbf{H} ( Y ) - \mathbf{H} ( X \mid Y) = \mathbf{H} ( X ) - \mathbf{H} ( X \mid Y) \ge 0\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Theorem.</strong> The entropy <span class="math inline">\(\mathbf{H}(X)\)</span> is concave in the probability density <span class="math inline">\(p(x)\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(\lambda_1, \lambda_2 \in [0, 1]\)</span> such that <span class="math inline">\(\lambda_1 + \lambda_2 = 1\)</span>. Suppose that <span class="math inline">\(Z_1, Z_2\)</span> are random variables with density functions <span class="math inline">\(p_1(z)\)</span> and <span class="math inline">\(p_2(z)\)</span> respectively. Define the random variable <span class="math display">\[
-    Y = \begin{cases}
-        1,    &amp;\text{w.p } \lambda_1,\\
-        2,    &amp;\text{w.p } \lambda_2,
-    \end{cases}
-\]</span> and let <span class="math inline">\(X = Z_Y\)</span>.</p>
-<p>Then <span class="math display">\[
-    \mathbf{H}(X) = \mathbf{H}( \lambda_1 p_1 + \lambda_2 p_2)
-\]</span></p>
-<p>On the other hand, <span class="math display">\[
-    \mathbf{H}(X \mid Y) = \lambda_1 \mathbf{H}( p_1 ) + \lambda_2 \mathbf{H}( p_2 ). 
-\]</span></p>
-<p>We finish the proof by observing that <span class="math inline">\(\mathbf{H}(X) \ge \mathbf{H}(X \mid Y)\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Definition.</strong> Let <span class="math inline">\(X\)</span> be a Bernoulli random variable with mean <span class="math inline">\(p \in [0, 1]\)</span>. Denote <span class="math inline">\(\mathbf{H}(p) = \mathbf{H}(X) = p \log \frac{1}{p} + (1 - p) \log \frac{1}{1 - p}\)</span>.<br />
-<strong>Corollary.</strong> <span class="math inline">\(\mathbf{H}(p)\)</span> is concave in <span class="math inline">\(p\)</span>.</p>
-</blockquote>
-<h2 id="conditional-mutual-information">Conditional Mutual Information</h2>
-<blockquote>
-<p><strong>Definition.</strong> The <strong><em>conditional mutual information</em></strong> between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> given <span class="math inline">\(Z = z\)</span> is the mutual information between the random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> in the joint ensemble <span class="math inline">\(\Pr (X, Y | Z = z)\)</span>, <span class="math display">\[
-I(X ; Y \mid Z = z) = \mathbf{H}(X \mid Z = z) - \mathbf{H}(X \mid Y, Z = z)
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Definition.</strong> The <strong><em>conditional mutual information</em></strong> between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> given <span class="math inline">\(Z\)</span> is average over <span class="math inline">\(z\)</span> of <span class="math inline">\(I(X; Y \mid Z = z)\)</span>, <span class="math display">\[
-\begin{aligned}
-I(X; Y \mid Z) 
-&amp;= \mathbf{H}(X \mid Z) - \mathbf{H}(X \mid Y, Z) \\
-&amp;= \mathbf{H}(Y \mid Z) - \mathbf{H}(Y \mid X, Z) \\
-&amp;= \mathbf{H}(X \mid Z) + \mathbf{H}(Y \mid Z) - \mathbf{H}(X, Y \mid Z) \\
-&amp;= \mathbb{E}_{X, Y, Z} \log \frac{ p(X, Y \mid Z )}{ p(X \mid Z) \cdot p(Y \mid Z)}.
-\end{aligned}
-\]</span></p>
-</blockquote>
-<h1 id="conditional-relative-entropy"><strong>Conditional Relative Entropy</strong></h1>
-<blockquote>
-<p><strong>Definition</strong> (Conditional Relative Entropy). <span class="math display">\[
-\begin{aligned}
-\mathbf{D}( p(y \mid x) || q(y \mid x) ) &amp;\doteq  \mathbb{E}_{p(x, y) } \left[ \log \frac{ p(Y \mid X) }{ q(Y \mid X) }  \right]\\
-&amp;=\sum_{x}  \sum_{ y } p(y \mid x) \log \frac{ p(y \mid x) }{ q(y \mid x) }
-\end{aligned}
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Lemma.</strong> Relative entropy <span class="math inline">\(\mathbf{D}( p || q )\)</span> is convex in the pair <span class="math inline">\((p, q)\)</span>: if there are two distribution pairs <span class="math inline">\((p_1, q_1)\)</span> and <span class="math inline">\((p_2, q_2)\)</span>, then for <span class="math inline">\(\alpha_1, \alpha_2 \in [0, 1]\)</span>, s.t., <span class="math inline">\(\alpha_1 + \alpha_2 = 1\)</span>, it holds that <span class="math display">\[
-\mathbf{D}( \alpha_1 p_1 + \alpha_2 p_2 || \alpha_1 q_1 + \alpha_2 q_2 ) \le \alpha_1 \mathbf{D}( p_1 ||  q_1 ) + \alpha_2 \mathbf{D}( p_2 ||  q_2 )
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> For any fix value <span class="math inline">\(x\)</span>, let <span class="math inline">\(s(x)\)</span> be a shorthand for <span class="math inline">\(\alpha_1 p_1(x) + \alpha_2 p_2(x)\)</span>. It holds that <span class="math display">\[ \small
-\begin{aligned}
-    s(x) \log \frac{ s(x) }{ \alpha_1 q_1(x) + \alpha_2 q_2(x) } 
-    &amp;=-s(x) \log \frac { \alpha_1 q_1(x) + \alpha_2 q_2(x) } { s(x) } \\
-    &amp;= -s(x) \log \left( \frac { \alpha_1 p_1(x)  } { s(x) } \frac { \alpha_1 q_1(x) } { \alpha_1 p_1(x)  } + \frac { \alpha_2 p_2(x)  } { s(x) } \frac { \alpha_2 q_2(x) } { \alpha_2 p_2(x)  } \right) \\
-    &amp;\le -\alpha_1 p_1(x) \log   \frac {  q_1(x) } {  p_1(x)  } - \alpha_2 p_2(x) \log \frac {  q_2(x) } {  p_2(x)  }
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="chain-rules"><strong>Chain Rules</strong></h1>
-<h2 id="chain-rule-for-information-content">Chain Rule for Information Content</h2>
-<blockquote>
-<p><span class="math inline">\(\log \frac{1}{ p(x, y) } = \log \frac{1}{p(x) } + \log \frac{1}{p(y | x) }\)</span>.</p>
-</blockquote>
-<h2 id="chain-rule-for-entropy">Chain Rule for Entropy</h2>
-<p>Let <span class="math inline">\(X_1, \ldots, X_n\)</span> be random variables whose density function is <span class="math inline">\(p(x_1 \ldots, x_n)\)</span>.</p>
-<blockquote>
-<p><span class="math inline">\(\mathbf{H}(X_1, \ldots, X_n) = \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, \ldots, X_{i - 1})\)</span></p>
-</blockquote>
-<p><strong>Proof.</strong><br />
-<span class="math display">\[ \small
-\begin{aligned}
-    \mathbf{H}(X_1, \ldots, X_n) 
-        &amp;= \sum_{x_1 \ldots, x_n} p(x_1 \ldots, x_n)  \log \frac{1}{\prod_{i = 1}^n p(x_i \mid x_1, \ldots, x_{i - 1})  }  \\
-        &amp;= \sum_{x_1 \ldots, x_n} p(x_1 \ldots, x_n) \sum_{i = 1}^n \log \frac{1}{ p(x_i \mid x_1, \ldots, x_{i - 1})  }  \\
-        &amp;=\sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, \ldots, X_{i - 1}) \\
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary</strong>. $  ( X_1, , X_n) _{i = 1}^n (X_i). $</p>
-</blockquote>
-<p><span class="math inline">\(\square\)</span></p>
-<h2 id="chain-rule-for-mutual-information">Chain Rule for Mutual Information</h2>
-<blockquote>
-<p><span class="math inline">\(\mathbf{I}(Y; X_1, \ldots, X_n) = \sum_{i = 1}^n \mathbf{I}( Y; X_i \mid X_1, \ldots, X_{i - 1})\)</span></p>
-</blockquote>
-<p><strong>Proof 1.</strong><br />
-<span class="math display">\[ \small
-\begin{aligned}
-    \mathbf{I}(X_1, \ldots, X_n; Y)
-    &amp;=  \mathbf{H}(X_1, \ldots, X_n) -  \mathbf{H}(X_1, \ldots, X_n \mid Y) \\
-    &amp;= \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, \ldots, X_{i - 1})  - \sum_{i = 1}^n \mathbf{H}(X_i \mid X_1, \ldots, X_{i - 1}, Y) \\
-    &amp;= \sum_{i = 1}^n \mathbf{I}(X_i ; Y\mid X_1, \ldots, X_{i - 1}) 
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Proof 2.</strong><br />
-<span class="math display">\[ \small
-\begin{aligned}
-    \mathbf{I}( Y ; X_1,  \ldots, X_n )
-        &amp;=  \mathbf{D} ( p(x_1, \ldots, x_n, y) \Vert p(x_1, \ldots, x_n) p(y)) \\
-        &amp;= \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y) \log \frac{ p( x_1, \ldots, x_n, y) }{ p( x_1, \ldots, x_n ) p(y)  } \\
-        &amp;= \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y) \left( \log \frac{1}{ p(x_1, \ldots, x_n) }  - \log \frac{1}{ p(x_1, \ldots, x_n \mid y ) } \right) \\
-        &amp;= \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y) \log \frac{1}{ p(x_1) \cdot p(x_2 \mid x_1) \cdot \ldots \cdot p(x_n \mid x_1, \ldots, x_{n - 1} ) } \\
-        &amp; - \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y)  \log \frac{1}{ p(x_1 \mid y) \cdot p(x_2 \mid x_1, y) \cdot \ldots \cdot p(x_n \mid x_1, \ldots, x_{n - 1}, y ) } \\
-        &amp;= \sum_{x_1, \ldots, x_n, y } p(x_1, \ldots, x_n, y) \left( \sum_{i \in [n] } \log \frac{ p(x_i \mid x_1, \ldots, x_{i - 1}, y) }{ p(x_i \mid x_1, \ldots, x_{i - 1}) } \right) \\
-        &amp;= \sum_{i = 1}^n \mathbf{I}( Y ; X_i \mid X_1, \ldots, X_{i - 1})
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Convexity of Relative Entropy.</strong> <span class="math display">\[
-\mathbf{D}( p(x, y) || q(x, y) ) = \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) ).
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-\begin{aligned}
-    \mathbf{D}( p(x, y) || q(x, y) ) 
-        &amp;= \sum_{x, y} p(x, y) \log \frac{ p(x) p(y \mid x) }{q(x) q (y \mid x) }
-        \\
-        &amp;= \sum_{x, y} p(x, y) \log \frac{ p(x)  }{q(x) } + \sum_{x, y} p(x, y) \log \frac{  p(y \mid x) }{  q (y \mid x) }
-        \\
-        &amp;= \mathbf{D}( p(x) || q(x) ) + \mathbf{D}( p(y \mid x) || q(y \mid x) )
-\end{aligned}
+<p>This is shown by the picture below.</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Complex-Mapping.png?raw=true" /></p>
+<p>We verify this algebraically.</p>
+<p><strong>Proof 1.</strong> Let <span class="math inline">\(w = \frac{2}{z - 1}\)</span>. As <span class="math inline">\(w \neq 0\)</span>, we have <span class="math display">\[
+{\small
+    z - 1 = \frac{2}{w} \implies z = \frac{2}{w} + 1.
+}
+\]</span> Hence, <span class="math display">\[
+\begin{aligned} \small
+        |z - 2 |  &lt; 1 
+            &amp;\implies \left| \frac{2}{w} - 1 \right| &lt; 1 \\
+            &amp;\implies \left| \frac{2 - w}{w} \right|^2 &lt; 1 \\
+            &amp;\implies \left| 2 - w \right|^2 &lt; |w|^2 \\
+            &amp;\implies \Vert (2 - x, y) \Vert_2^2 &lt; \Vert (x, y) \Vert_2^2   &amp;\text{let } w = (x, y) \\
+            &amp;\implies 4 - 4 x &lt; 0 \\
+            &amp;\implies 1 &lt; x. 
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><strong>Proof 2.</strong> Denote the border of <span class="math inline">\(S_1\)</span> as <span class="math inline">\(z = 2 + e^{i \theta}\)</span>, where <span class="math inline">\(\theta \in [-\pi, \pi)\)</span>. Then <span class="math display">\[
+    \begin{aligned}
+        w 
+            &amp;= \frac{2}{z - 1} \\
+            &amp;= \frac{2}{1 + e^{i \theta } } \\
+            &amp;= \frac{2}{1 + e^{i \theta } } \cdot \frac{e^{- i\theta / 2 } }{ e^{ - i \theta / 2 } } \\
+            &amp;= \frac{2 e^{ - i \theta / 2} }{ e^{ - i \theta / 2 } + e^{i \theta / 2} } \\
+            &amp;= 2 \cdot \frac{ \cos (\theta / 2) + i \sin (\theta / 2) }{ 2 \cos (\theta  / 2) } \\
+            &amp;= 1 + i \tan (\theta / 2).
+    \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 
@@ -657,7 +247,7 @@ I(X; Y \mid Z)
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/05/Amplificatoin-by-Sampling/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/14/Fano%E2%80%99s-Inequality/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -671,7 +261,7 @@ I(X; Y \mid Z)
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/05/Amplificatoin-by-Sampling/" class="post-title-link" itemprop="url">Amplificatoin by Sampling</a>
+            <a href="/2021/07/14/Fano%E2%80%99s-Inequality/" class="post-title-link" itemprop="url">Fano’s Inequality</a>
         </h2>
 
         <div class="post-meta">
@@ -681,14 +271,14 @@ I(X; Y \mid Z)
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-07-05 23:51:25" itemprop="dateCreated datePublished" datetime="2021-07-05T23:51:25+10:00">2021-07-05</time>
+              <time title="Created: 2021-07-14 00:28:31" itemprop="dateCreated datePublished" datetime="2021-07-14T00:28:31+10:00">2021-07-14</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-06 00:27:12" itemprop="dateModified" datetime="2021-07-06T00:27:12+10:00">2021-07-06</time>
+                <time title="Modified: 2021-07-25 15:12:23" itemprop="dateModified" datetime="2021-07-25T15:12:23+10:00">2021-07-25</time>
               </span>
 
           
@@ -702,45 +292,187 @@ I(X; Y \mid Z)
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote>
-<p><strong>Definition.</strong> Two distribution <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\mu&#39;\)</span> are <span class="math inline">\((\epsilon, \delta)\)</span> close, denoted as <span class="math inline">\(\mu \simeq_{(\epsilon, \delta) } \mu&#39;\)</span>, if for all measurable set <span class="math inline">\(A\)</span>, we have <span class="math display">\[
-\begin{aligned}
-\mu(A) &amp;\le e^\epsilon \mu&#39;(A) + \delta, \\
-\mu&#39;(A) &amp;\le e^\epsilon \mu(A) + \delta. 
-\end{aligned}
+          <p>Suppose that Alice wants to transmit a random variable <span class="math inline">\(X\)</span> to Bob via a noisy channel. The noisy channel is modelled by a stochastic mapping <span class="math inline">\(f\)</span>, and Bob receives a randomized version of <span class="math inline">\(X\)</span>, denoted as <span class="math inline">\(Y = f(X)\)</span>. Bob post-processes <span class="math inline">\(Y\)</span> by another stochastic mapping <span class="math inline">\(g\)</span> to produce an estimate <span class="math inline">\(\hat X\)</span> of <span class="math inline">\(X\)</span>. The mapping <span class="math inline">\(g\)</span> depends only on <span class="math inline">\(Y\)</span> and therefore <span class="math inline">\(\hat X\)</span> and <span class="math inline">\(X\)</span> are conditionally independent given <span class="math inline">\(Y\)</span>. The random variables <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span> and <span class="math inline">\(\hat X\)</span> forms a Markov chain, denoted as <span class="math display">\[
+    X \rightarrow Y \rightarrow \hat X. 
 \]</span></p>
-</blockquote>
+<p>Denote <span class="math inline">\(p_e = \Pr[ \hat X \neq X]\)</span> the probability of estimation error. If the channel is noiseless, then <span class="math inline">\(H(X \mid Y ) = 0\)</span>, and the identity mapping <span class="math inline">\(g(Y) \doteq Y\)</span> has error probability <span class="math inline">\(p_e = 0\)</span>. As the noisy of the channel increases, <span class="math inline">\(H(X \mid Y)\)</span> increases, so as <span class="math inline">\(p_e\)</span>. <span class="math inline">\(H(X \mid Y)\)</span> can be viewed as the information lost incurred by the channel. The information lost is small, only if when <span class="math inline">\(p_e\)</span> is small, which is established by the following theorem.</p>
 <blockquote>
-<p><strong>Theorem.</strong> Let <span class="math inline">\(q \in (0, 1)\)</span> and let <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\mu&#39;\)</span> be two distributions such that <span class="math inline">\(\mu \simeq_{(\epsilon, \delta)} \mu&#39;\)</span>. For <span class="math inline">\(\nu = (1 - q) \mu + q \mu&#39;\)</span>, it holds that <span class="math display">\[
-\nu \simeq_{ (\epsilon&#39;, q \delta) } \mu, 
-\]</span> where <span class="math inline">\(\epsilon&#39; = \ln ( q (e^\epsilon - 1) + 1 )\)</span>.</p>
+<p><strong>Theorem (Fano's Inequality).</strong> Suppose that the random variables <span class="math inline">\(X \rightarrow Y \rightarrow \hat X\)</span> forms a Markov chain. Let <span class="math inline">\(p_e \doteq \Pr[ X \neq \hat X]\)</span>. The information lost of <span class="math inline">\(H(X \mid Y)\)</span> is bounded by: <span class="math display">\[
+H(X \mid Y) \le H ( X \mid \hat X) \le H_2(p_e) + p_e \log ( | \Omega | - 1), 
+\]</span> where <span class="math inline">\(H_2(p) \doteq p \cdot \big( \log \frac{1}{p} \big) + (1 - p) \cdot \log \frac{1}{1 - p}\)</span>.</p>
 </blockquote>
-<p><strong>Proof.</strong> For each measurable set <span class="math inline">\(A\)</span> <span class="math display">\[
+<p><strong>Remark.</strong> Note that <span class="math display">\[
+    \lim_{p_e \rightarrow 0 } H_2 (p_2) + p_e \log ( | \Omega | - 1 ) = 0,
+\]</span> which complies with our discussion before.</p>
+<p><strong>Proof.</strong> Let <span class="math inline">\(E\)</span> be an indicator random variable for the event <span class="math inline">\(X \neq \hat X\)</span>.</p>
+<p>Via chain rule for entropy, we expand <span class="math inline">\(H(E, X \mid \hat X)\)</span> in two different ways <span class="math display">\[
     \begin{aligned}
-        \nu(A) 
-            &amp;= (1 - q) \mu(A) + q \mu&#39; (A) \\
-            &amp;\le (1 - q) \mu(A) + q (e^\epsilon \mu (A) + \delta) \\
-            &amp;= ( q (e^\epsilon - 1) + 1 ) \mu(A) + q \delta. 
+        H(E, X \mid \hat X) 
+            &amp;= H( X \mid \hat X ) + H( E \mid X, \hat X) \\
+            &amp;= H( E \mid \hat X ) + H( X \mid E, \hat X).
     \end{aligned}
 \]</span></p>
-<p>Next we prove the other direction. Denote <span class="math inline">\(t = e^{\epsilon} - 1\)</span>. Then <span class="math display">\[
-    e^{\epsilon&#39;} = 1 + qt, 
-\]</span></p>
-<p>and <span class="math display">\[
+<p>We see that * <span class="math inline">\(H(E \mid X, \hat X) = 0\)</span>, since <span class="math inline">\(E\)</span> is a function of <span class="math inline">\(X\)</span> and <span class="math inline">\(\hat X\)</span>, the conditional entropy.</p>
+<ul>
+<li><p><span class="math inline">\(H( E \mid \hat X ) \le H(E) = H_2 (p_e)\)</span>, since conditioning reduces entropy and <span class="math inline">\(E\)</span> is a binary random variable.</p></li>
+<li><p><span class="math inline">\(H(X \mid E, \hat X) \le p_e \log ( | \Omega | - 1)\)</span>, which is obtained as follows:<br />
+<span class="math display">\[
+      \begin{aligned}
+      H(X \mid E, \hat X) 
+          &amp;= p_e H( X \mid \hat X, E = 1) + (1 - p_e) H(X \mid \hat X, E = 0) \\
+          &amp;\le p_e \log ( | \Omega | - 1).
+      \end{aligned}
+  \]</span></p>
+<p>The last inequality holds, since given <span class="math inline">\(\hat X\)</span>,</p>
+<ol type="1">
+<li><p>when <span class="math inline">\(E = 0\)</span>, there is no randomness about <span class="math inline">\(X\)</span>; and</p></li>
+<li><p>when <span class="math inline">\(E = 1\)</span>, <span class="math inline">\(X\)</span> has <span class="math inline">\(|\Omega - 1|\)</span> possible outcomes and its randomness is less than the one of uniform distribution over the possible outcomes.</p></li>
+</ol></li>
+</ul>
+<p>Combining these results, we get <span class="math display">\[
     \begin{aligned}
-        \nu(A)  
-            &amp;=  (1 - q) \mu(A) + q \mu&#39; (A)   \\
-            &amp;\ge  (1 - q) \mu(A) + q e^{-\epsilon} (\mu (A) - \delta)   \\
-            &amp;=  (1 - q) \mu(A) + \frac{q}{1 + t} (\mu (A) - \delta)   \\
-            &amp;=  \mu(A) - \frac{qt}{1 + t} \mu (A) - \frac{q}{1 + t} \delta   \\
-            &amp;= \left( 1 - \frac{qt}{1 + t} \right) \mu (A) - \frac{1}{1 + t} q \delta \\
-            &amp;\ge \left( 1 - \frac{qt}{1 + qt} \right) \mu (A) - \frac{1}{1 + qt} q \delta \\
-            &amp;= \frac{1}{1 + qt} \left( \mu (A) - q \delta \right). 
-    \end{aligned}
+        H(E, X \mid \hat X) 
+            = H( X \mid \hat X ) 
+            \le H_2 ( p_2 ) + p_e \log ( | \Omega | - 1). 
+    \end{aligned} 
+\]</span></p>
+<p>It is left to prove that <span class="math display">\[
+    H(X \mid Y) \le H( X \mid \hat X). 
+\]</span></p>
+<p>Via the data-processing inequality for the Markov chain <span class="math inline">\(X \rightarrow Y \rightarrow \hat X\)</span>: <span class="math display">\[
+    I(X ; Y) \ge I(X ; \hat X), 
+\]</span></p>
+<p>which implies <span class="math display">\[
+    H( X \mid \hat X) = H(X) - I(X ; \hat X) \ge H(X) - I(X ; Y) = H(X \mid Y). 
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1] <em>Ú. Erlingsson, V. Feldman, I. Mironov, A. Raghunathan, K. Talwar, and A. Thakurta, “Amplification by Shuffling: From Local to Central Differential Privacy via Anonymity,”</em></p>
+<p>[1] <em>T. M. Cover and J. A. Thomas, “ELEMENTS OF INFORMATION THEORY,” p. 774.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/14/Data-Processing-Inequality/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/14/Data-Processing-Inequality/" class="post-title-link" itemprop="url">Data-Processing Inequality</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-14 00:08:51" itemprop="dateCreated datePublished" datetime="2021-07-14T00:08:51+10:00">2021-07-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-25 00:40:14" itemprop="dateModified" datetime="2021-07-25T00:40:14+10:00">2021-07-25</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose that <span class="math inline">\(X\)</span> be a random variable.</p>
+<ul>
+<li>We obtain a new random variable <span class="math inline">\(Y\)</span> by applying a stochastic mapping <span class="math inline">\(f\)</span> on <span class="math inline">\(X\)</span>, namely, <span class="math inline">\(Y = f(X)\)</span>.<br />
+</li>
+<li>We further post-process <span class="math inline">\(Y\)</span> by another stochastic mapping <span class="math inline">\(g\)</span> to obtain <span class="math inline">\(Z\)</span>, i.e., <span class="math inline">\(Z = g(Y)\)</span>.</li>
+</ul>
+<p>The function <span class="math inline">\(g\)</span> depends only on <span class="math inline">\(Y\)</span> and is independent of <span class="math inline">\(X\)</span>. Therefore, the <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are conditionally independent given <span class="math inline">\(Y\)</span>. The random variables <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span>, <span class="math inline">\(Z\)</span> are said to form a Markov chain, denoted by <span class="math display">\[
+    X \rightarrow Y \rightarrow Z. 
+\]</span></p>
+<p>The data processing inequality states that postprocessing can not increases the correlations.</p>
+<blockquote>
+<p><strong>Theorem (Data Processing Inequality).</strong> If the random variables <span class="math inline">\(X, Y\)</span> and <span class="math inline">\(Z\)</span> form a Markov chain: <span class="math inline">\(X \rightarrow Y \rightarrow Z\)</span>. Then <span class="math display">\[
+I( X; Y) \ge I(X ; Z),\,\\
+I( X; Y) \ge I(X; Y \mid Z).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> By chain rule of mutual information, we expand the mutual information in two different ways: <span class="math display">\[
+    \begin{aligned}
+        I(X; Y, Z) 
+            &amp;= I(X ; Z) + I( X; Y \mid Z)   \\
+            &amp;= I(X ; Y) + I( X; Z \mid Y). 
+    \end{aligned}
+\]</span></p>
+<p>Since <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> are conditionally independent through <span class="math inline">\(Y\)</span>, it holds that <span class="math display">\[
+    I(X; Z \mid Y) = 0.
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    I(X; Y) = I(X; Z) + I(X; Y \mid Z). 
+\]</span></p>
+<p>The inequalities follow form non-negativity of mutual information.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong>Remark.</strong> <span class="math display">\[
+    \begin{aligned} \small
+        I(X; Y, Z) 
+            &amp;= \sum p(x, y, z) \log \frac{ p (x, y, z) }{ p(x) p(y, z) } \\
+            &amp;= \sum p(x, y, z) \log \frac{ p(y, z \mid x) }{ p(y, z) } \\
+            &amp;= \sum p(x, y, z) \Big( \log \frac{ 1 }{ p(z) p(y \mid z) } - \log \frac{1}{ p(z \mid x) p(y \mid z, x) }\Big) \\
+            &amp;= I(X; Z) + I(X; Y \mid Z).
+    \end{aligned}
+\]</span></p>
+<p><strong>Remark.</strong> If <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> are conditionally independent through <span class="math inline">\(Y\)</span>, then <span class="math display">\[
+    I(X, Z \mid Y) = \sum p(x, y, z) \log \frac{ p(x, z \mid y) }{ p(x \mid y) p ( z \mid y ) } = 0, 
+\]</span> since <span class="math inline">\(p(x, z \mid y) = p(x \mid y ) p(z \mid y)\)</span>.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>T. M. Cover and J. A. Thomas, “ELEMENTS OF INFORMATION THEORY,” p. 774.</em></p>
+<!-- Let $X$ be a random variable and $f$ be a stochastic map. Define $Y \doteq f(X)$. 
+Suppose then we process $Y$ according to another stochastic map $g$ to obtain $Z \doteq g(Y)$.
+The data-processing inequality states that the correlation between $X$ and $Z$ is less than the correlation between $X$ and $Y$: 
+$$
+    I(X; Y) \ge I(X ; Z), 
+$$
+i.e., data processing according to any stochastic map cannot increase correlations. 
+
+
+The scenario described above paragraph contains a major assumption: the stochastic map $g$ depends on the random variable $Y$ only -- it has no dependence on $X$, meaning that 
+$$
+    p(z \mid y, x) = p(z \mid y). 
+$$
+
+This assumption is called Markov assumption. 
+We asy that $X$, $Y$ and $Z$ form a Markov chain and use the notation $X \rightarrow Y \rightarrow Z$ to indicate this stochastic relationship.  -->
 
       
     </div>
@@ -759,7 +491,7 @@ I(X; Y \mid Z)
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/56/">56</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/57/">57</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -825,7 +557,7 @@ I(X; Y \mid Z)
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">167</span>
+          <span class="site-state-item-count">170</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -857,7 +589,7 @@ I(X; Y \mid Z)
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
