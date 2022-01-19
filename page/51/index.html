@@ -146,6 +146,98 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/21/Graph%20Sparsification/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/21/Graph%20Sparsification/" class="post-title-link" itemprop="url">Graph Sparsification</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-21 19:52:33" itemprop="dateCreated datePublished" datetime="2018-07-21T19:52:33+10:00">2018-07-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-07-22 13:11:24" itemprop="dateModified" datetime="2018-07-22T13:11:24+10:00">2018-07-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Given a dense graph <span class="math inline">\(G = \langle V,E \rangle\)</span> and relative error threshold <span class="math inline">\(\epsilon\)</span>, we want to get a spare graph <span class="math inline">\(G&#39; = \langle V, E&#39; \rangle\)</span>, such that <span class="math inline">\(G&#39;(S, \bar{S}) \in (1 \pm \epsilon) G(S, \bar{S})\)</span> for any cut <span class="math inline">\((S, \bar{S}) \in V \times V\)</span>, where <span class="math inline">\(G&#39;(S, \bar{S})\)</span> stands for the number of edges between <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> in <span class="math inline">\(G&#39;\)</span>.</p>
+<p><span class="math inline">\(G&#39;\)</span> can be constructed as follows:</p>
+<blockquote>
+<ol type="1">
+<li><p>Keep all vertices <span class="math inline">\(V\)</span> in <span class="math inline">\(G&#39;\)</span>,</p></li>
+<li><p>Keep each edge <span class="math inline">\(e \in E\)</span> in <span class="math inline">\(G&#39;\)</span> with probability <span class="math inline">\(p\)</span>. If an edge is kept, set its weight to <span class="math inline">\(1/p\)</span>.</p></li>
+</ol>
+</blockquote>
+<p>We will determine the value of <span class="math inline">\(p\)</span> later.</p>
+<p>There are many possible <span class="math inline">\(G&#39;\)</span>'s -- precisely, <span class="math inline">\(2^{|E|}\)</span> of <span class="math inline">\(G&#39;\)</span>'s. At the first glimpse, it not clear what we get out of them. However, we will show that for a large fraction of them satisfy our requirement. In other words, we get a <em>good</em> <span class="math inline">\(G&#39;\)</span> with high probability.</p>
+<p>To show this, first observe that each edge has expected weight <span class="math inline">\(p \cdot 1 / p + (1 - p) \cdot 0 = 1\)</span>. Therefore, by linearity of expectation, the expected value of each cut in <span class="math inline">\(G&#39;\)</span> equals to its value in <span class="math inline">\(G\)</span>, i.e., <span class="math inline">\(E[G&#39;(S, \bar{S})] = G(S, \bar{S})\)</span>, for <span class="math inline">\(\forall (S, \bar{S}) \in V \times V\)</span>.</p>
+<p>By proper choice of <span class="math inline">\(p\)</span>, all <span class="math inline">\(G&#39;(S, \bar{S})\)</span> will concentrate around its expectation. Moreover, the more edges a cut <span class="math inline">\((S, \bar{S}) \in G\)</span> has, the more likely its expectation has a smaller deviation. This motivates that <span class="math inline">\(p\)</span> is set according to the min-cut of <span class="math inline">\(G\)</span>.</p>
+<p>Throughout discussion below, we denote <span class="math inline">\(n\)</span> as the number of vertices, <span class="math inline">\(m\)</span> the number of edges, and <span class="math inline">\(c^*\)</span> the min-cut value in <span class="math inline">\(G\)</span>.</p>
+<h4 id="two-important-results">Two Important Results</h4>
+<p>The first one is the famous combinatorial ramification of Karger Algorithm.</p>
+<p><strong>Theorem 1</strong>. The number of cuts whose weight are within <span class="math inline">\(\alpha c^*\)</span> is upper bounded by <span class="math inline">\(n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2}\)</span>, where <span class="math inline">\(\alpha \ge 1, 2 \alpha \in N^+\)</span>.</p>
+<p>Define <span class="math inline">\(f(x)\)</span> (<span class="math inline">\(x \in R, x \ge 1\)</span>) the number of cuts in <span class="math inline">\(G&#39;\)</span> with value <span class="math inline">\(x c^*\)</span>, where <span class="math inline">\(x c^*\)</span> is an integer. <span class="math inline">\(F(\alpha) = \sum_{x \le \alpha} f(x)\)</span> is bounded by <span class="math inline">\(n^{2\alpha}\)</span>.</p>
+<p>The second is Chernoff Bound.</p>
+<p><strong>Theorem 2</strong>. Let <span class="math inline">\(\{ X_i \}\)</span> be a set of random variables and <span class="math inline">\(X \doteq \Sigma X_i\)</span>, <span class="math inline">\(E[X] = \mu\)</span>, then <span class="math inline">\(Pr[|X - \mu| \ge \epsilon \mu] \le 2 \exp(- \epsilon^2 \mu /3)\)</span>.</p>
+<p>By Chernoff bound, the probability that a min-cut derivate more than <span class="math inline">\(\epsilon c^*\)</span> is bounded by <span class="math inline">\(2 \exp (-\epsilon^2 p c^* / 3)\)</span>. Similarly, the bound for a cut with value <span class="math inline">\(\alpha c^*\)</span> is <span class="math inline">\(2 \exp (-\epsilon^2 \alpha p c^* / 3)\)</span>.</p>
+<p>Denote <span class="math inline">\(c&#39; = cp\)</span>. It follows by union bound that the probability that some cut deviate more than <span class="math inline">\(\epsilon\)</span> times it expected value is at most <span class="math inline">\(\sum_x f(x) \cdot 2 \exp(-\epsilon^2xc&#39;/3)\)</span>.</p>
+<p>It can be shown that to maximum this value, we need <span class="math inline">\(F(\alpha)\)</span> takes the value <span class="math inline">\(n^{2 \alpha}\)</span> any for <span class="math inline">\(\alpha \ge 1, 2\alpha \in N^+\)</span>. Hence the sum is less than <span class="math display">\[
+2f(1)e^{-\epsilon^2 c&#39; /3} + 2 \int_{x = 1}^\infty {\partial n^{2x} \over \partial x} e^{-\epsilon^2 x c&#39;/ 3} dx
+\]</span></p>
+<p>That is <span class="math display">\[
+2 n^2 e^{-\epsilon^2 c&#39; /3}(1 + {\ln n^2 \over \epsilon^2 c&#39; /3 - \ln n^2}) 
+\]</span></p>
+<p>If we let <span class="math inline">\(p = 3(d + 2) \ln n / (\epsilon^2 c)\)</span> for some parameter d, then the bound becomes <span class="math inline">\(O(n^{-d})\)</span>.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/21/Karger%20Algorithm%20I/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -376,149 +468,6 @@ p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/18/Hashing/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/18/Hashing/" class="post-title-link" itemprop="url">Hashing</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-07-18 15:07:42" itemprop="dateCreated datePublished" datetime="2018-07-18T15:07:42+10:00">2018-07-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-05-03 00:17:49" itemprop="dateModified" datetime="2020-05-03T00:17:49+10:00">2020-05-03</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(S = \{ x_1, x_2, ..., x_m \}\)</span> be a set of distinct element from domain <span class="math inline">\(U\)</span>. A function <span class="math inline">\(h: U \rightarrow [n]\)</span> that takes element from <span class="math inline">\(U\)</span> to a smaller domain <span class="math inline">\([n]\)</span> is called a hash function, where <span class="math inline">\([n] = \{ 0, 1, ..., n - 1\}\)</span> and <span class="math inline">\(n \le |U|\)</span>. In the case where <span class="math inline">\(n &lt; |U|\)</span>, there must be some <span class="math inline">\(i \in [n]\)</span>, s.t., <span class="math inline">\(|h^{-1}(i)| &gt; 1\)</span>. We are interested in the number of total duplicate value in <span class="math inline">\(h(S) = \{ h(x_1), h(x_2), ..., h(x_m) \}\)</span>.</p>
-<p>If both <span class="math inline">\(S\)</span> and <span class="math inline">\(h\)</span> are fixed, there is nothing uncertain. There are two ways to add some randomness to our analysis</p>
-<ol type="1">
-<li><p><span class="math inline">\(h\)</span> is fixed, and <span class="math inline">\(S\)</span> follows some distribution on <span class="math inline">\(U\)</span>. As an example, let <span class="math inline">\(U = [0, 2^{20} - 1]\)</span> and <span class="math inline">\(h(x) = x \ \&amp; \ 1023\)</span> that returns the last <span class="math inline">\(10\)</span> bits of <span class="math inline">\(x\)</span> (in binary form). If <span class="math inline">\(S\)</span> is sampled uniformly at random from <span class="math inline">\(U\)</span>, then on average for each <span class="math inline">\(x_i \in S\)</span>, there are <span class="math inline">\(\frac{m - 1}{1024}\)</span> elements that have the same value as <span class="math inline">\(x_i\)</span> under <span class="math inline">\(h\)</span>.</p></li>
-<li><p>The assumption that <span class="math inline">\(S\)</span> follows some distribution is too strong. Instead we assume that given <span class="math inline">\(S\)</span>, we select a function <span class="math inline">\(h\)</span> uniformly, from a set of functions <span class="math inline">\(\mathcal{H}\)</span>. Now we are going to analyze the probability <span class="math inline">\(P[ h(x_i) = h(x_j) ]\)</span> for <span class="math inline">\(i \neq j\)</span>.</p></li>
-</ol>
-<p>Let <span class="math inline">\(p &gt; |U|\)</span> be a prime number and <span class="math display">\[
-\mathcal{H} \doteq \{ h(x) = ax + b \mod p \mod n | 1 \le a &lt; p, 0 \le b &lt; p \}
-\]</span></p>
-<p>It follows that if <span class="math inline">\(h\)</span> is sampled uniformly at random, <span class="math inline">\(P[h(x_i) = h(x_j)] \le 1 / n\)</span> for <span class="math inline">\(i \neq j\)</span>.</p>
-<h5 id="lemma-1.">Lemma 1.</h5>
-<p>For <span class="math inline">\(x_i \neq x_j\)</span>, and <span class="math inline">\(s, t \in [p], s \neq t\)</span>, there is a unique pair <span class="math inline">\((a,b) \in [p]^+ \times [p]\)</span> <span class="math display">\[
-    a x_i + b \mod p = s \\
-    a x_j + b \mod p = t
-\]</span> where <span class="math inline">\([p]^+ \doteq \{1, 2, ..., p-1 \}\)</span>.</p>
-<p><strong>Proof</strong>: Since <span class="math inline">\([p]\)</span> is a finite filed and <span class="math inline">\(x_i \neq x_j\)</span>, the matrix</p>
-<p><span class="math display">\[
-\begin{bmatrix}
-x_i \mod p, 1 \\
-x_j \mod p, 1
-\end{bmatrix} \in [p]^{2 \times 2}
-\]</span></p>
-<p>is invertible. Therefore,</p>
-<p><span class="math display">\[
-\begin{bmatrix}
-a \\ 
-b
-\end{bmatrix} 
-= 
-\begin{bmatrix}
-x_i \mod p, 1 \\
-x_j \mod p, 1
-\end{bmatrix}^{-1}
-\begin{bmatrix}
-s \\ 
-t
-\end{bmatrix}
-\]</span> is unique. Moreover, <span class="math inline">\(a \neq 0\)</span>. Otherwise <span class="math inline">\(b = s\)</span> and <span class="math inline">\(b = t\)</span>, a contradiction to <span class="math inline">\(s \neq t\)</span>.</p>
-<h5 id="lemma-2.">Lemma 2.</h5>
-<p>For <span class="math inline">\(x_i \neq x_j\)</span>, <span class="math display">\[
-\begin{aligned}
-P[h(x_i = x_j)] 
-&amp;= \sum_{s, t \in [p], s \neq t, s \mod n = t \mod n} P[ h(x_i) = s \wedge h(x_j) = t] \\
-&amp;= \sum_{s, t \in [p], s \neq t, s = t \mod n} \frac{1}{ (p-1)p } \\
-&amp;= \sum_{s \in [p]} \sum_{t \in [p], t \neq s, t = s \mod n} \frac{1}{ (p-1)p } \\
-&amp;\le \sum_{s \in [p]} \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
-&amp;= p \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
-&amp;= \frac{1}{ n }
-\end{aligned}
-\]</span></p>
-<h5 id="lemma-3.">Lemma 3.</h5>
-<p>The expected number of pair <span class="math inline">\(x_i, x_j\)</span>, s.t., <span class="math inline">\(x_i \neq x_j \wedge h(x_i) = h(x_j)\)</span> is given by</p>
-<p><span class="math display">\[
-E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] = \sum_{x_i \neq x_j} P[h(x_i = x_j)] = \binom{m}{2} \frac{1}{n} = \frac{m (m - 1)}{ 2n }
-\]</span></p>
-<p>When <span class="math inline">\(m^2 \le n\)</span>, then <span class="math inline">\(E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] \le \frac{1}{2}\)</span>. By Markov inequality,</p>
-<p><span class="math display">\[
-P[\exists \quad \text{collision}] \le \frac{1}{ 2 }
-\]</span></p>
-<p>Lemma 4.</p>
-<p>With probability at most <span class="math inline">\(1/2\)</span>, some bin contains more than <span class="math inline">\(\frac{m}{n} + \sqrt{2m}\)</span> balls.</p>
-<p>For a fixed bin, let <span class="math inline">\(Y\)</span> denote the number of ball in this bin. Further, define <span class="math display">\[
-Y_i = \begin{cases}
-1, \qquad \text{if the } i \text{-th ball falls into the bin} \\
-0, \qquad \text{otherwise}
-\end{cases}
-\]</span> Then <span class="math inline">\(Y = \sum_i Y_i\)</span>, and <span class="math display">\[
-E[Y] = \frac{m}{n} \\
-\]</span> By pair-wise independence, we have <span class="math display">\[
-Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
-\]</span> Therefore, by Chebyshev inequality, we have <span class="math display">\[
-\Pr \left[ |Y - E[Y]| \ge \sqrt{2n} \sqrt{ m \frac{1}{n} \left(1 - \frac{1}{n} \right)} \right] = \Pr[|Y - E[Y]| \ge \sqrt{2n} \cdot \sigma] \le \frac{Var[Y]}{2n\sigma^2} = \frac{1}{2n}
-\]</span> Finally, applying union bound over <span class="math inline">\(n\)</span> bins, we get <span class="math display">\[
-\Pr[\text{some bin gets more than } \sqrt{2m} \text{ balls} ] \le \frac{1}{2}
-\]</span></p>
-<h5 id="reference">Reference:</h5>
-<ol type="1">
-<li>Sanjeev Arora, Cos 521: Advanced Algorithm Design, Lecture 1: Course Intro and Hashing</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -588,7 +537,7 @@ Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">170</span>
+          <span class="site-state-item-count">171</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
