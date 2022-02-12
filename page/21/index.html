@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/02/Randomized-Response/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/12/PAC-learning/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/11/02/Randomized-Response/" class="post-title-link" itemprop="url">Randomized Response</a>
+            <a href="/2020/11/12/PAC-learning/" class="post-title-link" itemprop="url">PAC Learning Basic</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-11-02 10:41:39" itemprop="dateCreated datePublished" datetime="2020-11-02T10:41:39+11:00">2020-11-02</time>
+              <time title="Created: 2020-11-12 16:06:55" itemprop="dateCreated datePublished" datetime="2020-11-12T16:06:55+11:00">2020-11-12</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-09 17:26:31" itemprop="dateModified" datetime="2020-11-09T17:26:31+11:00">2020-11-09</time>
+                <time title="Modified: 2021-11-09 21:28:44" itemprop="dateModified" datetime="2021-11-09T21:28:44+11:00">2021-11-09</time>
               </span>
 
           
@@ -191,405 +191,542 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>In the setting of randomized response, there is a coordinator and a set of <span class="math inline">\(n\)</span> players each having a secrete bit <span class="math inline">\(x_i \in \{0, 1\}\)</span>. Instead of sending <span class="math inline">\(x_i\)</span> to the coordinator directly, the player sends a randomly perturbed version <span class="math inline">\(X_i\)</span>, such that <span class="math display">\[
-X_i = 
-\begin{cases}
-    x_i, \qquad \text{with probability } 0.5 + \epsilon \\
-    \bar{ x}_i, \qquad \text{with probability } 0.5 - \epsilon \\
-\end{cases}
+          <p>We discuss a toy model of probably approximately correct (PAC) learning [1]. The setting focuses on a <span class="math inline">\(d\)</span>-dimension Boolean hypercube <span class="math inline">\(\{0, 1\}^d\)</span> and a set of functions <span class="math inline">\(\mathcal{H} = \{ h : \{0, 1\}^d \rightarrow \{0, 1 \} \}\)</span>. A function <span class="math inline">\(h \in \mathcal{H}\)</span> is called a hypothesis or a concept, which assigns each vertex in the hypercube a label 0 or 1.</p>
+<p>The goal of PAC learning is to learn an unknown hypothesis, denoted as <span class="math inline">\(h^* \in \mathcal{H}\)</span>, from a dataset, which consists of <span class="math inline">\(n\)</span> points <span class="math inline">\(X_1, X_2, \ldots, X_n \in \{0, 1\}^n\)</span> sampled independently from an unknown distribution <span class="math inline">\(D\)</span> (over the hypercube), as well as their labels <span class="math inline">\(Y_1 = h^*(X_1), Y_2 = h^*(X_2), \ldots, Y_n = h^*(X_n)\)</span>.</p>
+<p>We can state the algorithm for PAC learning in just one sentence.</p>
+<blockquote>
+<p>Output any hypothesis <span class="math inline">\(h&#39; \in \mathcal{H}\)</span> that is consistent with the sampled dataset, i.e., <span class="math display">\[
+h&#39;(X_i) = Y_i, \qquad \forall i \in [n]
 \]</span></p>
-<p>where <span class="math inline">\(\epsilon \in [0, 0.5]\)</span> and <span class="math inline">\(\bar{x}_i = 1 - x_i\)</span>. If <span class="math inline">\(\epsilon = 0\)</span>, then the response from play <span class="math inline">\(i\)</span> is totally random. On the other hand, if <span class="math inline">\(\epsilon = 0.5\)</span>, there isn't noise in <span class="math inline">\(X_i\)</span>.</p>
-<p>The coordinator would like to estimate the ratio of <span class="math inline">\(1\)</span>'s among the <span class="math inline">\(x_i\)</span>'s. Let <span class="math display">\[
-\bar{X} = \frac{1}{n} \sum_{i \in [n] } X_i. 
+</blockquote>
+<p>Such an hypothesis always exists, as <span class="math inline">\(h^*\)</span> satisfies this constraint. We have the classic PAC learning theorem.</p>
+<blockquote>
+<p><strong><em>Theorem.</em></strong> Let <span class="math inline">\(X \in \{0, 1\}^n\)</span> be a random point sampled from the unknown distribution, then for a given <span class="math inline">\(\delta \in (0, 1)\)</span>, <span class="math display">\[
+\Pr[ h&#39;(X) \neq h^*(X)] \ge \sqrt{ \log |\mathcal{H}| + \log \frac{ 1 }{ \delta } \over 2n}
+\]</span> with probability at most <span class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<p>The PAC learning theorem states that the probability that <span class="math inline">\(h&#39;\)</span> mislabels a point is bounded by <span class="math inline">\(\sqrt{ \log |\mathcal{H}| + \log ( 1 / \delta ) \over 2n}\)</span>.</p>
+<p><em>Proof.</em> Consider some fixed <span class="math inline">\(h \in \mathcal{H}\)</span>. For convenience, we rewrite <span class="math display">\[
+    \Pr[ h(X) \neq h^*(X)] = \mu_h. 
 \]</span></p>
-<p>Denote <span class="math inline">\(\mu = \frac{1}{n} \sum_{i \in [n] } x_i\)</span> the true ratio. Now <span class="math display">\[
+<p>Denote <span class="math inline">\(Z_i\)</span> the indicator variable of whether <span class="math inline">\(h\)</span> mislabels <span class="math inline">\(X_i\)</span>, i.e., <span class="math display">\[
+    Z_i = \begin{cases}
+        0, \qquad \text{ if } h(X_i) = Y_i \\
+        1, \qquad \text{ if } h(X_i) \neq Y_i 
+    \end{cases}
+\]</span></p>
+<p>By definition, <span class="math inline">\(\mathbb{E}[Z_i]\)</span> is an unbiased estimator of <span class="math inline">\(\mu_h\)</span>. Further, denote <span class="math inline">\(\hat \mu_h\)</span> the empirical mean of <span class="math inline">\(Z_i\)</span>'s <span class="math display">\[
+    \hat \mu_h \doteq \frac{1}{n} \sum_{i \in [n] } Z_i. 
+\]</span></p>
+<p>Note that for the outputted <span class="math inline">\(h&#39;\)</span>, <span class="math inline">\(\hat \mu_{h&#39;} = 0\)</span>.</p>
+<p>By Hoeffding inequality, for any <span class="math inline">\(\delta&#39; &gt; 0\)</span>, <span class="math display">\[
+    \Pr \left[ \hat \mu_h \le \mu_h - \sqrt{ \frac{ \log ( 1 / \delta&#39;) }{2n} } \right] \le \delta&#39;. 
+\]</span></p>
+<p>By union bound, the probability that <span class="math display">\[
+    \exists h \in \mathcal{H}, \hat \mu_h \ge \mu_h - \sqrt{ \frac{ \log ( 1 / \delta&#39;) }{2n} }
+\]</span></p>
+<p>is bounded by <span class="math inline">\(| \mathcal{H} | \delta&#39;\)</span>. By setting <span class="math inline">\(\delta&#39; = \frac{\delta}{ | \mathcal{H} | }\)</span>, it is guaranteed that with probability at most <span class="math inline">\(\delta\)</span>, <span class="math display">\[
+    0 = \hat \mu_{h&#39; } \le \mu_{h&#39;} -  \sqrt{ \log |\mathcal{H}| + \log ( 1 / \delta) \over 2n}.
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>The previous theorem can be improved with the <span class="math inline">\(\sqrt{ \cdot }\)</span> removed. The key here is that the selected <span class="math inline">\(h&#39;\)</span> is error-free on the samples.</p>
+<blockquote>
+<p><strong><em>Theorem.</em></strong> Let <span class="math inline">\(X \in \{0, 1\}^n\)</span> be a random point sampled from the unknown distribution, then for a given <span class="math inline">\(\delta \in (0, 1)\)</span>, <span class="math display">\[
+\Pr[ h&#39;(X) \neq h^*(X)] \ge { \log |\mathcal{H}| + \log \frac{ 1 }{ \delta } \over n}
+\]</span> with probability at most <span class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<p><em>Proof.</em> Consider some fixed <span class="math inline">\(h \in \mathcal{H}\)</span>. For convenience, we rewrite <span class="math display">\[
+    \Pr[ h(X) \neq h^*(X)] = \mu_h. 
+\]</span></p>
+<p>We will prove that if <span class="math inline">\(\mu_h \ge { \log |\mathcal{H}| + \log \frac{ 1 }{ \delta } \over n}\)</span>, then <span class="math inline">\(h\)</span>'s probability of being selected is very low.</p>
+<p>Denote <span class="math inline">\(Z_i\)</span> the indicator variable of whether <span class="math inline">\(h\)</span> mislabels <span class="math inline">\(X_i\)</span>, i.e., <span class="math display">\[
+    Z_i = \begin{cases}
+        0, \qquad \text{ if } h(X_i) = Y_i \\
+        1, \qquad \text{ if } h(X_i) \neq Y_i 
+    \end{cases}
+\]</span></p>
+<p>By definition, <span class="math inline">\(\Pr[Z_i = 1] = \mu_h\)</span>. Therefore, <span class="math display">\[
+    \begin{aligned}
+        \Pr[ Z_1 = 0 \wedge Z_2 = 0 \wedge \ldots \wedge Z_n = 0] = (1 - \mu_h)^n \le \exp(- \mu_h n) = \frac{\delta}{ |\mathcal{H} | }
+    \end{aligned}
+\]</span></p>
+<p>Taking union bound over all possible <span class="math inline">\(h\)</span> gives the desired result.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Caveat.</em></strong> <em>In both theorem, we see a <span class="math inline">\(\log \mathcal{H}\)</span> term in the failure probability, which is due to the use of union bound and can be roughly considered as the complexity of the hypothesis family. It is tempting to think that this could be avoid as follows.</em></p>
+<blockquote>
+<p>For the outputted <span class="math inline">\(h&#39;\)</span>, <span class="math inline">\(Z_1, \ldots, Z_n\)</span> are i.i.d samples. Therefore, the probability of all of them being <span class="math inline">\(0\)</span> is give by<br />
+<span class="math display">\[
+(1 - \mu_{h&#39;} )^n \le \exp( - \mu_{h&#39;} n). 
+  \]</span><br />
+Bounding this probability by <span class="math inline">\(\delta\)</span> gives <span class="math inline">\(\mu_{h&#39;} \le \frac{ \log ( 1 / \delta ) } {n}\)</span>.</p>
+</blockquote>
+<p><em>The argument is wrong. For the outputted <span class="math inline">\(h&#39;\)</span>, the <span class="math inline">\(Z_1, \ldots, Z_n\)</span> are not i.i.d samples, as <span class="math inline">\(h&#39;\)</span> is selected according to <span class="math inline">\(Z_1, \ldots, Z_n\)</span> and depends on them.</em></p>
+<p><em>To make it more concrete, suppose that there is an <span class="math inline">\(h\)</span>, such that <span class="math inline">\(\mu_h = \frac{ \log ( 1 / \delta ) } {n}\)</span>. Consider the following experiment</em></p>
+<blockquote>
+<ol type="1">
+<li>Sample <span class="math inline">\(n\)</span> points independently the distribution <span class="math inline">\(D\)</span>.<br />
+</li>
+<li>Pick an <span class="math inline">\(h&#39;\)</span> that makes no prediction error on the samples.</li>
+</ol>
+</blockquote>
+<p><em>If we repeat the experiment <span class="math inline">\(N\)</span> times for some positive integer <span class="math inline">\(N\)</span>, then the fixed <span class="math inline">\(h\)</span> makes no mistake in roughly <span class="math inline">\((1 - \delta) N\)</span> of the experiments and constitutes an candidate of <span class="math inline">\(h&#39;\)</span>. However, on the other roughly <span class="math inline">\(\delta N\)</span> experiments, where <span class="math inline">\(h\)</span> makes prediction error, it is no longer considered as the candidate of <span class="math inline">\(h&#39;\)</span>. The selection procedure of <span class="math inline">\(h&#39;\)</span> ignores bad event of <span class="math inline">\(h\)</span> automatically.</em></p>
+<p><em>We could also investigate the following example. Let <span class="math inline">\(h^* = h_0\)</span>. There are also other two hypothesis <span class="math inline">\(h_1\)</span> and <span class="math inline">\(h_2\)</span>. Let <span class="math inline">\(S\)</span> be the sample space. It holds that</em> <span class="math display">\[
+    |h_1(x) - h^*(x) | = \begin{cases}
+        2 \epsilon, \forall x \in S \setminus S_{h_1} \\
+        0,\ \       \forall x \in S_{h_1}
+    \end{cases}
+\]</span> <span class="math display">\[
+    |h_2(x) - h^*(x) | = \begin{cases}
+        2 \epsilon, \forall x \in S \setminus S_{h_2} \\
+        0,\ \       \forall x \in S_{h_2}
+    \end{cases}
+\]</span> <em>Moreover, <span class="math inline">\(\Pr[S_{h_1}] = \Pr[S_{h_2} ] = \delta\)</span>. How, if we get a sample in <span class="math inline">\(S_{h_1}\)</span>, then we can output <span class="math inline">\(h&#39;\)</span> as <span class="math inline">\(h_0\)</span> or <span class="math inline">\(h_1\)</span>, since both of them make no error when <span class="math inline">\(x \in S_{h_1}\)</span>. Similarly, if <span class="math inline">\(x \in S_{h_2}\)</span>, we can output either <span class="math inline">\(h_0\)</span> or <span class="math inline">\(h_2\)</span>. We call <span class="math inline">\(S_{h_1}\)</span> and <span class="math inline">\(S_{h_2}\)</span> the bad areas. When <span class="math inline">\(x\)</span> is in the bad area of any hypothesis, we can't distinguish this hypothesis from the true hypothesis. That is why we need to use union bound to bound the total probabilities of these bad areas.</em></p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/PAC-Learning.png?raw=true" width="400" height="340" /></p>
+</div>
+<h3 id="reference">Reference</h3>
+<p>[1] Leslie G. Valiant. A theory of the learnable. Communications of the ACM, 27(11):1134-1142, 1984. 6</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/06/Gaussian-Distribution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/06/Gaussian-Distribution/" class="post-title-link" itemprop="url">Gaussian Distribution</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-06 23:00:19" itemprop="dateCreated datePublished" datetime="2020-11-06T23:00:19+11:00">2020-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-06-09 22:00:48" itemprop="dateModified" datetime="2021-06-09T22:00:48+10:00">2021-06-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="gaussian-distribution">Gaussian Distribution</h1>
+<p>We show how Gaussian distribution (a.k.a. normal distribution) is constructed and list some of its basic properties.</p>
+<p>Suppose we would like to have a distribution in <span class="math inline">\(\mathbb{R}\)</span>, such that</p>
+<ol type="1">
+<li>It is centered at the origin.<br />
+</li>
+<li>Its density function decreases exponentially with respect to the square distance to the origin.</li>
+</ol>
+<blockquote>
+<p><em>Remark: if we replace 2 with "a density function decreases exponentially with the distance to the origin", we obtain Laplace distribution.</em></p>
+</blockquote>
+<p>The density function <span class="math inline">\(p(x)\)</span> should be inversely and exponentially proportional to <span class="math inline">\(x^2\)</span>: <span class="math display">\[
+    p(x) \propto \exp(-x^2 )
+\]</span></p>
+<p>Denote <span class="math inline">\(M\)</span> the value of<br />
+<span class="math display">\[
+    M \doteq \int_{-\infty}^\infty \exp(-x^2) \ dx, 
+\]</span></p>
+<p>then the close form of <span class="math inline">\(p(x)\)</span> is <span class="math display">\[
+    p(x)  = \frac{1}{M} \exp(- x^2). 
+\]</span></p>
+<p>It is easy to verity that <span class="math inline">\(p(x)\)</span> is a valid density function: <span class="math inline">\(\int_{-\infty}^\infty p(x) \ dx = 1\)</span>.</p>
+<h1 id="closed-form">Closed Form</h1>
+<blockquote>
+<p><strong>Theorem.</strong> $ p(x) =  ( - x^2 ) $ is a density function.</p>
+</blockquote>
+<p>In general, it is not hard to construct a distribution. Let <span class="math inline">\(h(x)\)</span> be any integrable function on a domain <span class="math inline">\(\mathcal{D}\)</span> such that <span class="math display">\[
+    M = \int_\mathcal{D} h(x) \ dx &lt; \infty
+\]</span></p>
+<p>Then we can view <span class="math inline">\(h(x)\)</span> as almost an density function of some distribution. The only obstacle is that <span class="math inline">\(M\)</span> might not be <span class="math inline">\(1\)</span>. However this is easy to fix. We scale the value of <span class="math inline">\(h(x)\)</span> by a constant factor at each point by setting <span class="math display">\[
+    p(x) = \frac{1}{M} h(x).
+\]</span></p>
+<p>In this case, we don't even need to know the exact value of <span class="math inline">\(M\)</span>. We only need to guarantee that</p>
+<blockquote>
+<p>The value of <span class="math inline">\(M\)</span> exists and is finite.</p>
+</blockquote>
+<p>Then we can safely rely on <span class="math inline">\(M\)</span> as a normalized. For example, we know that <span class="math display">\[
+    \int_0^\infty x^{0.2} e^{-x} \ dx \le  \int_0^1 e^{-x} \ dx  + \int_1^\infty x e^{-x} \ dx &lt; \infty.
+\]</span></p>
+<p>We can construct a density function as discussed above. It turns out that this is a special case of <em>Gamma distribution</em>.</p>
+<p>For Gaussian distribution, we are lucky as the closed form of <span class="math inline">\(M\)</span> does exists, due to the following "squaring trick": <span class="math display">\[
 \begin{aligned}
-    \mathbb{E} [ \bar{X} ] &amp;= \frac{1}{n} \sum_{i \in [n] } \mathbb{E}[ X_i ] \\
-                            &amp;= \frac{1}{n} \sum_{i \in [n] } [ (0.5 + \epsilon) x_i + (0.5 - \epsilon )\bar{x}_i ] \\
-                            &amp;= \frac{1}{n} \sum_{i \in [n] } [ 2 \epsilon x_i  + (0.5 - \epsilon) (x_i + \bar{x}_i) ] \\
-                            &amp;= \frac{1}{n} \sum_{i \in [n] } [ 2 \epsilon x_i  + (0.5 - \epsilon)  ] \\
-                            &amp;= \frac{1 - 2\epsilon }{2n}  + 2\epsilon \mu
+    M^2 &amp;= \Big( \int_{-\infty}^\infty \exp( -x^2 ) \  dx \Big)^2 \\
+        &amp;= \int_{-\infty}^\infty \exp( -x^2 ) \  dx \ \cdot \int_{-\infty}^\infty \exp( -y^2 ) \  dy \\
+        &amp;= \int_{-\infty}^\infty \int_{-\infty}^\infty \exp( -(x + y) ^2 ) \  dx  dy. 
 \end{aligned}
 \]</span></p>
-<p>and <span class="math display">\[
+<p>Denote <span class="math inline">\(r \doteq \sqrt{ x^2 + y^2}\)</span> the distance of <span class="math inline">\((x, y)\)</span> to <span class="math inline">\((0, 0)\)</span>. We are integrating the function <span class="math inline">\(\exp( - r^2)\)</span> over the plane <span class="math inline">\(\mathbb{R}^2\)</span>. It is natural to switch to polar coordinate system <span class="math inline">\((r, \theta)\)</span>, where <span class="math inline">\(\theta\)</span> is the angle of a point. Here is an informal but intuitive explanation. As the picture below demonstrates, if <span class="math inline">\(r\)</span> increases by <span class="math inline">\(dr\)</span> and <span class="math inline">\(\theta\)</span> increases by <span class="math inline">\(d\theta\)</span>, the new area spanned by <span class="math inline">\(dr\)</span> and <span class="math inline">\(d \theta\)</span> is roughly <span class="math inline">\(r dr d \theta\)</span>.<br />
+We can also calculate this algebraically<br />
+<span class="math display">\[
+\frac{1}{2} [(r + dr)^2 - r^2] d\theta = r dr d \theta + \frac{1}{2} (dr)^2 d \theta \approx r dr d \theta.
+\]</span></p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration1.png?raw=true" width="400" height="340" /></p>
+</div>
+<p>Finally, <span class="math display">\[
 \begin{aligned}
-    \mathbb{Var} [ \bar{X} ] = \frac{1}{n} \sum_{i \in [n] } \mathbb{Var}[ X_i ] 
-                            \le \frac{1}{4n} 
+    M^2 &amp;= \int_{0}^{ 2 \pi} \int_{0}^\infty \exp( -r^2 ) r d r d \theta \\
+        &amp;= \int_{0}^{ 2 \pi} \frac{1}{2}  \int_{0}^\infty \exp( -r^2 ) d r^2 d \theta \\
+        &amp;= \int_{0}^{ 2 \pi} \frac{1}{2} d \theta \\
+        &amp;= \pi.
 \end{aligned}
 \]</span></p>
-<p>Hence, <span class="math display">\[
-\mu = \mathbb{E}[ \frac{1}{2\epsilon} (\bar X + \frac{2\epsilon - 1}{2n}) ]
+<h1 id="basic-properties">Basic Properties</h1>
+<h2 id="expectation"><strong>Expectation</strong></h2>
+<p>As the distribution is symmetric to <span class="math inline">\(0\)</span>, it has expectation 0.</p>
+<h2 id="variance"><strong>Variance</strong></h2>
+<p>As its expectation is 0, the variance is given by</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \int_{-\infty}^\infty  \frac{ x^2 }{ \sqrt \pi } \exp( -x^2 ) \ dx 
+        &amp;= -\frac{1}{2 \sqrt \pi } \int_{-\infty}^\infty x \ d \exp( -x^2 ) \\
+        &amp;= \frac{1}{2 \sqrt \pi } \int_{-\infty}^\infty \exp( -x^2 ) d x\\
+        &amp;= \frac{1}{2 \sqrt \pi } \sqrt \pi \\
+        &amp;= \frac{1}{2}
+\end{aligned}
 \]</span></p>
-<p>and <span class="math inline">\(\hat \mu \doteq \frac{1}{2\epsilon} (\bar X + \frac{2\epsilon - 1}{2n})\)</span> is an unbiased estimator of <span class="math inline">\(\mu\)</span>. As <span class="math display">\[
-\mathbb{Var}[ \hat \mu ] = \frac{1}{4 \epsilon^2 } \mathbb{Var}[\bar{X} ] \le \frac{1}{16 n \epsilon^2}
+<h2 id="general-gaussian-distribution">General Gaussian Distribution</h2>
+<p>We have proved that if <span class="math inline">\(X\)</span> is a random variable with density function <span class="math inline">\(p(x) = \frac{1}{\sqrt \pi} \exp( -x^2)\)</span>, then <span class="math display">\[
+    \mathbb{Var}[X] = \frac{1}{2}.
 \]</span></p>
-<p>By Chebyshev's inequality, <span class="math display">\[
-\Pr[ |\hat \mu - \mu | \ge \sqrt{2} \cdot \frac{1 }{4\epsilon \sqrt{n} } ] \le \frac{ \mathbb{Var}[ \hat \mu ] }{ ( \sqrt{2} \cdot \frac{1 }{4 \epsilon \sqrt{n} } )^2 } = \frac{1}{2}
+<p>Define another random variable <span class="math inline">\(Y \doteq \sqrt{2} X\)</span>, whose variance is <span class="math display">\[
+    \mathbb{Var}[X] = 2 \mathbb{Var}[X] = 1.
 \]</span></p>
-<p>Or we can apply Hoeffding inequality to show that, with probability at least <span class="math inline">\(1 - \delta\)</span>, <span class="math display">\[
-|\bar{X} - \mathbb{E} [ \bar{X} ] | \le \sqrt{ \frac{\log \frac{2}{\delta} }{2n} }
+<p>To obtain its density function of <span class="math inline">\(Y\)</span>, we first scale the function <span class="math inline">\(p(x)\)</span> horizontally by a factor of <span class="math inline">\(\sqrt 2\)</span> to get <span class="math display">\[
+    \frac{1}{ \sqrt{ \pi } } \exp \Big( -\frac{x^2}{2} \Big).
+\]</span></p>
+<p>Now the area under the curve <span class="math inline">\(f(x) = \frac{1}{ \sqrt{ \pi } } \exp \big( - x^2 / {2} \big)\)</span> is <span class="math inline">\(\sqrt 2\)</span>. We normalize this area to <span class="math inline">\(1\)</span> and obtain <span class="math inline">\(Y\)</span>'s density function as <span class="math display">\[
+    p(y) = \frac{1}{ \sqrt{2 \pi } } \exp \Big( -\frac{y^2}{2} \Big)
+\]</span></p>
+<p>In what follows, we use <span class="math inline">\(N(0, 1)\)</span> to denote a Gaussian distribution with mean 0 and variance <span class="math inline">\(1\)</span>. We can also scale <span class="math inline">\(X\)</span> by a factor of <span class="math inline">\(\sqrt 2 \sigma\)</span> for any <span class="math inline">\(\sigma &gt; 0\)</span>, to get <span class="math inline">\(Y = \sqrt 2 \sigma X\)</span>. It have variance <span class="math inline">\(\sigma^2\)</span> and density function <span class="math display">\[
+    p(y) = \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp \Big( - \Big(\frac{y}{ \sqrt{2} \sigma } \Big)^2 \Big) = \frac{1}{ \sqrt{2 \pi \sigma^2 } } \exp \Big( -\frac{y^2}{ 2 \sigma^2 } \Big).
+\]</span></p>
+<p>Finally, we can shift the center of <span class="math inline">\(0\)</span> by any real number <span class="math inline">\(\mu \in \mathbb{R}\)</span> to obtain a new density function <span class="math display">\[
+    p(y) = \frac{1}{ \sqrt{ \pi \cdot 2  \sigma^2 } } \exp\Big( -\frac{ (y - \mu)^2 }{ 2 \sigma^2 } \Big).
+\]</span></p>
+<p>The corresponding distribution is denoted as <span class="math inline">\(N(\mu, \sigma^2)\)</span>.</p>
+<em>The picture below shows a few Gaussian distributions.</em>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution.png?raw=true" width="700" height="430" /></p>
+</div>
+<h1 id="advanced-properties">Advanced Properties</h1>
+<h2 id="sum-of-normal-random-variables">Sum of Normal Random Variables</h2>
+<blockquote>
+<p>If <span class="math inline">\(X \sim N(0, a^2)\)</span> and <span class="math inline">\(Y \sim N(0, b^2)\)</span>, then <span class="math inline">\(X + Y \sim N(0, a^2 + b^2)\)</span>.</p>
+</blockquote>
+<p>The demonstration here follows from [1]. The key observation is that the joint distribution of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is rotation invariant with the origin.</p>
+<p>As an example, we plot below the joint distribution of <span class="math inline">\(X, Y \sim N(0, 1)\)</span>.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-3D-0.png?raw=true" width="500" height="330" /></p>
+</div>
+<p>The figure below shows the same distribution. Observe again that the probability mass concentrates at a small region centered at origin.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-3D-1.png?raw=true" width="500" height="330" /></p>
+</div>
+<p>Therefore, for any <span class="math inline">\(t \in \mathbb{R}\)</span>, the set <span class="math display">\[
+    \{ (x, y) \in \mathbb{R}^2 : ax + by \le t \}
+\]</span> has the same probability measure as the one <span class="math display">\[
+    \Big\{ (x, y) \in \mathbb{R}^2 : x \le \frac{ t}{ \sqrt{a^2 + b^2} } \Big\}.
+\]</span></p>
+<p>Observe that the latter can be obtained by rotating the former with respect to the origin (see the figure below).</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration2.png?raw=true" width="500" height="250" /></p>
+</div>
+<p>Now, the probability of the latter set is given by <span class="math display">\[
+    \Pr \Big[ X \le \frac{ t}{ \sqrt{a^2 + b^2} } \Big] = \Pr\Big[  \sqrt{a^2 + b^2} X \le t \Big]
+\]</span></p>
+<p>It concludes that <span class="math inline">\(X + Y\)</span> has the same distribution as <span class="math inline">\(\sqrt{a^2 + b^2} X \sim N(0, a^2 + b^2)\)</span>.</p>
+<!-- **Remark**: we can also verify this algebraically:
+$$
+    \begin{aligned}
+        \Pr [ X + Y \le t ] 
+            &= \int_{-\infty}^t \int_{-\infty }^{ t - x } \frac{1}{ 2 \pi } \exp \Big(-\frac{x^2 + y^2 }{2} \Big) \ dx 
+    \end{aligned}
+$$ -->
+<!-- $$
+    \Pr [X + Y \le t] = \int_{-\infty}^{ \frac{ t}{ \sqrt{a^2 + b^2} }  } \frac{1}{ \sqrt{2 \pi} } \exp \Big(-\frac{x^2}{2} \Big) \ dx 
+$$
+
+Hence
+$$
+\begin{aligned}
+    \frac{ \partial }{ \partial t} \Pr[X + Y \le t]
+        &= \frac{ \partial }{ \partial t} \int_{-\infty}^{ \frac{ t}{ \sqrt{a^2 + b^2} }  } \frac{1}{ \sqrt{2 \pi} }\exp \Big(-\frac{x^2}{2} \Big) \ dx \\
+        &= \frac{1}{ \sqrt{2 \pi (a^2 + b^2) } } \exp \Big( -\frac{x^2}{2 (a^2 + b^2) } \Big).
+\end{aligned}
+$$ -->
+<h2 id="concentration-inequalities">Concentration Inequalities</h2>
+<h3 id="bound-1"><strong>Bound 1</strong></h3>
+<blockquote>
+<p>If <span class="math inline">\(X \sim N(0, \sigma^2)\)</span>, then <span class="math inline">\(\forall t &gt; 0\)</span>, <span class="math display">\[
+\Pr[ |X| \ge t] \le \exp \Big( -\frac{t^2}{ 2\sigma^2} \Big)
+\]</span></p>
+</blockquote>
+<p><strong>Remark</strong>: it is possible to get a tighter bound by using more advanced techniques.</p>
+<p><strong>Intuition:</strong> in previous figures, it seems Gaussian distributions have a shape bump around its mean. This is kind of mis-leading, because the x-axis and y-axis are scaled. In the figure below, we plot <span class="math inline">\(N(0, 1)\)</span>, with ratio between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> axes being approximate <span class="math inline">\(1:1\)</span>. We see only a small bump around its mean. Although the distribution span the entire range of <span class="math inline">\(\mathbb{R}\)</span>, the probability mass is centered tightly around the origin.</p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Concentration.png?raw=true" width="600" height="400" /></p>
+</div>
+<h4 id="proof-by-moment-generating-function">Proof by Moment Generating Function</h4>
+<p>We prove a weaker version by a factor of <span class="math inline">\(2\)</span>. For all <span class="math inline">\(\lambda \in \mathbb{R}\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E}[ e^{\lambda X} ] 
+            &amp;= \frac{1}{\sqrt{2 \pi \sigma} }\int e^{\lambda x} e^{ - \frac{x^2}{2 \sigma^2 } } \ d x \\
+            &amp;= \frac{ e^{\lambda^2 \sigma^2 / 2} }{\sqrt{2 \pi \sigma} }\int e^{ - \frac{ (x - \lambda \sigma^2)^2}{2 \sigma^2 } } \ d x \\
+            &amp;= e^{\lambda^2 \sigma^2 / 2}.
+    \end{aligned}
+\]</span></p>
+<p>Via Markov's inequality, for all <span class="math inline">\(\lambda \ge 0\)</span>, we have <span class="math display">\[
+    \begin{aligned}
+        \Pr[ X \ge t] 
+            &amp;\le \frac{ \mathbb{E}[ e^{\lambda X} ]  }{ e^{\lambda t} } 
+            &amp;\le e^{\lambda^2 \sigma^2 / 2 - \lambda t}.
+    \end{aligned}
+\]</span></p>
+<p>Setting <span class="math inline">\(\lambda = \frac{t}{\sigma^2}\)</span>, we get <span class="math display">\[
+    \Pr[ X \ge t ] \le e^{ - \frac{t^2}{2 \sigma^2} }.
+\]</span></p>
+<p>It concludes that <span class="math inline">\(\Pr[ |X| \ge t ] \le 2 e^{ - \frac{t^2}{2 \sigma^2} }.\)</span></p>
+<h4 id="proof-by-geometry">Proof by Geometry</h4>
+<p>Let <span class="math inline">\(T = \Pr[ |X| \ge t]\)</span>. Then <span class="math display">\[
+    T^2 = \int_{ |x| \ge t, |y| \ge t} \frac{1}{ 2 \pi \sigma^2 } \exp \Big( - \frac{ x^2 + y^2}{2 \sigma^2} \Big). 
+\]</span></p>
+<p>As <span class="math display">\[
+    \{ (x, y) \in \mathbb{R}^2: |x| \ge t \wedge |y| \ge t \} \subset
+    \{ (x, y) \in \mathbb{R}^2: x^2 + y^2 \ge 2 t^2 \} 
+\]</span></p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration3.png?raw=true" width="400" height="400" /></p>
+</div>
+<p>It follows that <span class="math display">\[
+\begin{aligned}
+    T^2 
+        &amp;\le \int_{ \sqrt 2 t}^\infty \int_{0}^{2 \pi } \frac{1}{ 2 \pi \sigma^2 } \exp \Big( - \frac{ r^2 }{2 \sigma^2} \Big) r \ d\theta dr\\
+        &amp;\le \int_{ \sqrt 2 t }^\infty \exp \Big( - \frac{ r^2 }{2 \sigma^2} \Big) \ d \frac{r^2}{ 2\sigma^2} \\
+        &amp;\le \int_{ \frac{ t^2 }{  \sigma^2 } }^\infty \exp ( - z ) \ d z \\
+        &amp;= \exp \Big( -\frac{t^2}{ \sigma^2} \Big).
+\end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    T \le \exp \Big( - \frac{t^2}{ 2\sigma^2} \Big).
+\]</span></p>
+<h3 id="bound-2"><strong>Bound 2</strong></h3>
+<blockquote>
+<p>If <span class="math inline">\(X \sim N(0, \sigma^2)\)</span>, then <span class="math inline">\(\forall t &gt; 0\)</span>, <span class="math display">\[
+\Pr[ X \ge t] \le \frac{ \sigma }{ \sqrt{2 \pi }  t } \exp \Big( -\frac{t^2}{ 2\sigma^2} \Big).
+\]</span> By symmetry we also have <span class="math display">\[
+\Pr[ X \le -t] \le \frac{ \sigma }{ \sqrt{2 \pi }  t } \exp \Big( -\frac{t^2}{ 2\sigma^2} \Big).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \Pr[X &gt; t] 
+            &amp;= \int_{t}^\infty \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp \Big( - \frac{ x^2 }{ 2 \sigma^2 } \Big) \ dx \\
+            &amp;\le \int_{t}^\infty \frac{1}{ \sqrt{2 \pi \sigma^2} } \frac{x}{t} \exp \Big( - \frac{ x^2 }{ 2  \sigma^2 } \Big) \ dx \\
+            &amp;\le  \frac{ \sigma }{ \sqrt{2 \pi }  t }  \int_{t}^\infty  \exp \Big( - \frac{ x^2 }{ 2  \sigma^2 } \Big) \ d \frac{ x^2 }{ 2 \sigma^2 } \\
+            &amp;=  - \frac{ \sigma }{ \sqrt{2 \pi }  t }  \exp \Big( - \frac{ x^2 }{ 2  \sigma^2 } \Big) \mid_{t}^\infty \\
+            &amp;=  \frac{ \sigma }{ \sqrt{2 \pi }  t }  \exp \Big( - \frac{ t^2 }{ 2 \sigma^2 } \Big).  
+    \end{aligned}
+\]</span></p>
+<p>This bound is more useful only when we know that <span class="math inline">\(t \ge \frac{ \sigma }{ \sqrt{2 \pi } }\)</span>.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] B. Eisenberg and R. Sullivan, “Why Is the Sum of Independent Normal Random Variables Normal?,” Mathematics Magazine, vol. 81, no. 5, pp. 362–366, Dec. 2008</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/06/Gaussian-Mechanism/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/06/Gaussian-Mechanism/" class="post-title-link" itemprop="url">Gaussian Mechanism</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-06 23:00:19" itemprop="dateCreated datePublished" datetime="2020-11-06T23:00:19+11:00">2020-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-06-09 20:59:47" itemprop="dateModified" datetime="2021-06-09T20:59:47+10:00">2021-06-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="background">Background</h1>
+<p>Let <span class="math inline">\((\mathcal{X}, d)\)</span> be a metric space, and <span class="math inline">\(f\)</span> be a function <span class="math inline">\(\mathcal{X} \rightarrow \mathbb{R}^n\)</span>. A Gaussian mechanism adds Gaussian noise to the output of <span class="math inline">\(f\)</span>, such that for all neighboring pairs <span class="math inline">\(x, y \in \mathcal{X}\)</span> with <span class="math inline">\(d(x, y) = 1\)</span>, it is hard to distinguish the outputs, i.e., their outputs distributions are similar.</p>
+<blockquote>
+<p><strong>Definition.</strong> The sensitivity <span class="math inline">\(\Delta\)</span> of <span class="math inline">\(f\)</span> is defined as <span class="math display">\[
+\Delta = \max_{x, y \in \mathcal{X}, d(x, y) = 1 } \Vert f(x) - f(y) \Vert_2, 
+\]</span> where <span class="math inline">\(\Vert \cdot \Vert_2\)</span> is the <span class="math inline">\(\ell_2\)</span>-norm of a vector in <span class="math inline">\(\mathbb{R}^n\)</span>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Definition.</strong> Given <span class="math inline">\(f\)</span> and a variance parameter <span class="math inline">\(\sigma^2\)</span>, the output of the Gaussian mechanism is a random variable defines as <span class="math display">\[
+g(x) = f(x) + X,
+  \]</span> where <span class="math inline">\(X = (X_1, X_2, ..., X_n) \sim N(0, \sigma^2 I)\)</span>.</p>
+</blockquote>
+<h1 id="privacy-guarantee">Privacy Guarantee</h1>
+<blockquote>
+<p><strong>Theorem.</strong> For <span class="math inline">\(\delta, \epsilon \in (0, 1)\)</span>, if <span class="math inline">\(\sigma^2 = \frac{ \Delta^2 }{ \epsilon^2 } \Big( 2 \ln \frac{1}{\delta} + \epsilon \Big)\)</span>, then <span class="math inline">\(\forall x, y \in \mathcal{X}\)</span>, s.t., <span class="math inline">\(d(x, y) = 1\)</span>, and for all measurable subset <span class="math inline">\(S \subset \mathbb{R}^n\)</span>, it holds <span class="math display">\[
+\Pr[ g(x) \in S] \le e^\epsilon \cdot \Pr[ g(y) \in S] + \delta 
+\]</span></p>
+</blockquote>
+<p>It is obvious that if we set <span class="math inline">\(\sigma \rightarrow \infty\)</span>, then the Gaussian distribution converge to a uniform one and it holds that <span class="math inline">\(\Pr[ g(x) \in S] = \Pr[ g(y) \in S]\)</span>. Therefore, we are interested in how small <span class="math inline">\(\sigma\)</span> can be.</p>
+<p>We claim that <span class="math inline">\(\sigma = O(\frac{\Delta}{\epsilon } )\)</span> suffices. This is based on three observations: 1. Most of the probability mass of a Gaussian distribution concentrates on a ball centered at its mean with radius <span class="math inline">\(O(\sigma)\)</span>. 2. The density ratio of any two points within the ball is bounded by a constant. 3. The distance between the distribution center of <span class="math inline">\(g(x)\)</span> and <span class="math inline">\(g(y)\)</span> is bounded by <span class="math inline">\(\Delta\)</span>.</p>
+<p><strong>Proof.</strong> To ease the notations, we write <span class="math inline">\(g(y) = f(y) + Y\)</span> to distinguish it from <span class="math inline">\(g(x)\)</span>. By definition, <span class="math display">\[g(x) \sim N(f(x), \sigma^2 I), \quad g(y) \sim N( f(y), \sigma^2 I).
+\]</span></p>
+<p>Let <span class="math inline">\(p_x\)</span> and <span class="math inline">\(p_y\)</span> the density functions of <span class="math inline">\(g(x)\)</span> and <span class="math inline">\(g(y)\)</span> respectively. The sketch of the proof is as follows: we partition <span class="math inline">\(\mathbb{R}^n\)</span> into two parts: <span class="math display">\[
+    \mathcal{Y}_1 = \{ t \in \mathcal{R}^n : p_x(t) \le e^\epsilon \cdot p_y(t) \} \\
+    \mathcal{Y}_2 = \{ t \in \mathcal{R}^n : p_x(t) &gt; e^\epsilon \cdot p_y(t) \}.
+\]</span></p>
+<p>If <span class="math inline">\(\Pr[ g(x) \in \mathcal{Y}_2 ] \le \delta\)</span> <span class="math inline">\(\big(\)</span> here we measure the size of <span class="math inline">\(\mathcal{Y}_2\)</span> by the probability measure induced by <span class="math inline">\(g(x)\)</span> <span class="math inline">\(\big)\)</span>, then <span class="math display">\[
+\begin{aligned}
+    \Pr[ g(x) \in S] 
+        &amp;= \Pr[ g(x) \in S \cap \mathcal{Y}_1] + \Pr[ g(x) \in S \cap \mathcal{Y}_2] \\
+        &amp;\le \Pr[ g(x) \in S \cap \mathcal{Y}_1] + \Pr[  g(x) \in \mathcal{Y}_2] \\
+        &amp;\le \Pr[ g(x) \in S \cap \mathcal{Y}_1] + \delta \\
+        &amp;= \int_{S \cap \mathcal{Y}_1 } p_x(t) \ d t + \delta \\
+        &amp;\le \int_{S \cap \mathcal{Y}_1 } e^\epsilon \cdot p_y(t) \ d t + \delta \\
+        &amp;= e^\epsilon \cdot \Pr[ g(y) \in S \cap \mathcal{Y}_1] + \delta. \\
+        &amp;\le e^\epsilon \cdot \Pr[ g(y) \in S ] + \delta. \\
+\end{aligned}
+\]</span></p>
+<p>As <span class="math inline">\(p_y(t) &gt; 0\)</span> for all <span class="math inline">\(t \in \mathbb{R}^n\)</span>, we can rewrite <span class="math display">\[
+    \mathcal{Y}_1 = \Big\{ t \in \mathcal{R}^n : \ln \frac{p_x(t) }{ p_y(t) } \le \epsilon \Big\} \\
+    \mathcal{Y}_2 = \Big\{ t \in \mathcal{R}^n : \ln \frac{p_x(t) }{ p_y(t) } &gt; \epsilon \Big\}.
+\]</span></p>
+<p>In literature, the ratio <span class="math inline">\(\ln \frac{p_x(t) }{ p_y(t) }\)</span> is know as <em>privacy loss</em>. Substituting <span class="math inline">\(p_x(t)\)</span> and <span class="math inline">\(p_y(t)\)</span> with their definitions, and letting <span class="math inline">\(t&#39; = t - f(x)\)</span> and <span class="math inline">\(v = f(x) - f(y)\)</span>, we get <span class="math display">\[
+\begin{aligned}
+    \ln \frac{ p_x( t)  }{  p_y(t)} 
+        &amp;= \ln \frac{ \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp \Big( -\frac{ \Vert t - f(x)\Vert ^2 }{ 2 \sigma^2 } \Big) }{ \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp \Big( -\frac{ \Vert t - f(y) \Vert ^2 }{ 2 \sigma^2 } \Big)  } \\
+        &amp;=  -\frac{ \Vert t&#39; \Vert ^2 - \Vert  t&#39; + v \Vert ^2 }{ 2 \sigma^2 } \\
+        &amp;= \frac{ 2 v^T t&#39; + \Vert  v \Vert ^2 }{ 2 \sigma^2 }  . 
+\end{aligned}
+\]</span></p>
+<p>If <span class="math inline">\(t \sim N( f(x), \sigma^2 I)\)</span>, it holds that <span class="math inline">\(t&#39; \sim N( 0, \sigma^2 I)\)</span>.</p>
+<!-- $$
+\begin{aligned}
+    \ln \frac{ p_x( t)  }{  p_y(t)} 
+        &=  -\frac{ \Vert  t' \Vert ^2 - \Vert  t' + v \Vert ^2 }{ 2 \sigma^2 }    \\
+        &= \frac{ 2 v^T t' + \Vert  v \Vert ^2 }{ 2 \sigma^2 }    \\
+\end{aligned}
+$$ -->
+<p>Then <span class="math inline">\(v^T t&#39; \sim N(0, \Vert v \Vert ^2 \sigma^2)\)</span>. Let <span class="math inline">\(Z \sim N(0, 1)\)</span>, then <span class="math inline">\(\ln \frac{ p_x( t) }{ p_y(t)}\)</span> has the same distribution as <span class="math display">\[
+    \frac{ 2 \Vert v\Vert  \sigma Z + \Vert v\Vert ^2 }{ 2 \sigma^2  } = \frac{ \Vert v\Vert ^2 }{ 2 \sigma^2  } + \frac{ \Vert v\Vert  }{  \sigma  } Z \sim N \Big( \frac{ \Vert v\Vert ^2 }{ 2 \sigma^2  },  \frac{ \Vert v\Vert ^2 }{  \sigma^2  } \Big).   \\
+\]</span></p>
+<p>Now, <span class="math display">\[
+    \frac{ \Vert v\Vert ^2 }{ 2 \sigma^2  } + \frac{ \Vert v\Vert  }{  \sigma  } Z  \ge \epsilon \\
+    \longleftrightarrow  Z  \ge \frac{  \sigma  }{ \Vert v\Vert  } \epsilon - \frac{ \Vert v\Vert  }{ 2 \sigma  }
+\]</span></p>
+<p>As <span class="math inline">\(Z \sim N(0, 1)\)</span>, <span class="math inline">\(\forall z \in \mathbb{R}_{\ge 0}\)</span>, <span class="math display">\[
+    \Pr[ Z \ge z] \le \exp \Big( -\frac{ z^2 }{2} \Big).
+\]</span></p>
+<p>Assuming that <span class="math inline">\(\sigma^2 \ge \frac{\Vert v \Vert^2}{ 2 \epsilon }\)</span>. Then <span class="math inline">\(\frac{ \sigma }{ \Vert v\Vert } \epsilon - \frac{ \Vert v\Vert }{ 2 \sigma } \ge 0\)</span>. Replacing <span class="math inline">\(z\)</span> with <span class="math inline">\(\frac{ \sigma }{ \Vert v\Vert } \epsilon - \frac{ \Vert v\Vert }{ 2 \sigma }\)</span>, <span class="math display">\[
+    \Pr[ z \ge t ] \le  \exp \Big( -\frac{1}{2} \Big( \frac{  \sigma  }{ \Vert v\Vert  } \epsilon - \frac{ \Vert v\Vert  }{ 2 \sigma  } \Big)^2 \Big).
+\]</span></p>
+<p>We would like to bound this probability by some <span class="math inline">\(\delta \in (0, 1)\)</span>, then <span class="math display">\[
+\begin{aligned}
+    &amp;\exp \Big( -\frac{1}{2} \Big( \frac{  \sigma  }{ \Vert v\Vert  } \epsilon - \frac{ \Vert v\Vert  }{ 2 \sigma  } \Big)^2 \Big) \le \delta \\
+    &amp;\Longrightarrow \frac{  \sigma  }{ \Vert v\Vert  } \epsilon - \frac{ \Vert v\Vert  }{ 2 \sigma  } \ge \sqrt{2 \ln \frac{1}{\delta} } \\
+    &amp;\Longrightarrow \frac{\epsilon }{\Vert v\Vert  } \sigma^2 - \sqrt{2 \ln \frac{1}{\delta} } \sigma - \frac{ \Vert v\Vert  }{2} \ge 0
+\end{aligned}
+\]</span></p>
+<p>Finally, we get <span class="math display">\[
+    \sigma \ge \frac{ \sqrt{ 2 \ln \frac{1}{\delta} } + \sqrt{ 2 \ln \frac{1}{\delta} + 2 \epsilon  }  }{ 2 \frac{\epsilon }{\Vert v\Vert  } }
+\]</span></p>
+<p>By concavity of the square root function, it suffices to take <span class="math display">\[
+    \sigma = \frac{ \Vert v\Vert  }{ \epsilon } \sqrt{ 0.5 \cdot 2 \ln \frac{1}{\delta} + 0.5 \cdot \Big( 2 \ln \frac{1}{\delta} + 2 \epsilon \Big) } = \frac{ \Vert v\Vert  }{ \epsilon } \sqrt{  2 \ln \frac{1}{\delta} + \epsilon },
 \]</span></p>
 <p>i.e., <span class="math display">\[
-|\hat \mu - \mu | = \frac{1}{2 \epsilon} |\bar{X} - \mathbb{E} [ \bar{X} ] | \le \frac{1}{ 2 \epsilon } \sqrt{ \frac{\log \frac{2}{\delta} }{2n} }
-\]</span></p>
-<p>which is much tighter than Chebyshev inequality.</p>
-<p>Finally, observe that to get a meaningful estimate <span class="math inline">\(\hat \mu\)</span>, we require that <span class="math inline">\(\frac{ 1 }{\epsilon \sqrt{n} } \le 1\)</span>, i.e., <span class="math inline">\(n \in \Omega(\frac{1}{\epsilon^2})\)</span> or <span class="math inline">\(\epsilon \in \Omega( \frac{1}{ \sqrt{n} } )\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/27/Twin-Drive-or-Not/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/27/Twin-Drive-or-Not/" class="post-title-link" itemprop="url">Twin Drive or Not?</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-27 16:15:03" itemprop="dateCreated datePublished" datetime="2020-10-27T16:15:03+11:00">2020-10-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-06 11:08:17" itemprop="dateModified" datetime="2020-11-06T11:08:17+11:00">2020-11-06</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>In this article, we introduce differential privacy. We start with a story of information leakage.</p>
-<h3 id="twin-drive-or-not">Twin Drive or Not</h3>
-<p>Celestial Being is a private military organization with superior technology. It has four advanced machines. The most powerful one is the Gundam 00.</p>
-<p>The Gundam 00 is about to engage the enemy.</p>
-<div style="text-align:center">
-<p><img src="https://lh5.googleusercontent.com/-9AOc-O5bdRk/S_mZxjf1DWI/AAAAAAAACvs/uXI0SvAMqWc/s640/5.jpg" width="500" height="250" /></p>
-</div>
-<p>Due to maintenance, Gundam 00 is not always equipped with two engines (known as <strong><em>twin drive system</em></strong>). With probability <strong><em>0.5</em></strong>, it uses one drive. We use <span class="math inline">\(T = (1, 1)\)</span> to denote the status of equipping with the twin drive system, and <span class="math inline">\(S = (1, 0)\)</span> (or <span class="math inline">\((0, 1)\)</span>) for status of single drive. Let <span class="math inline">\(X\)</span> be a random variable that indicates drive status. Therefore, <span class="math display">\[
-\Pr[ X = T ] = 0.5, \\
-\Pr[ X = S ] = 0.5.  
-\]</span></p>
-<div style="text-align:center">
-<p><img src="https://knolly.files.wordpress.com/2009/03/00gundamdrive1.jpg" width="500" height="250" /></p>
-</div>
-<p>Raiser sword is one of Gundam 00 most powerful weapon. The energy level of the Raiser sword, denote as <span class="math inline">\(Y\)</span>, is a random variable in <span class="math inline">\([0, 100]\)</span>, whose distribution, denoted as <span class="math inline">\(\Pr[\cdot \mid X]\)</span>, depends on the drive status. Thus, <span class="math inline">\(\Pr[Y = y \mid X = T]\)</span> (or <span class="math inline">\(\Pr[Y = y \mid X = S]\)</span>) is the probability that <span class="math inline">\(Y\)</span> equals to <span class="math inline">\(y\)</span> conditioned on <span class="math inline">\(X = T\)</span> (<span class="math inline">\(X = S\)</span>). Specifically, <span class="math display">\[
-\Pr[\cdot \mid T] \sim B(100, 0.81) \\
-\Pr[\cdot \mid S] \sim B(100, 0.09)
-\]</span></p>
-<p>where <span class="math inline">\(B(n, p)\)</span> denotes a binomial distribution. The expected energy level is <span class="math inline">\(81\)</span> with <em>twin drive system</em>, compared to only <span class="math inline">\(9\)</span> with single drive. This is called "<strong><em>squaring</em></strong>" phenomenon of <em>twin drive</em>.</p>
-<div style="text-align:center">
-<p><img src="https://vignette.wikia.nocookie.net/gundam/images/8/84/Raiser_sword.png/revision/latest?cb=20101124151429" width="500" height="250" /></p>
-</div>
-<p>Now suppose that you're the enemy pilot of a mobile suit with just average performance. Before you start dog fighting with Gundam 00, you will be attacked by the 00's long-range raiser sword (you have not seen 00 yet). Luckily, you survive the raiser sword attack. Now you need to make a decision. If 00 is equipped with twin drive, there is zero chance that you can win the dog fight. The best choice is to leave the battle. Otherwise, you can outperform 00 and you would like to engage it.</p>
-<div style="text-align:center">
-<p><img src="https://blogimg.goo.ne.jp/user_image/79/da/c198b8cf829b5f7f7dd507d40bb39ba5.jpg" width="500" height="250" /></p>
-</div>
-<p>Since you have just been attacked by the raiser sword, you have an observation of its energy level <span class="math inline">\(y\)</span>. By Bayes' theorem, <span class="math display">\[
-\begin{aligned}
-\Pr[ X = T \mid Y = y] = \frac{ \Pr[Y = y \mid X = T] \cdot \Pr[X = T] }{ \Pr[Y = y \mid X = T] \cdot \Pr[X = T] + \Pr[Y = y \mid X = S] \cdot \Pr[X = S] } 
-\\
-\\
-\Pr[ X = S \mid Y = y] = \frac{ \Pr[Y = y \mid X = S] \cdot \Pr[X = S] }{ \Pr[Y = y \mid X = T] \cdot \Pr[X = T] + \Pr[Y = y \mid X = S] \cdot \Pr[X = S] }
-\end{aligned}
-\]</span></p>
-<p>Substituting with <span class="math inline">\(\Pr[X = S] = \Pr[X = T] = 0.5\)</span>, we get <span class="math display">\[
-\begin{aligned}
-\Pr[ X = T \mid Y = y] = \frac{ \Pr[Y = y \mid X = T]  }{ \Pr[Y = y \mid X = T]  + \Pr[Y = y \mid X = S] } 
-\\
-\\
-\Pr[ X = S \mid Y = y] = \frac{ \Pr[Y = y \mid X = S]  }{ \Pr[Y = y \mid X = T]  + \Pr[Y = y \mid X = S] }
-\end{aligned}
-\]</span></p>
-<p>The distributions <span class="math inline">\(B(100, 0.09)\)</span> and <span class="math inline">\(B(100, 0.81)\)</span> are plotted together below.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/B-100-0.09-vs-B-100-0.81.png?raw=true" /></p>
-<p>Immediately, you can draw some conclusions based on single value of <span class="math inline">\(y\)</span>, such as</p>
-<ol type="1">
-<li>If <span class="math inline">\(y = 10\)</span>, it is likely 00 has only one drive.<br />
-</li>
-<li>If <span class="math inline">\(y = 75\)</span>, it is likely 00 has twin drive.</li>
-</ol>
-<p>Or you can conclude based on the range of <span class="math inline">\(y\)</span>, such as</p>
-<ol type="1">
-<li>If <span class="math inline">\(y \in [0, 20]\)</span>, it is likely 00 has single drive.</li>
-<li>If <span class="math inline">\(y \in [70, 90]\)</span>, it is likely 00 has twin drive.</li>
-</ol>
-<p>Before the observation of <span class="math inline">\(y\)</span>, as <span class="math inline">\(\Pr[X = S] = \Pr[X = T] = 0.5\)</span>, you have only random guess over the engine status of 00. After the observation, you might be much more confident about your guess, even though the energy level of the raiser sword is a random variable.</p>
-<p>Why does this happen? Because the two distributions are well-separated. They are far from each other. Further, the prior probabilities <span class="math inline">\(\Pr[X = S]\)</span> and <span class="math inline">\(\Pr[X = T]\)</span> play important roles. If you know <span class="math inline">\(\Pr[X = S] = 10^{-10}\)</span>, even if you observe an energy level of <span class="math inline">\(y = 10\)</span>, you had better not engage Gundam 00. You know it could be just a trap!</p>
-<h3 id="formal-definition">Formal Definition</h3>
-<p>Database managers face similar scenarios in privacy protection. We know define the setting for differential privacy. We view a dataset <span class="math inline">\(D\)</span> as a table of <span class="math inline">\(n\)</span> rows, each of which comes from a domain <span class="math inline">\(\mathcal{X}\)</span>. Hence <span class="math inline">\(D \in \mathcal{X}^n\)</span>. Instead of releasing the dataset directly, the manager runs a randomized algorithm <span class="math inline">\(A: \mathcal{X}^n \rightarrow \mathcal{Y}\)</span> on <span class="math inline">\(D\)</span>, and outputs <span class="math inline">\(Y = A(D) \in \mathcal{Y}\)</span>. Here <span class="math inline">\(\mathcal{Y}\)</span> is called the co-domain of <span class="math inline">\(A\)</span> and does not necessarily equal to <span class="math inline">\(\mathcal{X}^n\)</span>. Note that the output distribution of <span class="math inline">\(A\)</span> may depend on the input <span class="math inline">\(D\)</span>. Further, for simplicity of discussion, we believe a uniform prior distribution over datasets in <span class="math inline">\(\mathcal{X}^n\)</span>.</p>
-<p>In the Gundam 00's story, <span class="math inline">\(\mathcal{X} = \{0, 1\}^2\)</span>, and <span class="math inline">\(\mathcal{Y} = [0, 100]\)</span>.</p>
-<p>Suppose there is another dataset <span class="math inline">\(D&#39;\)</span> that differs only one row from <span class="math inline">\(D\)</span>. The algorithm <span class="math inline">\(A\)</span> is said to be differentially private if a malicious user is unlikely to distinguish the input to <span class="math inline">\(A\)</span> between <span class="math inline">\(D\)</span> and <span class="math inline">\(D&#39;\)</span>, by merely observing <span class="math inline">\(A\)</span>'s output. Simply put, the conditional distributions of <span class="math inline">\(\Pr[\cdot \mid X = D]\)</span> and <span class="math inline">\(\Pr[\cdot \mid X = D&#39;]\)</span> should be similar, where <span class="math inline">\(X\)</span> is a variable that denotes the input dataset.</p>
-<p>We observe in the previous section that, if the distributions are well separated, then we can infer the underlying input with high confidence when the output value takes specific values or lies in certain ranges.</p>
-<p>There are many ways to characterize the closeness of two distributions. We introduce the one proposed in [1].</p>
-<blockquote>
-<p>Algorithm <span class="math inline">\(A\)</span> is called <span class="math inline">\((\epsilon, \delta)\)</span> differentially private, if for any pair of neighboring datasets <span class="math inline">\(D\)</span> and <span class="math inline">\(D&#39;\)</span> (the ones that differ in only one row), and for any (measurable) subset <span class="math inline">\(\mathcal{R} \subset \mathcal{Y}\)</span>, it holds that <span class="math display">\[
-\Pr[Y \in \mathcal{R} \mid X = D ] \le \exp(\epsilon) \cdot \Pr[Y \in \mathcal{R} \mid X = D&#39; ]+ \delta
-\]</span></p>
-</blockquote>
-<p>In other words, we can't find a subset <span class="math inline">\(\mathcal{R}\)</span>, with which we can distinguish <span class="math inline">\(D\)</span> and <span class="math inline">\(D&#39;\)</span> with high confidence. In the previous example, such <span class="math inline">\(\mathcal{R}\)</span> exists. E.g., <span class="math inline">\(R = [70, 90]\)</span>. If <span class="math inline">\(Y\)</span> lies in <span class="math inline">\(\mathcal{R}\)</span>, we can infer that Gundam 00 is likely to have twin drive.</p>
-<h3 id="hypothesis-testing">Hypothesis Testing</h3>
-<p>There is alternative view of <span class="math inline">\((\epsilon, 0)\)</span> differential privacy as hypothesis testing. Suppose that we know the underlying dataset is either <span class="math inline">\(D\)</span> or <span class="math inline">\(D&#39;\)</span> with equal probability. After observing the output of <span class="math inline">\(A\)</span>, we need to decide which hypothesis of the following holds: <span class="math display">\[
-H_0: \text{ the dataset if } D \\
-H_1: \text{ the dataset if } D&#39;
-\]</span></p>
-<p>Assume that we adopt a fixed strategy:</p>
-<ol type="1">
-<li>First we choose a fixed subset <span class="math inline">\(\mathcal{R} \subset \mathcal{Y}\)</span>,</li>
-<li>If <span class="math inline">\(Y \in \mathcal{R}\)</span>, we choose to accept <span class="math inline">\(H_0\)</span>,</li>
-<li>Otherwise, we accept <span class="math inline">\(H_1\)</span>.</li>
-</ol>
-<p>There are two kinds of errors we can make. The type I error is the one when the true hypothesis is <span class="math inline">\(H_0\)</span> and we accept <span class="math inline">\(H_1\)</span>. Conversely, type II error is the one when the true hypothesis is <span class="math inline">\(H_1\)</span> and we accept <span class="math inline">\(H_0\)</span>. Let <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> be the probabilities we make type I and II errors respectively. The following theorem holds</p>
-<blockquote>
-<p>Algorithm A is <span class="math inline">\((\epsilon, 0)\)</span> differentially private then</p>
-<ol type="1">
-<li><span class="math inline">\(\frac{1}{1 + \exp(\epsilon) } \le q \le \frac{1}{1 + \exp(-\epsilon) }\)</span><br />
-</li>
-<li><span class="math inline">\(\frac{1}{1 + \exp(\epsilon) } \le p \le \frac{1}{1 + \exp(-\epsilon) }\)</span></li>
-</ol>
-</blockquote>
-<p><em>Proof.</em> By definition, <span class="math display">\[
-\begin{aligned}
-    q   &amp;= \Pr[ X = D \mid  Y \in \bar{\mathcal{R}} ] \\
-        &amp;= \frac{ \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ] \Pr[X = D ] }{ \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ] \Pr[X = D ] + \Pr[  Y \in \bar{\mathcal{R}} \mid X = D&#39; ] \Pr[X = D&#39; ] } \\
-        &amp;= \frac{ \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ]  }{ \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ]  + \Pr[  Y \in \bar{\mathcal{R}} \mid X = D&#39; ]  } 
-\end{aligned}
-\]</span></p>
-<p>As <span class="math inline">\(A\)</span> is <span class="math inline">\((\epsilon, 0)\)</span> differentially private, it holds that <span class="math display">\[
-\Pr[  Y \in \bar{\mathcal{R}} \mid X = D&#39; ] \le \exp(\epsilon) \cdot \Pr[  Y \in \bar{\mathcal{R}} \mid X = D ]
-\]</span> and <span class="math display">\[
-\Pr[  Y \in \bar{\mathcal{R}} \mid X = D ] \le \exp(\epsilon) \cdot \Pr[  Y \in \bar{\mathcal{R}} \mid X = D&#39; ]
-\]</span></p>
-<p>therefore, <span class="math display">\[
-\frac{1}{1 + \exp(\epsilon) } \le q \le \frac{1}{1 + \exp(-\epsilon) }
-\]</span></p>
-<p>By symmetry, we also have <span class="math display">\[
-\frac{1}{1 + \exp(\epsilon) } \le p \le \frac{1}{1 + \exp(-\epsilon) }
+    \sigma^2 = \frac{ \Vert v\Vert ^2 }{ \epsilon^2 } \Big( 2 \ln \frac{1}{\delta} + \epsilon \Big). 
 \]</span></p>
 <p><span class="math inline">\(\blacksquare\)</span></p>
-<h3 id="reference">Reference</h3>
-<p>[1] C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,” Foundations and Trends in Theoretical Computer Science, vol. 9, no. 3–4, pp. 211–407, 2013<br />
-[2] L. Wasserman and S. Zhou, “A statistical framework for differential privacy,” arXiv:0811.2501 [math, stat], Oct. 2009, Accessed: Oct. 27, 2020.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/26/Norm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/26/Norm/" class="post-title-link" itemprop="url">Norm</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-10-26 22:17:18" itemprop="dateCreated datePublished" datetime="2020-10-26T22:17:18+11:00">2020-10-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-01 00:49:31" itemprop="dateModified" datetime="2020-11-01T00:49:31+11:00">2020-11-01</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>A norm <span class="math inline">\(| \cdot |:\mathbb{R}^n \rightarrow \mathbb{R}\)</span> is a function that satisfies the following properties:</p>
-<ol type="1">
-<li>Positive definite: <span class="math inline">\(|x| = 0 \rightarrow x = \vec 0\)</span>,</li>
-<li>Nonnegative:<span class="math inline">\(|x| \ge 0\)</span> for any <span class="math inline">\(x \in \mathbb{R}^n\)</span>,</li>
-<li>Absolutely homogeneous: <span class="math inline">\(|k x| = |k| |x|\)</span>, for any <span class="math inline">\(x \in \mathbb{R}^n, k \in \mathbb{R}\)</span>,</li>
-<li>Subadditive (triangle inequality): <span class="math inline">\(|x + y| \le |x| + |y|\)</span>, for any <span class="math inline">\(x \in \mathbb{R}^n, y \in \mathbb{R}^n\)</span>.</li>
-</ol>
-<p>Given properties 1-3, we claim that property 4 is equivalent to</p>
-<ol start="5" type="1">
-<li>The region <span class="math inline">\(\{ x \in \mathbb{R}^n: |x| \le 1\}\)</span> is convex.</li>
-</ol>
-<p><em>Proof:</em> The proof is straightforward.</p>
-<p><span class="math inline">\(5 \rightarrow 4:\)</span> If <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(\vec y = 0\)</span>, then 4 holds trivially. Otherwise, suppose that <span class="math inline">\(x, y \neq \vec 0\)</span>. Then <span class="math display">\[
-\begin{aligned}
-    &amp;|x + y| \le |x| + |y| \\
-    \leftrightarrow 
-    &amp;| \frac{ |x| }{ |x| + |y| } \frac{ x }{ |x| } + \frac{ |x| }{ |x| + |y| } \frac{ y }{ |y| } | \le 1
-\end{aligned}
-\]</span></p>
-<p>As <span class="math inline">\(|\frac{ x }{ |x| } | =1\)</span>, <span class="math inline">\(|\frac{ y }{ |y| }| = 1\)</span> and <span class="math inline">\(\frac{ |x| }{ |x| + |y| } + \frac{ |y| }{ |x| + |y| } = 1\)</span>, the second inequality follows exactly from condition 5.</p>
-<p><span class="math inline">\(4 \rightarrow 5:\)</span> Let <span class="math inline">\(x, y \in \mathbb{R}^n, |x| \le 1, |y| \le 1\)</span> and <span class="math inline">\(a, b \ge 0\)</span>, <span class="math inline">\(a + b = 1\)</span>. Then <span class="math display">\[
-|ax + by| \le |ax| + |by| = a|x| + b|y| = 1
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h3 id="induced-norm"><strong>Induced Norm</strong></h3>
-<p>To illustrate a deeper connection between property 4 and 5, we first show how a norm can be induced by a convex and symmetric region centered at the origin <span class="math inline">\(O\)</span>. Let the boundary of the region as <span class="math inline">\(E\)</span>. We are going to induce a norm by <span class="math inline">\(E\)</span>, denoted as <span class="math inline">\(|\cdot |_E\)</span>.</p>
-<p>First, we define</p>
-<ol type="1">
-<li><span class="math inline">\(| x |_E = 1, \forall x \in E\)</span>.</li>
-</ol>
-<p>For any other vector <span class="math inline">\(x \notin E\)</span>, consider the ray initiated from the origin and with the same direction as <span class="math inline">\(x\)</span>. Denote its intersection point with <span class="math inline">\(E\)</span> as <span class="math inline">\(x_E\)</span>. Suppose that <span class="math inline">\(x = a \cdot x_E\)</span> for some <span class="math inline">\(a \in \mathbb{R}_+\)</span>. Then we define</p>
-<ol start="2" type="1">
-<li><span class="math inline">\(| x |_E = a |x_E|_E = a\)</span>.</li>
-</ol>
-<p>Indeed, if we write the <span class="math inline">\(|\cdot|_2\)</span> as the <span class="math inline">\(\ell_2\)</span> norm, then the value of <span class="math inline">\(a\)</span> is given by <span class="math inline">\(\frac{ |x|_2 } { |x_E|_2 }\)</span>. Clearly, by definition, <span class="math inline">\(|\cdot|_2\)</span> is positive definite and non-negative. To prove that it is absolutely homogeneous, <span class="math inline">\(\forall k \in \mathbb{R}\)</span>, <span class="math display">\[
-|k x|_E = |k ax_E|_E
-\]</span></p>
-<p>If <span class="math inline">\(k \ge 0\)</span>, we have <span class="math inline">\(|k ax_E|_E = ka |x_E|_E = ka\)</span>. Otherwise, if <span class="math inline">\(k &lt; 0\)</span>, <span class="math display">\[
-|k x|_E = |k ax_E|_E = |-k a (-x_E)|_E = -k a |(-x_E)|_E
-\]</span></p>
-<p>By symmetry of <span class="math inline">\(E\)</span> (with respect to the origin <span class="math inline">\(O\)</span>), <span class="math inline">\(|(-x_E)|_E = |x_E|_E = 1\)</span>. Therefore, <span class="math display">\[
-|k x|_E = |k|a 
-\]</span></p>
-<p>Finally, we have a graphical verification of triangle inequality. Let <span class="math inline">\(v, u \in \mathbb{R}^n\)</span>, which intersect with <span class="math inline">\(E\)</span> at <span class="math inline">\(v_E\)</span> and <span class="math inline">\(u_E\)</span> respectively. If <span class="math inline">\(|v|_E &lt; 1\)</span> (<span class="math inline">\(|u|_E &lt; 1\)</span>), then we can extend it along its direction to get its intersection with <span class="math inline">\(E\)</span>. Let <span class="math inline">\(c = |v|_E\)</span> and <span class="math inline">\(d = |u|_E\)</span>, then</p>
-<ol type="1">
-<li><span class="math inline">\(v = c \cdot v_E\)</span>,</li>
-<li><span class="math inline">\(u = d \cdot u_E\)</span>.</li>
-</ol>
-<p>Let <span class="math inline">\(w = v + u = c \cdot v_E + d \cdot u_E\)</span>. Let <span class="math inline">\(p\)</span> be the intersection between <span class="math inline">\(w\)</span> and the line segment between <span class="math inline">\(v\)</span> and <span class="math inline">\(u\)</span>. It is easy to verify that <span class="math display">\[
-p = \frac{c}{c + d} v_E + \frac{d}{ c + d} u_E
-\]</span></p>
-<p>By convexity of the region bounded by <span class="math inline">\(E\)</span>, <span class="math display">\[
-|p|_E \le 1
-\]</span></p>
-<p>It concludes that <span class="math inline">\(|w|_E = |c v_E + d u_E |_E \le c + d = |v|_E + |u|_E\)</span>.</p>
-<!-- <img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Induced-Norm.png?raw=true" style="zoom: 67%;" /> -->
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Induced-Norm.png?raw=true" /></p>
-<h3 id="application"><strong>Application</strong></h3>
-<p>The idea discussed above significantly simplifies the proof of Minkowski inequality.</p>
-<p>The <span class="math inline">\(p\)</span>-norm (<span class="math inline">\(p \ge 1\)</span>) on <span class="math inline">\(\mathbb{R}^n\)</span> is given as <span class="math display">\[
-| x |_p = \big( \sum_{i = 1}^n |x_i|^p \big)^\frac{1}{p}
-\]</span></p>
-<p>Clearly, <span class="math inline">\(p\)</span>-norm is positive definite, nonnegative, absolutely homogeneous. It is left to verify triangle inequality, which is known as Minkowski inequality for the case of <span class="math inline">\(p\)</span>-norm. This is equivalent to show that <span class="math display">\[
-\{ x \in \mathbb{R}^n : |x |_p \le 1 \}
-\]</span></p>
-<p>is convex. The trick here is that <span class="math inline">\(|x|_p \le 1\)</span> is equivalent to <span class="math inline">\((|x|_p)^p \le 1\)</span>. Hence, <span class="math display">\[
-\{ x \in \mathbb{R}^n : |x |_p \le 1 \} = \{ x \in \mathbb{R}^n : \sum_{i = 1}^n |x_i|^p  \le 1 \}
-\]</span></p>
-<p>The convexity of this set follows directly from the point-wise convexity of the function <span class="math inline">\(|\cdot |^p\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong><em>Remark:</em></strong> To appreciate how concise the above proof is, we also give one traditional proof here, which consists of three steps.</p>
-<h4 id="youngs-inequality">Young's Inequality</h4>
-<p>For <span class="math inline">\(a, b &gt; 0\)</span>, <span class="math inline">\(p, q &gt; 0\)</span>, s.t., <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>, it holds that <span class="math display">\[
-ab \le \frac{a^p}{p} + \frac{b^q}{q}
-\]</span></p>
-<p><em>Proof:</em> The inequality is nothing more than convexity of the function <span class="math inline">\(x \rightarrow e^x\)</span>: <span class="math display">\[
-ab = \exp(\frac{ p \ln a }{p} + \frac{ q \ln b }{q}) \le \frac{ \exp( \ln a^p ) }{p} + \frac{ \exp( \ln b^q ) }{q} = \frac{a^p}{p} + \frac{b^q}{q} 
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h4 id="holders-inequality">Holder's Inequality</h4>
-<p>For <span class="math inline">\(x, y \in \mathbb{R}^n\)</span>, <span class="math inline">\(p, q &gt; 0\)</span>, s.t., <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>, it holds that <span class="math display">\[
-\sum_{i = 1}^n |x_i| |y_i| \le |x|_p |y|_q
-\]</span></p>
-<p><em>Proof:</em> The inequality is trivial if <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(y = \vec 0\)</span>. Otherwise, let <span class="math inline">\(u = \frac{x}{ |x|_p }\)</span> and <span class="math inline">\(v = \frac{ y }{ |y|_q }\)</span>. It remains to prove that <span class="math display">\[
-\sum_{i = 1}^n |u_i| |v_i| \le 1
-\]</span></p>
-<p>for <span class="math inline">\(|u|_p = 1\)</span> and <span class="math inline">\(|v|_q = 1\)</span>. WLOG, we assume <span class="math inline">\(u &gt; 0\)</span> and <span class="math inline">\(v &gt; 0\)</span>. Applying Young's Inequality, we have <span class="math display">\[
-u_i v_i \le \frac{ u_i^p }{p}  + \frac{v_i^q}{q}.
-\]</span> Hence, <span class="math display">\[
-u \cdot v = \sum_{i = 1}^n \big( \frac{ u_i^p }{p}  + \frac{v_i^q}{q} \big) = \frac{1}{p} + \frac{1}{q} = 1 .
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h4 id="minkowski-inequality">Minkowski Inequality</h4>
-<p>For <span class="math inline">\(x, y \in \mathbb{R}^n\)</span>, <span class="math inline">\(p \ge 1\)</span>, it holds that <span class="math display">\[
-|x + y|_p \le |x|_p + |y|_p
-\]</span></p>
-<p><em>Proof:</em> The inequality is trivial if <span class="math inline">\(x = \vec 0\)</span> or <span class="math inline">\(y = \vec 0\)</span>. Otherwise, assume that <span class="math inline">\(x &gt; 0\)</span> and <span class="math inline">\(y &gt; 0\)</span>. Now</p>
-<p><span class="math display">\[
-|x + y|_p^p = \sum_{i = 1}^n |x_i + y_i|^p = \sum_{i = 1}^n [ x_i (x_i + y_i)^{p - 1} + y_i (x_i + y_i)^{p - 1} ]
-\]</span></p>
-<p>Let <span class="math inline">\(q = \frac{p}{p - 1}\)</span>. Then <span class="math inline">\(\frac{1}{p} + \frac{1}{q} = 1\)</span>. By Holder's inequality, <span class="math display">\[
-\begin{aligned}
-    \sum_{i = 1}^n x_i (x_i + y_i)^{p - 1} 
-    &amp;\le |x|_p ( \sum_{i = 1}^n (x_i + y_i)^{(p - 1)q} )^{ \frac{1}{q} } \\
-    &amp;= |x|_p ( \sum_{i = 1}^n (x_i + y_i)^{ p } )^{ \frac{p - 1}{ p } } \\
-    &amp;= |x|_p (|x + y|_p)^{p - 1}
-\end{aligned}
-\]</span></p>
-<p>Similarly, we have <span class="math display">\[
-\sum_{i = 1}^n y_i (x_i + y_i)^{p - 1} \le |y|_p (|x + y|_p)^{p - 1}
-\]</span></p>
-<p>Putting the inequalities together, <span class="math display">\[
-|x + y|_p^p \le |x|_p (|x + y|_p)^{p - 1} + |y|_p (|x + y|_p)^{p - 1}
-\]</span></p>
-<p>We finish the proof by dividing both side with <span class="math inline">\((|x + y|_p)^{p - 1}\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] G. Kamath, “Lecture 5 — Approximate Diﬀerential Privacy”, CS 860 - Algorithms for Private Data Analy sis.</p>
 
       
     </div>
@@ -608,7 +745,7 @@ u \cdot v = \sum_{i = 1}^n \big( \frac{ u_i^p }{p}  + \frac{v_i^q}{q} \big) = \f
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><span class="space">&hellip;</span><a class="page-number" href="/page/57/">57</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/20/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><span class="space">&hellip;</span><a class="page-number" href="/page/59/">59</a><a class="extend next" rel="next" href="/page/22/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -674,7 +811,7 @@ u \cdot v = \sum_{i = 1}^n \big( \frac{ u_i^p }{p}  + \frac{v_i^q}{q} \big) = \f
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">171</span>
+          <span class="site-state-item-count">175</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

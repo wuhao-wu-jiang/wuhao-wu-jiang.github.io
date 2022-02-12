@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Let \((\mathcal{X}, \Vert \cdot \Vert)\) be a matrix space.  Definition. Two elements \(D, D&#39; \in \mathcal{X}\) are neighboring, denoted as \(D \sim D&#39;\), if \(\Vert D&#39;, D&#39; \Vert &#x3D; 1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sparse Vector">
+<meta property="og:url" content="http://example.com/2022/02/08/Sparse-Vector/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Let \((\mathcal{X}, \Vert \cdot \Vert)\) be a matrix space.  Definition. Two elements \(D, D&#39; \in \mathcal{X}\) are neighboring, denoted as \(D \sim D&#39;\), if \(\Vert D&#39;, D&#39; \Vert &#x3D; 1">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-02-08T06:59:19.000Z">
+<meta property="article:modified_time" content="2022-02-12T06:26:46.423Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/02/08/Sparse-Vector/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Sparse Vector | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/08/Sparse-Vector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Sparse Vector
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-02-08 17:59:19" itemprop="dateCreated datePublished" datetime="2022-02-08T17:59:19+11:00">2022-02-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-12 17:26:46" itemprop="dateModified" datetime="2022-02-12T17:26:46+11:00">2022-02-12</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Let <span class="math inline">\((\mathcal{X}, \Vert \cdot \Vert)\)</span> be a matrix space.</p>
+<blockquote>
+<p><strong>Definition.</strong> Two elements <span class="math inline">\(D, D&#39; \in \mathcal{X}\)</span> are neighboring, denoted as <span class="math inline">\(D \sim D&#39;\)</span>, if <span class="math inline">\(\Vert D&#39;, D&#39; \Vert = 1\)</span>.<br />
+<strong>Definition.</strong> A function <span class="math inline">\(q: \mathcal{X} \rightarrow \mathbb{R}\)</span> has sensitivity <span class="math inline">\(\Delta \in \mathbb{R}^+\)</span>, if <span class="math display">\[
+\Delta = \sup_{ D, D&#39; \in \mathcal{X}, D \sim D&#39; } | q(D) - q(D&#39;) |. 
+\]</span></p>
+</blockquote>
+<h1 id="problem">Problem</h1>
+<blockquote>
+<p>Let <span class="math inline">\(q_i: \mathcal{X} \rightarrow \mathbb{R}, i \in \mathbb{N}^+\)</span> be a sequence of functions with sensitivity <span class="math inline">\(\Delta\)</span>. Let <span class="math inline">\(T \in \mathbb{R}\)</span> be a threshold. Design an <span class="math inline">\(\epsilon\)</span>-differentially private algorithm, that reports the first <span class="math inline">\(i \in \mathbb{N}^+\)</span> for which <span class="math inline">\(q_i(D)\)</span> is near or above <span class="math inline">\(T\)</span>.</p>
+</blockquote>
+<h1 id="algorithm">Algorithm</h1>
+<blockquote>
+<p><strong>Definition.</strong> For each <span class="math inline">\(b \in \R^+\)</span>, let <span class="math inline">\(\mathcal{Lap}(b)\)</span> be the Laplacian distribution with parameter <span class="math inline">\(b\)</span>.</p>
+</blockquote>
+<p>The algorithm is described as follows.</p>
+<blockquote>
+<p><strong>Algorithm <span class="math inline">\(\mathcal{A}\)</span>.</strong><br />
+1. <span class="math inline">\(\hat T \leftarrow T + Z\)</span> where <span class="math inline">\(Z \sim \mathcal{Lap}(3 \Delta / \epsilon)\)</span><br />
+2. <strong>for</strong> <span class="math inline">\(i \in \mathbb{N}^+\)</span> <strong>do</strong><br />
+3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat q_i(D) \leftarrow q_i(D) + X_i\)</span>, where <span class="math inline">\(X_i \sim \mathcal{Lap}( 3 \Delta / \epsilon)\)</span><br />
+4. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span class="math inline">\(\hat q_i(D) \ge \hat T\)</span> <strong>then</strong><br />
+5. <span class="math inline">\(\qquad\qquad\)</span> <strong>output</strong> <span class="math inline">\(\bot\)</span><br />
+6. <span class="math inline">\(\qquad\qquad\)</span> <strong>halt</strong><br />
+7. <span class="math inline">\(\qquad\)</span> <strong>else</strong><br />
+8. <span class="math inline">\(\qquad\qquad\)</span> <strong>output</strong> <span class="math inline">\(\top\)</span></p>
+</blockquote>
+<h1 id="privacy-guarantee">Privacy Guarantee</h1>
+<p>Let <span class="math inline">\(D&#39;\)</span> be a neighboring dataset of <span class="math inline">\(D\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> For each <span class="math inline">\(i \in \mathbb{N}^+\)</span>, let <span class="math inline">\(s_i \doteq \underbrace{\top \ldots \top}_{ i - 1 \text{ occurrences} } \bot\)</span>. Then <span class="math display">\[
+e^{-\epsilon}
+\le 
+\frac{\Pr[ \mathcal{A}(D) = s_i ]}{\Pr[ \mathcal{A}(D&#39;) = s_i ]} 
+\le 
+e^{\epsilon}.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Fix an <span class="math inline">\(i \in \mathbb{N}^+\)</span>. Let <span class="math inline">\(M(D) = \max_{1 \le j \le i - 1} \Big( q_j(D) + X_j \Big)\)</span>. The event <span class="math inline">\(\mathcal{A}(D) = s_i\)</span> happens if and only if<br />
+<span class="math display">\[
+    M(D) &lt; \hat T \le \hat q_i(D). 
+\]</span></p>
+<p>Denote <span class="math inline">\(\vec X_{i - 1} \doteq (X_1, \ldots, X_{i - 1})\)</span>. Fix a sequence <span class="math inline">\(\vec x_{i - 1} = (x_1, \ldots, x_{i - 1} ) \in \R\)</span>. Conditioned on <span class="math inline">\(\vec X_{i - 1} = \vec x_{i - 1}\)</span>, the probability density of <span class="math inline">\(\Pr\big[ \mathcal{A}(D) = s_i \big]\)</span> is given by <span class="math display">\[
+    \begin{aligned}
+        p\big[ \mathcal{A}(D) = s_i \big] 
+            &amp;= p\big[ M(D) &lt; \hat T \le \hat q_i(D) \big] \\
+            &amp;= p\big[ M(D) &lt; T + Z \le q_i(D) + X_i \big] \\
+            &amp;= \int \int p_Z(z) \cdot p_{X_i}(x) \cdot \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big] \, dx \, dz,
+    \end{aligned}
+\]</span> where <span class="math inline">\(p_Z(z)\)</span> and <span class="math inline">\(p_{X_i}(x)\)</span> are probability densities of <span class="math inline">\(Z\)</span> and <span class="math inline">\(X_i\)</span>, respectively.</p>
+<p>Similarly, the conditional probability density of <span class="math inline">\(\Pr\big[ \mathcal{A}(D&#39;) = s_i \big]\)</span> is given by <span class="math display">\[
+    \begin{aligned}
+        p\big[ \mathcal{A}(D&#39;) = s_i \big] 
+            &amp;= p\big[ M(D&#39;) &lt; \hat T \le \hat q_i(D&#39;) \big] \\
+            &amp;= p\big[ M(D&#39;) &lt; T + Z \le q_i(D&#39;) + X_i \big] \\
+            &amp;= \int \int  p_Z(z&#39;) \cdot p_{X_i}(x&#39;) \cdot \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] \, dx&#39; \, dz&#39;.
+    \end{aligned}
+\]</span></p>
+<p>Suppose that the following equations holds: <span class="math display">\[
+    \begin{aligned}
+        T + z&#39; - M(D&#39;) &amp;= T + z - M(D), \\
+        q_i(D&#39;) + x&#39; - (T + z&#39;) &amp;= q_i(D) + x - (T + z).
+    \end{aligned}
+\]</span></p>
+<p>Then <span class="math display">\[
+    \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] 
+    = \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big].
+\]</span></p>
+<p>But this implies that <span class="math display">\[
+    \begin{aligned}
+        |z&#39; - z|    &amp;= |M(D&#39;) - M| \le \Delta \\
+        |x&#39; - x|    &amp;= |z&#39; - q_i(D&#39;) - (z - q_i(D))| \\
+                    &amp;= |M(D) - M(D&#39;) + q_i(D) - q_i(D&#39;)| \\
+                    &amp;\le 2 \cdot \Delta.
+    \end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    \begin{aligned}
+        \frac{p\big[ \mathcal{A}(D) = s_i \big]}{p\big[ \mathcal{A}(D&#39;) = s_i \big] } 
+            &amp;= \frac{ 
+                \int \int p_Z(z) \cdot p_{X_i}(x) \cdot \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big] \, dx \, dz 
+            }
+            {
+                \int \int  p_Z(z&#39;) \cdot p_{X_i}(x&#39;) \cdot \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] \, dx&#39; \, dz&#39;
+            } \\
+            &amp;\le \exp \Big( \Delta \cdot \frac{\epsilon}{3\Delta}\Big) \cdot \exp \Big( 2 \cdot \Delta \cdot \frac{\epsilon}{3\Delta} \Big) \\
+            &amp;\le \exp(\epsilon).
+    \end{aligned}
+\]</span></p>
+<p>Integrating over <span class="math inline">\(\vec X_{i - 1} = \vec x_{i - 1}\)</span> for all possible <span class="math inline">\(\vec x_{i - 1}\)</span> proves that <span class="math inline">\(\Pr\big[ \mathcal{A}(D) = s_i \big] \le e^\epsilon \cdot \Pr\big[ \mathcal{A}(D&#39;) = s_i \big]\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="utility-guarantee">Utility Guarantee</h1>
+<p>Suppose that the algorithm outputs <span class="math inline">\(\top\)</span> at the <span class="math inline">\(i\)</span>-th query, we measure the empirical error by <span class="math inline">\(\max \{0, q_i(D) - T \}\)</span>, i.e., if <span class="math inline">\(q_i(D)\)</span> does not exceed <span class="math inline">\(T\)</span>, then we regards the empirical error as <span class="math inline">\(0\)</span>. Similarly, for an output <span class="math inline">\(\bot\)</span>, the empirical error is measured by <span class="math inline">\(\max \{0, T - q_i(D) \}\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Fix a sequence of <span class="math inline">\(k\)</span> queries <span class="math inline">\(q_1, \ldots, q_k\)</span> to be performed by the algorithm. With probability at most <span class="math inline">\(\beta\)</span>, the maximum empirical error exceeds <span class="math display">\[
+\frac{6 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta}.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \Pr \left[ |Z| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta} \right] 
+        \le \exp \left( 2 \cdot \ln \frac{k + 1}{\beta} \right)
+        = \frac{\beta}{k + 1}. 
+\]</span> Similarly, for each <span class="math inline">\(i \in [k]\)</span>, <span class="math display">\[
+    \Pr \left[ |X_i| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta} \right] 
+        \le \exp \left( 2 \cdot \ln \frac{k + 1}{\beta} \right)
+        = \frac{\beta}{k + 1}. 
+\]</span></p>
+<p>By union bound, with probability at most <span class="math inline">\(\beta\)</span>, it holds that <span class="math display">\[
+    |Z| + \max_{i \in [k]} |X_i| \ge \frac{6 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta}.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,”</em></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/04/Dijkstra-s-Algorithm-With-d-Ary-Heap/" rel="prev" title="Dijkstra's Algorithm With d-Ary Heap">
+      <i class="fa fa-chevron-left"></i> Dijkstra's Algorithm With d-Ary Heap
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/11/Approximate-Densest-Subgraph/" rel="next" title="Approximate Densest Subgraph">
+      Approximate Densest Subgraph <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#algorithm"><span class="nav-number">2.</span> <span class="nav-text">Algorithm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#privacy-guarantee"><span class="nav-number">3.</span> <span class="nav-text">Privacy Guarantee</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#utility-guarantee"><span class="nav-number">4.</span> <span class="nav-text">Utility Guarantee</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">175</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

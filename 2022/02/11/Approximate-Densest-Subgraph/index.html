@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Let \(G &#x3D; (V, E)\) be an undirected graph with \(|V| &#x3D; n\) vertices and \(|E| &#x3D; m\) edges. For each \(S \subset V\), denote \(E(S)\) the set of edges in the subgraph induced by \(S\), i.e., \[     E">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Approximate Densest Subgraph">
+<meta property="og:url" content="http://example.com/2022/02/11/Approximate-Densest-Subgraph/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Let \(G &#x3D; (V, E)\) be an undirected graph with \(|V| &#x3D; n\) vertices and \(|E| &#x3D; m\) edges. For each \(S \subset V\), denote \(E(S)\) the set of edges in the subgraph induced by \(S\), i.e., \[     E">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-02-11T11:49:24.000Z">
+<meta property="article:modified_time" content="2022-02-12T00:58:38.746Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/02/11/Approximate-Densest-Subgraph/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Approximate Densest Subgraph | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/11/Approximate-Densest-Subgraph/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Approximate Densest Subgraph
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-02-11 22:49:24" itemprop="dateCreated datePublished" datetime="2022-02-11T22:49:24+11:00">2022-02-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-12 11:58:38" itemprop="dateModified" datetime="2022-02-12T11:58:38+11:00">2022-02-12</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Let <span class="math inline">\(G = (V, E)\)</span> be an undirected graph with <span class="math inline">\(|V| = n\)</span> vertices and <span class="math inline">\(|E| = m\)</span> edges.<br />
+For each <span class="math inline">\(S \subset V\)</span>, denote <span class="math inline">\(E(S)\)</span> the set of edges in the subgraph induced by <span class="math inline">\(S\)</span>, i.e., <span class="math display">\[
+    E(S) \doteq \{ (u, v) \in E : u, v \in S \}. 
+\]</span> The density of the subgraph induced by <span class="math inline">\(S\)</span> is <span class="math display">\[
+    d_G(S) \doteq \frac{|E(S)|}{|S|}. 
+\]</span></p>
+<blockquote>
+<p><strong>Problem.</strong> Find <span class="math inline">\(S^* \subset V\)</span>, s.t. <span class="math inline">\(d_G(S^*)\)</span> is maximized.</p>
+</blockquote>
+<h1 id="greedy-algorithm">Greedy Algorithm</h1>
+<blockquote>
+<p><strong>Definition.</strong> Given <span class="math inline">\(S \subset V\)</span>, for each <span class="math inline">\(u \in S\)</span>, define the set of edges incident to <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span> as <span class="math display">\[
+E(u, S) \doteq \{ (u, v) \in E(S) \}.
+\]</span></p>
+<p><strong>Definition.</strong> A function <span class="math inline">\(w: E \rightarrow V\)</span> is called an edge assignment, if it maps each edge <span class="math inline">\((u, v) \in E\)</span> to one of its endpoints <span class="math inline">\(\{u, v \}\)</span>.</p>
+</blockquote>
+<p>There is a linear time, 2-approximation greedy algorithm [1] which works as follows.</p>
+<blockquote>
+<p><strong>Greedy Algorithm.</strong> 1. <span class="math inline">\(S_1 \leftarrow V\)</span>;<br />
+2. for <span class="math inline">\(i \in [n]\)</span> do<br />
+3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(u_i \leftarrow \argmin_{u \in S_i} |E(u, S_i)|\)</span>;<br />
+4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(S_{i + 1} \leftarrow S_i \setminus \{ u_i \}\)</span>;<br />
+5. <span class="math inline">\(\qquad\)</span> for <span class="math inline">\(e = (u_i, v) \in E(u_i, S_i)\)</span> do<br />
+6. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(w(e) \leftarrow u_i\)</span>;<br />
+7. <span class="math inline">\(k \leftarrow \argmax_{i \in n]} |E(u_i, S_i)|\)</span>;<br />
+8. return <span class="math inline">\(S_k\)</span>;</p>
+</blockquote>
+<h1 id="approximation-guarantee">Approximation Guarantee</h1>
+<blockquote>
+<p><strong>Definition.</strong> Given an edge assignment <span class="math inline">\(w\)</span>, for each <span class="math inline">\(u \in V\)</span>, denote the set of edges assigned to <span class="math inline">\(u\)</span> as <span class="math display">\[
+A_w(u) \doteq \{ e = (u, v) \in E : w(e) = u \}. 
+\]</span></p>
+</blockquote>
+<p>The approximation guarantee relies on the following lemma.</p>
+<blockquote>
+<p><strong>Lemma.</strong> For edge assignment <span class="math inline">\(w\)</span> and each <span class="math inline">\(S \subset V\)</span>, it holds that <span class="math display">\[
+\max_{u \in V} |A_w(u)| \ge d_G(S).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Observe that all edges in <span class="math inline">\(E(S)\)</span> are assigned to vertices in <span class="math inline">\(S\)</span>. It follows that <span class="math display">\[
+    \max_{u \in V} |A_w(u)| 
+        \ge \max_{u \in S} |A_w(u)| 
+        \ge \frac{|E(S)|}{|S|} = d_G(S).
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem.</strong> The solution <span class="math inline">\(S_k\)</span> satisfies <span class="math display">\[
+d_G(S_k) \ge \frac{1}{2} \cdot d_G (S^*). 
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong><br />
+Let <span class="math inline">\(w\)</span> be the assignment constructed by the greedy algorithm, and denote <span class="math display">\[
+    d_{\max} \doteq \max_{u \in V} |A_w(u)| = \max_{i \in [n]} |E(u_i, S_i)| = |E(u_k, S_k)|.
+\]</span> Via the previous lemma, it holds that <span class="math display">\[
+    d_G(S^*) \le d_{\max} = |E(u_k, S_k)|. 
+\]</span></p>
+<p>Further, as <span class="math inline">\(u_k\)</span> is the vertices with minimum degree in the subgraph induced by <span class="math inline">\(S_k\)</span>, <span class="math inline">\(|E(u_k, S_k)|\)</span> should be upper bounded by the average degree in <span class="math inline">\(S_k\)</span>: <span class="math display">\[
+    d_G(S^*) \le |E(u_k, S_k)| \le 2 \cdot  \frac{|E(S_k)|}{ |S_k| } = 2 \cdot d_G(S_k). 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="running-time">Running Time</h1>
+<blockquote>
+<p><strong>Theorem.</strong> The algorithm can be implemented in <span class="math inline">\(O(m + n)\)</span> time.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>We can maintain the degrees of the vertices in <span class="math inline">\(S_i, i \in [n]\)</span> dynamically.</p>
+<ol type="1">
+<li><p>At the beginning of the algorithm, set <span class="math inline">\(d(u) = |E(u, V)| = |E(u, S_i)|\)</span> for each <span class="math inline">\(u \in V\)</span>. We maintain the invariant that <span class="math inline">\(d(u) = |E(u, S_i)|\)</span> at the beginning of each iteration <span class="math inline">\(i \in [n]\)</span>.</p></li>
+<li><p>At the <span class="math inline">\(i^{(th)}\)</span> iteration, when <span class="math inline">\(u_i\)</span> is removed from <span class="math inline">\(S_i\)</span> to construct <span class="math inline">\(S_{i + 1}\)</span>, we decrease <span class="math inline">\(d(v)\)</span> by <span class="math inline">\(1\)</span>, if <span class="math inline">\((u_i, v) \in E(S_i)\)</span>.</p></li>
+</ol>
+<p>It is easy to see that the invariant is maintained, and the total update time is <span class="math inline">\(O(m)\)</span>.</p>
+<p>Next, we design a data structure that supports the extraction of <span class="math inline">\(u_i\)</span>, the vertex with minimum degree in <span class="math inline">\(S_i\)</span>, in <span class="math inline">\(O(1)\)</span> time. We keep an array with size <span class="math inline">\(n\)</span>.</p>
+<ul>
+<li><p>Each vertex <span class="math inline">\(u\)</span> is kept in the <span class="math inline">\(d(u)\)</span>-th bucket of the array. When <span class="math inline">\(d(u)\)</span> is updated, we update the bucket of <span class="math inline">\(u\)</span> correspondingly. The total update cost is <span class="math inline">\(O(m)\)</span>.</p></li>
+<li><p>At the beginning of the algorithm, we search bucket <span class="math inline">\(0, 1, \ldots\)</span> , until we find the first non-empty bucket <span class="math inline">\(j \in [n]\)</span>. Then we extract a vertex <span class="math inline">\(u\)</span> from the bucket <span class="math inline">\(j\)</span>, and updates the <span class="math inline">\(d(v)\)</span> for which <span class="math inline">\(v\)</span> is neighbor of <span class="math inline">\(u\)</span> in the induced subgraph. The update decreases <span class="math inline">\(d(v)\)</span> by <span class="math inline">\(1\)</span>. Therefore, the bucket <span class="math inline">\(\max \{ 0, j - 1 \}\)</span> can become non-empty at the next iteration, from which we should try to find the next vertex with minimum degree. There are <span class="math inline">\(n\)</span> iteration, and we can move backward at the array by at most <span class="math inline">\(n\)</span> steps. It follows that the total searching cost in the array is <span class="math inline">\(O(n)\)</span>.</p></li>
+</ul>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>M. Charikar, “Greedy Approximation Algorithms for Finding Dense Components in a Graph,” 2000</em>.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/08/Sparse-Vector/" rel="prev" title="Sparse Vector">
+      <i class="fa fa-chevron-left"></i> Sparse Vector
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#greedy-algorithm"><span class="nav-number">1.</span> <span class="nav-text">Greedy Algorithm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#approximation-guarantee"><span class="nav-number">2.</span> <span class="nav-text">Approximation Guarantee</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#running-time"><span class="nav-number">3.</span> <span class="nav-text">Running Time</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">175</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
