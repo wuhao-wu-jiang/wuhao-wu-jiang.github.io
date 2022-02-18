@@ -345,7 +345,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-09-04 01:30:08" itemprop="dateModified" datetime="2018-09-04T01:30:08+10:00">2018-09-04</time>
+                <time title="Modified: 2022-02-18 15:04:42" itemprop="dateModified" datetime="2022-02-18T15:04:42+11:00">2022-02-18</time>
               </span>
 
           
@@ -359,103 +359,283 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Karger Algorithm</p>
-<p>The Karger algorithm was proposed by David R. Karger [<em>Global Min-cuts in RNC, and Other Ramifications of a Simple Min-Cut Algorithm</em>]. It is a randomized algorithm to find a min-cut of an undirected connected graph.</p>
-<p>The idea of the algorithm is simple -- randomly pick an edge from the graph, and merge the endpoints of this edge into one. The edges incident on two merged endpoints is now incident on the new endpoint. Repeat this process until two nodes are left on the graph. We show that the probability that the number of edges remained between the two nodes equals the value of min-cut is at least <span class="math inline">\(\frac{2}{n(n - 1)}\)</span>.</p>
-<p>Formally, suppose we are given an undirected graph <span class="math inline">\(G = (V, E)\)</span> with <span class="math inline">\(n = |V|\)</span> vertices, <span class="math inline">\(m = |E|\)</span> edges, and <span class="math inline">\(c^*=\)</span> <em>size of the min-cut</em>.</p>
-<h4 id="karger-algorithm">Karger Algorithm</h4>
-<ol type="1">
-<li>Select an edge <span class="math inline">\(e = (u,v) \in E\)</span> uniformly with probability <span class="math inline">\(1/|E|\)</span>.<br />
-</li>
-<li>Contract <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> into a new vertex <span class="math inline">\(w\)</span>, and all edges -- except <span class="math inline">\(e\)</span>-- incident on <span class="math inline">\(u\)</span> or <span class="math inline">\(v\)</span> are now incident on <span class="math inline">\(w\)</span>. In other words,</li>
-</ol>
-<p><span class="math display">\[
- \begin{aligned}
-  V  \leftarrow &amp; V /  \{u,v\} \cup \{w\}, \\
-  E  \leftarrow &amp; E /  \{(x, y) | (x,y) \in E \ and \ x \in \{u, v\} \}  \\
-   &amp; \cup \{(w,y) | \exists  (x,y) \in E \ and \ x \in \{u, v\} \ and \ y \notin \{u,v\} \}
- \end{aligned}
-\]</span></p>
-<ol start="3" type="1">
-<li>Repeat the above process until |V| = 2.</li>
-</ol>
-<p>In the end, there is only one cut between the remaining two vertices, whose size we denote as <span class="math inline">\(c\)</span>. If follows that <span class="math inline">\(P(c = c^*) = \frac{2}{n ( n - 1)}\)</span>.</p>
-<p>By repeating the process <span class="math inline">\(\frac{n (n - 1)}{2} \log n\)</span> times, the probability we don't find the size of min-cut is at most</p>
-<p><span class="math display">\[
-\big( 1 - \frac{2}{n (n - 1)} \big)^{\frac{n (n - 1)}{2} \log n} \le e^{log n} = \frac{1}{n}
-\]</span></p>
-<p>Now we prove that <span class="math inline">\(P(c = c^*) = \frac{2}{n ( n - 1)}\)</span>.</p>
-<p>The key observation is that the degree each vertex is at least <span class="math inline">\(c^*\)</span>. Therefore there are at least <span class="math inline">\(\frac{c^* n}{2}\)</span> edges for a graph with <span class="math inline">\(n\)</span> vertices. Given a particular min-cut, which has <span class="math inline">\(c^*\)</span> edges, the probability that any of its edges is selected during the contraction operation is at most</p>
-<p><span class="math display">\[
-\frac{c^*}{|E|} \le \frac{c^*}{ \frac{c^* n}{2} } = \frac{2} { n }
-\]</span></p>
-<p>The second observation is that, if the edges of a min-cut are not selected during contraction, then the min-cut value of the contracted graph remains the same. After <span class="math inline">\(i\)</span> contractions, there are <span class="math inline">\(n - i\)</span> vertices and the probability a min-cut survives the <span class="math inline">\(i + 1\)</span> contraction is most <span class="math inline">\(\frac{2}{n - i}\)</span>. After <span class="math inline">\(n - 1\)</span> round, the min-cut remains with probability at least <span class="math display">\[
-(1 - \frac{2}{n})(1 - \frac{2}{n - 1})...(1 - \frac{2}{3}) = \binom{n}{2}^{-1}
-\]</span> Some interesting corollaries could be derived from this.</p>
-<h4 id="corollary-one">Corollary one</h4>
+          <h1 id="algorithm">Algorithm</h1>
+<p>Let <span class="math inline">\(G = (V, E)\)</span> be an undirected connected graph with <span class="math inline">\(n\)</span> vertices, <span class="math inline">\(m\)</span> edges, and min-cut size <span class="math inline">\(c^*\)</span>. David R. Karger [1] proposed a simple randomized algorithm for estimating the value of <span class="math inline">\(c^*\)</span>, as described thus.</p>
 <blockquote>
-<p>There are <span class="math inline">\(\frac{n (n - 1)}{ 2 }\)</span> min-cuts in the graph, since the events of outputting each min-cut are disjoint.</p>
+<p><strong>Karger Algorithm</strong>. 1. <strong>repeat</strong> until two nodes are left in the graph:<br />
+2. <span class="math inline">\(\qquad\)</span> Select an edge <span class="math inline">\(e = (u,v)\)</span> from the graph uniformly at random.<br />
+3. <span class="math inline">\(\qquad\)</span> Merge its endpoints <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> into new vertex <span class="math inline">\(w\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> Remove self loops created by the merge.<br />
+4. <span class="math inline">\(\qquad\)</span> Connect the edges incident to <span class="math inline">\(u\)</span> or <span class="math inline">\(v\)</span> to new vertex <span class="math inline">\(w\)</span>.<br />
+5. Return the number of edges, denoted as <span class="math inline">\(c\)</span>, between the remaining two vertices.</p>
 </blockquote>
-<p>By slightly modifying the algorithm, we can give another fact.</p>
-<p><strong>Definition</strong>. A <span class="math inline">\(\alpha\)</span>-min-cut is a cut with no more than <span class="math inline">\(\alpha c^*\)</span> edges.</p>
-<h4 id="corollary-two">Corollary two</h4>
-<p>For any <span class="math inline">\(\alpha\)</span> s.t. <span class="math inline">\(2 \alpha\)</span> is an integer, the number of <span class="math inline">\(\alpha\)</span>-min-cuts is at most <span class="math inline">\(n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2}\)</span>, which is less than <span class="math inline">\(n^{2 \alpha}\)</span>.</p>
-<p><strong>Proof</strong>: We perform the contraction as before but stop when there are <span class="math inline">\(2\alpha\)</span> vertexes left. Then we output one the <span class="math inline">\(2^{2\alpha - 1}\)</span> cuts uniformly at random.</p>
-<p>The probability a <span class="math inline">\(\alpha\)</span>-min-cut is outputted with probability at least <span class="math display">\[
-\begin{aligned}
-&amp; (1 - \frac{2 \alpha }{n})(1 - \frac{ 2 \alpha }{ n-1 })...(1 - \frac{2 \alpha }{ 2\alpha + 1 }) \cdot \frac{1}{2^{2 \alpha - 1}}  \\
-&amp;=2 \frac{ (n - 2 \alpha)! (2 \alpha)! }{ 2^{2\alpha} n!  } \\
-&amp;\ge \frac{ 2 } { 2^{2\alpha} } 
-\sqrt{2 \pi (n - 2 \alpha)} \frac{(n - 2\alpha)^{(n - 2\alpha)} }{e ^{(n - 2\alpha)} }
-\sqrt{2 \pi (2 \alpha)} \frac{(2\alpha)^{(2\alpha)} }{e ^{(2\alpha)} } 
-\frac{1}{e \sqrt n} \frac{e ^{n} }{ n^{n} } \\
-&amp;= \frac{ 2 \cdot 2\pi } { e \cdot 2^{2\alpha} } 
-\sqrt \frac{(n - 2\alpha) 2\alpha}{n} 
-\frac{ (2\alpha)^{(2\alpha)} (n - 2\alpha)^{(n - 2\alpha)} }{ n^n }
-\end{aligned}
-\]</span> As <span class="math inline">\(\frac{(n - 2\alpha) 2\alpha}{n}\)</span> is minimized to <span class="math inline">\(\frac{1}{2}\)</span> for <span class="math inline">\(n \ge 2, \ 1 \le 2 \alpha \le n - 1\)</span>, the above inequality becomes <span class="math display">\[
-\ge \frac{ \sqrt{2} \cdot 2\pi \cdot (2\alpha)^{(2\alpha)}} { e \cdot 2^{2\alpha} } 
-\frac{ 1 }{ n^{(2\alpha)} }
-\]</span> The number of <span class="math inline">\(\alpha\)</span>-min-cuts is bounded by <span class="math display">\[
-n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2} 
-\]</span> <strong>Remark</strong>: For <span class="math inline">\(k \in N\)</span>, we have <span class="math display">\[
+<p>Each iteration in the algorithm is called a <strong><em>contraction</em></strong>.</p>
+<h1 id="analysis">Analysis</h1>
+<blockquote>
+<p><strong>Theorem.</strong> It holds that <span class="math display">\[
+\Pr[ c = c^* ] = \frac{2}{n(n - 1)}. 
+\]</span></p>
+</blockquote>
+<p>We can boost the successful probability via repetitions.</p>
+<blockquote>
+<p><strong>Corollary.</strong> If we repeat the algorithm <span class="math inline">\(0.5 \cdot n \cdot (n - 1) \cdot \ln n\)</span> times, the probability we don't find <span class="math inline">\(c^*\)</span> is at most <span class="math inline">\(1 / n\)</span>.</p>
+</blockquote>
+<p><strong>Proof of the Corollary.</strong> <span class="math display">\[
+  \left( 1 - \frac{2}{n (n - 1)} \right)^{0.5 \cdot n \cdot (n - 1) \cdot \ln n} \le e^{\ln n} = \frac{1}{n}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><strong>Proof of the Theorem.</strong></p>
+<p>Consider the first iteration of the algorithm. The key observation is that the degree of each vertex is at least <span class="math inline">\(c^*\)</span>. Therefore, <span class="math display">\[
+  m \ge c^* \cdot n / 2. 
+\]</span></p>
+<p>Fix a min-cut in <span class="math inline">\(G\)</span>, the probability that any of its edges is selected at most <span class="math display">\[
+  \frac{c^*}{m} \le \frac{2} { n }. 
+\]</span></p>
+<p>Therefore, with probability at least <span class="math inline">\(1 - 2 / n\)</span>, none of the edges in the chosen min-cut is contracted in the first iteration. Moreover, we have the following observation.</p>
+<blockquote>
+<p>After contracting an edge, each cut in the new graph corresponds to a cut in the original graph.</p>
+</blockquote>
+<p>Therefore, if none of the edges of the chosen min-cut is contracted, it remains to be the min-cut in the new graph. Conditioned on this, via similar argument, we can prove that in the second iteration, none of the edges of the chosen min-cut is contracted with probability at least <span class="math inline">\(1 - 2 / (n - 1)\)</span>.</p>
+<p>By induction, it holds that, none of the edges of the chosen min-cut is contracted over all iterations is given by <span class="math display">\[
+  \left(1 - \frac{2}{n} \right) \left(1 - \frac{2}{n - 1} \right) \ldots \left(1 - \frac{2}{3} \right) 
+  = \binom{n}{2}^{-1}. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="number-of-min-cuts">Number of Min Cuts</h1>
+<blockquote>
+<p><strong>Corollary.</strong> There are <span class="math inline">\(n (n - 1) / 2\)</span> min-cuts in the graph.</p>
+</blockquote>
+<p><strong>Proof.</strong><br />
+The events of outputting different min-cuts are disjoint.<br />
+<span class="math inline">\(\square\)</span></p>
+<p>By slightly modifying the algorithm, we can obtain another useful fact.</p>
+<blockquote>
+<p><strong>Theorem. (Approximate Min-Cut).</strong> Given <span class="math inline">\(t \in [1, n / 2]\)</span>, an <span class="math inline">\(t\)</span>-minimal cut is a cut with value <span class="math inline">\(\le t c^*\)</span>. It follows that the number of <span class="math inline">\(t\)</span>-minimal cut is bounded by <span class="math display">\[
+O \left( 2^{2t} \cdot \sqrt{ \frac{n}{(n - 2t) \cdot 2t} } \left( \frac{n}{n - 2t} \right)^{n - 2t} \left( \frac{n}{2t} \right)^{2t}\right)
+\]</span></p>
+</blockquote>
+<p><strong>Remark.</strong> The bound can be further upper bounded by <span class="math display">\[
+  \begin{aligned}
+    &amp;O \left( \sqrt{ \frac{n}{(n - 2t) \cdot 2t} } \cdot \exp \left( \frac{2t}{n - 2t} \cdot (n - 2t) \right) \cdot \left( \frac{n}{t} \right)^{2t} \right) 
+    \subseteq 
+    O \left( \left( \frac{e \cdot n}{t} \right)^{2t} \right).
+  \end{aligned}
+\]</span> <!-- 
+The bound is meaningful, when $(en / t)^{2t} \le 2^n$, i.e., 
+$t \le n / (2 \cdot \log n)$ for some constant $c$.  
+--></p>
+<p><strong>Proof.</strong> Suppose we run the contraction algorithm, until <span class="math inline">\(k = \lceil 2t \rceil\)</span> are left. Then we output one of the <span class="math inline">\(2^k\)</span> cuts uniformly at random. The probability <span class="math inline">\(p\)</span> that a particular <span class="math inline">\(t\)</span>-minimal cut is outputted is given by<br />
+<span class="math display">\[
+  \begin{aligned}
+    p 
+      &amp;\doteq \frac{1}{2^k} \cdot \left( 1 - \frac{2t}{n} \right) \cdot \left( 1 - \frac{2t}{n - 1} \right) \cdot \left( 1 - \frac{2t}{k + 1} \right) \\
+      &amp;= \frac{1}{2^k} \cdot\frac{ (n - 2t) \cdot (n - 1 - 2t) \cdot \ldots (k + 1 - 2t)}{ n \cdot (n - 1) \cdot \ldots \cdot (k + 1)}.
+  \end{aligned}
+\]</span></p>
+<p>Denote <span class="math inline">\(a = k - 2t \in [0, 1)\)</span>, <span class="math inline">\(b = n - 2t\)</span>, and <span class="math display">\[
+  f = \prod_{ i \in [n - 2k] } (a + i). 
+\]</span></p>
+<p>We rely on the following lemmas and facts.</p>
+<blockquote>
+<p><strong>Lemma.</strong> <span class="math display">\[
+f \in \Theta \left( \sqrt{n - 2t} \left( \frac{n - 2t}{e} \right)^{n - 2t} \right).
+\]</span></p>
+<p><strong>Fact (Stirling's Approximation).</strong> <span class="math display">\[
+n! \in \Theta \left( \sqrt{n} \left( \frac{n}{e} \right)^{n}\right), 
+\quad
+k! \in \Theta \left( \sqrt{k} \left( \frac{k}{e} \right)^{k}\right).  
+\]</span></p>
+</blockquote>
+<p>It follows that <span class="math display">\[
+  p 
+    = \frac{1}{2^k} \cdot \frac{f \cdot k!}{n!} 
+    \in \Theta \left( \frac{1}{2^k} \cdot \frac{ \sqrt{(n - 2t) \cdot k}}{n} \cdot \frac{\left( n - 2t \right)^{n - 2t} k^k }{ n^n } \right).
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>It remains to prove the lemma.</p>
+<p><strong>Proof of the Lemma.</strong> Note <span class="math display">\[
+  \begin{aligned}
+    \ln f &amp;= \sum_{ i \in [n - 2k] } \ln (a + i). 
+  \end{aligned}
+\]</span></p>
+<p>For each <span class="math inline">\(r \ge 1\)</span>, define <span class="math display">\[
+   U_r \doteq \int_{r}^{r + 1} \ln x \, dx 
+      = \left( x \ln x - x \right) \mid_r^{r + 1}
+      = \ln \frac{(r + 1)^{r + 1}}{r^r} - 1, 
+\]</span> and <span class="math display">\[
+  L_r \doteq \frac{1}{2} \big( \ln r + \ln (r + 1) \big)
+      = \ln \sqrt{ r (r + 1) }. 
+\]</span></p>
+<p>Denote the gap between them as <span class="math inline">\(\epsilon_r \doteq U_r - L_r\)</span>. Then <span class="math display">\[
+  \begin{aligned}
+    \ln f 
+      = \sum_{ i \in [n - 2k] } \ln (a + i) 
+      = \frac{1}{2} \left( \ln (a + 1) + \ln b \right) + \sum_{i \in [n - 2k - 1] } L_{a + i}. 
+  \end{aligned}
+\]</span></p>
+<p>Moreover, via that <span class="math inline">\(a + 1 \in [1, 2)\)</span>, <span class="math display">\[
+  \begin{aligned}
+    U &amp;\doteq \sum_{i \in [n - 2k - 1] } U_{a + i} = \int_{a + 1}^{b} \ln x \, dx \\
+    &amp;= \big( b \ln b - (a + 1) \ln (a + 1) - (b - a - 1) \big)
+    \in \Theta (b \ln b - b). 
+  \end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+  \big( \ln f \big) - U 
+  \in 
+  \Theta \left( \frac{1}{2} \ln b + b \ln b - b - \sum_{i \in [n - 2k - 1] } \epsilon_{a + i} \right). 
+\]</span></p>
+<p>Finally,<br />
+<span class="math display">\[
+  \begin{aligned}
+    \epsilon_r &amp;\doteq U_r - L_r
+      = \ln \frac{(r + 1)^{r + 0.5}}{r^{r + 0.5}} - 1
+      = (r + 0.5) \ln \frac{r + 1}{r} - 1. 
+  \end{aligned}
+\]</span></p>
+<!-- 
+Since $1 / r \le 1$, via Tailor's expansion, 
+$$
+  \begin{aligned}
+    \ln \left(1 + \frac{1}{r} \right) 
+      &= \frac{1}{r} - \frac{1}{2 r^2} + \frac{1}{3 r^3} - \frac{1}{4 r^4} + \ldots
+  \\
+    r \cdot \ln \left(1 + \frac{1}{r} \right) 
+      &= 1 \, - \,\frac{1}{2 r} + \frac{1}{3 r^2} - \frac{1}{4 r^3} + \frac{1}{5 r^4} \ldots 
+  \\
+    \frac{1}{2} \cdot \ln \left(1 + \frac{1}{r} \right) 
+      &= \qquad \frac{1}{2r} - \frac{1}{4 r^2} + \frac{1}{6 r^3} - \frac{1}{8 r^4} + \ldots, 
+  \end{aligned}
+$$ 
+-->
+<p>We will prove that <span class="math inline">\(\epsilon_r \in \Theta(1 / r^2)\)</span>. Let <span class="math inline">\(1 / z \doteq 2 \cdot (r + 0.5) = 2r + 1\)</span>. Then <span class="math display">\[
+  \begin{aligned}
+    \epsilon_r 
+    &amp;= \frac{1}{2 z} \cdot \ln \frac{1 / z + 1}{1 / z - 1} - 1
+    = \frac{1}{2 z} \cdot \ln \frac{1 + z}{1 - z} - 1\\
+    &amp;= \frac{1}{2 z} \cdot \left( -\sum_{ i \in \mathbb{N}^+ } \frac{(-z)^i}{i} + \sum_{ i \in \mathbb{N}^+ } \frac{z^i}{i} \right) - 1 \\
+    &amp;= \frac{1}{z} \cdot \left( z + \frac{z^3}{3} + \frac{z^5}{5} + \ldots \right) - 1 \\
+    &amp;= \frac{z^2}{3} + \frac{z^4}{5} + \frac{z^6}{7} + \ldots.
+  \end{aligned}
+\]</span></p>
+<p>It follows that <span class="math display">\[
+  \begin{aligned}
+    \epsilon_r 
+      &amp;\in \Theta \left( \frac{z^2}{3} \left( 1 + z^2 + z^4 + \ldots \right) \right) \\
+      &amp;\subset \Theta \left( \frac{z^2}{3} \cdot \frac{1}{1 - z^2} \right) \\
+      &amp;\subset \Theta \left( \frac{1}{3} \cdot \frac{1}{ (2 r + 1)^2 - 1} \right)\\
+      &amp;\subset \Theta \left( \frac{1}{3} \frac{1}{(2r + 2) \cdot 2r} \right) \\
+      &amp;\subset \Theta \left( \frac{1}{12} \cdot \left( \frac{1}{r} - \frac{1}{r + 1}\right) \right), 
+  \end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+  \begin{aligned}
+      \sum_{i \in [n - 2k - 1] } \epsilon_{a + i}  
+      \in \Theta \left( \frac{1}{12} \cdot \sum_{i \in [n - 2k - 1] } \left( \frac{1}{a + i} - \frac{1}{a + i + 1}\right)  \right) 
+      \subset \Theta \left( 1 \right). 
+  \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- 
+Further, via Stirling's approximation, 
+$$
+  \begin{aligned}
+    n \cdot (n - 1) \cdot \ldots \cdot (k + 1) 
+      &= \frac{n!}{k!} 
+      &= \frac{ \sqrt{2 \pi n} (n / e)^n }{ \sqrt{2 \pi k} (k / e)^k }
+      &= \frac{ \sqrt{n} (n / e)^n }{ \sqrt{k} (k / e)^k }
+  \end{aligned}
+$$
+ -->
+<!-- 
+Therefore, 
+$$
+  \begin{aligned}
+    O \left( \frac{1}{2} \left( \ln a + \ln b \right) + \big( b \ln b - a \ln a - (b - a) \big) - \frac{1}{12 \cdot a}  - \frac{1}{2} \ln n - n \ln n + n + \frac{1}{2} \ln k + k \ln k - k \right) \\
+    = O \left( \frac{1}{2} \ln b + b \ln b - b - \frac{1}{2} \ln n - n \ln n + n + \frac{1}{2} \ln k + k \ln k - k \right) \\
+    = O \left( (n - 2t) \ln \frac{n - 2t}{n} - \frac{1}{2} \ln \frac{n}{n - 2t} - (2t) \ln n + \frac{1}{2} \ln k + k \ln k \right) \\
+  \end{aligned}
+$$
+ -->
+<!-- 
+> **Corollary**. A $\alpha$-min-cut is a cut with $\le \alpha c^*$ edges. 
+> For any $\alpha$ s.t. $2 \alpha$ is an integer, the number of $\alpha$-min-cuts is at most $n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2}$, which is less than $n^{2 \alpha}$.
+
+**Proof**: We perform the contraction as before but stop when there are $2\alpha$ vertexes left. Then we output one the $2^{2\alpha - 1}$ cuts uniformly at random. 
+
+The probability a $\alpha$-min-cut is outputted with probability at least
+$$
+  \begin{aligned}
+    & (1 - \frac{2 \alpha }{n})(1 - \frac{ 2 \alpha }{ n-1 })...(1 - \frac{2 \alpha }{ 2\alpha + 1 }) \cdot \frac{1}{2^{2 \alpha - 1}}  \\
+    &=2 \frac{ (n - 2 \alpha)! (2 \alpha)! }{ 2^{2\alpha} n!  } \\
+    &\ge \frac{ 2 } { 2^{2\alpha} } 
+    \sqrt{2 \pi (n - 2 \alpha)} \frac{(n - 2\alpha)^{(n - 2\alpha)} }{e ^{(n - 2\alpha)} }
+    \sqrt{2 \pi (2 \alpha)} \frac{(2\alpha)^{(2\alpha)} }{e ^{(2\alpha)} } 
+    \frac{1}{e \sqrt n} \frac{e ^{n} }{ n^{n} } \\
+    &= \frac{ 2 \cdot 2\pi } { e \cdot 2^{2\alpha} } 
+    \sqrt \frac{(n - 2\alpha) 2\alpha}{n} 
+    \frac{ (2\alpha)^{(2\alpha)} (n - 2\alpha)^{(n - 2\alpha)} }{ n^n }
+  \end{aligned}
+$$
+
+As $\frac{(n - 2\alpha) 2\alpha}{n}$ is minimized to $\frac{1}{2}$ for $n \ge 2, \ 1 \le 2 \alpha \le n - 1$, the above inequality becomes
+$$
+  \ge \frac{ \sqrt{2} \cdot 2\pi \cdot (2\alpha)^{(2\alpha)}} { e \cdot 2^{2\alpha} } 
+  \frac{ 1 }{ n^{(2\alpha)} }
+$$
+The number of $\alpha$-min-cuts is bounded by
+$$
+  n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2} 
+$$
+**Remark**:
+For $k \in N$, we have
+$$
 \sqrt{2 \pi k} \cdot \frac{k^k}{e^k} \le k! \le e \sqrt k \cdot \frac{k^k}{e^k}
-\]</span></p>
-<h4 id="corollary-three">Corollary three</h4>
-<p>The number of <span class="math inline">\(\alpha\)</span>-min-cuts is at most <span class="math inline">\(e^{7/6} n^{2\alpha} \frac{2^{ 2 \alpha} }{( 2 \alpha + 1 )^ {2 \alpha} }\)</span> for any <span class="math inline">\(\alpha \ge 1\)</span>.</p>
-<p><strong>Proof</strong>: We perform the contraction as before but stop when there are <span class="math inline">\(\lceil 2\alpha \rceil\)</span> vertexes left. Then we output one the <span class="math inline">\(2^{\lceil 2\alpha \rceil - 1}\)</span> cuts uniformly at random.</p>
-<p>The probability a <span class="math inline">\(\alpha\)</span>-min-cut is outputted with probability at least <span class="math display">\[
-\begin{aligned}
-&amp; (1 - \frac{2 \alpha}{n }) (1 - \frac{2 \alpha}{n - 1 }) ... (1 - \frac{2 \alpha}{\lceil 2 \alpha \rceil + 1 }) 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;= \frac{(n - 2 \alpha) (n - 1 - 2 \alpha) ... (\lceil 2 \alpha \rceil + 1 - 2 \alpha)}{ n (n - 1) ...(\lceil 2 \alpha \rceil + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;= \frac{\Gamma(n - 2 \alpha + 1)}{ \Gamma(\lceil 2 \alpha \rceil + 1 - 2 \alpha) } \frac{\Gamma(\lceil 2 \alpha \rceil + 1)}{\Gamma(n + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;\ge \sqrt{2\pi} \frac{1}{\sqrt {n - 2 \alpha + 1} }(\frac{n - 2 \alpha + 1}{e})^ {n - 2 \alpha + 1} \\ 
-&amp;\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (\lceil 2 \alpha \rceil + 1 - 2 \alpha ) } } \sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha)} (\frac{e}{\lceil 2 \alpha \rceil + 1 - 2 \alpha})^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha} \\
-&amp;\ \ \cdot \sqrt{2\pi} \frac{1}{ \sqrt{\lceil 2 \alpha \rceil + 1} }(\frac{ \lceil 2 \alpha \rceil + 1 }{e})^ {\lceil 2 \alpha \rceil + 1} \\
-&amp;\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (n + 1) } } \sqrt{(n + 1)} (\frac{e}{n + 1})^ {n + 1} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;= \frac{1}{e^{2 / 12}} \frac{\sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha} }{ \sqrt {n - 2 \alpha + 1} } \frac{\sqrt{(n + 1)} }{\sqrt{\lceil 2 \alpha \rceil + 1}} 
-e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\lceil 2 \alpha \rceil + 1)} \\
-&amp;\ \ \cdot (\frac{n - 2 \alpha + 1}{n + 1})^ {n - 2 \alpha + 1} (\frac{1}{n + 1})^{2\alpha} \cdot 
-\frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;\ge  \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
-\frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1 / 2} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 / 2 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
-&amp;\ge \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
-\frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
-&amp;= \frac{1}{e^{1 / 6}} \frac{1}{n^{2\alpha}} \frac{1}{(1 + 1/n)^{2\alpha}}
-\frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
-&amp;\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
-&amp;\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( 2 \alpha + 1 )^ {2 \alpha} }{2^{ 2 \alpha} }
-\end{aligned}
-\]</span></p>
-<p>To bound the inequality, we need the stirling formula for Gamma functions.</p>
-<p><strong>Lemma</strong>. <span class="math inline">\(\forall x \ge 0\)</span>, <span class="math display">\[
-\Gamma(x + 1) = x \Gamma(x) \\
-\sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x 
-\le 
-\Gamma(x)
-\le
-\sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x e^{\frac{1}{12 x}}
-\]</span></p>
+$$ -->
+<!-- #### Corollary three -->
+<!-- 
+The number of $\alpha$-min-cuts is at most $e^{7/6} n^{2\alpha} \frac{2^{ 2 \alpha} }{( 2 \alpha + 1 )^ {2 \alpha} }$ for any $\alpha \ge 1$. 
+
+**Proof**: We perform the contraction as before but stop when there are $\lceil 2\alpha \rceil$ vertexes left. Then we output one the $2^{\lceil 2\alpha \rceil - 1}$ cuts uniformly at random. 
+
+The probability a $\alpha$-min-cut is outputted with probability at least
+$$
+  \begin{aligned}
+    & (1 - \frac{2 \alpha}{n }) (1 - \frac{2 \alpha}{n - 1 }) ... (1 - \frac{2 \alpha}{\lceil 2 \alpha \rceil + 1 }) 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &= \frac{(n - 2 \alpha) (n - 1 - 2 \alpha) ... (\lceil 2 \alpha \rceil + 1 - 2 \alpha)}{ n (n - 1) ...(\lceil 2 \alpha \rceil + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &= \frac{\Gamma(n - 2 \alpha + 1)}{ \Gamma(\lceil 2 \alpha \rceil + 1 - 2 \alpha) } \frac{\Gamma(\lceil 2 \alpha \rceil + 1)}{\Gamma(n + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &\ge \sqrt{2\pi} \frac{1}{\sqrt {n - 2 \alpha + 1} }(\frac{n - 2 \alpha + 1}{e})^ {n - 2 \alpha + 1} \\ 
+    &\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (\lceil 2 \alpha \rceil + 1 - 2 \alpha ) } } \sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha)} (\frac{e}{\lceil 2 \alpha \rceil + 1 - 2 \alpha})^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha} \\
+    &\ \ \cdot \sqrt{2\pi} \frac{1}{ \sqrt{\lceil 2 \alpha \rceil + 1} }(\frac{ \lceil 2 \alpha \rceil + 1 }{e})^ {\lceil 2 \alpha \rceil + 1} \\
+    &\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (n + 1) } } \sqrt{(n + 1)} (\frac{e}{n + 1})^ {n + 1} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &= \frac{1}{e^{2 / 12}} \frac{\sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha} }{ \sqrt {n - 2 \alpha + 1} } \frac{\sqrt{(n + 1)} }{\sqrt{\lceil 2 \alpha \rceil + 1}} 
+    e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\lceil 2 \alpha \rceil + 1)} \\
+    &\ \ \cdot (\frac{n - 2 \alpha + 1}{n + 1})^ {n - 2 \alpha + 1} (\frac{1}{n + 1})^{2\alpha} \cdot 
+    \frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &\ge  \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
+    \frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1 / 2} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 / 2 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &\ge \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
+    \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+    &= \frac{1}{e^{1 / 6}} \frac{1}{n^{2\alpha}} \frac{1}{(1 + 1/n)^{2\alpha}}
+    \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+    &\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+    &\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( 2 \alpha + 1 )^ {2 \alpha} }{2^{ 2 \alpha} }
+  \end{aligned}
+$$
+
+To bound the inequality, we need the stirling formula for Gamma functions. 
+
+**Lemma**. $\forall x \ge 0$,
+$$
+  \Gamma(x + 1) = x \Gamma(x) \\
+  \sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x 
+  \le 
+  \Gamma(x)
+  \le
+  \sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x e^{\frac{1}{12 x}}
+$$
+ -->
+<h1 id="reference">Reference</h1>
+<p>[1] Karger, David R. "Global Min-cuts in RNC, and Other Ramifications of a Simple Min-Cut Algorithm." Soda. Vol. 93. 1993.</p>
 
       
     </div>
