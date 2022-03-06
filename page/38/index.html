@@ -146,6 +146,127 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/28/Minimax-Theorem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/28/Minimax-Theorem/" class="post-title-link" itemprop="url">Minimax Theorem</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-28 18:54:52" itemprop="dateCreated datePublished" datetime="2019-10-28T18:54:52+11:00">2019-10-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-15 00:18:42" itemprop="dateModified" datetime="2021-07-15T00:18:42+10:00">2021-07-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>A zero-sum game is a game in which a player's payoff implies the loss of another player. There is a payoff a matrix <span class="math inline">\(A \in \mathbb{R}^{n \times m}\)</span>. One player chooses from rows <span class="math inline">\(\{1, 2, ..., n\}\)</span> and the other chooses from columns <span class="math inline">\(\{1, 2, ..., m\}\)</span>. The former is called the row player and the later is called the column player. The entry <span class="math inline">\(a_{ij}\)</span> of <span class="math inline">\(A\)</span> is the payoff when the row player chooses <span class="math inline">\(i\)</span> and the column player chooses <span class="math inline">\(j\)</span>. In such case the column player loses <span class="math inline">\(a_{ij}\)</span>.</p>
+<p>If one player makes a choice first and the other play follows, then the second player can always respond according the first player choice, to maximize its payoff or minimize its loss.</p>
+<p>To make the game more fair, suppose that there are two huge black boxes. We require the row player to go into one black box, and write down her choice <span class="math inline">\(i\)</span> on a note, and then leave the black box. We require the column player to do the same in another black box. Suppose the row player chooses his row index according to some distribution <span class="math inline">\(x \in \mathbb{R}^n\)</span>, and the column player chooses according to distribution <span class="math inline">\(y \in \mathbb{R}^m\)</span>. The <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are called strategies and the expected payoff is (for the row player) is <span class="math display">\[
+    x^T A y.
+\]</span></p>
+<p>What is one player knows the other's strategy? In this scenario, the row player choose its strategy <span class="math inline">\(x\)</span> first and the column player responds by a strategy <span class="math inline">\(y\)</span>, or vise versa. Obvious, the strategy of the player who plays first can not be deterministic, i.e., have probability <span class="math inline">\(1\)</span> on one index and <span class="math inline">\(0\)</span> on others.</p>
+<p>The question is, whether the order of choosing a strategy results in different expected payoff.</p>
+<p>First we write down what the expected payoff is. If the row player commit to a strategy <span class="math inline">\(x\)</span> first, the column player will choose a distribution <span class="math inline">\(y\)</span> minimize it expected loss: <span class="math display">\[
+    \min_y x^T A y.
+\]</span></p>
+<p>As <span class="math inline">\(x\)</span> is known, this is equivalent to choosing the column with minimum value: <span class="math display">\[
+    \min_{j \in [m]} x^T A e_j.
+\]</span></p>
+<p>Understanding the expected behavior of the column player, the row player should choose a strategy <span class="math inline">\(x\)</span>, such that in the worst case, its expected payoff is maximized: <span class="math display">\[
+    \max_{x} (\min_y x^T A y) = \max_{x} (\min_{j \in [m]} x^T A e_j).
+\]</span></p>
+<p>Similarly, if the column player play first, the expected payoff is <span class="math display">\[
+    \min_y (\max_{x} x^T A y) = \min_{y} (\max_{i \in [n]} e_i^T A y).
+\]</span></p>
+<p>The minimax-theorem states that <span class="math display">\[
+    \begin{aligned}
+        \max_{x} (\min_y x^T A y) 
+        = &amp;\min_y (\max_{x} x^T A y). 
+    \end{aligned}
+\]</span></p>
+<p>The proof is not difficult -- by formulating the two optimizing problems as linear programming, and observing that they are dual to each other. If the row player goes first, <span class="math display">\[
+    \begin{array}{lr}
+        \max v \\
+        v  -  \sum_{i = 1}^n a_{ij} x_i \le 0 \,,  &amp; \forall j \in [m] \\
+        \sum_{i = 1}^n x_i = 1 \\
+        x_i \ge 0 \,,   &amp; \forall i \in [n]
+    \end{array}
+\]</span></p>
+<p>The first constraint just says that <span class="math inline">\(v\)</span> should be smaller than each column of <span class="math inline">\(x^T A\)</span>.</p>
+<p>To upper bound <span class="math inline">\(v\)</span>, we introduce a variable <span class="math inline">\(u \in \mathbb{R}\)</span> (that is associated with constraint <span class="math inline">\(\sum_{i = 1}^n x_i = 1\)</span>). Then <span class="math display">\[ 
+    \begin{array}{ll}
+        u   &amp;= u \left( \sum_{i = 1}^n x_i \right) \\
+            &amp;\ge u \left( \sum_{i = 1}^n x_i \right) + \sum_{j = 1}^m y_j \left( v  -  \sum_{i = 1}^n a_{ij} x_i \right) \\
+            &amp;= v \left( \sum_{j = 1}^m y_j \right) + \sum_{i = 1}^n x_i \left( u - \sum_{j = 1}^m a_{ij} y_j \right) \\
+            &amp;= v + \sum_{i = 1}^n x_i \left( u - \sum_{j = 1}^m a_{ij} y_j \right) \\
+    \end{array}
+\]</span></p>
+<p>The first equality follows from that <span class="math inline">\(\sum_{i = 1}^n x_i = 1\)</span>. The second inequality follows from that <span class="math inline">\(y_j \ge 0\)</span> and <span class="math inline">\(v - \sum_{i = 1}^n a_{ij} x_i \le 0\)</span>. The last equality follows from that <span class="math inline">\(\sum_{j = 1}^m y_j = 1\)</span>.</p>
+<p>If it holds that <span class="math inline">\(u - \sum_{j = 1}^m a_{ij} y_j \ge 0\)</span> for all <span class="math inline">\(i \in [n]\)</span>, as <span class="math inline">\(x_i \ge 0\)</span>, then <span class="math inline">\(u\)</span> is an upper bound of <span class="math inline">\(v\)</span>: <span class="math display">\[ 
+    \begin{array}{ll}
+        u  \ge v + \sum_{i = 1}^n x_i \left( u - \sum_{j = 1}^m a_{ij} y_j \right) \ge v. 
+    \end{array}
+\]</span></p>
+<p>Minimizing <span class="math inline">\(u\)</span> gives the following linear program: <span class="math display">\[
+    \begin{array}{lr}
+        \min u \\
+        u  -  \sum_{j = 1}^m a_{ij} y_j \ge 0 \,,  &amp; \forall i \in [n] \\
+        \sum_{i = 1}^m y_j = 1 \\
+        y_j \ge 0 \,, &amp; \forall j \in [m]
+    \end{array}
+\]</span></p>
+<p>Observe this is exactly <span class="math inline">\(\min_y \max_x x^T A y\)</span>. Further, by strong duality, we know that the optimal values of the two program are equal.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/08/Balanced-Binary-Search-Tree/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -341,192 +462,6 @@ x = x_1 10^{n - 1} + x_2 10^{n - 2} + ... + x^n \equiv x_1 + x_2 + ... + x_n \mo
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/03/Primality-Test/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/03/Primality-Test/" class="post-title-link" itemprop="url">Primality Test</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-09-03 17:15:48" itemprop="dateCreated datePublished" datetime="2019-09-03T17:15:48+10:00">2019-09-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-02 19:56:55" itemprop="dateModified" datetime="2019-12-02T19:56:55+11:00">2019-12-02</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Although there is no polynomial algorithm for computing the prime decomposition of an integer, testing primality can be done in polynomial time. The central idea of is to find a certificate that we can verify in polynomial time for the compositeness of an integer.</p>
-<p>We begin with Fermat's Test, which gives false positive but works for most cases. It relies on the Fermat's Little Theorem and Lagrange Theorem.</p>
-<h3 id="fermats-little-theorem.">Fermat's Little theorem.</h3>
-<p>If <span class="math inline">\(n\)</span> is a prime number, then for any <span class="math inline">\(x \in [n - 1]\)</span>, we have <span class="math display">\[
-x^{n - 1} \equiv 1 \mod n
-\]</span></p>
-<p>where throughout the article we use <span class="math inline">\([n - 1]\)</span> to denote the integer set <span class="math inline">\(\{1, 2, ..., n - 1\}\)</span>.</p>
-<p><strong>Proof:</strong> Consider the set of numbers <span class="math inline">\(\langle x, 2x, 3x, ..., (n - 1)x \rangle\)</span>. Note that all numbers are different in terms of <span class="math inline">\(\mod n\)</span>. Otherwise <span class="math inline">\(ix \equiv jx \mod n\)</span> implies that <span class="math inline">\((i - j) x \equiv 0 \mod n\)</span>. But <span class="math inline">\(i \neq j\)</span> and <span class="math inline">\(x \neq 0\)</span> concludes that <span class="math inline">\(n\)</span> in not prime, a contradiction. <span class="math inline">\(\blacksquare\)</span></p>
-<h4 id="lagrange-theorem">Lagrange Theorem</h4>
-<p>If <span class="math inline">\(Z\)</span> is a finite group and <span class="math inline">\(S\)</span> is a subgroup of <span class="math inline">\(Z\)</span>, then the size of <span class="math inline">\(S\)</span> divides that of <span class="math inline">\(Z\)</span>, i.e., <span class="math inline">\(|S| \equiv 0 \mod |Z|\)</span>.</p>
-<p><strong>Proof</strong>: Order the elements in <span class="math inline">\(Z\)</span> as <span class="math inline">\(z_1, z_2, ... z_n\)</span>. Consider the sets defined by <span class="math display">\[
-z_i S \doteq \{ z \in S, s.t., z = z_i \cdot s, where \quad  s \in S\}
-\]</span> We claim <span class="math inline">\(|z_i S| = |S|\)</span>. This is true as for <span class="math inline">\(x \in S, y \in S\)</span> and <span class="math inline">\(x \neq y\)</span>, we have <span class="math inline">\(z_i x \neq z_i y\)</span>.</p>
-<p>Now we have the collection of sets <span class="math inline">\(z_1 S, z_2 S, ..., z_n S\)</span>. We remove duplicates among them and keep only one copy of each set. Suppose <span class="math inline">\(m\)</span> sets are left and reorder them as <span class="math inline">\(S_1, S_2, ..., S_m\)</span>, then they constitute a partition of <span class="math inline">\(Z\)</span>.</p>
-<ol type="1">
-<li>Clearly <span class="math inline">\(S_1 \cup S_2 \cup ... \cup S_m = Z\)</span>.</li>
-<li>Moreover, <span class="math inline">\(S_i \cap S_j = \emptyset\)</span>. for <span class="math inline">\(i \neq j\)</span>. Otherwise, let <span class="math inline">\(x \in S_i \cap S_j\)</span>. By definition of <span class="math inline">\(S_i\)</span> and <span class="math inline">\(S_j\)</span>, there exists <span class="math inline">\(z&#39; \in Z\)</span> and <span class="math inline">\(z&#39;&#39; \in Z\)</span>, such that <span class="math inline">\(S_i = z&#39; S\)</span> and <span class="math inline">\(S_j = z&#39;&#39; S\)</span>. Then <span class="math inline">\(x = z&#39; x = z&#39;&#39; y\)</span> for some <span class="math inline">\(x, y \in S\)</span>. It follows that <span class="math inline">\(z&#39; = z&#39;&#39; y x^{-1} \in z&#39;&#39; S\)</span> and <span class="math inline">\(S_i = S_j\)</span>, contradiction the construction of <span class="math inline">\(S_i\)</span> and <span class="math inline">\(S_j\)</span>.</li>
-</ol>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p>Before proceeding to the algorithm, we introduce a lemma.</p>
-<h4 id="lemma">Lemma</h4>
-<p>Given two positive integers <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span>, if <span class="math inline">\(gcd(n, m) = k\)</span>, then <span class="math inline">\(\exists a, b \in Z\)</span>, s.t., <span class="math inline">\(an + bm = k\)</span>.</p>
-<p><strong>Proof.</strong>. Consider the set <span class="math inline">\(E = \{ an + bm, a, b\in Z\}\)</span> and define <span class="math inline">\(c = \min_{e \in E \wedge e &gt; 0} e\)</span>. Note that <span class="math inline">\(c\)</span> is well-defined -- since both <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span> are positive, there are positive integers in <span class="math inline">\(E\)</span>. Further, it holds that <span class="math inline">\(c \le n (a = 1, b = 0)\)</span> and <span class="math inline">\(c \le m (a = 0, b = 1)\)</span>.</p>
-<p>We claim that <span class="math inline">\(c \equiv 0 \mod n\)</span> and <span class="math inline">\(c \equiv 0 \mod m\)</span>. WLOG, we prove only the former case. Suppose it is not, let <span class="math inline">\(y \equiv c \mod n\)</span>. There exists integers <span class="math inline">\(x\)</span> s.t., <span class="math inline">\(cx + y = n\)</span> . But now it follows that <span class="math inline">\(y = n - xc \in E\)</span>, contradicting the definition of <span class="math inline">\(c\)</span>.</p>
-<p>Now <span class="math inline">\(c\)</span> is common divisor of <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span>. It is also the greatest one, since every divisor of <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span> divides any element in <span class="math inline">\(E\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h3 id="algorithm-fermats-test.">Algorithm : Fermat's Test.</h3>
-<p>The algorithm is relatively easy and shown as follows.</p>
-<ol type="1">
-<li>Input: an integer <span class="math inline">\(n\)</span>.</li>
-<li>Output: whether <span class="math inline">\(n\)</span> is a prime number.</li>
-<li>Take a number of <span class="math inline">\(x \in [n - 1]\)</span> uniformly at random.</li>
-<li>Check whether <span class="math inline">\(x^{n - 1} \equiv 1 \mod n\)</span>. If not, output "NO".</li>
-<li>Repeat steps <span class="math inline">\(3, 4\)</span> a specified number of times.</li>
-<li>Output "YES".</li>
-</ol>
-<p>Now we analyze the algorithm. Given <span class="math inline">\(n\)</span>, denote <span class="math inline">\(Z_n^* = \{ x \in [n - 1] \wedge gcd(x, n) = 1 \}\)</span>, i.e., the set of numbers in <span class="math inline">\([n - 1]\)</span> that are coprime to <span class="math inline">\(n\)</span>. Note that <span class="math inline">\(Z_n^*\)</span> is a group under multiplication:</p>
-<ul>
-<li><span class="math inline">\(1 \in Z_n^*\)</span>.</li>
-<li>If <span class="math inline">\(x \in Z_n^*\)</span>, then <span class="math inline">\(\exists a, b \in Z\)</span>, s.t., <span class="math inline">\(ax + bn = 1\)</span> by definition of <span class="math inline">\(Z_n^*\)</span>. Hence <span class="math inline">\((a \mod n ) \in Z_n^*\)</span> and <span class="math inline">\(x^{-1} = (a \mod n )\)</span>.</li>
-<li>If <span class="math inline">\(x, y \in Z_n^*\)</span>, then <span class="math inline">\(gcd(xy, n) = 1\)</span>, therefore <span class="math inline">\(xy \in Z_n^*\)</span>.</li>
-<li>Clearly multiplication is associative.</li>
-</ul>
-<p>On the other hand, consider the set of integers that satisfies Fermat's Little Theorem: <span class="math inline">\(S = \{ x \in [n - 1] \wedge x^{n - 1} \equiv 1 \mod n \}\)</span>. Clearly <span class="math inline">\(S\)</span> is a subset of <span class="math inline">\(Z_n^*\)</span>, since elements in <span class="math inline">\(S\)</span> are invertible module <span class="math inline">\(n\)</span>. Besides, <span class="math inline">\(S\)</span> is itself a group:</p>
-<ul>
-<li><span class="math inline">\(1 \in S\)</span>.</li>
-<li>If <span class="math inline">\(x \in S\)</span>, then <span class="math inline">\(x^{(n - 2)(n - 1)} \equiv x^{(n - 1)(n - 2)} \equiv 1 \mod n\)</span>. It holds that <span class="math inline">\(x^{n - 2} \in S\)</span> and <span class="math inline">\(x^{-1} = x^{n - 2}\)</span>. (The other way to see this is that <span class="math inline">\(1 \equiv x x^{-1} \equiv x^{n - 1} x^{- (n - 1)} \equiv x^{- (n - 1)}\)</span>, hence <span class="math inline">\(x^{-1} \in S\)</span>.)</li>
-<li>Clearly multiplication is associative.</li>
-<li>If <span class="math inline">\(x, y \in S\)</span>, then <span class="math inline">\((xy)^{n - 1} \equiv x^{n - 1} y^{n - 1} \equiv 1 \mod n\)</span>.</li>
-</ul>
-<p>Therefore, <span class="math inline">\(S\)</span> is a subgroup of <span class="math inline">\(Z_n^*\)</span>. As <span class="math inline">\(Z_n^*\)</span> is finite, by <em>Lagrange's Theorem</em>,</p>
-<p><span class="math display">\[
-|Z_n^*| \text{ is a multiple of } |S|
-\]</span></p>
-<p>If there is an element <span class="math inline">\(x \in Z_n^*\)</span> but <span class="math inline">\(x \notin S\)</span>, then <span class="math inline">\(|Z_n^*| \ge 2 |S|\)</span> and step <span class="math inline">\(3, 4\)</span> successfully reports "NO" with probability at least a half.</p>
-<p>However relative rare, systematic error exists. There are numbers such that all numbers coprime to them satisfy Fermat's Little Theorem, i.e., <span class="math inline">\(|Z_n^*| = |S|\)</span>. The smallest one, 561, was found by Carmichael in 1910 and such number are called Carmichael numbers. This motivates the invention of the Rabin/Miller test. The heart lies on finding a pseudo square root of <span class="math inline">\(1\)</span>.</p>
-<h5 id="theorem">Theorem</h5>
-<p>If <span class="math inline">\(n\)</span> is prime and <span class="math inline">\(x^2 \equiv 1 \mod n\)</span>, then <span class="math inline">\(x = \pm 1 \mod n\)</span>, where <span class="math inline">\(-1 \mod n\)</span> is defined as <span class="math inline">\(n - 1\)</span>.</p>
-<p>Proof: <span class="math inline">\(x^2 \equiv 1 \mod n\)</span> implies <span class="math inline">\((x - 1)(x + 1) \equiv 0 \mod n\)</span>. As <span class="math inline">\(n\)</span> is a prime, <span class="math inline">\(x - 1 \equiv 0 \mod n\)</span> or <span class="math inline">\(x + 1 \equiv 0 \mod n\)</span>. <span class="math inline">\(\blacksquare\)</span></p>
-<p>Observe that when <span class="math inline">\(n &gt; 2\)</span>, <span class="math inline">\(n - 1 \neq 1\)</span>.</p>
-<h3 id="algorithm-2-rabin-miller-test">Algorithm 2: Rabin Miller Test</h3>
-<ol type="1">
-<li><p>Input: an integer <span class="math inline">\(n\)</span>.</p></li>
-<li><p>Output: whether <span class="math inline">\(n\)</span> is a prime number.</p></li>
-<li><p>If <span class="math inline">\(n \neq 2\)</span> and <span class="math inline">\(n\)</span> is even, output "NO".</p></li>
-<li><p>If <span class="math inline">\(n\)</span> is the power of some integer, output "NO".</p></li>
-<li><p>Find the maximum integer <span class="math inline">\(k\)</span>, such that <span class="math inline">\(n - 1 = 2^k m\)</span> for some odd number <span class="math inline">\(m\)</span>.</p></li>
-<li><p>Take a number of <span class="math inline">\(x \in [n - 1]\)</span> uniformly at random.</p></li>
-<li><p>Check whether <span class="math inline">\(x^{n - 1} \equiv 1 \mod n\)</span>. If not, output "NO". [Now Fermat's Test Is Passed. Need Further Verification.]</p></li>
-<li><p>Otherwise, compute the certificate <span class="math display">\[
-C = (x^m, x^{2m}, x^{4m}, ..., x^{2^{k - 1}m}, x^{2^km})
-\]</span> We must have <span class="math inline">\(x^{2^km} \equiv 1\)</span> since it passes Fermat's test. We check whether <span class="math inline">\(\exists i\)</span>, such that <span class="math inline">\(x^{2^i m} \neq \pm 1\)</span> but <span class="math inline">\(x^{2^{i + 1} m} = 1\)</span>. If so, we find a pseudo square root of unity and output "NO".</p></li>
-<li><p>Repeat steps <span class="math inline">\(6 - 8\)</span> a specified number of times.</p></li>
-<li><p>Output "YES".</p></li>
-</ol>
-<p>We claim that line 4 runs in polynomial time. If <span class="math inline">\(n\)</span> is the power of some integer, the smallest integer is <span class="math inline">\(2\)</span>, which gives the power value <span class="math inline">\(\log n\)</span>. Therefore we need only to check for each integer <span class="math inline">\(i \in [\log n]\)</span> whether it holds that <span class="math inline">\(n^{1/i}\)</span> is a integer, which can be computed in polynomial time.</p>
-<p>Now we prove the main theorem.</p>
-<p><strong>Theorem</strong>: If <span class="math inline">\(n\)</span> is composite, then the algorithm output "YES" with probability at least <span class="math inline">\(1/2\)</span>.</p>
-<p>Proof: we call <span class="math inline">\(x \in [n - 1]\)</span> a Rabin Miller witness, if <span class="math inline">\(n\)</span> is a composite and the algorithm outputs "YES" when choosing <span class="math inline">\(x\)</span>. Otherwise we call <span class="math inline">\(x\)</span> a Rabin Miller non-witness. Such <span class="math inline">\(x\)</span>'s satisfies <span class="math display">\[
-    x^m \equiv 1 \text{ or } x^{2^i m} \equiv -1 \mod n \text{ for } 0 \le i &lt; k
-\]</span></p>
-<p>We are going to construct a proper subgroup <span class="math inline">\(S \subset Z_n^*\)</span>, such that all Rabin Miller non-witness belong to <span class="math inline">\(S\)</span>. Then by Lagrange Theorem, it holds that <span class="math display">\[
-|\{ \text{Rabin Miller non-witness} \} | \le |S| \le \frac{1}{2} |Z_n^*| \le \frac{n}{2}
-\]</span></p>
-<p>The construction considers the collection of subsets: <span class="math display">\[
-S_r = \{ x \in [n -  1] : x^r \equiv \pm 1 \mod n \}
-\]</span> for <span class="math inline">\(r = m, 2m, 4m, ..., 2^k m\)</span>. Define <span class="math display">\[
-S = \max_r S_r, s.t., \exists x \in S_r: x^r \equiv -1 \mod n
-\]</span> In other words, <span class="math inline">\(S\)</span> is defined to be the set <span class="math inline">\(S_r\)</span> that contains an element whose <span class="math inline">\(r\)</span>-th power equals to <span class="math inline">\(-1\)</span> for the largest <span class="math inline">\(r\)</span>. Such <span class="math inline">\(S\)</span> must exists since <span class="math inline">\(-1 \in S_m\)</span>. <span class="math inline">\(S\)</span> has two important properties:</p>
-<ol type="1">
-<li>All Rabin Miller non-witness belongs to <span class="math inline">\(S\)</span>.</li>
-<li><span class="math inline">\(S\)</span> is subgroup of <span class="math inline">\(Z_n^*\)</span>.</li>
-<li><span class="math inline">\(\exists y \in Z_n^*\)</span>, s.t., <span class="math inline">\(y \notin S\)</span>, i.e., <span class="math inline">\(S \neq Z_n^*\)</span></li>
-</ol>
-<p>Property (1) is obvious by the definition of Rabin Miller non-witness. To show (2), we need to verify <span class="math inline">\(S\)</span> is close under multiplication, each element in <span class="math inline">\(S\)</span> belongs to <span class="math inline">\(Z_n^*\)</span> and is invertible in <span class="math inline">\(S\)</span>:</p>
-<ul>
-<li>If <span class="math inline">\(x \in S, y \in S\)</span>, then <span class="math inline">\((xy)^r \pm x^r y^r \equiv \pm 1 \mod n\)</span>.</li>
-<li>If <span class="math inline">\(x \in S\)</span>, then <span class="math inline">\(x^r \equiv 1 \mod n\)</span> or <span class="math inline">\(x^{2r} \equiv 1 \mod n\)</span>. Clearly <span class="math inline">\(x\)</span> is invertible. Hence <span class="math inline">\(x \in Z_n^*\)</span>.</li>
-<li>If <span class="math inline">\(x \in S\)</span>, then <span class="math inline">\(1 \equiv (x x^{-1})^r \equiv x^r x^{-r} \equiv x^{-r} \mod n\)</span>.</li>
-</ul>
-<p>Finally, we prove Property (3). As <span class="math inline">\(n\)</span> is composite, we can write <span class="math inline">\(n = ab\)</span>, where <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are coprime. By definition of <span class="math inline">\(S\)</span>, <span class="math inline">\(\exists x \in S\)</span>, such that <span class="math display">\[
-x^r \equiv -1 \mod n
-\]</span> By Chinese Remainder Theorem, this is equivalent to <span class="math display">\[
-x^r \equiv n-1 \mod a \wedge x^r \equiv n-1 \mod b
-\]</span> i.e., <span class="math display">\[
-x^r \equiv -1 \mod a \wedge x^r \equiv -1 \mod b
-\]</span></p>
-<p>However, another use of Chinese Remainder Theorem asserts <span class="math inline">\(\exists y \in [n]\)</span>, such that <span class="math display">\[
-y \equiv x \mod a \wedge y \equiv 1 \mod b
-\]</span></p>
-<p>which implies that <span class="math display">\[
-y^r \equiv x^r \equiv -1 \mod a \wedge y^r \equiv 1 \mod b
-\]</span></p>
-<p>Hence it is impossible that <span class="math inline">\(y^r \equiv \pm 1 \mod n\)</span>. It is left to prove <span class="math inline">\(y\)</span> is invertible module <span class="math inline">\(n\)</span>:</p>
-<ul>
-<li><span class="math inline">\(y \in Z_n^*\)</span>, as <span class="math inline">\(\gcd(x, n) = \gcd(x, ab) = 1 \rightarrow \gcd(x,a ) = 1 \wedge \gcd(x, b) = 1 \rightarrow \gcd(y, a) = \gcd(x, a) = 1 \rightarrow \gcd(y, ab) = 1\)</span>.</li>
-</ul>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h4 id="reference">Reference:</h4>
-<ol type="1">
-<li><a target="_blank" rel="noopener" href="http://theory.stanford.edu/~valiant/teaching/CS265/primality.pdf">Primality Testing, CS265/CME309, Fall 2017. Gregory Valiant</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -596,7 +531,7 @@ y^r \equiv x^r \equiv -1 \mod a \wedge y^r \equiv 1 \mod b
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">175</span>
+          <span class="site-state-item-count">176</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

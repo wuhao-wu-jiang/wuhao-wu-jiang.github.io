@@ -146,6 +146,126 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/09/01/Vertex-Cover/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/09/01/Vertex-Cover/" class="post-title-link" itemprop="url">Vertex Cover</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-09-01 08:59:27" itemprop="dateCreated datePublished" datetime="2018-09-01T08:59:27+10:00">2018-09-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-18 23:32:05" itemprop="dateModified" datetime="2021-03-18T23:32:05+11:00">2021-03-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<blockquote>
+<p>Given an undirected graph <span class="math inline">\(G = \left&lt;V, E \right&gt;\)</span> in which each vertex <span class="math inline">\(i\)</span> is associated with a weight <span class="math inline">\(w_i\)</span>, the <em>vertex cover</em> problem asks for the subset of vertices with minimum weight, such that every edge in <span class="math inline">\(G\)</span> is incident to at least one vertex in the set.</p>
+</blockquote>
+<p>The problem can be formulate as integer program then relaxed as linear program. Let <span class="math inline">\(n\)</span> and <span class="math inline">\(m\)</span> be the number of vertices and edges respectively. For every vertex <span class="math inline">\(i \in [n]\)</span>, there is a indicator variable <span class="math inline">\(x_i \in [0, 1]\)</span>. The linear program is given as</p>
+<p><span class="math display">\[  
+\begin{array}{llr}
+    \min        &amp; \sum_{i = 1}^n w_i x_i  &amp;\\
+    \text{s.t.} &amp; x_i + x_j \ge 1         &amp; \forall (i,j) \in E \\
+                &amp; x_i \ge 0               &amp;  \forall i \in [n] 
+\end{array}
+\]</span></p>
+<!-- $$
+    \begin{aligned}
+    &\min  & \sum_{i = 1}^n w_i x_i &  &\\
+    &s.t., & x_i + x_j \ge 1 & & \forall e = (i,j) \in E \\
+    &      & x_i \ge 0       & & \forall i \in [n] 
+    \end{aligned}
+$$ -->
+<p>Its dual is given by <span class="math display">\[
+\begin{array}{llr}
+    \max        &amp; \sum_{(i,j) \in E} y_{i,j}   &amp;\\
+    \text{s.t.} &amp; \sum_{(i, j) \in E} y_{i, j} \le w_i      &amp; \forall i \in [n] \\
+                &amp; y_{i, j} \ge 0        &amp; \forall (i, j) \in E 
+\end{array}
+\]</span></p>
+<p>where <span class="math inline">\(y_{i,j}\)</span> and <span class="math inline">\(y_{j, i}\)</span> denote the same variable.</p>
+<!-- $$
+\begin{aligned}
+&\max  & \sum_{e \in E} y_e &  &\\
+&s.t., & \sum_{(i, j) \in E} y_{i, j} \le w_i & & \forall i \in [n] \\
+&      & y_{i, j} \ge 0       & & \forall e = (i, j) \in e
+\end{aligned}
+$$ -->
+<p>By weak duality, <span class="math display">\[
+\sum_{(i, j) \in E} y_{i, j} \le \sum_{(i,j) \in E} (x_i + x_j ) y_{i, j} = \sum_{i = 1}^n \left( \sum_{(i, j) \in E} y_{i, j}\right) x_i \le \sum_{i = 1}^n w_i x_i
+\]</span></p>
+<p>Let <span class="math inline">\(x^*\)</span> and <span class="math inline">\(y^*\)</span> denotes the primal and dual optimal solutions respectively. By strong duality, the complementary slackness states that <span class="math display">\[
+\begin{array}{llllr}
+    x_i^* + x_j^* = 1   &amp;\vee &amp; y_{i, j}^* = 0 &amp;&amp; (1)\\
+    \sum_{(i, j) \in E} y^*_{i, j} = w_i &amp;\vee &amp; x^*_i = 0 &amp;&amp; (2)
+\end{array}
+\]</span></p>
+<p>Now we show how to use this condition to construct an approximate primal solution. We begin with an initial values of <span class="math inline">\(x = (0, 0, ..., 0)\)</span> and <span class="math inline">\(y = (0, 0, ..., 0)\)</span>. Note that <span class="math inline">\(y\)</span> is a dual feasible solution and condition <span class="math inline">\((2)\)</span> holds. However <span class="math inline">\(x\)</span> is not a primal feasible solution. In the following we give an algorithm that maintains the feasibility of <span class="math inline">\(y\)</span> and condition <span class="math inline">\((2)\)</span> while restores the feasibility of <span class="math inline">\(x\)</span>.</p>
+<blockquote>
+<p>Algorithm 1 -- an 2 approximation algorithm<br />
+while <span class="math inline">\(\exists (i, j) \in E, s.t., x_i + x_j &lt; 1\)</span><br />
+<span class="math inline">\(\quad\)</span> increase <span class="math inline">\(y_{i, j}\)</span> as much as possible until either &gt; <span class="math inline">\(1. \quad \sum_{(i, k) \in E} y_{i, k} = w_i\)</span>, then set <span class="math inline">\(x_i = 1\)</span><br />
+&gt; <span class="math inline">\(2. \quad \sum_{(j, k) \in E} y_{j, k} = w_j\)</span>, then set <span class="math inline">\(x_j = 1\)</span></p>
+</blockquote>
+<p>Note that in the inner loop, if two conditions hold simultaneously, we need only set one of <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span> to 1.</p>
+<p>Now we analyze the algorithm. It is apparent that <span class="math inline">\(\sum_{(i, j) \in E} y_{i,j} \le w_i \forall i \in [i]\)</span> holds throughout the algorithm. Moreover, for <span class="math inline">\(i \in [i]\)</span>, <span class="math inline">\(x_i = 0\)</span> or <span class="math inline">\(x_i = 1\)</span>. In the latter case, we must have <span class="math inline">\(\sum_{(i, k) \in E} y_{i, k} = w_i\)</span>. We conclude that when the algorithm terminates,</p>
+<p><span class="math display">\[
+\sum_{(i, j) \in E} y_{i, j} \le \sum_{i = 1}^n w_i x_i =  \sum_{i = 1}^n \left( \sum_{(i, j) \in E} y_{i, j}\right) x_i  = \sum_{(i,j) \in E} (x_i + x_j ) y_{i, j}  
+\]</span></p>
+<p>But <span class="math inline">\(x_i + x_j\)</span> is at most <span class="math inline">\(2\)</span>, therefore <span class="math inline">\(\sum_{(i, j) \in E} y_{i, j} \le \sum_{i = 1}^n w_i x_i \le 2\sum_{(i, j) \in E} y_{i, j}\)</span>.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/28/Heavy-Hitter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -305,138 +425,6 @@ h(x) = ax + b \mod p \mod n
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/26/Birthday-Paradox/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/08/26/Birthday-Paradox/" class="post-title-link" itemprop="url">Birthday Paradox</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-08-26 11:29:30" itemprop="dateCreated datePublished" datetime="2018-08-26T11:29:30+10:00">2018-08-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-09 18:34:28" itemprop="dateModified" datetime="2020-12-09T18:34:28+11:00">2020-12-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Suppose that we throw <span class="math inline">\(m\)</span> balls into <span class="math inline">\(n\)</span> bins uniformly at random, where <span class="math inline">\(n\)</span> is a fixed number. What is the probability that some pair of balls are placed in the same bin?</p>
-<p>Define <span class="math inline">\(X_{i, j}\)</span> be the indicator variable that the <span class="math inline">\(i\)</span>-th ball and the <span class="math inline">\(j\)</span>-th ball go to the same bin. Its expectation is given by</p>
-<p><span class="math display">\[
-E[X_{i,j}] = 1\cdot P[ X_{i,j} = 1] + 0 \cdot P[X_{i,j} = 0] = \frac{1}{n}.
-\]</span></p>
-<p>By linearity of expectation, we have <span class="math display">\[
-E[\sum_{1 \le i &lt; j \le m} X_{i,j}] = \sum_{1 \le i &lt; j \le m} E[X_{i,j}] = \frac{m (m - 1)}{2n}.
-\]</span></p>
-<p>When <span class="math inline">\(m \approx \sqrt{2n}\)</span>, in expectation, there is a pair of ball going to the same bin. However, this estimate is too loose.</p>
-<p>Define <span class="math inline">\(p(m, n)\)</span> the exact probability that no ball goes to the same bin. Then</p>
-<p><span class="math display">\[
-p(m, n) = \prod_{i = 0}^m \frac{n - i}{n} = \prod_{i = 0}^m (1 - \frac{i}{n}).
-\]</span></p>
-<p>By inequality <span class="math inline">\(1 - \frac{i}{n} \le e^{- \frac{i}{n} }\)</span>, we have a upper bound for the above probability: <span class="math display">\[
-p(m, n) \le  e^{- \frac{m (m - 1)}{2n} }. 
-\]</span></p>
-<p>Therefore, the probability that there is at least one collision is lower bounded by <span class="math display">\[
-1 - e^{- \frac{m (m - 1)}{2n} }. 
-\]</span></p>
-<p>If <span class="math inline">\(m = \sqrt n\)</span>, we get <span class="math inline">\(e^{- \frac{m (m - 1)}{2n} } \approx e^{-\frac{1}{2} } \approx 0.6\)</span>. If <span class="math inline">\(m = 2 \sqrt n\)</span>, we get <span class="math inline">\(e^{- \frac{m (m - 1)}{2n} } \approx e^{-2} \approx 0.14\)</span>.</p>
-<p>In the case <span class="math inline">\(n = 365\)</span>, we say that if there are <span class="math inline">\(\sqrt n \approx 19\)</span> people, <span class="math inline">\(40\%\)</span> of times some pair of them share the same birthday. If there are <span class="math inline">\(36\)</span> people, the probability is over <span class="math inline">\(80\%\)</span>.</p>
-<p><em>Remark:</em> let's play some math to bound <span class="math inline">\(p(m, n)\)</span> asymptotically. First, when <span class="math inline">\(x \le 1 / 2\)</span>, we have <span class="math display">\[
-e^x = \sum_{i = 0}^\infty x^i / i! \le 1 + x + \frac{x^2}{2} \left( \sum_{i = 0}^\infty ( \frac{1}{2})^i \right) \le 1 + 2 x.
-\]</span></p>
-<p>Hence, <span class="math display">\[
-p(m, n) \le  e^{- \frac{m (m - 1)}{2n} } \le \exp( -\frac{m^2}{2n} ) \cdot (1 + \frac{m}{n} ). 
-\]</span></p>
-<p>On the other hand, for <span class="math inline">\(k \in \mathbb{N}^+\)</span>, <span class="math display">\[
-(1 - x) ( \sum_{i = 0}^k  x^k) = 1 - x^{k + 1}.
-\]</span></p>
-<p>when <span class="math inline">\(|x| &lt; 1\)</span>, <span class="math display">\[
-(1 - x) ( \sum_{i = 0}^\infty  x^i) = \lim_{k \rightarrow \infty} (1 - x^{k + 1} ) = 1.
-\]</span></p>
-<p>Therefore, when <span class="math inline">\(|x| &lt; 1\)</span>, <span class="math display">\[
-\frac{1}{1 - x} = \sum_{i = 0}^\infty x^i. 
-\]</span></p>
-<p>Replacing <span class="math inline">\(x\)</span> with <span class="math inline">\(-x\)</span>, we get <span class="math display">\[
-\frac{1}{1 + x} = \sum_{i = 0}^\infty (-1)^i x^i = 1 - x + x^2 - x^3 + ...
-\]</span></p>
-<p>By <span class="math inline">\((\ln (1 + x) )&#39; = \frac{1}{1 + x}\)</span>, we get <span class="math display">\[
-\ln (1 + x) = x - \frac{x^2}{2} + \frac{x^3}{3} - ...
-\]</span></p>
-<p>and <span class="math display">\[
-\ln (1 - x) = - x - \frac{x^2}{2} - \frac{x^3}{3} - ...
-\]</span></p>
-<p>When <span class="math inline">\(x \le 1 / 2\)</span>, we get <span class="math display">\[
-\ln (1 - x) \ge - x - \frac{x^2}{2}( \sum_{i = 0}^\infty (\frac{1}{2})^i ) = -x - x^2.
-\]</span></p>
-<p>So, when <span class="math inline">\(m &lt; n / 2\)</span>, <span class="math display">\[
-\begin{aligned}
-    p(m, n) 
-        &amp;= \prod_{i = 0}^m (1 - \frac{i}{n}) \\
-        &amp;\ge \exp( - \sum_{i = 0}^m \frac{i}{n} - \sum_{i = 0}^m \frac{i^2}{n^2}) \\
-        &amp;\ge \exp( - \frac{m (m - 1)}{2n} ) ( 1 - \sum_{i = 0}^m \frac{i^2}{n^2}) \\
-        &amp;\ge \exp( - \frac{m^2}{2n} ) ( 1 - O( \frac{m^3}{n^2} ) ). 
-\end{aligned}
-\]</span></p>
-<p>Combined, we get <span class="math display">\[
-\exp( - \frac{m^2}{2n} ) ( 1 - O( \frac{m^3}{n^2} ) ) \le p(m, n) \le \exp( - \frac{m^2}{2n} ) ( 1 - m / n ). 
-\]</span></p>
-<p>If <span class="math inline">\(m &lt; \sqrt n\)</span>, then <span class="math inline">\(m^3 / n^2 &lt; m / n\)</span>. In this case, <span class="math display">\[
-p(m, n) = \Theta \left( \exp( - \frac{m^2}{2n} ) ( 1 - m / n ) \right). 
-\]</span></p>
-<p>Replacing <span class="math inline">\(m = \sqrt{2 n\ln 2}\)</span>, then <span class="math display">\[
-p(m, n) = \frac{1}{2} + \Theta( \frac{1}{\sqrt n}). 
-\]</span></p>
-<h3 id="reference.">Reference.</h3>
-<p>[1]. Ryan O'Donnell, Lecture 3, CS Theory Toolkit, CARNEGIE MELLON UNIVERSITY</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -506,7 +494,7 @@ p(m, n) = \frac{1}{2} + \Theta( \frac{1}{\sqrt n}).
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">175</span>
+          <span class="site-state-item-count">176</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

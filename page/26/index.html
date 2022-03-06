@@ -146,6 +146,205 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/07/Entropy-and-Compression/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/07/Entropy-and-Compression/" class="post-title-link" itemprop="url">Entropy and Compression</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-07 12:24:22" itemprop="dateCreated datePublished" datetime="2020-06-07T12:24:22+10:00">2020-06-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-11 23:49:47" itemprop="dateModified" datetime="2021-07-11T23:49:47+10:00">2021-07-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>One interpretation of entropy of a random variable is as a measure of how many unbiased, independent random bits in expectation we can extract from the random variable. Another one comes from compression of a sequence.</p>
+<p>Assume that the sequence studied (denoted as <span class="math inline">\(s\)</span>) is a binary one. It consists of a concatenation of the outcomes of <span class="math inline">\(n\)</span> independent Bernoulli random variables. Without lose of generality, we assume that each bit comes up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p \le 1 / 2\)</span>. This is one of the simplest models of a sequence.</p>
+<p>The fact that sequence could be a biased one makes it possible to represent it by a new sequence with shorter length in expectation. For example, suppose that <span class="math inline">\(p = \frac{1}{4}\)</span>, then for a pair of consecutive bits, it have</p>
+<ol type="1">
+<li>probability <span class="math inline">\(\frac{1}{16}\)</span> of being <span class="math inline">\(11\)</span>,<br />
+</li>
+<li>probability <span class="math inline">\(\frac{3}{16}\)</span> of being <span class="math inline">\(01\)</span>,</li>
+<li>probability <span class="math inline">\(\frac{3}{16}\)</span> of being <span class="math inline">\(10\)</span>,</li>
+<li>probability <span class="math inline">\(\frac{9}{16}\)</span> of being <span class="math inline">\(00\)</span>.</li>
+</ol>
+<p>If we use <span class="math inline">\(111\)</span> to represent <span class="math inline">\(11\)</span>, <span class="math inline">\(110\)</span> to represent <span class="math inline">\(01\)</span>, <span class="math inline">\(10\)</span> to represent <span class="math inline">\(10\)</span>, and <span class="math inline">\(0\)</span> to represent <span class="math inline">\(00\)</span>, then the expected number of representation bits per pair is <span class="math display">\[
+\begin{array}{r}
+    3 \cdot \frac{1}{16} + 3 \cdot \frac{3}{16} + 2 \cdot  \frac{3}{16} + 1 \cdot  \frac{9}{16} 
+    = \frac{27}{16} 
+    &lt; 2
+\end{array}
+\]</span></p>
+<p>In general, compression is not limited to the way described above. We call the rule with which we compress a string <em>a compression function</em>.</p>
+<h1 id="compression-function">Compression Function</h1>
+<blockquote>
+<p><strong>Definition.</strong> Let <span class="math inline">\(S = \{0, 1\}^n\)</span> be the set of binary sequence of length <span class="math inline">\(n\)</span>, and <span class="math inline">\(T = \{ 0, 1\}^+\)</span> the set of binary sequence of any positive length. A compression function <span class="math inline">\(h: S \rightarrow T\)</span> is an injective (one-to-one) function from <span class="math inline">\(S\)</span> to <span class="math inline">\(T\)</span>.</p>
+</blockquote>
+<p>In other words, each <span class="math inline">\(s \in S\)</span> is assigned a unique non-empty sequence (of arbitrary length) by <span class="math inline">\(h\)</span>.</p>
+<p>Observe that the size of <span class="math inline">\(S\)</span> is <span class="math inline">\(2^n\)</span>. On the other hand, the number of sequences with length less than <span class="math inline">\(n\)</span> is <span class="math inline">\(\sum_{i = 1}^{n - 1} 2^{i} = 2^n - 1 &lt; 2^n\)</span>. For any <span class="math inline">\(h\)</span>, it is impossible for <span class="math inline">\(h\)</span> to map every <span class="math inline">\(s \in S\)</span> to a sequence with length less than <span class="math inline">\(n\)</span>. Under adversarial input, <span class="math inline">\(h\)</span> can not compress at all.</p>
+<p>The hope is that when there is a distribution <span class="math inline">\(\mathfrak{D}\)</span> on <span class="math inline">\(S\)</span>, the expected length of the compressed sequences would be small: <span class="math display">\[
+    \mathbf{E} [ |h(s)| ] = \sum_{s \in S} p_s \cdot |h(s)|
+\]</span></p>
+<p>To illustrate the meaning of entropy, we study a simple case where <span class="math inline">\(\mathfrak{D}\)</span> is the joint distribution of <span class="math inline">\(n\)</span> <em>i.i.d.</em> Bernoulli random variables that come up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p \le { 1 / 2 }\)</span> (by symmetry, the claim holds for the case of <span class="math inline">\(p &gt; { 1 / 2 }\)</span>).</p>
+<p>The following theorem formalizes how good a compression function we can find.</p>
+<h2 id="entropy-as-lower-and-upper-bounds"><strong>Entropy as Lower and Upper Bounds</strong></h2>
+<blockquote>
+<p><strong>Theorem.</strong> 1. <span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> a compression <span class="math inline">\(h\)</span> and integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that <span class="math display">\[
+\mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)
+\]</span> 2. <span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that for any compression <span class="math inline">\(h\)</span>, <span class="math display">\[
+\mathbf{E}[ |h(s)| ] \ge (1 - \delta) n \mathbf{H}(p)
+\]</span></p>
+</blockquote>
+<p><em>Intuitively, the entropy <span class="math inline">\(\mathbf{H}(p)\)</span> is the measure of the average number of bits in expectation we need after compression to represent a Bernoulli random variable that comes up <span class="math inline">\(1\)</span> with probability <span class="math inline">\(p\)</span>.</em></p>
+<p><em>The high level idea of the proof is that, with high probability, the number of ones in a <span class="math inline">\(s \in S\)</span> is roughly <span class="math inline">\(np\)</span>. There are roughly <span class="math inline">\(2^{n\mathbf{H}(p)}\)</span> such sequences. Therefore, we can use <span class="math inline">\(n \mathbf{H}(p)\)</span> bits to represent each sequence.</em></p>
+<p><strong>Proof.</strong> The claim is trivially true if <span class="math inline">\(p = { 1 / 2 }\)</span>. Otherwise, <span class="math inline">\(p &lt; { 1 / 2 }\)</span>. We can pick some <span class="math inline">\(\epsilon &gt; 0\)</span>, such that <span class="math inline">\(p + \epsilon &lt; { 1 / 2 }\)</span>. Further, if <span class="math inline">\(n\)</span> is large enough, <span class="math inline">\(np + n\epsilon \le n / 2 - 1\)</span>. Hence, we may assume that <span class="math inline">\(\lceil np + n\epsilon \rceil \le n / 2\)</span> .</p>
+<p>Denote <span class="math inline">\(Z\)</span> be the number of ones in the string <span class="math inline">\(s\)</span>. By Hoeffding Inequality, it holds that <span class="math display">\[
+    \Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)
+\]</span></p>
+<p>By the fact that <span class="math inline">\(Z\)</span> takes only integer values, we have <span class="math display">\[
+    \Pr[Z \ge \lceil np + n\epsilon \rceil] \le \exp(-2 n \epsilon^2 )
+\]</span></p>
+<p>We use the first bit output of <span class="math inline">\(h\)</span> as a flag. For a string <span class="math inline">\(s\)</span> with <span class="math inline">\(Z \ge \lceil np + n\epsilon \rceil\)</span>, we set the first bit to <span class="math inline">\(0\)</span> and then output the same sequence, i.e., <span class="math inline">\(h(s) = 0 \circ s\)</span>. In such case we do not compress the string at all and use <span class="math inline">\(n + 1\)</span> bits to represent it.</p>
+<p>We set the first bit output to <span class="math inline">\(1\)</span> if <span class="math inline">\(Z &lt; \lceil np + n \epsilon \rceil \le n / 2\)</span>. The number of such sequences is bounded by <span class="math display">\[
+    \sum_{k = 0}^{\lceil np + n\epsilon \rceil - 1} \binom{n}{k} \le  \frac{n}{2} \binom{n}{\lceil np + n\epsilon \rceil - 1 } \le \frac{n}{2} 2^{ n \cdot \mathbf{H} \left( \frac{ \lceil np + n\epsilon \rceil - 1 }{n} \right) } \le \frac{n}{2} 2^{ n \mathbf{H} \left( p + \epsilon  \right) }
+\]</span></p>
+<p>The first inequality holds because <span class="math inline">\(\binom{n}{k}\)</span> increases for <span class="math inline">\(k &lt; n / 2\)</span> and that the summation is over <span class="math inline">\(\lceil np + n \epsilon \rceil \le n / 2\)</span> terms. The last inequality holds since <span class="math inline">\((\lceil np + n\epsilon \rceil - 1) / n \le ( np + n\epsilon ) / n = p + \epsilon &lt; 1 / 2\)</span> and <span class="math inline">\(\mathbf{H}( \cdot )\)</span> is a increasing function in the range <span class="math inline">\([0, 1/2]\)</span>.</p>
+<p>We compress these sequences by representing each of them with a unique sequence of at most<br />
+<span class="math display">\[
+\begin{array}{rl}
+    \log \left[ (n / 2) \cdot  2^{ n \cdot\mathbf{H} \left( p + \epsilon  \right) } \right]
+    = n \cdot\mathbf{H} \left( p + \epsilon  \right)  + \log n -1
+\end{array}
+\]</span></p>
+<p>bits. Considering the leading flag bit 1 (to indicate the sequence is a compressed one), we output at most <span class="math inline">\(n \mathbf{H} \left( p + \epsilon \right) + \log n\)</span> bits for sequences with <span class="math inline">\(Z &lt; \lceil np + n \epsilon \rceil\)</span>. This can be written as <span class="math inline">\(\left[ \mathbf{H} \left( p + \epsilon \right) + (1 / n) \cdot (\log n - 1) \right] n\)</span> bits and is smaller than <span class="math display">\[
+(1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n
+\]</span></p>
+<p>is <span class="math inline">\(\epsilon\)</span> is smaller enough and <span class="math inline">\(n\)</span> is large enough.</p>
+<p>We are almost done with the proof. It is left to consider sequences with <span class="math inline">\(Z \ge \lceil np + n \epsilon \rceil\)</span>. For those sequence, we don't compress them and and set the leading flag bit to 0. The outputs for those sequences consist of at most <span class="math inline">\(1 + n\)</span> bits. However, by Hoeffding inequality, such sequences do not appear frequently and the expected output length can be made arbitrary small.</p>
+<p>Specifically, <span class="math inline">\(\forall \delta &gt; 0\)</span>, we can find large enough <span class="math inline">\(N\)</span>, such that <span class="math inline">\(\forall n &gt; N\)</span>, it holds</p>
+<p><span class="math display">\[
+    (n + 1 ) \cdot \exp(-2 n \epsilon^2 ) \le n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)
+\]</span></p>
+<p>Then, in expectation, the bits outputted by <span class="math inline">\(h\)</span> is at most <span class="math display">\[
+\begin{aligned}
+    &amp;(n + 1) \cdot \exp(-2 n \epsilon^2 ) + [n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ] \cdot [ 1 - \exp(-2 n \epsilon^2 ) ] \\
+    \le&amp; n \cdot (\delta / 2)  \cdot  \mathbf{H}(p) + [ n \cdot \mathbf{H} \left( p + \epsilon  \right)   + \log n ]\\
+    \le&amp; n \cdot (\delta / 2)  \cdot  \mathbf{H}(p)  +  (1 + \delta /{2} ) \cdot \mathbf{H} (p) \cdot n\\
+    \le&amp; \left(  1 + \delta \right) \cdot \mathbf{H}(p) \cdot n
+\end{aligned}
+\]</span></p>
+<p>To prove the lower bound, first we need the following lemma.</p>
+<blockquote>
+<p><strong>Lemma.</strong> <em>for <span class="math inline">\(s_1, s_2 \in S\)</span>, if <span class="math inline">\(s_1\)</span> has more ones than <span class="math inline">\(s_2\)</span>, i.e., <span class="math inline">\(\Pr(s_1) \ge \Pr(s_2)\)</span>, then the <span class="math inline">\(h\)</span> that minimizes the expected output length <span class="math inline">\(\mathbf{E}[ |h(s)| ]\)</span> should assign <span class="math inline">\(s_1\)</span> a sequence at most as long as <span class="math inline">\(s_2\)</span>, i.e., <span class="math inline">\(|h(s_1)| \le |h(s_2)|\)</span>.</em></p>
+</blockquote>
+<p><strong>Proof</strong>. Otherwise, if we swap the output sequences of <span class="math inline">\(h(s_1)\)</span> and <span class="math inline">\(h(s_2)\)</span>, we lower value of <span class="math inline">\(\mathbf{E}[ |h(s)| ]\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Further, consider the number of <span class="math inline">\(s \in S\)</span> with <span class="math inline">\(\lfloor np - n \epsilon \rfloor\)</span> ones, <span class="math display">\[
+\begin{aligned}
+\binom{n}{\lfloor np - n\epsilon \rfloor } 
+    &amp;\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H} \left( { \lfloor np - n\epsilon \rfloor } / { n} \right) } \\
+    &amp;\ge \frac{1}{n + 1} 2^{ n \cdot \mathbf{H}( { (np - n\epsilon - 1) } / {n} )} \\
+    &amp;\ge 2^{ \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) -  \log (n + 1)  \rfloor }
+\end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(k = \lfloor n \cdot \mathbf{H}( p - \epsilon -1 / n) - \log (n + 1) \rfloor\)</span>. For large enough <span class="math inline">\(n\)</span>, it holds that <span class="math display">\[
+k \ge (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)
+\]</span></p>
+<p>Further, since <span class="math display">\[
+\sum_{i = 1}^{  k - 1  } 2^i \le \sum_{i = 0}^{  k - 1  } 2^i = 2^{  k } - 1 &lt; 2^k,
+\]</span></p>
+<p>there are strictly less than <span class="math inline">\(2^k\)</span> distinct binary sequences with length at most <span class="math inline">\(k - 1\)</span>.</p>
+<p>Therefore, for the set of <span class="math inline">\(s \in S\)</span> with <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones, at least one of them has output length at least <span class="math inline">\(k\)</span>.</p>
+<p>By the previous lemma, all sequences with more than <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones has length at least <span class="math inline">\(k\)</span>.</p>
+<p>Denote <span class="math inline">\(Z\)</span> be the number of ones in the string <span class="math inline">\(s\)</span>. By Hoeffding Inequality, it holds that <span class="math display">\[
+\Pr[ |Z - np| \ge n\epsilon ] \le \exp(-2n \epsilon^2)
+\]</span></p>
+<p>By the fact that <span class="math inline">\(Z\)</span> takes only integer values, we have <span class="math display">\[
+\Pr[Z \le \lfloor np - n\epsilon \rfloor] \le \exp(-2 n \epsilon^2 )
+\]</span></p>
+<p>The expected output length of the sequences with more than <span class="math inline">\(\lfloor np - n\epsilon \rfloor\)</span> ones is at least <span class="math display">\[
+\begin{aligned}
+    &amp;[ 1 - \exp(-2n\epsilon^2) ] \cdot k \\
+    =&amp;[ 1 - \exp(-2n\epsilon^2) ] \cdot  (1 - \delta / 2) \cdot n \cdot \mathbf{H}(p)
+\end{aligned}
+\]</span></p>
+<p>This is at least <span class="math inline">\((1 - \delta) \cdot n \cdot \mathbf{H}(p)\)</span> when <span class="math inline">\(n\)</span> is large enough.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h2 id="huffman-code"><strong>Huffman Code</strong></h2>
+<p>In this section, we show that the upper bound can be achieved by Huffman code.</p>
+<blockquote>
+<p><em><span class="math inline">\(\forall \delta &gt; 0\)</span>, <span class="math inline">\(\exists\)</span> a compression <span class="math inline">\(h\)</span> and integer <span class="math inline">\(N &gt; 0\)</span>, s.t., <span class="math inline">\(\forall n \ge N\)</span>, it holds that</em> <span class="math display">\[
+\mathbf{E}[ |h(s)| ] \le (1 + \delta) n \mathbf{H}(p)
+\]</span></p>
+</blockquote>
+<p>We begin with an important property of Huffman Code. Suppose that we have an alphabet <span class="math inline">\(\mathbb{U}\)</span> such that probability associated with each element in <span class="math inline">\(\mathbb{U}\)</span> is <span class="math inline">\(2^{-l}\)</span> for some integer <span class="math inline">\(l\)</span>. Then <span class="math inline">\(\exists h\)</span>, such that <span class="math display">\[
+   \mathbf{E}_{X \in \mathbb{U} } [ |h(X)| ] =  n \mathbf{H}(X)
+\]</span></p>
+<p>For example, if <span class="math inline">\(\mathbb{U} = \{0, 1, 2, 3 \}\)</span> and the distribution <span class="math inline">\(p = \{ 0.5, 0.25, 0.125, 0.125 \}\)</span>, then we can have the following encoding</p>
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Encoding.png" /></p>
+<p>The expected coding length is <span class="math display">\[
+0.5 \cdot 1 + 0.25 \cdot 2 + 2 \cdot 0.125 \cdot 3 = 1.75
+\]</span></p>
+<p>which is exactly the entropy of the random variable.</p>
+<p>In general, if we have a random variable <span class="math inline">\(X\)</span>, we can round down its probability to the nearest integer negative power of <span class="math inline">\(2\)</span>. The expected code length is given by <span class="math display">\[
+\sum_{i } p_i \left\lceil \log \frac{1}{p_i} \right\rceil \le \mathbf{H}(p) + 1
+\]</span></p>
+<p>Intuitively, the <span class="math inline">\(\left\lceil \log \frac{1}{p_i} \right\rceil\)</span> has enough slot to accommodate all elements with probabilities <span class="math inline">\(p_i\)</span>'s.</p>
+<p>In particular, we view <span class="math inline">\(\{0, 1\}^n\)</span> as a large alphabet <span class="math inline">\(\mathbf{\Sigma }\)</span>. The alphabet has entropy <span class="math inline">\(n \cdot \mathbf{H}(p)\)</span>. We can have a encoding such that the expected output length is at most <span class="math inline">\(n \cdot \mathbf{H}(p) + 1\)</span>. For large enough <span class="math inline">\(n\)</span>, this is at most <span class="math inline">\((1 + \delta) n \cdot \mathbf{H}(p)\)</span>.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>M. Mitzenmacher and E. Upfal, Probability and computing: an introduction to randomized algorithms and probabilistic analysis. New York: Cambridge University Press, 2005.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/01/Entropy-and-Random-Bits/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -730,359 +929,6 @@ O(m + n \sqrt{\log C})
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/26/Splay-Tree/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/26/Splay-Tree/" class="post-title-link" itemprop="url">Splay Tree</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-05-26 16:19:41" itemprop="dateCreated datePublished" datetime="2020-05-26T16:19:41+10:00">2020-05-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-01-28 23:49:10" itemprop="dateModified" datetime="2022-01-28T23:49:10+11:00">2022-01-28</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Splay Tree [1] is a self-binary search tree that achieves <span class="math inline">\(O(\log n)\)</span> amortized time complexity for each operation. Unlike other balanced binary search trees, it does not require to maintain additional information to keep balance. Further, it has good property that more recently accessed nodes are more easily retrieved and achieves certain optimality even for an unknown sequence of operations.</p>
-<h1 id="basic-operations">Basic Operations</h1>
-<p>The philosophy of splay tree is very simple: just bring the last accessed node <span class="math inline">\(x\)</span> to the root of the tree, via a sequence of <em>rotations</em>. This brings the most recently visited nodes close to the root.</p>
-<p><em>[Remark: For insertion, the last accessed node is the node inserted. For a successful search operation, the last accessed node is the node found. For an unsuccessful search/deletion, it is the predecessor or successor of the search node / deleted node.]</em></p>
-<p>There is more than one way to rotate a node <span class="math inline">\(x\)</span> to the root. For example, the simplest one rotates <span class="math inline">\(x\)</span> with its parent repeatedly until it becomes the root. However, we can easily find counter examples for this naïve approach. The rotations need to be carefully designed and are called <em>splays</em>. At each step the node being splayed is brought up at most 2 levels. It can be divided into three categories.</p>
-<blockquote>
-<p>Call <span class="math inline">\(x\)</span> the node being splayed, <span class="math inline">\(y\)</span> its parent and <span class="math inline">\(z\)</span> its grandparent (if they exist).</p>
-</blockquote>
-<ol type="1">
-<li>Root case: <span class="math inline">\(x\)</span> is the root. Do nothing.</li>
-</ol>
-<h2 id="zig"><em>Zig</em></h2>
-<ol start="2" type="1">
-<li>The <em>Zig</em> case: <span class="math inline">\(y\)</span> is the root. We just perform <span class="math inline">\(rotate(x, y)\)</span>.
-<ul>
-<li>See the following figure. <img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/Zig.png" /></li>
-</ul></li>
-<li>Otherwise, <span class="math inline">\(x\)</span> has a grandparent <span class="math inline">\(z\)</span>. It is further divided into two categories:</li>
-</ol>
-<h2 id="zig-zig"><em>Zig-Zig</em></h2>
-<ul>
-<li><p><em>Zig-Zig</em> case: both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are left children or right children. We first perform <span class="math inline">\(rotate(y, z)\)</span> then <span class="math inline">\(rotate(x, y)\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/ZigZig.png" /></p></li>
-</ul>
-<h2 id="zig-zag"><em>Zig-Zag</em></h2>
-<ul>
-<li><em>Zig-Zag</em> case: <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are different children of their parents, i.e., <span class="math inline">\(x\)</span> is the left child and <span class="math inline">\(y\)</span> is the right child, or vice versa. We first perform <span class="math inline">\(rotate(x, y)\)</span> then <span class="math inline">\(rotate(y, z)\)</span>.<br />
-<img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/ZigZag.png" /></li>
-</ul>
-<p>The splay is performed repeatedly on <span class="math inline">\(x\)</span> until it reaches the root. It is also possible to perform equivalent operations in an top-down approach [1].</p>
-<h1 id="amortized-analysis">Amortized Analysis</h1>
-<p>There is no explicit control over the height of the tree. It is possible that the accessed node has depth <span class="math inline">\(\Omega(\log n)\)</span>. The intuition is that, however, the imbalanced situation is not easy to create and results from a sequence of previous operations. The number such operations can not be too small to create the imbalance. We can charge the cost of accessing the node with long depth to these previous operations. Intuitively, each such operation is required to reserve some additional "energy" for the amount of imbalanced it creates, which is used later to fix the imbalance. When a long path is encountered, there should be enough "energy" to cover the search on the path, and the subsequent splay costs.</p>
-<p>It is left to give a quantitative analysis for keeping the "energy" and for "using" the "energy". We need a few more definitions for a node <span class="math inline">\(x\)</span>.</p>
-<blockquote>
-<ol type="1">
-<li><p><span class="math inline">\(T(x):\)</span> the subtree rooted at <span class="math inline">\(x\)</span>.</p></li>
-<li><p><span class="math inline">\(w(x):\)</span> the weight associated with node <span class="math inline">\(x\)</span>. This weight is only used for analysis and is not kept explicitly by splay tree.</p></li>
-<li><p><span class="math inline">\(s(x)=\sum_{y \in T(x)} w_y:\)</span> the sum of weights of nodes in <span class="math inline">\(T(x)\)</span>, which is referred to as the size of <span class="math inline">\(x\)</span>.</p></li>
-<li><p><span class="math inline">\(r(x) \doteq \log s(x)\)</span>, the rank of <span class="math inline">\(x\)</span>.</p></li>
-</ol>
-</blockquote>
-<p>Let <span class="math inline">\(T\)</span> be the splay tree.</p>
-<blockquote>
-<p><strong>Definition.</strong> The potential function, which records the amount of "energy" in <span class="math inline">\(T\)</span>, is defined as <span class="math display">\[
-\Phi(T) = \sum_{x \in T} r(x).
-\]</span></p>
-<p><strong>Definition.</strong> The amortized cost of an operation is defined as <span class="math display">\[
-\text{amortized cost} = \text{actual cost} + \Delta \Phi
-\]</span> where <span class="math inline">\(\Delta \Phi\)</span> is the change of the potential function.</p>
-</blockquote>
-<p>Now, let <span class="math inline">\(r(x)\)</span> be the rank of <span class="math inline">\(x\)</span> before we performed a single splay operation on <span class="math inline">\(x\)</span> and <span class="math inline">\(r&#39;(x)\)</span> the one after. The <em>Access Lemma</em> states the <span class="math inline">\(\Phi\)</span> changes as follows:</p>
-<blockquote>
-<p><strong><em>Access Lemma</em></strong> For a single splay operation, the potential change is bounded by <span class="math display">\[ 3(r&#39;(x) - r(x)) - 2 \]</span> for <em>zig-zig</em> and <em>zig-zag</em> case and <span class="math display">\[ r&#39;(x) - r(x) \]</span> for the <em>zig</em> case.</p>
-</blockquote>
-<p>Before we prove this key lemma, we use it for the following theorem.</p>
-<blockquote>
-<p><strong><em>Theorem.</em></strong> The amortized cost of the splaying a node <span class="math inline">\(x\)</span> to the root is <span class="math display">\[
-O \left( 1 + \log \frac{s(root) }{s(x) } \right)
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> To splay a node <span class="math inline">\(x\)</span> to the root, suppose that we have performed <span class="math inline">\(k\)</span> splays. Further, let <span class="math inline">\(r_i(x)\)</span> be the rank of <span class="math inline">\(x\)</span> after we performed the <span class="math inline">\(i^{th}\)</span> splay on <span class="math inline">\(x\)</span>. We have <span class="math display">\[
-  r_0(x) = \log s(x), \qquad r_k(x) = \log s(root).
-\]</span> Observe that the actual cost of splay operation is <span class="math inline">\(2\)</span> for <em>zig-zig</em> and <em>zig-zag</em> case and 1 for the <em>zig</em> case. Via the <em>access lemma</em>, the amortized cost is <span class="math display">\[
-  \begin{aligned}
-    \text{amortized cost} 
-      &amp;\le \sum_{i \in [k] } 3 \big( r_i(x) - r_{i - 1}(x) \big) +1 \\
-      &amp;= 3(r_k(x) - r_0(x)) + 1.
-  \end{aligned}
-\]</span> The added 1 results from the final possible <em>zig</em> operation.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>If we set <span class="math inline">\(w(x) = 1\)</span> for all nodes, then <span class="math inline">\(r_k(x) = \log n\)</span> and <span class="math inline">\(r_1(x) \ge \log 1 = 0\)</span>. Therefore, the amortized cost of splaying <span class="math inline">\(x\)</span> is bounded by <span class="math inline">\(O(\log n)\)</span>.</p>
-<h2 id="proof-of-the-access-lemma">Proof of The Access Lemma</h2>
-<h3 id="zig-zig-1"><strong><em>Zig-Zig</em></strong></h3>
-<ul>
-<li><p>Example.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/ZigZig.png" /></p></li>
-</ul>
-<p>First, <span class="math display">\[
-  \begin{aligned}
-      \frac{1}{2} r&#39;(z) + \frac{1}{2} r(x)    
-      &amp;=   \frac{1}{2} \log s&#39;(z) + \frac{1}{2} \log s(x)   \\
-      &amp;\le   \log \left[ \frac{s&#39;(z)}{2}  + \frac{ s(x) }{2} \right] \\
-      &amp;&lt;   \log \left[ \frac{s(z)}{2}  \right].
-  \end{aligned}
-\]</span></p>
-<p>The first inequality follows from that the function <span class="math inline">\(\log (\cdot )\)</span> is concave and the second one follows from <span class="math inline">\(s&#39;(z) + s(x) = s(z) - 1 &lt; s(z)\)</span>.</p>
-<p>Noting that <span class="math inline">\(s(z) = s(x&#39;)\)</span>, we have <span class="math inline">\(r(z) = r(x&#39;)\)</span>, and <span class="math display">\[
-  \begin{aligned}
-      &amp; r&#39;(z) + r(x) \le 2 \left[ r(z) - 1 \right] = 2 \left[ r(x&#39;) - 1 \right].
-  \end{aligned}
-\]</span> This implies that <span class="math display">\[
-    r&#39;(z) \le 2 \left[ r(x&#39;) - 1 \right] - r(x).
-\]</span></p>
-<p>Now consider the potential change of the zig-zig operation: <span class="math display">\[
-\begin{array}{rll}
-        &amp;   r&#39;(x) + r&#39;(y) + r&#39;(z) - r(x) - r(y) - r(z) \\
-    =   &amp;   r&#39;(y) + r&#39;(z) - r(x) - r(y) \\
-    \le &amp;   r&#39;(x) + r&#39;(z) - 2 r(x) \\
-    =   &amp;   r&#39;(x) + \left[ 2 \left[ r(x&#39;) - 1 \right] - r(x) \right] - 2 r(x) \\
-    \le   &amp;   3[r&#39;(x) - r(x)] - 2,
-\end{array}
-\]</span> where the first equality follows from that <span class="math inline">\(r&#39;(x) = r(z)\)</span>, and the first inequality holds since <span class="math inline">\(r(x) \le r(y)\)</span>.</p>
-<h3 id="zig-zag-1"><strong><em>Zig-Zag</em></strong></h3>
-<ul>
-<li><p>Example.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/ZigZag.png" /></p></li>
-</ul>
-<p>First, note that <span class="math display">\[
-\begin{aligned}
-            \frac{1}{2} r&#39;(y) + \frac{1}{2} r&#39;(z)    
-    =   &amp;   \frac{1}{2} \log s&#39;(y) + \frac{1}{2} \log s&#39;(z)   \\
-    \le &amp;   \log \left[ \frac{s&#39;(y)}{2}  + \frac{ s&#39;(z) }{2} \right] \\
-    &lt;   &amp;   \log \left[ \frac{s&#39;(x)}{2}  \right].
-\end{aligned}
-\]</span></p>
-<p>The first inequality follows from that the function <span class="math inline">\(\log (\cdot )\)</span> is concave and the second one follows from <span class="math inline">\(s&#39;(y) + s&#39;(z) = s&#39;(x) - 1 &lt; s&#39;(x)\)</span>.</p>
-<p>Therefore, <span class="math display">\[
-r&#39;(y) + r&#39;(z) \le 2 \left[ r&#39;(x) - 1 \right]
-\]</span></p>
-<p>Now consider the potential change of the zig-zag operation: <span class="math display">\[
-\begin{array}{rll}
-        &amp;   r&#39;(x) + r&#39;(y) + r&#39;(z) - r(x) - r(y) - r(z) \\
-    =   &amp;   r&#39;(y) + r&#39;(z) - r(x) - r(y) \\
-    \le &amp;   r&#39;(y) + r&#39;(z) - 2 r(x) \\
-    \le &amp;   2 \left[ r&#39;(x) - 1 \right] - 2 r(x) \\
-    =   &amp;   2[r&#39;(x) - r(x)] - 2,
-\end{array}
-\]</span> where the first equality follows from <span class="math inline">\(r&#39;(x) = r(z)\)</span>, and the first inequality holds since <span class="math inline">\(r(x) \le r(y)\)</span>.</p>
-<h3 id="zig-1"><strong><em>Zig</em></strong></h3>
-<ul>
-<li><p>Example.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/SplayTree/Zig.png" /></p></li>
-</ul>
-<p>Now consider the potential change of the zig-zag operation: <span class="math display">\[
-    \begin{array}{rll}
-            &amp;   r&#39;(x) + r&#39;(y)  - r(x) - r(y)  \\
-        =   &amp;   r&#39;(y)  - r(x)  \\
-        \le &amp;   r&#39;(x)  - r(x) 
-    \end{array}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>Next, we analyze the amortized costs of basic BST operations. Throughout the analysis we assume that <span class="math inline">\(w(x) = 1\)</span>.</p>
-<h2 id="search"><strong>Search</strong></h2>
-<p>Whether the search is successful or not, we splay the last accessed node to the root and charge the cost of going down the tree to the splay-operations. Therefore, the amortized cost is <span class="math inline">\(O(\log n)\)</span>.</p>
-<p>Remark: in case of unsuccessful search, we find either the predecessor or successor of the search key.</p>
-<h2 id="insertion"><strong>Insertion</strong></h2>
-<p>Inserting a node <span class="math inline">\(x\)</span> is the same as that in a BST. Then we splay node <span class="math inline">\(x\)</span> to the root. We charge the cost of going down the tree by the cost of splaying <span class="math inline">\(x\)</span>, which has amortized cost <span class="math inline">\(O(\log n)\)</span>. It is left to analyze the change of <span class="math inline">\(\Phi\)</span>. Let <span class="math inline">\(root = x_1, x_2, ..., x_k, x_{k + 1} = x\)</span> be the root to <span class="math inline">\(x\)</span> path right after inserting <span class="math inline">\(x\)</span>. The insertion of <span class="math inline">\(x\)</span> increases <span class="math inline">\(s(x_1), s(x_2), ..., s(x_{k })\)</span> by 1, therefore, <span class="math display">\[
-  \begin{aligned}
-    \Delta \Phi &amp;= \sum_{i = 1}^k \log \frac{s(x_i) + 1 }{s(x_i)} \\
-          &amp;= \log \prod_{i = 1}^k \frac{s(x_i) + 1 }{s(x_i)} \\
-          &amp;\le \log \frac{s(x_1) + 1}{ s(x_k ) },
-  \end{aligned}
-\]</span> The last inequality follows from that <span class="math inline">\(s(x_i) \ge s(x_{i + 1}) + 1\)</span> for <span class="math inline">\(i \in [k]\)</span>. Therefore, <span class="math inline">\(\Delta \Phi = O(\log n)\)</span> and the overall amortized cost of insertion is <span class="math inline">\(O(\log n)\)</span>.</p>
-<p>Remark: <span class="math inline">\(key(x_{k})\)</span> is either the predecessor or successor of <span class="math inline">\(key(x)\)</span>.</p>
-<h2 id="deletion"><strong>Deletion</strong></h2>
-<p>As in a BST, deletion is a little bit tricky. Let <span class="math inline">\(x\)</span> be the node to delete and <span class="math inline">\(y\)</span> be its parent (if exists). There are 3 cases</p>
-<ul>
-<li><p>If <span class="math inline">\(x\)</span> is a leaf node, then we just delete it and splay <span class="math inline">\(y\)</span> to the root.</p></li>
-<li><p>If <span class="math inline">\(x\)</span> has only one child, we replace <span class="math inline">\(x\)</span> with its child as the child of <span class="math inline">\(y\)</span>. Then we delete <span class="math inline">\(x\)</span> and splay <span class="math inline">\(y\)</span> to the root.</p></li>
-</ul>
-<p>The final case uses the first two cases as a sub-routine. We first discuss the amortized cost of the first two cases. The cost of going down to <span class="math inline">\(x\)</span> can be charged to the cost of splaying <span class="math inline">\(y\)</span> to the root, which has amortized cost <span class="math inline">\(O(\log n)\)</span>. Deleting the node decreases the potential function, which will only lower the overall amortized cost. Therefore, the amortized cost of deletion is bounded by <span class="math inline">\(O(\log n)\)</span>.</p>
-<ul>
-<li>If <span class="math inline">\(x\)</span> has two children, we find the predecessor node <span class="math inline">\(pred(x)\)</span> of <span class="math inline">\(x\)</span>, which is the node with largest key in <span class="math inline">\(x\)</span>'s left sub-tree. Note that <span class="math inline">\(pred(x)\)</span> has at most one child. Then we delete the node <span class="math inline">\(pred(x)\)</span>. This reduces to case 1 or case 2. Finally we replace the <span class="math inline">\(key(x)\)</span> with <span class="math inline">\(key(pred(x))\)</span>.</li>
-</ul>
-<h1 id="static-optimality">Static Optimality</h1>
-<p>Let <span class="math inline">\(S\)</span> be a sequence of <span class="math inline">\(m\)</span> operations, consists only of successful searches. Let <span class="math inline">\(p_i &gt; 0\)</span> be the number of times the <span class="math inline">\(i^{th}\)</span> element is accessed. Define a static binary search tree to be the one whose structure is fixed. In particular, it can not perform rotations.</p>
-<blockquote>
-<p><strong>Theorem (Static Optimality).</strong> The total cost of <span class="math inline">\(S\)</span> performed on the splay tree is at most a constant times the minimum possible cost of <span class="math inline">\(S\)</span> performed a static binary search tree, plus <span class="math inline">\(O(m)\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong><br />
-Let</p>
-<ol type="1">
-<li><p><span class="math inline">\(T^*\)</span> be the static binary search tree that minimizes the cost of <span class="math inline">\(S\)</span>.</p></li>
-<li><p><span class="math inline">\(d_i\)</span> the depth of the <span class="math inline">\(i^{th}\)</span> element in <span class="math inline">\(T^*\)</span>, i.e. the number of nodes on the path from the root to the <span class="math inline">\(i^{th}\)</span> element. In particular <span class="math inline">\(l(root\, element) = 1\)</span>.</p></li>
-</ol>
-<p>The total search cost of <span class="math inline">\(S\)</span> on <span class="math inline">\(T^*\)</span> is <span class="math display">\[
-  \sum_{ i \in [n] } p_i \cdot m \cdot d_i.
-\]</span></p>
-<p>We are going to prove that the cost for splay tree is <span class="math display">\[
-      O \left( m + \sum_{ i \in [n] } p_i \cdot m \cdot d_i \right).
-\]</span></p>
-<!-- 
-Suppose that $T^*$ has maximum depth $d_{max}(T^*)$. 
-We claim that for any $k < d_{max}(T^*)$, $T^*$ must contain exactly $2^k$ nodes with depth $k$. 
-Otherwise, we can cut some leaf node from its parent and pad it into the $i^{th}$ level. 
-This will only decrease the access cost, contradicting $T^*$ being the optimal static binary tree. 
-Then, $d_{max}(T^*) \le \lfloor \log_2 n \rfloor + 1$ and 
-$$
-      \sum_{ i \in [n] } 3^{-d_i} 
-      \le \frac{1}{2} \sum_{k = 1}^{ \lfloor \log_2 n \rfloor + 1 } \left( \frac{2}{3} \right)^k 
-      \le 1.
-$$ 
--->
-<p>To investigate the time for splay tree, we choose a different weight than earlier and just set <span class="math inline">\(w_i = 3^{-d_i}\)</span>. Note that for each <span class="math inline">\(k \in \mathbb{N}^+\)</span>, there can be at most <span class="math inline">\(2^k\)</span> elements with depth <span class="math inline">\(k\)</span>. Hence the sum of weights is bounded by <span class="math display">\[
-    \sum_{i \in [n]} w_i = \sum_{i \in [n]} \frac{1}{3^{d_i}} \le \sum_{k \ge 1} 2^k \cdot \frac{1}{3^k} \in O(1). 
-\]</span> It follows that <span class="math display">\[
-    s(root) = \log \sum_{i \in [n]} w_i \in O(1).
-\]</span></p>
-<p>Further, for each <span class="math inline">\(i \in [n]\)</span>, since <span class="math inline">\(s(i) \ge w_i\)</span>, via the access lemma, the amortized cost of accessing <span class="math inline">\(i^{th}\)</span> element is bounded by <span class="math display">\[
-      O  \left(1 + \log_2 \frac{s(root)}{s(i)} \right) 
-    \subset O \left(1 + \log_2 \frac{1}{w_i} \right) 
-    = O \left(1 + d_i \right)
-\]</span></p>
-<p>For each <span class="math inline">\(k \in [m]\)</span>, let <span class="math inline">\(c_k\)</span> be the actual cost of the <span class="math inline">\(k^{th}\)</span> operation in <span class="math inline">\(S\)</span> and <span class="math inline">\(a_k\)</span> be the amortized cost. Further, let <span class="math inline">\(\Phi_k\)</span> be the potential of the splay tree after the <span class="math inline">\(k^{th}\)</span> operation. Then <span class="math display">\[
-    \sum_{ k \in [m] } a_k = \sum_{ k \in [m] } \big( c_k + \Phi_k - \Phi_{k - 1} \big) = \Phi_m - \Phi_0 + \sum_{ k \in [m] } c_k.
-\]</span> Hence, the actual cost on this sequence is bounded by <span class="math display">\[
-    \begin{aligned}
-    \sum_{ k \in [m] } c_k &amp;= \Phi_0 - \Phi_m + \sum_{ k \in [m] } a_k \\
-    &amp;\in O \left(   \Phi_0 - \Phi_m + \sum_{ i \in [n] } p_i \cdot m \cdot \big( 1 + d_i \big) \right) \\
-    &amp;=  O \left(    \Phi_0 - \Phi_m + \sum_{ i \in [n] } p_i \cdot m \cdot (d_i + 1) \right) \\
-    &amp;= O \left( m + \Phi_0 - \Phi_m + \sum_{ i \in [n] } p_i \cdot m \cdot d_i  \right)
-    \end{aligned}
-\]</span></p>
-<p>It is left to bound <span class="math inline">\(\Phi_0 - \Phi_m\)</span>. Let <span class="math inline">\(r^0(i)\)</span> be the rank of <span class="math inline">\(i^{th}\)</span> before and <span class="math inline">\(r^m(i)\)</span> be the rank after the operations. It holds that <span class="math inline">\(r^0(i) \le r(root) \in O(1)\)</span>, and <span class="math inline">\(r^m(i) \ge \log_2 w(i)\)</span>. Now, <span class="math display">\[
-    \begin{aligned}
-      \Phi_0 - \Phi_m 
-        = \sum_{i \in [n]} \left( r^0(i) - r^m(i) \right) 
-        &amp;\in O \left( \sum_{ i \in [n] } \log 3^{d_i} \right)
-        = O \left( \sum_{i \in [n]} d_i \right).
-    \end{aligned}
-\]</span> Under the assumption that each item is accessed at least once, we know <span class="math inline">\(p_i \cdot m \ge 1\)</span> and <span class="math display">\[
-    \Phi_0 - \Phi_m \in O \left( \sum_{ i \in [n] } p_i \cdot m \cdot d_i \right). 
-\]</span></p>
-<p><strong><em>Remark</em></strong>. Of course, we could bound <span class="math display">\[
-    \sum_{ i \in [n] } d_i \log 3 \le (1 + 2 \cdot 2 + 3 \cdot 2^2 + 4 \cdot 2^3 + ... + (\lfloor \log_2 n \rfloor + 1) \cdot 2^{ \lfloor \log_2 n \rfloor }) \log 3.
-\]</span></p>
-<p>Let <span class="math inline">\(\Sigma=1 + 2 \cdot 2 + 3 \cdot 2^2 + 4 \cdot 2^3 + ... + (\lfloor \log_2 n \rfloor + 1) \cdot 2^{ \lfloor \log_2 n \rfloor }\)</span>, then <span class="math display">\[
-    2 \cdot \Sigma - \Sigma = (\lfloor \log_2 n \rfloor + 1) \cdot 2^{ \lfloor \log_2 n \rfloor + 1} - \sum_{i = 0}^{\lfloor \log_2 n \rfloor - 1} 2^i \in O(n \log n)
-\]</span></p>
-<p>Note that <span class="math inline">\(n \log n\)</span> is a lower bound of the access cost of the optimal static binary search tree, under the assumption that each item is accessed at least once.</p>
-<p><strong><em>Remark</em></strong>:</p>
-<p>In general, <span class="math display">\[
-    \sum_{i = 0}^k x^i = \frac{x^{k + 1} - 1}{x - 1}
-\]</span> Applying <span class="math inline">\(x \cdot \frac{\partial}{\partial x}\)</span> to both sides, <span class="math display">\[
-    \begin{aligned}
-        \sum_{i = 1}^k i x^{i} 
-        &amp;= x \cdot \frac{(k + 1) x^k (x - 1) - (x^{k + 1} - 1)}{(x - 1)^2} \\
-        &amp;= x \cdot \frac{(k + 1) (x^{k +1} - x^k) - (x^{k + 1} - 1)}{(x - 1)^2} \\
-        &amp;= x \cdot \frac{ k x^{k +1} - (k + 1) x^k  + 1}{(x - 1)^2} \\
-        &amp;= x \cdot \left( \frac{k x^k }{x - 1} - \frac{ x^k  - 1}{(x - 1)^2} \right)\\
-    \end{aligned}
-\]</span></p>
-<h1 id="working-set-property">Working Set Property</h1>
-<p>Suppose that <span class="math inline">\(S = \{x_1, x_2, ..., x_m\}\)</span> and let <span class="math inline">\(t(k)\)</span> be the number of different nodes accessed before <span class="math inline">\(x_k\)</span> since the last access of node <span class="math inline">\(x_k\)</span>, or since the beginning of the sequence if <span class="math inline">\(x_k\)</span> is the first access.</p>
-<blockquote>
-<p><strong>Theorem.</strong> The overall cost of <span class="math inline">\(S\)</span> on the splay tree is bounded by <span class="math display">\[
-O \left( m + n \cdot \log n + \sum_{k = 1}^n \log t(k) \right)
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> We maintain <span class="math inline">\(w(x) = \frac{1}{(j + 1)^2}\)</span>, if the sequence accesses <span class="math inline">\(j\)</span> different nodes since the last accessed of node <span class="math inline">\(x\)</span>, or <span class="math inline">\(w(x) = \frac{1}{n^2}\)</span> if it is never accessed before. By definition of <span class="math inline">\(t(k)\)</span>, we have <span class="math inline">\(w(x_k) = \frac{1}{(t(x_k) + 1)^2}\)</span>. Now <span class="math display">\[
-    W \doteq \sum_{x \in T}^n w(x) \in O(1)
-\]</span></p>
-<p>For a node <span class="math inline">\(x_k\)</span> , if it is accessed for the first time, the amortized cost is <span class="math display">\[
-    O \left( 1 + \log \frac{W}{w(x_k)} \right) = O(\log n) = O(\log t(k))
-\]</span> Summing over all nodes <span class="math inline">\(x\)</span> in the splay tree <span class="math inline">\(T\)</span>, we get <span class="math inline">\(O(n \log n)\)</span>.</p>
-<p>Otherwise, if an item <span class="math inline">\(x_k\)</span> is accessed before, the amortized cost of accessing <span class="math inline">\(x_k\)</span> is <span class="math display">\[
-  O\left( 1 + \log \frac{W}{w(x_k) } \right) = O \left( 1 + \log t(k) \right)
-\]</span> After each access of a node <span class="math inline">\(x_k\)</span> and splaying it to the root, we modify the weights of the nodes as follows: for all node <span class="math inline">\(x\)</span> with <span class="math inline">\(t(x) &lt; t(x_k)\)</span> (the nodes accessed after the last access of <span class="math inline">\(x_k\)</span>), we set <span class="math display">\[
-  w(x) = \frac{1}{(t(x) + 1)^2}
-\]</span> This guarantees that <span class="math inline">\(w(x_k) = {1} / {(1 + t(k))^2}\)</span> for <span class="math inline">\(k \in [m]\)</span>.</p>
-<p>The weight of the root does not change but the weight of other nodes may decrease after the reassignment. Therefore, the overall potential decreases. The amortized cost of the this access only decreases and is still bounded by <span class="math inline">\(O(1 + \log t(k))\)</span>.</p>
-<p>Hence <span class="math display">\[
-  \sum_{ k \in [m] } a_k 
-  \in 
-  O \left( n \log n + m + \sum_{ k \in [m] } \log t(k) \right).
-\]</span></p>
-<p>Finally, it is easy to see that <span class="math inline">\(\Phi_0 - \Phi_m \in O(n \log n)\)</span>. Therefore, <span class="math display">\[
-  \sum_{ k \in [m] } c_k 
-  \in 
-  O \left( n \log n + m + \sum_{ k \in [m] } \log t(k) \right).
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="static-finger-property">Static Finger Property</h1>
-<p>The static finger property states that splay tree achieves some kind of locality. Suppose we order the nodes in the tree in increasing order according to their keys and labels them as <span class="math inline">\(1, 2, ..., n\)</span>. For a node <span class="math inline">\(x\)</span>, we use <span class="math inline">\(\pi(x)\)</span> to denote its order.</p>
-<blockquote>
-<p><strong>Theorem.</strong> For any fixed <span class="math inline">\(i \in [n]\)</span>, the total cost of <span class="math inline">\(S\)</span> on the splay tree is bounded by <span class="math display">\[
-O \left( n \log n + m + \sum_{ k \in [m] } \log (|\pi(x_k) - i| + 1) \right).
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> For <span class="math inline">\(x \in T\)</span>, we set <span class="math inline">\(w(x) = \frac{1}{(|pi(x) - i| + 1)^2}\)</span>. Then <span class="math display">\[
-  W \doteq \sum_{x \in T} \in O(1)
-\]</span> and the amortized cost of accessing <span class="math inline">\(x_k\)</span> is <span class="math display">\[
-    O \left( 1 + \log \frac{W}{w(x_k)} \right) 
-    = O(1 + \log (|\pi(x_k) - i| + 1))
-\]</span> The theorem then follows from <span class="math inline">\(\Phi_0 - \Phi_m = O(n \log n)\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1]. Sleator, D.D. and Tarjan, R.E., 1983. A data structure for dynamic trees. Journal of computer and system sciences, 26(3), pp.362-391.</p>
-<p>[2]. Jelani Nelson, Lecture 7, CS 224: Advanced Algorithms.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1152,7 +998,7 @@ O \left( n \log n + m + \sum_{ k \in [m] } \log (|\pi(x_k) - i| + 1) \right).
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">175</span>
+          <span class="site-state-item-count">176</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
