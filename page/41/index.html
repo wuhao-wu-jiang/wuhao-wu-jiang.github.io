@@ -146,6 +146,274 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/05/18/The-Number-of-Distinct-Elements/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/18/The-Number-of-Distinct-Elements/" class="post-title-link" itemprop="url">The Number of Distinct Elements</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-18 16:09:20" itemprop="dateCreated datePublished" datetime="2019-05-18T16:09:20+10:00">2019-05-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-15 00:08:56" itemprop="dateModified" datetime="2022-02-15T00:08:56+11:00">2022-02-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<p>In many applications, data comes as a stream <span class="math inline">\(S = \{x_1, x_2, ..., x_n \}\)</span>, where each <span class="math inline">\(x_i, i \in [n]\)</span> belongs to the domain <span class="math inline">\(\mathcal{U}\)</span>, with size <span class="math inline">\(|\mathcal{U}| = N\)</span>. With out lost of generality, suppose each element in <span class="math inline">\(\mathcal{U}\)</span> appear at least once in <span class="math inline">\(S\)</span>.</p>
+<blockquote>
+<p><strong>Problem.</strong> Estimate <span class="math inline">\(N\)</span>, i.e., the number of distinct elements in <span class="math inline">\(S\)</span>.</p>
+</blockquote>
+<p>Naive solutions include</p>
+<ol type="1">
+<li><p><strong>Sorting.</strong> With quicksort, this can be preformed in <span class="math inline">\(O(n \log n)\)</span> expected time and <span class="math inline">\(O(n)\)</span> space.</p></li>
+<li><p><strong>Hashing.</strong> With hashing (e.g., Cuckoo hashing), this can be done in <span class="math inline">\(O(n)\)</span> time and <span class="math inline">\(O(n)\)</span> space with two level hashing.</p></li>
+</ol>
+<p>In real world application, <span class="math inline">\(n\)</span> could be extremely large. Therefore, the demand for <span class="math inline">\(O(n)\)</span> space is expansive or even impossible.</p>
+<blockquote>
+<p><strong>Question.</strong> Can we perform this with <span class="math inline">\(\tilde O(1)\)</span> space?</p>
+</blockquote>
+<p>If we allow some error, this is possible.</p>
+<h1 id="flajolet-and-martin-algorithm">Flajolet and Martin Algorithm</h1>
+<p>Let <span class="math inline">\(\mathcal{H}\)</span> be the collection of all functions from <span class="math inline">\(\mathcal{U}\)</span> to <span class="math inline">\([0, 1]\)</span>. Suppose that we pick a function <span class="math inline">\(h\)</span> uniformly at randomly from <span class="math inline">\(\mathcal{H}\)</span>, then it maps elements in <span class="math inline">\(\mathcal{U}\)</span> independently and uniformly at random to real numbers in <span class="math inline">\([0, 1]\)</span>.</p>
+<blockquote>
+<p><strong>Question: can we find another family of <span class="math inline">\(\mathcal{U}\)</span> so that the following analysis still hold?</strong></p>
+</blockquote>
+<p>The algorithm works as follows.</p>
+<blockquote>
+<p><strong>Flajolet and Martin Algorithm.</strong><br />
+1. Denote <span class="math inline">\(h(S) = \{ h(x_1), h(x_2), ..., h(x_n)\}\)</span>;<br />
+2. Let <span class="math inline">\(Z \leftarrow \min h(S)\)</span>;<br />
+3. <strong>Return</strong> <span class="math inline">\(1 / Z - 1\)</span>.</p>
+</blockquote>
+<h2 id="expectation">Expectation</h2>
+<blockquote>
+<p><strong>Observation.</strong> <span class="math inline">\(\Pr [ Z \ge z] = (1 - z)^N​\)</span> and <span class="math inline">\(\Pr[Z \le z] = 1 - (1 - z)^N​\)</span>.</p>
+</blockquote>
+<p>Hence the density function is given as follows.</p>
+<blockquote>
+<p><strong>Density Function.</strong> Let <span class="math inline">\(p\)</span> be the density function of <span class="math inline">\(Z\)</span>, then <span class="math display">\[
+p(z) = \frac{\partial \Pr[Z \le z] }{ \partial z} = N (1 - z)^{N - 1}.
+\]</span></p>
+</blockquote>
+<p>We are ready to discuss the expectation.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math inline">\(\mathbb{E} [Z] = 1 / \big(N + 1\big)\)</span>.</p>
+</blockquote>
+<p><strong>Proof 1</strong>. <span class="math display">\[
+    \mathbb{E} [Z] = \int_{z = 0}^1 z \cdot p(z) \ dz = \frac{1}{N + 1}. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Proof 2</strong>. Another way to prove this is to introduce an additional element <span class="math inline">\(x_{n + 1}\)</span> which is different from any other element in <span class="math inline">\(\mathcal{U}\)</span> and let <span class="math inline">\(S&#39; = S \cup \{ x_{n + 1} \}\)</span>.</p>
+<p>What is the probability that <span class="math inline">\(h(x_{n + 1})\)</span> is the smallest in <span class="math inline">\(h(S&#39;)\)</span>, i.e., <span class="math inline">\(\min h(S&#39;) = h(x_{n + 1})\)</span>? Conditioning on the minimum value of <span class="math inline">\(\{ h(x_1), h(x_2), ..., h(x_n) \}\)</span> (<span class="math inline">\(Z\)</span>) being some <span class="math inline">\(z\)</span> (<span class="math inline">\(z \in [0, 1]\)</span>), the probability becomes <span class="math display">\[
+    \begin{aligned}
+        \Pr \big[\min h(S&#39;) = h(x_{n + 1}) \mid Z = z \big] 
+        = \Pr \big[h(x_{n + 1}) \in [0, z] \mid Z = z \big] 
+        = z.
+    \end{aligned}
+\]</span></p>
+<p>Integrating over all possible values of <span class="math inline">\(z\)</span>, we have <span class="math display">\[
+    \begin{aligned}
+        \Pr[\min h(S&#39;) = h(x_{n + 1})] 
+            &amp;= \int_{z = 0}^1 \Pr \big[\min h(S&#39;) = h(x_{n + 1}) \mid Z = z \big] \cdot p(z) \ dz \\
+            &amp;= \int_{z = 0}^1 z \cdot p(z) \ dz \\
+            &amp;= \mathbb{E} [Z] . 
+    \end{aligned}
+\]</span></p>
+<p>But, by symmetry, <span class="math inline">\(\Pr[\min h(S&#39;) = h(x_{n + 1})] = 1 / \big(N + 1\big)\)</span>. Therefore, <span class="math inline">\(\mathbb{E}[Z] = 1 / \big(N + 1\big)\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Next we upper bound and lower the value of <span class="math inline">\(Z\)</span>.</p>
+<h2 id="variance">Variance</h2>
+<p>As we need to bound the two side error of <span class="math inline">\(Z\)</span>, we can't use Markov inequality but rely on Chebyshev's inequality. In this section, we study the variance of <span class="math inline">\(Z\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math inline">\(\mathbb{Var}[Z] \le 1 / \big(N + 1\big)^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof 1.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ Z^2 ]
+        &amp;= \int_{z = 0}^1 N z^2(1 - z)^{N - 1} dz \\
+        &amp;= \int_{z = 0}^1 N [(z - 1)^2  + 2(z - 1) + 1] (1 - z)^{N - 1}dz \\
+        &amp;= -\frac{N}{N + 2}(1 - z)^{N + 2} \mid_{0}^1 + \frac{2N}{N + 1} (1 - z)^{N + 1} \mid_{0}^1 - \frac{N}{N} (1 - z)^{N} \mid_{0}^1  \\  
+        &amp;= \frac{N}{N + 2} - \frac{2N}{N + 1} + \frac{N}{N} \\
+        &amp;= \frac{-(N - 1)(N + 2) + N^2 + N}{(N +2)(N + 1)} \\
+        &amp;= \frac{2}{(N +2)(N + 1)}
+    \end{aligned}
+\]</span></p>
+<p>Hence, <span class="math inline">\(\mathbb{Var} [ Z ] = 2 / \big( (N + 1)(N + 2) \big) - 1 / \big(N + 1\big)^2 \le 1 / \big(N + 1\big)^2\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Proof 2.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ Z^2 ] 
+            &amp;= \int_{z = 0}^1 \Pr[ Z^2 \ge z ] \ dz \\
+            &amp;= \int_{z = 0}^1 \Pr[ Z \ge \sqrt z ] \ dz \\
+            &amp;= \int_{z = 0}^1 (1 - \sqrt z)^N \ dz \\
+            &amp;\overset{t \doteq \sqrt z}{=} \int_{t = 0}^1 (1 - t)^N  \ d t^2 \\
+            &amp;= 2 \int_{t = 0}^1 (1 - t)^N (t - 1 + 1) \ d t \\
+            &amp;= 2 \int_{t = 0}^1 (1 - t)^N - (1 - t)^{N + 1}  \ d t \\
+            &amp;= 2 \left( \frac{1}{N + 1} - \frac{1}{N + 2} \right)
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Question to ponder: try to apply Chebyshev's inequality directly on this single estimate. Can we get a meaningful lower bound for <span class="math inline">\(Z\)</span>?</strong></p>
+</blockquote>
+<h2 id="repetition">Repetition</h2>
+<p>However, this alone is not enough to give an accurate estimate. Instead, we repeat the algorithm <span class="math inline">\(k\)</span> times, and take the average over the <span class="math inline">\(Z\)</span>'s.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(Z_1, ..., Z_k\)</span> be <span class="math inline">\(k\)</span> independent copies of <span class="math inline">\(Z\)</span> and define <span class="math inline">\(\bar Z \doteq (1 / k) \sum_{i \in [k] } Z_i\)</span>. Then <span class="math inline">\(0 &lt; \epsilon &lt; 1\)</span>, <span class="math display">\[
+\Pr \left[ \left| \bar Z - \frac{1}{N + 1} \right| \ge \frac{ \epsilon }{N + 1} \right] 
+\le 
+\frac{1}{k \cdot \epsilon^2}.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> By independence of <span class="math inline">\(Z_i\)</span>'s, we have <span class="math display">\[
+    \mathbb{Var} [ \bar Z ] = \frac{1}{k^2} \cdot \sum_{i \in [k] } \mathbb{Var}[Z_i ] \le \frac{1}{k (N + 1)^2}.
+\]</span> The theorem follows directly from Chebyshev's inequality.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>That is, <span class="math inline">\(\bar Z \in \big( 1 / (1 + N) \big) \big[ 1 - \epsilon, 1 + \epsilon \big]\)</span> with probability <span class="math inline">\(1 / \big( k \epsilon^2 \big)\)</span>. It concludes that, with probability <span class="math inline">\(1 / \big( k \epsilon^2 \big)\)</span>, <span class="math display">\[
+    \frac{1}{ \bar Z } \in   \left[ \frac{ N + 1 }{ 1 + \epsilon }, \frac{ N + 1 }{ 1 - \epsilon } \right]. 
+\]</span></p>
+<h1 id="taking-quantiles">Taking Quantiles</h1>
+<p>There exists other analysis for the concentration behavior when we repeat the experiment for <span class="math inline">\(k\)</span> times.</p>
+<p>We need the following inequalities:</p>
+<ol type="1">
+<li><span class="math inline">\(\forall x \in \mathbb{R}\)</span>, <span class="math inline">\(1 + x \le e^x\)</span>;<br />
+</li>
+<li><span class="math inline">\(\forall x \in [0, 1]\)</span>, <span class="math inline">\(e^x \le 1 + 2x\)</span>.</li>
+</ol>
+<p>Now, for <span class="math inline">\(N \ge 1\)</span>,</p>
+<p><span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ Z \ge \frac{1 + \epsilon}{N} \right]  
+        = \left(1 - \frac{1 + \epsilon}{N} \right)^N 
+        \le \exp \left( - \big( 1 + \epsilon \big) \right)
+        = \frac{1}{e \cdot e^\epsilon}.
+    \end{aligned}
+\]</span> <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ Z \le \frac{1 - 2\epsilon}{N} \right]  
+        = 1 - \left( 1 -  \frac{1 - 2\epsilon}{N} \right)^N  
+        \le 1 - \exp \left( - \big( 1 - \epsilon \big) \right) 
+        = 1 - \frac{e^\epsilon}{e}.
+    \end{aligned}
+\]</span></p>
+<!-- 
+$$
+\begin{aligned}
+    \Pr \left[ Z \ge (1 + \epsilon) \frac{1}{N + 1} \right]  
+    &= \left(1 - \frac{1 + \epsilon}{N + 1} \right)^N \\
+    &\le \exp \left( -\frac{1 + \epsilon}{N + 1}N \right) \\
+    &\le \exp \left( -\frac{1 + \epsilon}{2} \right) \\
+    &= \frac{1}{\sqrt e} e^{-\epsilon / 2}, \\
+    \Pr \left[ Z \le (1 - \epsilon) \frac{1}{N + 1} \right]  
+    &= 1 - \left( 1 -  \frac{1 - \epsilon}{N + 1} \right)^N \\
+    &\le 1 - \exp \left( - \frac{ 1 - \epsilon }{2(N + 1)}N \right) \\
+    &\le 1 - \exp \left( - \frac{ 1 - \epsilon }{2} \right) \\
+    &= 1 - \frac{1}{\sqrt e} e^{ \epsilon / 2}. 
+\end{aligned}
+$$ 
+-->
+<p>We claim that if we take the <span class="math inline">\(\frac{k}{\sqrt e}​\)</span>-th smallest element, with high probability, <span class="math display">\[
+    \left| \overline X - \frac{1}{N + 1} \right| \le \epsilon \frac{1}{N + 1}.
+\]</span></p>
+<p>Denote <span class="math inline">\(z_1, z_2, ..., z_k\)</span> a set of i.i.d Bernoulli variables with mean <span class="math inline">\(\frac{1}{\sqrt e} e^{-\epsilon / 2}\)</span>. Then by Chernoff bound,<br />
+<span class="math display">\[
+    \begin{aligned}
+        \Pr[ \sum z_i \ge \frac{k}{\sqrt e} ]
+        &amp;= \Pr[ \sum z_i \ge (1 + (e^{\epsilon / 2} - 1) ) \frac{k}{\sqrt e} e^ {-\epsilon / 2}] \\
+        &amp;\le \exp \left( -(e^{\epsilon / 2} - 1)^2 \frac{k}{\sqrt e} e^ {-\epsilon / 2} / 3 \right) \\
+        &amp;= \exp \left( -(e ^\epsilon - 2 e^{\epsilon / 2} + 1) e^ {-\epsilon / 2} \frac{k}{\sqrt e}  / 3 \right) \\
+        &amp;= \exp \left( -( e^{\epsilon / 2} - 2 + e^ {-\epsilon / 2}) \frac{k}{\sqrt e}  / 3 \right) \\
+        &amp;\le \exp \left( - \frac{ \epsilon^2 }{4} \frac{k}{\sqrt e}  / 3 \right) \\
+        &amp; = \delta
+    \end{aligned}
+\]</span></p>
+<p>It suffices to set <span class="math inline">\(k = \frac{12 \sqrt e}{\epsilon^2} \ln \frac{1}{\delta}\)</span>.</p>
+<p>By symmetry, we can prove the inequality of the other hand.</p>
+<p><strong>Remark 2:</strong> Suppose that we have a function <span class="math inline">\(h\)</span> that maps each of the <span class="math inline">\(N\)</span> elements to a non-negative real number according to exponential distribution <span class="math inline">\(\exp(-1)\)</span> independently (the same element is mapped to the same number), then the minimum of these real numbers serves also as an unbiased estimator of <span class="math inline">\(\frac{1}{N}\)</span>. To verify this, <span class="math display">\[
+\Pr[ Z \le z] = 1 - \exp(-zN) 
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    p[Z = z] = \frac{\partial \Pr[ Z \le z]}{\partial z} = N \exp(-Nz).
+\]</span> and <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E}[Z] 
+            &amp;= \int_{0}^\infty Nz \exp(-Nz) dz \\
+            &amp;= -\int_{0}^\infty z \ d\exp(-Nz) \\
+            &amp;= -z \exp(-Nz) \mid_{0}^\infty + \int_0^\infty \exp(-Nz) dz \\
+            &amp;= \frac{1}{N}. 
+    \end{aligned}
+\]</span></p>
+<p>Further, <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ Z \ge (1 + \epsilon)  \frac{1}{N} \right] 
+            &amp;= \exp( - 1 - \epsilon) = \frac{1}{e}e^{-\epsilon}, \\
+        \Pr \left[ Z \le (1 - \epsilon)  \frac{1}{N} \right]
+            &amp;= 1 - \exp( - 1 + \epsilon) = 1 - \frac{1}{e}e^{\epsilon}.
+    \end{aligned}
+\]</span> Similarly, we can show that if we repeat the experiment <span class="math inline">\(k = O(\frac{\ln 1 / \delta }{\epsilon^2 } )\)</span> times, with probability at least <span class="math inline">\(1 - \delta\)</span>, the <span class="math inline">\(\frac{1}{e}\)</span> smallest elements is an <span class="math inline">\(1 \pm \epsilon\)</span> estimator of <span class="math inline">\(\frac{1}{N}\)</span>.</p>
+<h2 id="solution-2">Solution 2</h2>
+<p>Suppose we only want to know whether <span class="math inline">\(N \ge t​\)</span> or <span class="math inline">\(N \le t / 2​\)</span> for a given integer <span class="math inline">\(t​\)</span>, is this possible?</p>
+<p>The answer is yes and the solution is amazingly easy. We hash each element in <span class="math inline">\(\mathcal{U}\)</span> uniformly at random into the range <span class="math inline">\([1, 2, 3, ..., t]\)</span>. If <span class="math inline">\(N \ge t\)</span>, the probability that no elements is assigned the value <span class="math inline">\(t\)</span> is given by <span class="math display">\[
+    (1 - 1 / t)^N \le (1 - 1 / t)^t \le 1/e
+\]</span> The second inequality holds since <span class="math inline">\((1 - 1 / t) \le e^{1 / t}\)</span>.</p>
+<p>On the other hand, when <span class="math inline">\(N \le t / 2\)</span>, the probability that no element is assigned the value <span class="math inline">\(t\)</span> is greater than <span class="math display">\[
+    (1 - 1 / t)^N \ge (1 - 1 / t)^{t / 2} \ge 1 / e
+\]</span> The second inequality holds since <span class="math inline">\((1 - 1 / t) \ge e^{- 2 / t} = 1 - \frac{2}{t} + \frac{1}{2!}(\frac{2}{t})^2 - \frac{1}{3!}(\frac{2}{t})^3 + ...\)</span> when <span class="math inline">\(1 / t \le 1/ 2\)</span>.</p>
+<p>We can boost the probability to some defined threshold <span class="math inline">\(1 - \delta\)</span> by repeating <span class="math inline">\(k = \log 1 / \delta\)</span> times and check whether the majority of the answers are "yes". Note that the expected number of "yes" is more than <span class="math inline">\((1 - 1 / e)k\)</span> and by chernoff bound the probability that less than <span class="math inline">\(0.5 k\)</span> "yes" are returned is given by <span class="math inline">\(\delta\)</span>.</p>
+<p>Now, to estimate <span class="math inline">\(N\)</span>, we can set up <span class="math inline">\(\log n\)</span> values of <span class="math inline">\(t: 1, 2, 4, 8, ..., n\)</span> and test for each value of <span class="math inline">\(t\)</span> whether <span class="math inline">\(N \ge t\)</span> or <span class="math inline">\(N \le t / 2\)</span>. We can find an interval <span class="math inline">\([t_1, t_2]\)</span>, such that <span class="math inline">\(N \in [t_1, t_2]\)</span> and <span class="math inline">\(N / 2 \le t_1 \le t_2 \le 2\cdot N\)</span>. The space complexity is <span class="math inline">\(O(\log n \log 1 / \delta)\)</span>.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] M. Charikar, T. Li, and A. Xue, “Lecture 1: Counting Distinct Elements,”, CS369G: Algorithmic Techniques for Big Data.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2019/05/17/Jaccard-Similarity/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -272,7 +540,7 @@ k = \frac{2}{\epsilon^2}\log \frac{2}{\delta}
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-12-14 17:48:44" itemprop="dateModified" datetime="2020-12-14T17:48:44+11:00">2020-12-14</time>
+                <time title="Modified: 2022-03-18 10:10:12" itemprop="dateModified" datetime="2022-03-18T10:10:12+11:00">2022-03-18</time>
               </span>
 
           
@@ -286,282 +554,267 @@ k = \frac{2}{\epsilon^2}\log \frac{2}{\delta}
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Consider a problem that might arises from many application scenarios. We have a sequence of <span class="math inline">\(T\)</span> binary variables indexed by time <span class="math inline">\(X_1, X_2, ..., X_T\)</span>, where <span class="math inline">\(X_t \in \{0, 1\}, \forall t \in [T]\)</span>. We try to predict the value of <span class="math inline">\(X_t\)</span>, such that we win <span class="math inline">\(1\)</span> dollar if our guess is correct and <span class="math inline">\(0\)</span> dollar otherwise.</p>
-<p>We don't make decision on our own. Instead, we resort a group of <span class="math inline">\(n\)</span> experts. At each time <span class="math inline">\(t\)</span>, each expert <span class="math inline">\(i\)</span> gives a prediction <span class="math inline">\(p_i^t\)</span> of <span class="math inline">\(X_t\)</span>. Based on the experts' prediction, we make prediction our prediction <span class="math inline">\(p_A^t\)</span>. The value of <span class="math inline">\(X_t\)</span> is then revealed and we make a mistake if our prediction is wrong. The goal to minimize the number of mistakes.</p>
-<h3 id="how-good-can-we-do">How Good Can We Do</h3>
-<p>The first question is how good can we do? Define</p>
+          <h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(X_1, X_2, ..., X_T\)</span> be a sequence of <span class="math inline">\(T\)</span> binary values. We predict at each <span class="math inline">\(t \in [T]\)</span>, the value of <span class="math inline">\(X_t\)</span>. Our predictions are based on the ones from a set of <span class="math inline">\(n\)</span> experts. At each time <span class="math inline">\(t \in [T]\)</span>, each expert <span class="math inline">\(i \in [n]\)</span> generates a prediction <span class="math inline">\(p_i^t\)</span> of <span class="math inline">\(X_t\)</span>. Based on the experts' predictions, we make our own <span class="math inline">\(p_A^t\)</span>. The goal to minimize the number of wrong predictions/mistakes.</p>
+<h1 id="measurement-of-error">Measurement of Error</h1>
+<p>The first question is how good can we do?</p>
+<p>Define</p>
 <ol type="1">
-<li><span class="math inline">\(L_i^t:\)</span> the indicator variable of whether the expert <span class="math inline">\(i\)</span> makes a mistake at round <span class="math inline">\(t\)</span>.</li>
-<li><span class="math inline">\(L_i = \sum_{t \in [T] } L_i^t:\)</span> the total number of mistakes expert <span class="math inline">\(i\)</span> makes, when <span class="math inline">\(T\)</span> is fixed.</li>
-<li><span class="math inline">\(L_A:\)</span> the one made by our algorithm.</li>
+<li><span class="math inline">\(L_i^t:\)</span> the indicator for the expert <span class="math inline">\(i\)</span> making a mistake at round <span class="math inline">\(t\)</span>.</li>
+<li><span class="math inline">\(L_i = \sum_{t \in [T] } L_i^t:\)</span> the total number of mistakes expert <span class="math inline">\(i\)</span> makes.</li>
+<li><span class="math inline">\(L_A:\)</span> the mistakes by our algorithm (denoted as <span class="math inline">\(A\)</span>).</li>
 </ol>
 <p>Ideally, we would like achieve as few mistakes as<br />
 <span class="math display">\[
     \sum_{t \in [T] } \min_{i \in [n]} L_i^t. 
 \]</span></p>
-<p>However, this is impossible. To see this, suppose <span class="math inline">\(X_t\)</span> is a sequence of independent Bernoulli random variable with probability <span class="math inline">\(0.5\)</span> equal to <span class="math inline">\(1\)</span>. No matter what strategy we use, the expected number of mistakes is always <span class="math inline">\(T / 2\)</span>. On the other hand, <span class="math inline">\(\sum_{t \in [T] } \min_{i \in [n]} L_i^t\)</span> could be <span class="math inline">\(0\)</span>.</p>
-<p>Despite the negative result, there is hope to achieve as few mistakes as the best expert (up to some constant), that is<br />
+<p>However, this is impossible. To see this, let <span class="math inline">\(\{ X_t , t \in [T] \}\)</span> be independent Bernoulli random variables with equal probability taking <span class="math inline">\(1\)</span> and <span class="math inline">\(0\)</span>. Whatever our strategy is, the expected number of mistakes is <span class="math inline">\(T / 2\)</span>. On the other hand, it is possible that <span class="math inline">\(\sum_{t \in [T] } \min_{i \in [n]} L_i^t = 0\)</span>.</p>
+<p>Despite this negative result, there is hope to achieve as few mistakes as the best expert (up to some constant), that is<br />
 <span class="math display">\[
-O \left( \min_{i \in [n]} \sum_{t \in [T] } L_i^t \right) = O \left( \min_{i \in [n] } L_i \right). 
+    L_A \in O \left( \min_{i \in [n]} \sum_{t \in [T] } L_i^t \right) = O \left( \min_{i \in [n] } L_i \right). 
 \]</span></p>
-<h3 id="follow-the-majority">Follow the Majority</h3>
-<p>We start with an easy case where there exists an expert who always gives the correct guess. Under this assumption, we can achieve <span class="math display">\[
-\min_{i \in [n] } L_i + \log n
-\]</span></p>
-<p>mistakes. We simply keep track of a set of experts who do not make any mistake so far. Each time we make a decision, we follow the majority of the set.</p>
+<h1 id="algorithms">Algorithms</h1>
+<h2 id="follow-the-majority">Follow the Majority</h2>
+<p>We start with an easy case where an expert who always predicts correctly. In such case, we can maintain a set of experts who do not make any mistake so far. Each time we make a decision, we follow the majority of the set.</p>
 <blockquote>
-<p>Algorithm 1. <strong>Follow the Majority</strong></p>
+<p><strong>Theorem.</strong> If there is a perfect expert, the algorithm <em>Follow the Majority</em> achieves <span class="math display">\[
+L_A \le \min_{i \in [n] } L_i + \log n.
+\]</span></p>
+</blockquote>
+<blockquote>
+<p><strong>Algorithm 1. Follow the Majority</strong></p>
 <ol type="1">
-<li>Let <span class="math inline">\(E_0 \leftarrow \{ 1, 2, ..., n \}\)</span> be the set of all experts.<br />
+<li>Let <span class="math inline">\(E_0 \leftarrow [n]\)</span> be the set of all experts.<br />
 </li>
-<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
+<li><strong>For</strong> <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
 </li>
 <li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 0 at time <span class="math inline">\(t\)</span>.<br />
 </li>
 <li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 1 at time <span class="math inline">\(t\)</span>.<br />
 </li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(|S| &gt; |\bar S|\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
+<li><span class="math inline">\(\qquad\)</span> <strong>If</strong> <span class="math inline">\(|S| &gt; |\bar S|\)</span>, <strong>then</strong> predict <span class="math inline">\(0\)</span> (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
 </li>
-<li><span class="math inline">\(\qquad\qquad\qquad\quad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
+<li><span class="math inline">\(\qquad\qquad\qquad\quad\,\)</span> <strong>else</strong> predict <span class="math inline">\(1\)</span> (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
 </li>
 <li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
 </li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(X_t = 0\)</span>, then <span class="math inline">\(E_t \leftarrow S\)</span>;<br />
+<li><span class="math inline">\(\qquad\)</span> <strong>If</strong> <span class="math inline">\(X_t = 0\)</span>, <strong>then</strong> <span class="math inline">\(E_t \leftarrow S\)</span>;<br />
 </li>
-<li><span class="math inline">\(\qquad\qquad\qquad\)</span> else <span class="math inline">\(E_t \leftarrow \bar S\)</span>.</li>
+<li><span class="math inline">\(\qquad\qquad\qquad\,\)</span> <strong>else</strong> <span class="math inline">\(\,E_t \leftarrow \bar S\)</span>.</li>
 </ol>
 </blockquote>
-<p><em>Theorem. If there is a perfect expert, the algorithm </em>Follow the Majority* makes at most <span class="math inline">\(\log n\)</span> mistakes.*<br />
-<em>Proof.</em> Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. Each time it makes a mistake, the size of <span class="math inline">\(E_{t}\)</span> shrink by half. Hence, <span class="math display">\[
-1 \le |E_T| \le |E_1| \frac{1}{2^M}  = \frac{n}{2^M}. 
+<p>The key observation is that the set we maintain halves each time we make a mistake. Halving the set can happen at most <span class="math inline">\(\log n\)</span> times, as there are only <span class="math inline">\(n\)</span> experts.</p>
+<!-- 
+> **Theorem** If there is a perfect expert, the algorithm **Follow the Majority** makes at most $\log n$ mistakes.    
+-->
+<p><strong>Proof.</strong> Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. Each time it makes a mistake, the size of <span class="math inline">\(E_{t}\)</span> shrink by half. Hence, <span class="math display">\[
+    1 \le |E_T| \le |E_1| \frac{1}{2^M}  = \frac{n}{2^M}. 
 \]</span></p>
 <p>The first inequality follows from the existence of perfect expert. It concludes that <span class="math display">\[
-M \le \log n.  
+    M \le \log n.  
 \]</span> <span class="math inline">\(\square\)</span></p>
-<h3 id="follow-the-majority-with-reset">Follow the Majority With Reset</h3>
-<p>We continue with the case without a perfect expert. By modifying the <em>Follow the Majority</em> a little, we can achieve <span class="math display">\[
-\left( \min_{i \in [n] } L_i  + 1 \right) \cdot \log n
-\]</span> mistakes. As before, we maintain a set of experts who do not make any mistake so far and we follow the majority of the set to make decisions.</p>
+<h2 id="follow-the-majority-with-reset">Follow the Majority With Reset</h2>
+<p>Without the assumption of perfect expert, one simple modification we can make to <em>Follow the Majority</em> is resetting <span class="math inline">\(E_t = [n]\)</span>, if it is assigned an empty set. We call such an algorithm <em>Follow the Majority With Reset</em>.</p>
+<!-- 
+As before, we maintain a set of experts who do not make any mistake so far and we follow the majority of the set to make decisions. 
+> Algorithm 2. **Follow the Majority With Reset**  
+> 
+> 1. Let $E_0 \leftarrow [n]$ be the set of all experts.    
+> 2. For $t \leftarrow 1$ to $T$   
+> 3. $\qquad$ Let $S$ be the subset of $E_{t - 1}$ that predicts 0 at time $t$.   
+> 4. $\qquad$ Let $\bar S$ be the subset of $E_{t - 1}$ that predicts 1 at time $t$.   
+> 5. $\qquad$ If $|S| > |\bar S|$,  then predict 0 ($p_A^t \leftarrow 0$);   
+> 6. $\qquad\qquad\qquad\quad$      else predict 1 ($p_A^t \leftarrow 1$).  
+> 7. $\qquad$ Reveal $X_t$.  
+> 8. $\qquad$ If $X_t = 0$, then $E_t \leftarrow S$;   
+> 9. $\qquad\qquad\qquad$   else $E_t \leftarrow \bar S$.   
+> 10. $\qquad$ If $E_t = \emptyset$, then reset $E_t \leftarrow [n]$.  
+-->
 <blockquote>
-<p>Algorithm 2. <strong>Follow the Majority With Reset</strong></p>
+<p><strong>Theorem.</strong> If there isn't a perfect expert, the algorithm <em>Follow the Majority With Reset</em> achieves <span class="math display">\[
+L_A \le \left( \min_{i \in [n] } L_i + 1 \right) \cdot \log n.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> As analysed before, between two consecutive resets of <span class="math inline">\(E_t\)</span>, the algorithm makes at most <span class="math inline">\(\log n\)</span> mistakes while the best expert makes at least one mistake. Therefore, <span class="math display">\[
+    \frac{L_A}{ \log n } \le \min_{i \in [n] } L_i + 1 
+        \implies 
+    L_A \le \left( \min_{i \in [n]}  L_i  + 1\right) \cdot \log n. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="follow-the-weighted-majority">Follow the Weighted Majority</h2>
+<p>The previous algorithm forgets the historical performance of the experts each time it resets <span class="math inline">\(E_t\)</span>, which might contain helpful information. To fix this, we assign each expert <span class="math inline">\(i\)</span> a weight <span class="math inline">\(w_i^t\)</span>, follow the weighted majority at time <span class="math inline">\(t\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> The algorithm <em>Follow the Weighted Majority</em> achieves <span class="math display">\[
+L_A \le 2.41 \cdot \left( \min_{i \in [n]} L_i + \log n \right).
+\]</span></p>
+</blockquote>
+<blockquote>
+<p><strong>Algorithm 3. Follow the Weighted Majority</strong></p>
 <ol type="1">
-<li>Let <span class="math inline">\(E_0 \leftarrow \{ 1, 2, ..., n \}\)</span> be the set of all experts.<br />
+<li>Set <span class="math inline">\(w_i^1 \leftarrow 1, \forall i \in [n].\)</span><br />
 </li>
 <li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
 </li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 0 at time <span class="math inline">\(t\)</span>.<br />
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the set of experts who predict <span class="math inline">\(0\)</span>.<br />
 </li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the subset of <span class="math inline">\(E_{t - 1}\)</span> that predicts 1 at time <span class="math inline">\(t\)</span>.<br />
+<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the set of experts who predict <span class="math inline">\(1\)</span>.<br />
 </li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(|S| &gt; |\bar S|\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
+<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(\sum_{i \in S} w_i^t &gt; \sum_{i \in \bar S} w_i^t\)</span>, then predict <span class="math inline">\(0\)</span> (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
 </li>
-<li><span class="math inline">\(\qquad\qquad\qquad\quad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(X_t = 0\)</span>, then <span class="math inline">\(E_t \leftarrow S\)</span>;<br />
-</li>
-<li><span class="math inline">\(\qquad\qquad\qquad\)</span> else <span class="math inline">\(E_t \leftarrow \bar S\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(E_t = \emptyset\)</span>, then reset <span class="math inline">\(E_t \leftarrow \{1, 2, ..., n\}\)</span>.</li>
-</ol>
-</blockquote>
-<p><em>Theorem. If there isn't a perfect expert, the algorithm </em>Follow the Majority* makes at most <span class="math inline">\(\left( \min_{i \in [n] } L_i + 1 \right) \cdot \log n\)</span> mistakes.*<br />
-<em>Proof.</em> Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. As analysed before, between two consecutive resets of <span class="math inline">\(E_t\)</span>, the algorithm makes at most <span class="math inline">\(\log n\)</span> mistakes while the best expert makes at least one mistake. Therefore, <span class="math display">\[
-\frac{M}{ \log n } \le \min_{i \in [n] } L_i + 1\implies M \le \left( \min_{i \in [n]}  L_i  + 1\right) \cdot \log n
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h3 id="follow-the-weighted-majority">Follow the Weighted Majority</h3>
-<p>One drawback of the previous approach is that, the algorithm forgets the relative performance of the experts each time it resets <span class="math inline">\(E_t\)</span>. To fix this, we assign each expert <span class="math inline">\(i\)</span> a weight <span class="math inline">\(w_i^t\)</span> and we follow the weighted majority at time <span class="math inline">\(t\)</span>. This reduces the number of mistakes to <span class="math display">\[
-    2.41 \cdot ( \min_{i \in [n]} L_i + \log n).
-\]</span></p>
-<blockquote>
-<p>Algorithm 3. <strong>Follow the Weighted Majority</strong></p>
-<ol type="1">
-<li>Set <span class="math inline">\(w_i \leftarrow 1, \forall i \in [n].\)</span><br />
-</li>
-<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(S\)</span> be the set of experts who predict 0.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(\bar S\)</span> be the set of experts who predict 1.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> If <span class="math inline">\(\sum_{i \in S} w_i &gt; \sum_{i \in \bar S} w_i\)</span>, then predict 0 (<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
-</li>
-<li><span class="math inline">\(\qquad\qquad\qquad\qquad\qquad\qquad\)</span> else predict 1 (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
+<li><span class="math inline">\(\qquad\qquad\qquad\qquad\qquad\qquad\)</span> else predict <span class="math inline">\(1\)</span> (<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
 </li>
 <li><span class="math inline">\(\qquad\)</span> Reveal <span class="math inline">\(X_t\)</span>.<br />
 </li>
-<li><span class="math inline">\(\qquad\)</span> For each expert <span class="math inline">\(i\)</span> who predicts wrong</li>
-<li><span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(w_i \leftarrow w_i / 2\)</span></li>
+<li><span class="math inline">\(\qquad\)</span> For each expert <span class="math inline">\(i \in [n]\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\)</span> If it predicts wrong then <span class="math inline">\(w_i^{t + 1} \leftarrow w_i^t / 2\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(\qquad\qquad\qquad\quad\)</span> else <span class="math inline">\(w_i^{t + 1} \leftarrow w_i^t\)</span></li>
 </ol>
 </blockquote>
-<p><strong><em>Analysis.</em></strong> Let <span class="math inline">\(w_i^t\)</span> be the weight of player <span class="math inline">\(i\)</span> at time <span class="math inline">\(t\)</span> and define <span class="math inline">\(W^t = \sum_{i = 1}^n w_i^t\)</span>. Each time we make a mistake, the experts who make wrong the prediction have sum of weight <span class="math inline">\(\ge \frac{1}{2} W^t\)</span>. Since their weights halve, we have <span class="math display">\[
-W^{t + 1} \le W^t ( 1 - \frac{1}{2}\frac{1}{2}) = \frac{3}{4} W^t.
+<p><strong>Proof.</strong> Let <span class="math inline">\(W^t = \sum_{i \in [n] } w_i^t\)</span>. Each round <span class="math inline">\(t\)</span> the algorithms make a mistake, the sum of weights of experts who predict wrong is at least <span class="math inline">\(0.5 \cdot W^t\)</span>. Such weights halve at this round. Hence <span class="math display">\[
+    W^{t + 1} 
+        \le W^t \left( 1 - \frac{1}{2} \cdot \frac{1}{2} \right) 
+        = \frac{3}{4} W^t.
 \]</span></p>
-<p>Let <span class="math inline">\(M\)</span> be the number of mistakes the algorithm makes. It follows that <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
- \left( \frac{1}{2} \right)^{L_i} = w_i^T \le W^T \le \left( \frac{3}{4} \right)^M W_0 = \left( \frac{3}{4} \right)^M n,  
+<p>Fix an <span class="math inline">\(i \in [n]\)</span>. Recall <span class="math inline">\(L_i\)</span> is the number of mistakes experts <span class="math inline">\(i\)</span> makes throughout the <span class="math inline">\(T\)</span> rounds. It follows that, <span class="math display">\[
+    w_i^T  = \left( \frac{1}{2} \right)^{L_i} 
+        \le W^T 
+        \le \left( \frac{3}{4} \right)^{L_A} W^0 
+        = \left( \frac{3}{4} \right)^{L_A} \cdot n,  
+\]</span> which implies <span class="math display">\[
+    L_A \le  \frac{1}{ \log \frac{4}{3} } ( L_i + \log n) \le 2.41 \cdot (L_i + \log n).
 \]</span></p>
-<p>which implies <span class="math display">\[
-M \le  \frac{1}{ \log \frac{4}{3} } ( L_i + \log n) \le 2.41 \cdot (L_i + \log n).
-\]</span></p>
-<p><em>Remark:</em> it is not necessary to halve an expert's weight when it makes a mistake. We can decrease it by any factor <span class="math inline">\((1 - \epsilon)\)</span> for <span class="math inline">\(\epsilon \in (0, 1)\)</span>. In such case, we get <span class="math display">\[
-\begin{aligned}
-    &amp;\qquad (1- \epsilon)^{L_i} \le \left( 1 - \frac{1 - (1 - \epsilon)}{2} \right)^M n \\
-    &amp;\implies L_i \cdot \ln (1 -\epsilon) \le M \ln \left( 1 - \frac{\epsilon}{ 2 } \right) + \ln n \\
-    &amp;\implies M \le \frac{ L_i \ln \frac{1}{1 - \epsilon} + \ln n}{ \ln \frac{ 2 }{ 2 - \epsilon } }.
-\end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(x = \frac{1}{1 - \epsilon} &gt; 0\)</span>, then <span class="math inline">\(1 - \epsilon = \frac{1}{x}\)</span> and <span class="math inline">\(\frac{2 - \epsilon }{ 2 } = \frac{x + 1}{2x}\)</span>. Define <span class="math display">\[
-y = \frac{ L_i \ln x + \ln n}{ \ln 2x - \ln ( x + 1  ) }.
-\]</span></p>
-<p>Then <span class="math display">\[
-\begin{aligned}
-    y&#39; \ge 0 
-        &amp;\implies  \frac{L_i}{x} (\ln 2x - \ln ( x + 1  ) ) - \left( \frac{1}{x} - \frac{1}{x + 1} \right) (L_i \ln x + \ln n ) \ge 0 \\
-        &amp;\implies  L_i(x + 1) (\ln 2x - \ln ( x + 1  ) ) - (L_i \ln x + \ln n ) \ge 0 \\
-        &amp;\implies  (x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x \ge \frac{\ln n}{L_i}
-\end{aligned}
-\]</span></p>
-<p>It is not easy to compute a closed-form solution for <span class="math inline">\(x\)</span>. But observe that the function <span class="math inline">\((x + 1) (\ln 2x - \ln ( x + 1 ) ) - \ln x\)</span> equals to <span class="math inline">\(0\)</span> for <span class="math inline">\(x = 1\)</span> and is increasing for <span class="math inline">\(x &gt; 1\)</span>. Hence, there exists some <span class="math inline">\(x &gt; 1\)</span>, s.t., the value of the functions equal to <span class="math inline">\(\frac{ \ln n }{ L_i }\)</span>.</p>
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/MultiplicativeWeightUpdate/MultiplicativeWeightUpdate.png?raw=true" /></p>
 <p><span class="math inline">\(\square\)</span></p>
-<h3 id="multiplicative-weight-updates">Multiplicative Weight Updates</h3>
+<p><strong>Remark.</strong> It is not necessary to halve an expert's weight when it makes a mistake. We can decrease it by any factor <span class="math inline">\((1 - \epsilon)\)</span> for <span class="math inline">\(\epsilon \in (0, 1)\)</span>. In such case, we get <span class="math display">\[
+    \begin{aligned}
+        &amp;\qquad (1- \epsilon)^{L_i} \le \left( 1 - \frac{1 - (1 - \epsilon)}{2} \right)^{L_A} n \\
+        &amp;\implies L_i \cdot \ln (1 -\epsilon) \le L_A \cdot \ln \left( 1 - \frac{\epsilon}{ 2 } \right) + \ln n \\
+        &amp;\implies L_i \cdot \ln (1 -\epsilon) \le L_A \cdot \left( - \frac{\epsilon}{ 2 } \right) + \ln n \\
+        &amp;\implies L_i \cdot \left( -\epsilon - \epsilon^2 \right) \le L_A \cdot \left( - \frac{\epsilon}{ 2 } \right) + \ln n \\
+        &amp;\implies L_A \le 2 \left( 1 + \epsilon \right) \cdot L_i + \frac{2}{\epsilon} \cdot \ln n. 
+        % &amp;\implies L_A \le \frac{ L_i \ln 1 / (1 - \epsilon) + \ln n}{ \ln 2 / ( 2 - \epsilon ) }.
+    \end{aligned}
+\]</span></p>
+<p>We have used the fact that <span class="math inline">\(\ln(1 - \epsilon ) \ge - \epsilon - \epsilon^2\)</span> for <span class="math inline">\(\epsilon \in [0, 2 / 3]\)</span></p>
+<!-- 
+Let $x = 1 / (1 - \epsilon) > 0$, then $1 - \epsilon = 1 / x$ and $2 - \epsilon = (x + 1) / x$. Define 
+$$
+    y = \frac{ L_i \ln x + \ln n}{ \ln 2x - \ln ( x + 1  ) }.
+$$
+
+Then 
+$$
+    \begin{aligned}
+        y' \ge 0 
+            &\implies  \frac{L_i}{x} (\ln 2x - \ln ( x + 1  ) ) - \left( \frac{1}{x} - \frac{1}{x + 1} \right) (L_i \ln x + \ln n ) \ge 0 \\
+            &\implies  L_i(x + 1) (\ln 2x - \ln ( x + 1  ) ) - (L_i \ln x + \ln n ) \ge 0 \\
+            &\implies  (x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x \ge \frac{\ln n}{L_i}
+    \end{aligned}
+$$
+
+It is not easy to compute a closed-form solution for $x$. But observe that the function $(x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x$ equals to $0$ for $x = 1$ and is increasing for $x > 1$. Hence, there exists some $x > 1$, s.t., the value of the functions equal to $\frac{ \ln n }{ L_i }$. 
+
+![](https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/MultiplicativeWeightUpdate/MultiplicativeWeightUpdate.png?raw=true)
+ -->
+<h2 id="multiplicative-weight-updates">Multiplicative Weight Updates</h2>
 <p>We are in good shape so far. Let's extend the problem to more general settings. In this cases, the experts interact with the environment in round-robin fashion. At each round <span class="math inline">\(t\)</span>,</p>
 <ol type="1">
 <li>The expert <span class="math inline">\(i\)</span> performs action, termed <span class="math inline">\(a_i^t\)</span>.</li>
-<li>The environment returns the loss of performing <span class="math inline">\(a_i^t\)</span>, denoted as <span class="math inline">\(l_i^t \in [0, 1]\)</span>.</li>
+<li>The environment returns the loss of performing <span class="math inline">\(a_i^t\)</span>, denoted as <span class="math inline">\(\ell_i^t \in [0, 1]\)</span>.</li>
 </ol>
-<p>Although there is no restriction of the experts' actions and their losses, we can come up with some strategy the expected loss of which is almost as good as the best expert: <span class="math display">\[
-    \min_{i \in [n] } L_i + 2 \sqrt{ T \ln n }, 
-\]</span></p>
-<p>where <span class="math inline">\(L_i \doteq \sum_{t \in [T] } l_i^t\)</span> is the loss of expert <span class="math inline">\(i\)</span>. This implies that the average expected loss converges at a rate of <span class="math inline">\(\sqrt \frac{1}{T}\)</span> to the best one.</p>
+<p>Note that there is no restriction of the experts' actions and their losses (as long as they are within <span class="math inline">\([0, 1]\)</span>). We will present an algorithm, called <em>Multiplicative Weight Update</em>, which is almost as good as the best expert.</p>
 <blockquote>
-<p>Algorithm 4. <strong>Multiplicative Weight Update</strong></p>
-<ol type="1">
-<li>Set <span class="math inline">\(w_i \leftarrow 1, \forall i \in [n].\)</span><br />
-</li>
-<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(W = \sum_{i \in [n] } w_i\)</span>.<br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> Follow action <span class="math inline">\(a_i^t\)</span> with probability <span class="math inline">\(w_i / W\)</span>.</li>
-<li><span class="math inline">\(\qquad\)</span> For each expert <span class="math inline">\(i\)</span>:</li>
-<li><span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(w_i \leftarrow w_i \cdot (1 - \epsilon l_i^t)\)</span></li>
-</ol>
+<p><strong>Theorem.</strong> The algorithm <em>Multiplicative Weight Update</em> achieves <span class="math display">\[
+L_A \le \min_{i \in [n] } L_i + 2 \sqrt{ T \ln n }, 
+\]</span> where <span class="math inline">\(L_i \doteq \sum_{t \in [T] } \ell_i^t\)</span> is the loss of expert <span class="math inline">\(i\)</span>.</p>
 </blockquote>
-<p><strong><em>Analysis.</em></strong> Let <span class="math inline">\(l_A^t\)</span> be the loss of the algorithm at round <span class="math inline">\(t\)</span> and <span class="math inline">\(L_A \doteq \sum_{t \in [T] } l_A^t\)</span>. Let <span class="math inline">\(w_i^t\)</span> be the weight of expert <span class="math inline">\(i\)</span> and <span class="math inline">\(W^t\)</span> be the sum of weights at round <span class="math inline">\(t\)</span>. Then <span class="math display">\[
-\mathbb{E} [ l_A^t ] = \sum_{i \in [n] } \frac{ \epsilon w_i^t l_i^t }{ W^t }. 
+<p>This implies that the average expected loss converges at a rate of <span class="math inline">\(\sqrt{1 / T}\)</span> to the best one.</p>
+<blockquote>
+<p><strong>Algorithm 4. Multiplicative Weight Update</strong><br />
+1. Set <span class="math inline">\(w_i^1 \leftarrow 1, \forall i \in [n]\)</span>.<br />
+2. For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(T\)</span><br />
+3. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(W^t = \sum_{i \in [n] } w_i^t\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> Follow action <span class="math inline">\(a_i^t\)</span> with probability <span class="math inline">\(w_i^t / W^t\)</span>. 8. <span class="math inline">\(\qquad\)</span> For each expert <span class="math inline">\(i \in [n]\)</span>:<br />
+9. <span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(w_i^{t + 1} \leftarrow w_i^t \cdot (1 - \epsilon \cdot \ell_i^t)\)</span></p>
+</blockquote>
+<p>At a high level, at each round,</p>
+<ol type="1">
+<li>the algorithm follows expert <span class="math inline">\(i\)</span> with probability proportional to <span class="math inline">\(w_i^t\)</span>.<br />
+</li>
+<li>the weight <span class="math inline">\(w_i^t\)</span> is decreased proportionally to <span class="math inline">\(\ell_i^t\)</span>.</li>
+</ol>
+<p><strong>Proof.</strong> Let <span class="math inline">\(\ell_A^t\)</span> be the loss of the algorithm at round <span class="math inline">\(t\)</span>, and <span class="math inline">\(L_A \doteq \sum_{t \in [T] } \ell_A^t\)</span>.</p>
+<blockquote>
+<p><strong>Claim 1.</strong> <strong><span class="math inline">\(\,\ln W^{T + 1}\)</span> is inversely proportional to <span class="math inline">\(\mathbb{E} \big[ L_A \big]\)</span>.</strong></p>
+</blockquote>
+<p>Observe <span class="math display">\[
+    \mathbb{E} \big[ \ell_A^t \big] = \sum_{i \in [n] } \frac{ w_i^t }{ W^t } \cdot \ell_i^t. 
 \]</span></p>
 <p>By the update rule of the <span class="math inline">\(w_i\)</span>'s, we see <span class="math display">\[
-W^{t + 1} = \sum_{i \in [n] } w_i^t (1 - \epsilon l_i^t) = W^t ( 1 - \epsilon \mathbb{E} [ l_A^t ] ) \le W^t \exp( - \epsilon \mathbb{E} [ l_A^t ] ). 
+    W^{t + 1} = \sum_{i \in [n] } w_i^t (1 - \epsilon \ell_i^t) = W^t \cdot \left( 1 - \epsilon \cdot \mathbb{E} \big[ \ell_A^t \big] \right) \le W^t \cdot \exp \left( - \epsilon \cdot \mathbb{E} \big[ \ell_A^t \big] \right). 
 \]</span></p>
-<p>By induction, we can write <span class="math display">\[
-W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot \exp( - \epsilon \mathbb{E} [ L_A ] ).
+<p>By induction and noting that <span class="math inline">\(W^1 = n\)</span>, we have <span class="math display">\[
+    W^{T + 1} 
+        \le W^1 \cdot \exp \Big( - \sum_{t \in [T] } \epsilon \cdot \mathbb{E} \big[ \ell_A^t \big] \Big) 
+        = n \cdot \exp \Big( - \epsilon \cdot \mathbb{E} \big[ L_A \big] \Big).
 \]</span></p>
-<p>To upper bound <span class="math inline">\(\mathbb{E} [ L_A ]\)</span>, we try to lower bound the value of <span class="math inline">\(n \cdot \exp( - \epsilon \mathbb{E} [ L_A ] )\)</span>. We uses that <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
-    \prod_{t \in [T] } (1 - \epsilon l_i^t) = w_i^T \le W^T. 
+<blockquote>
+<p><strong>Claim 2.</strong> <strong><span class="math inline">\(\,\ln W^{T + 1}\)</span> is lower bounded by <span class="math inline">\(\sum_{t \in [T] } \ln (1 - \epsilon \cdot \ell_i^t)\)</span>.</strong></p>
+</blockquote>
+<p>For each expert <span class="math inline">\(i \in [n]\)</span>, its final weight is given by <span class="math display">\[
+    w_i^{T + 1} = \prod_{t \in [T] } (1 - \epsilon \cdot \ell_i^t) 
+    % \ge 1 - \sum_{t \in [T] } \epsilon \cdot \ell_i^t, 
+\]</span> <!-- 
+where the inequality follows from union bound that 
+$$
+    1 - \prod_{t \in [T] } (1 - \epsilon \cdot \ell_i^t) \le \sum_{t \in [T] } \epsilon \cdot \ell_i^t.
+$$ 
+--></p>
+<p>Noting that <span class="math inline">\(w_i^{T + 1} \le W^{T + 1}\)</span> proves the claim.</p>
+<p><strong>Putting the Claims Together.</strong> For each <span class="math inline">\(i \in [n]\)</span>, we have <span class="math display">\[
+    \begin{aligned}
+        % \ln \left( 1 - \epsilon \cdot L_i \right) 
+        % \le
+        \sum_{t \in [T] } \ln (1 - \epsilon \cdot \ell_i^t) 
+        \le 
+        - \epsilon \cdot \mathbb{E} \big[ L_A \big] + \ln n.  
+    \end{aligned}
+\]</span> Therefore, <span class="math display">\[
+    \epsilon \cdot \mathbb{E} \big[ L_A \big] \le - \sum_{t \in [T] } \ln (1 - \epsilon \cdot \ell_i^t)  + \ln n. 
 \]</span></p>
-<p>Using the fact that <span class="math inline">\(\ln(1 - \epsilon ) \ge \epsilon - \epsilon^2\)</span> for <span class="math inline">\(0 &lt; \epsilon &lt; 0.5\)</span>, we know that <span class="math inline">\(\forall i \in [n]\)</span>,</p>
-<p><span class="math display">\[
-\exp \left( - \sum_{i \in [T] } \epsilon l_i^t  - \sum_{i \in [T] } (\epsilon l_i^t)^2 \right) \le n \cdot \exp ( - \epsilon \mathbb{E} [ l_A^t ] ). 
+<p>Via the fact that <span class="math inline">\(\ln(1 - \epsilon ) \ge - \epsilon - \epsilon^2\)</span> for <span class="math inline">\(\epsilon \in [0, 2 / 3]\)</span>, we know that <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \epsilon \cdot \mathbb{E} \big[ L_A \big] 
+            &amp;\le \epsilon \cdot \sum_{t \in [T] } \ell_i^t  + \epsilon^2 \cdot \sum_{t \in [T] } \big( \ell_i^t \big)^2  + \ln n \\
+            &amp;= \epsilon \cdot L_i  + \epsilon^2 \cdot \sum_{t \in [T] } \big( \ell_i^t \big)^2  + \ln n. 
+    \end{aligned}
 \]</span></p>
-<p>Taking the log, we get <span class="math display">\[
-\mathbb{E} [ l_A^t ] \le \frac{1}{\epsilon } \ln n  + L_i + \epsilon \sum_{i \in [T] } (l_i^t)^2. 
+<p>Dividing both sides by <span class="math inline">\(\epsilon\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} \big[ L_A \big] 
+            &amp;\le L_i  + \epsilon \cdot \sum_{t \in [T] } \big( \ell_i^t \big)^2  + \frac{1}{\epsilon} \cdot \ln n. 
+    \end{aligned}
 \]</span></p>
-<p>There are various ways to upper bound <span class="math inline">\(\sum_{i \in [T] } (l_i^t)^2\)</span>. Naively, this is at most <span class="math inline">\(T\)</span>. Hence, <span class="math display">\[
-\mathbb{E} [ l_A^t ] \le \frac{1}{\epsilon } \ln n  + L_i + \epsilon T.  
+<p>There are various ways to upper bound <span class="math inline">\(\sum_{i \in [T] } (\ell_i^t)^2\)</span>. Naively, we observe that <span class="math inline">\((\ell_i^t)^2 \le \ell_i^t\)</span>, since <span class="math inline">\(\ell_i^t \in [0, 1]\)</span>. Therefore, <span class="math display">\[
+    \mathbb{E} \big[ L_A \big] 
+    \le L_i  + \epsilon \cdot L_i + \frac{1}{\epsilon} \cdot \ln n 
 \]</span></p>
-<p>Setting <span class="math inline">\(\epsilon = \sqrt{ \frac{ \ln n}{T} }\)</span>, we get <span class="math display">\[
-\mathbb{E} [ l_A^t ] \le L_i + 2 \sqrt{ T \ln n}.
+<p>Setting <span class="math inline">\(\epsilon = \sqrt{ (\ln n) / T }\)</span>, we get <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} \big[ L_A \big] 
+        &amp;\le L_i  + \sqrt{\frac{L_i \cdot \ln n}{T}} + \sqrt{ T \cdot \ln n} \\
+        &amp;\le L_i + 2 \sqrt{ T \cdot \ln n}.
+    \end{aligned}
+\]</span></p>
+<p><strong>Remark</strong>: if we know the value of <span class="math inline">\(\min_{i \in [n]} L_i\)</span>, or we can guess <span class="math inline">\(\Theta \left( \min_{i \in [n]} L_i \right)\)</span>, then we can achieve<br />
+<span class="math display">\[
+    \mathbb{E} \big[ L_A \big] \le \min_{i \in [n]} L_i + \Theta \left( \sqrt{ \min_{i \in [n]} L_i \cdot \ln n } \right).   
 \]</span></p>
 <p><span class="math inline">\(\blacksquare\)</span></p>
-<h4 id="last-updated-date-dec-14th-2020.">Last Updated Date: <strong>Dec 14th, 2020</strong>.</h4>
-<h3 id="reference">Reference</h3>
-<p>[1] Aaron Roth, “The Polynomial Weights Algorithm”, NETS 412: Algorithmic Game Theory,</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/24/Monotone-Class/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/24/Monotone-Class/" class="post-title-link" itemprop="url">Monotone Class</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-24 16:06:49" itemprop="dateCreated datePublished" datetime="2019-03-24T16:06:49+11:00">2019-03-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-02 02:14:05" itemprop="dateModified" datetime="2019-04-02T02:14:05+11:00">2019-04-02</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="theorem">Theorem</h1>
-<p>If <span class="math inline">\(M\)</span> is a monotone class and <span class="math inline">\(R \subset M\)</span> is a ring, then <span class="math inline">\(M\)</span> contains the <span class="math inline">\(\sigma\)</span>-ring <span class="math inline">\(\sigma(R)\)</span> generated by <span class="math inline">\(R\)</span> and use the following lemma.</p>
-<p><strong>Proof:</strong></p>
-<p>Consider the monotone class <span class="math inline">\(M_0\)</span> generated by <span class="math inline">\(R\)</span>. By definition <span class="math inline">\(M_0 \subset M\)</span>. The goal is show that <span class="math inline">\(M_0\)</span> is a ring that contains <span class="math inline">\(R\)</span>.</p>
-<h2 id="lemma">Lemma</h2>
-<p>If <span class="math inline">\(M_0\)</span> is a ring, then it must be a <span class="math inline">\(\sigma\)</span>-ring.</p>
-<p><em>Pf:</em> For each countable collection of sets <span class="math inline">\(( E_n )\)</span>, <span class="math inline">\(\cup_{n} E_n = \cup_{n} (\cup_{k = 1}^n E_k)\)</span>. Denote <span class="math inline">\(F_n = \cup_{k = 1}^n E_n\)</span>, and <span class="math inline">\(F = \cup_{n} E_n\)</span>. Clearly <span class="math inline">\(F_n \uparrow F\)</span>, which implies that <span class="math inline">\(F \subset M_0\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p>It immediately follows that <span class="math inline">\(M_0 \supset \sigma(R)\)</span>. Indeed, as <span class="math inline">\(\sigma(R)\)</span> itself is a monotone class and <span class="math inline">\(M_0\)</span> is the smallest monotone class that contains <span class="math inline">\(R\)</span>, we have <span class="math inline">\(\sigma(R) \supset M_0\)</span>. It concludes that <span class="math inline">\(M_0 = \sigma(R)\)</span>.</p>
-<p>To show <span class="math inline">\(M_0\)</span> is a ring, we need to verify that <span class="math inline">\(E, F \in M_0\)</span>, <span class="math inline">\(E \cup F = M_0\)</span> and <span class="math inline">\(E \setminus F \in M_0\)</span>.</p>
-<p>Define <span class="math inline">\(S_E = \{ F \in M_0 : E \cup F \in M_0, E \setminus F \in M_0 \}\)</span>, the collection of sets that satisfies the conditions. Note that <span class="math inline">\(S_E\)</span> is a monotone class.</p>
-<ol type="1">
-<li><p><span class="math inline">\((F_n) \subset S_E\)</span>, and <span class="math inline">\((F_n) \uparrow F\)</span>, then <span class="math inline">\(E \cup F = E \cup [\cup_n F_n] = \cup_n [E \cup F_n]\)</span>. By definition of <span class="math inline">\(S_E\)</span>, <span class="math inline">\(E \cup F_n \in M_0\)</span>. As <span class="math inline">\(F_n \uparrow\)</span> and <span class="math inline">\(M_0\)</span> is monotone, <span class="math inline">\(E \cup F \in M_0\)</span>. Hence <span class="math inline">\(F \in M_0\)</span>.</p></li>
-<li><p><span class="math inline">\((F_n) \subset S_E\)</span>, and <span class="math inline">\((F_n) \uparrow F\)</span>, then <span class="math inline">\(E \setminus F = E \setminus [\cup_n F_n] = \cap_n [E \cap F_n] \in M_0\)</span>.</p></li>
-</ol>
-<p>We claim that for each <span class="math inline">\(E \in M_0\)</span>, it holds that <span class="math inline">\(F \in S_E\)</span> for any <span class="math inline">\(F \in M_0\)</span>, i.e., <span class="math inline">\(M_0 \subset S_E\)</span>. But this is equivalent to show <span class="math inline">\(E \in S_F\)</span>. Since <span class="math inline">\(M_0\)</span> is the smallest monotone class that contains <span class="math inline">\(R\)</span>, it suffices to prove <span class="math inline">\(R \subset S_F\)</span>. We need to utilize the following observation.</p>
-<p><em>Let <span class="math inline">\(O \subset R\)</span>, then <span class="math inline">\(S_O \supset R\)</span>, which implies that <span class="math inline">\(S_O \supset M_0\)</span>, as <span class="math inline">\(S_O\)</span> is a monotone class.</em></p>
-<p>Therefore, <span class="math inline">\(\forall F \in M_0\)</span>, <span class="math inline">\(R \subset S_F\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span>.</p>
+<h1 id="reference">Reference</h1>
+<p>[1]. <a target="_blank" rel="noopener" href="http://www.theoryofcomputing.org/articles/v008a006/v008a006.pdf"><em>Arora, Sanjeev, Elad Hazan, and Satyen Kale. "The multiplicative weights update method: a meta-algorithm and applications." Theory of computing 8, no. 1 (2012): 121-164.</em></a></p>
+<p>[2] <em>Aaron Roth, “The Polynomial Weights Algorithm”, NETS 412: Algorithmic Game Theory</em></p>
 
       
     </div>
@@ -646,7 +899,7 @@ W^T \le W^1 \exp( - \sum_{t \in [T] } \epsilon \mathbb{E} [ l_A^t ] ) = n \cdot 
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">176</span>
+          <span class="site-state-item-count">177</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
