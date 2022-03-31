@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/02/The-Volume-of-Hamming-Ball/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/21/AMS-Sketch-For-Inner-Product-Estimation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/04/02/The-Volume-of-Hamming-Ball/" class="post-title-link" itemprop="url">The Volume of Hamming Ball</a>
+            <a href="/2021/05/21/AMS-Sketch-For-Inner-Product-Estimation/" class="post-title-link" itemprop="url">AMS Sketch For Inner Product Estimation</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-04-02 00:19:23" itemprop="dateCreated datePublished" datetime="2021-04-02T00:19:23+11:00">2021-04-02</time>
+              <time title="Created: 2021-05-21 23:23:12" itemprop="dateCreated datePublished" datetime="2021-05-21T23:23:12+10:00">2021-05-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-29 15:18:46" itemprop="dateModified" datetime="2021-07-29T15:18:46+10:00">2021-07-29</time>
+                <time title="Modified: 2021-05-22 11:58:57" itemprop="dateModified" datetime="2021-05-22T11:58:57+10:00">2021-05-22</time>
               </span>
 
           
@@ -191,383 +191,330 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Given a finite set <span class="math inline">\(\Sigma\)</span> with size <span class="math inline">\(q = |\Sigma|\)</span>, and a integer <span class="math inline">\(n \in \mathbb{N}_+\)</span>, a <em>code</em> <span class="math inline">\(C \subset \Sigma^n\)</span> is a set of strings that are far apart. The set <span class="math inline">\(\Sigma\)</span> is called the <em>alphabet</em> of the code, and <span class="math inline">\(n\)</span> is called the <em>block length</em> of the code. Strings in <span class="math inline">\(C\)</span> are called <em>codewords</em>.</p>
-<p>For <span class="math inline">\(x, y \in \Sigma^n\)</span>, define their Hamming distance as <span class="math display">\[
-    \Delta(x, y) \doteq | \{ i \in [n] : x_i \neq y_i \} |. 
-\]</span></p>
-<p>The distance <span class="math inline">\(\Delta(C)\)</span> of <span class="math inline">\(C\)</span>, is defined as the minimum distance between two different codes words in <span class="math inline">\(C\)</span>: <span class="math display">\[
-    \Delta(C)  \doteq \min_{x \neq  y \in C} \Delta(x, y). 
-\]</span></p>
-<p>Suppose that we have a code <span class="math inline">\(C\)</span> with distance <span class="math inline">\(d\)</span>. If we store a code <span class="math inline">\(x \in C\)</span>, and up to <span class="math inline">\((d - 1) / 2\)</span> bits of <span class="math inline">\(x\)</span> are corrupted, then we can still recover <span class="math inline">\(x\)</span>. Denote the ball centered at <span class="math inline">\(x\)</span> with radius <span class="math inline">\(r \in \mathbb{R}_+\)</span> as <span class="math display">\[
-    \mathcal{B}(x, r) \doteq \{ y \in \Sigma^n : \Delta(y, x) \le r \}. 
+          <h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(\vec x = (x_1, ..., x_n)\)</span>, <span class="math inline">\(\vec y = (y_1, ..., y_n) \in \mathbb{R}^n\)</span>. Given <span class="math inline">\(\delta \in (0, 1)\)</span>, construct a data structure with space usage <span class="math inline">\(O \left( \frac{1}{\epsilon^2} \log \frac{1}{\delta} \right)\)</span>, such that with failure probability at most <span class="math inline">\(\delta \in (0, 1)\)</span>,</p>
+<ul>
+<li>it returns an estimate of the inner product <span class="math inline">\(\left&lt; \vec x, \vec y \right&gt;\)</span> with error <span class="math inline">\(O( \epsilon \cdot \Vert \vec x \Vert_2 \cdot \Vert \vec y \Vert_2 )\)</span>.</li>
+</ul>
+<p><strong>Remark:</strong> If we have <span class="math inline">\(\vec x = \vec y\)</span>, we get an estimator of <span class="math inline">\(\Vert \vec x \Vert_2^2\)</span> with <span class="math inline">\(\epsilon\)</span>-relative error.</p>
+<h1 id="prototype">Prototype</h1>
+<p>Let <span class="math inline">\(\vec \sigma = (\sigma_1, ..., \sigma_n) \in \{ - 1, 1 \}^n\)</span> a sequence of <span class="math inline">\(n\)</span> independent Rademachers.</p>
+<p>Define <span class="math display">\[
+    X \doteq \left&lt; \vec x, \vec \sigma \right&gt;, \qquad Y \doteq \left&lt; \vec y, \vec \sigma \right&gt;.
 \]</span></p>
 <blockquote>
-<p><strong>Fact.</strong> For <span class="math inline">\(x \in \Sigma^n\)</span>, <span class="math inline">\(r \in \mathbb{R}_+\)</span>, the size (volume) of the ball <span class="math inline">\(\mathcal{B}(x, r)\)</span> is independent of <span class="math inline">\(x\)</span> and is given by <span class="math display">\[
-\mathbb{Vol}(r) \doteq | \mathcal{B}(x, r) | =  \sum_{i = 0}^{ \lfloor r \rfloor } \binom{n}{i} (q - 1)^i. 
+<p><strong>Theorem.</strong> <span class="math inline">\(X \cdot Y\)</span> is an unbiased estimator of <span class="math inline">\(\left&lt; \vec x, \vec y \right&gt;\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Observe <span class="math inline">\(\forall i, j \in [n]\)</span>, if entries of <span class="math inline">\(\sigma\)</span> are pairwise independent, then <span class="math display">\[
+    \mathbb{E} [ \sigma_i \sigma_j ] = \begin{cases}
+        1,  &amp; i = j \\
+        0,  &amp; i \neq j
+    \end{cases}.
+\]</span></p>
+<p>Hence, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ X \cdot Y ]
+            &amp;= \mathbb{E} \left[ \left( \sum_{i \in [n] } \sigma_i x_i \right) \left( \sum_{j \in [n] } \sigma_j y_j \right) \right] \\
+            &amp;= \sum_{i, j \in [n] } \mathbb{E} [ \sigma_i \sigma_j ]x_i y_j \\
+            &amp;= \sum_{i \in [n] } x_i y_i. 
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math inline">\(\mathbb{Var}[ X \cdot Y ] \le \Vert \vec x \Vert_2^2 \cdot \Vert \vec y \Vert_2^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> If entries of <span class="math inline">\(\sigma\)</span> are four-wise independent, then <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} [ X \cdot Y ]
+            &amp;= \mathbb{Var} \left[ \left( \sum_{i \in [n] } \sigma_i x_i \right) \left( \sum_{j \in [n] } \sigma_j y_j \right) \right] \\
+            &amp;= \mathbb{Var} \left[ \sum_{i \neq j \in [n] } \sigma_i \sigma_j x_i y_j \right] \\
+            &amp;= \sum_{i \neq j } \mathbb{Var} \left[  \sigma_i \sigma_j x_i y_j \right] + \sum_{i \neq j, k \neq \ell, (i, j) \neq (k, \ell) } \mathbb{Cov} [ \sigma_i \sigma_j x_i y_j, \sigma_k \sigma_\ell x_k y_\ell ]\\
+            &amp;= \sum_{i \neq j } x_i^2 y_j^2 \\
+            &amp;\le \Vert \vec x \Vert_2^2 \cdot \Vert \vec  y \Vert_2^2
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>If we have <span class="math inline">\(m\)</span> independent copies of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, denoted as <span class="math inline">\(X_1, ..., X_m\)</span>, and <span class="math inline">\(Y_1, ..., Y_m\)</span>, then we can compute the average <span class="math inline">\((1 / m) \cdot \sum_{i \in [m] } X_i \cdot Y_i\)</span>, whose variance is bounded by <span class="math inline">\((1 / m) \cdot \Vert \vec x \Vert_2^2 \cdot \Vert \vec y \Vert_2^2\)</span>. If we set <span class="math inline">\(m = 1 / \epsilon^2\)</span>, then it becomes <span class="math inline">\(\epsilon^2 \cdot \Vert \vec x \Vert_2^2 \cdot \Vert \vec y \Vert_2^2\)</span> and by Chebyshev's inequality <span class="math inline">\(|(1 / m) \cdot \sum_{i \in [m] } X_i \cdot Y_i - \left&lt; \vec x , \vec y \right&gt; |\)</span> is bounded by <span class="math inline">\(\epsilon \cdot \Vert \vec x \Vert_2 \cdot \Vert \vec y \Vert_2\)</span> with constant probability.</p>
+<p>By Chernoff bound, we can boost the probability to <span class="math inline">\(1 - \delta\)</span>, by repeating the experiment <span class="math inline">\(O(\log \frac{1}{\delta})\)</span> times and taking the median of the estimation.</p>
+<p>Computing <span class="math inline">\((1 / m) \cdot \sum_{i \in [m] } X_i \cdot Y_i\)</span> takes <span class="math inline">\(O( 1 / \epsilon^2 )\)</span> time. Repeating this <span class="math inline">\(O(\log \frac{1}{ \delta})\)</span> times and taking the median results in time complexity <span class="math inline">\(O( \frac{\log (1 / \delta) }{\epsilon^2} )\)</span>.</p>
+<p>On the other hand, we construct <span class="math inline">\(O ( \epsilon^2 \cdot \log \frac{1}{\delta} )\)</span> copies of <span class="math inline">\(X\)</span>, which takes time <span class="math display">\[
+    O ( n \cdot  \epsilon^2 \cdot \log \frac{1}{\delta} ).
+\]</span></p>
+<h1 id="algorithm">Algorithm</h1>
+<p>In this section, we show how to reduce the construction time to <span class="math display">\[
+    O ( n \cdot \log \frac{1}{\delta} ).
+\]</span></p>
+<p>Given <span class="math inline">\(m \in \mathbb{N}^+\)</span>, let <span class="math inline">\(h : [n] \rightarrow [m]\)</span> be a pairwise independent hash function.</p>
+<p>Let <span class="math inline">\(\vec X = (X_1, ..., X_m), \vec Y = (Y_1, ..., Y_m) \in \mathbb{R}^m\)</span> be random vectors, such that <span class="math inline">\(\forall t \in [m]\)</span>, <span class="math display">\[
+    X_t = \sum_{ i \in [n] : h(i) = t } \sigma_i x_i, \\
+    Y_t = \sum_{ i \in [n] : h(i) = t } \sigma_i y_i. 
+\]</span></p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math inline">\(\left&lt; \vec X, \vec Y \right&gt;\)</span> is an unbiased estimator of <span class="math inline">\(\left&lt; \vec x, \vec y \right&gt;\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>If entries of <span class="math inline">\(\sigma\)</span> are pairwise independent, then <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} \left[ \left&lt; \vec X, \vec Y \right&gt; \right]
+            &amp;= \sum_{ t \in [m] } \mathbb{E}[ X_t Y_t ] \\
+            &amp;= \sum_{ t \in [m] } \mathbb{E} \left[ \sum_{ i, j \in [n] : h(i) = h(j)  = t } \sigma_i \sigma_j x_i y_j \right] \\
+            &amp;= \sum_{ t \in [m] } \mathbb{E} \left[ \sum_{ i \in [n]  } \frac{1}{m} x_i y_i + \sum_{ i \neq j  } \frac{1}{m^2} \sigma_i \sigma_j x_i y_j\right] \\
+            &amp;= \sum_{ i \in [n]  }  x_i y_i
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math inline">\(\mathbb{Var} \left[ \left&lt; \vec X, \vec Y \right&gt; \right] \le \frac{1}{m} \cdot \Vert \vec x \Vert_2^2 \cdot \Vert \vec y \Vert_2^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> If entries of <span class="math inline">\(\sigma\)</span> are four-wise independent, then <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ \left&lt; \vec X, \vec Y \right&gt; \right]
+            &amp;=  \mathbb{Var} \left[ \sum_{ t \in [m] } X_t Y_t \right] \\
+            &amp;=  \mathbb{Var} \left[ \sum_{ i, j \in [n] : h(i) = h(j) } \sigma_i \sigma_j x_i y_j \right] \\
+            &amp;=  \mathbb{Var} \left[ \sum_{ i \neq j, h(i) = h(j)  } \sigma_i \sigma_j x_i y_j \right] \\
+            &amp;= \sum_{i \neq j } \mathbb{Var} \left[ 1_{ [ h(i) = h (j) ] } \cdot \sigma_i \sigma_j x_i y_j \right] \\
+            &amp;\quad+ \sum_{i \neq j, k \neq \ell, (i, j) \neq (k, \ell) } \mathbb{Cov} [ 1_{ [ h(i) = h (j) ] } \cdot \sigma_i \sigma_j x_i y_j, 1_{ [ h(k) = h (\ell ) ] } \cdot \sigma_k \sigma_\ell x_k y_\ell ] \\
+            &amp;= \sum_{i \neq j } \mathbb{E} \left[ \left( 1_{ [ h(i) = h (j) ] } \cdot \sigma_i \sigma_j x_i y_j \right)^2 \right] \\
+            &amp;= \sum_{i \neq j } \frac{1}{m} \cdot x_i^2 y_j^2 \\
+            &amp;\le \frac{1}{m} \cdot  \Vert \vec x \Vert_2^2 \cdot \Vert \vec  y \Vert_2^2
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>By setting <span class="math inline">\(m = 1/ \epsilon^2\)</span>, repeating the procedure <span class="math inline">\(O(\log \frac{1}{\delta})\)</span> times and taking the median as our estimation, we can obtained the desired result.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/16/L0-Sampling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/16/L0-Sampling/" class="post-title-link" itemprop="url">L0 Sampling</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-04-16 18:53:42" itemprop="dateCreated datePublished" datetime="2021-04-16T18:53:42+10:00">2021-04-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-05-15 12:15:01" itemprop="dateModified" datetime="2021-05-15T12:15:01+10:00">2021-05-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(x \in \mathbb{R}^n\)</span> be a vector initialized with all zeros. There is a stream <span class="math inline">\(S\)</span> of updates, each of which is a pair <span class="math inline">\((t, \Delta) \in [n] \times \mathbb{R}\)</span>, causing <span class="math inline">\(x_t \leftarrow x_t + \Delta\)</span>.</p>
+<p>Define the support <span class="math inline">\(\mathbb{Supp}(x)\)</span> to be the set of all non-zero indexes of <span class="math inline">\(x\)</span>: <span class="math display">\[
+    \mathbb{Supp}(x) \doteq \{ i \in [n] : x_i \neq 0 \}. 
+\]</span></p>
+<blockquote>
+<p><strong><span class="math inline">\(\ell_0\)</span> sampling</strong>: output an index uniformly at random from the support <span class="math inline">\(\mathbb{Supp}(x)\)</span>.</p>
+</blockquote>
+<p>We assume that at any time, <span class="math inline">\(\forall t \in [n], x_t \le M\)</span> for some <span class="math inline">\(M \in \mathbb{R}\)</span>.</p>
+<h2 id="naive-solutions">Naive Solutions</h2>
+<p>We can uses an array to keep <span class="math inline">\(x\)</span> explicitly. But this has size <span class="math inline">\(O( n \cdot \log M)\)</span> bits.</p>
+<blockquote>
+<p>Goal: design an algorithm for <span class="math inline">\(\ell_0\)</span> sampling with space less than <span class="math inline">\(O( n \cdot \log M)\)</span> bits.</p>
+</blockquote>
+<p>If there are only insertion updates, i.e., <span class="math inline">\(\forall (t, \Delta) \in S\)</span>, it holds that <span class="math inline">\(\Delta &gt; 0\)</span>, then we can use a hash set to keep the non-zero elements and their frequencies, which has size <span class="math inline">\(O( |\mathbb{Supp}(x) | \cdot \log M)\)</span>. If <span class="math inline">\(x\)</span> is dense, i.e., <span class="math inline">\(|\mathbb{Supp}(x)|\)</span> is large, this is still infeasible.</p>
+<h2 id="sampling-game">Sampling Game</h2>
+<p>We discuss one sampling game that illustrates the key ideas used in <span class="math inline">\(\ell_0\)</span>-sampling.</p>
+<p>In this game, we want to sample one integer uniformly at random from <span class="math inline">\([k]\)</span>. Instead of sampling it directly, we choose some <span class="math inline">\(p \in (0, 1]\)</span> and perform the following two steps:</p>
+<ol type="1">
+<li>First, we sample each <span class="math inline">\(i \in [k]\)</span> uniformly and independent at random with probability <span class="math inline">\(p\)</span>. Denote <span class="math inline">\(B\)</span> the set of sampled elements.<br />
+</li>
+<li>If <span class="math inline">\(B \neq \emptyset\)</span>, then output one element from <span class="math inline">\(B\)</span> uniformly at random.</li>
+</ol>
+<blockquote>
+<p><strong>Property.</strong> <span class="math inline">\(\mathbb{E} [ |B| ] = kp\)</span>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Property.</strong> <span class="math inline">\(\Pr[ |B| &gt; 0 ] = (1 - p)^k \le \exp(-kp)\)</span>.</p>
+</blockquote>
+<blockquote>
+<p><strong>Property.</strong> By Bernstein's Inequality, <span class="math inline">\(\forall \delta \in (0, 1)\)</span>, with probability at least <span class="math inline">\(1 - \delta\)</span>, we have <span class="math display">\[
+|B| - \mathbb{E} [ |B| ] \le \sqrt{2 \cdot k \cdot p \cdot (1 - p) \cdot \ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta} }{3}.
 \]</span></p>
 </blockquote>
-<p>If the code <span class="math inline">\(C\)</span> has distance <span class="math inline">\(\Delta(C) = d\)</span>, then the balls <span class="math inline">\(\{ \mathcal{B}(x, (d - 1) / 2) : x \in C \}\)</span> should be disjoint. Therefore, we can upper bound the size <span class="math inline">\(|C|\)</span> in terms of the size of <span class="math inline">\(\Sigma^n\)</span>, and the volume of the balls.</p>
 <blockquote>
-<p><strong>Theorem (Hamming Bound).</strong> Let <span class="math inline">\(C\)</span> be a code with distance <span class="math inline">\(d \ge 3\)</span>. Then <span class="math display">\[
-|C| \le \frac{q^n }{ \mathbb{Vol} \big( (d - 1) / 2 \big) }. 
+<p><strong>Theorem.</strong> Each element in <span class="math inline">\([k]\)</span> is outputted with equal probability <span class="math display">\[
+\frac{1 - \left(1 - p \right)^k }{ k }. 
 \]</span></p>
 </blockquote>
-<p>We are going to prove an estimate of the volume.</p>
-<blockquote>
-<p><strong>Estimate of Volume.</strong> Let <span class="math inline">\(r \in \mathbb{R}_+\)</span> be a positive integer. When <span class="math inline">\(r \le n - n / q\)</span>, <span class="math display">\[
-q^{ n h_q ( \lfloor r \rfloor / n) - O( \log n) } \le \mathbb{Vol} (r) \le q^{ n h_q ( \lfloor r \rfloor / n)}, 
-\]</span> where <span class="math display">\[
+<p><strong>Remark: when <span class="math inline">\(p = 1\)</span>, this reduces to sampling an element uniformly at random from <span class="math inline">\([k]\)</span>.</strong></p>
+<p><strong>Proof.</strong> The probability that <span class="math inline">\(B = \emptyset\)</span> is given by <span class="math inline">\((1 - p)^k\)</span>. Conditioned on that <span class="math inline">\(B \neq \emptyset\)</span>, by symmetry, each element is sampled with equal probability.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark:</strong> We can also have a proof by algebra. For evert <span class="math inline">\(i \in [k]\)</span>, the probability that it is sampled is given by <span class="math display">\[
 \begin{aligned}
-h_q (\epsilon) 
-&amp;\doteq (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right) + (q - 1) \frac{\epsilon}{q - 1} \log_q \left( \frac{q - 1}{ \epsilon } \right) \\
-&amp;= (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right) + \epsilon \log_q \left( \frac{q - 1}{ \epsilon } \right). 
+    \sum_{t = 1}^k \frac{1}{t} \cdot \Pr [ i \in B \mid |B| = t] \cdot \Pr[ |B| = t]
+         &amp;= \sum_{t = 1}^k  \frac{1}{t} \frac{ \binom{k - 1}{t - 1} }{ \binom{k}{t} } \binom{k}{t} p^t (1 - p)^{k - t} \\
+         &amp;= \sum_{t = 1}^k  \frac{1}{t} \binom{k - 1}{t - 1} p^t (1 - p)^{k - t} \\
+         &amp;= \frac{1}{k} \sum_{t = 1}^k  \binom{k}{t} p^t (1 - p)^{k - t} \\
+         &amp;= \frac{1}{k} \left( 1 - \binom{k}{0} p^0 (1 - p)^{k - 0} \right) \\
+         &amp;= \frac{1 - \left(1 - p \right)^k }{ k }. 
 \end{aligned}
 \]</span></p>
-</blockquote>
-<p>Observe that by concavity of <span class="math inline">\(\log_q (\cdot)\)</span>, we have <span class="math display">\[
-    h_q (\epsilon) \le \log_q \left( (1 - \epsilon)  \frac{1}{1 - \epsilon}  + \epsilon \frac{q - 1}{ \epsilon } \right) = 1. 
-\]</span></p>
-<p>The inequality holds with equality when <span class="math inline">\(h_q(\epsilon)\)</span> is maximized when <span class="math inline">\(1 - \epsilon = \epsilon / (q - 1)\)</span>, i.e., <span class="math inline">\(1 - \epsilon = 1 / q\)</span>.</p>
-<p>It immediately follows from the estimate that <span class="math display">\[
-    n h_q( \lfloor d / 2 - 1 / 2 \rfloor / n) + \log_q |C| \le n + O(\log n) \\
-    \Longleftrightarrow  h_q( \lfloor d / 2 - 1 / 2 \rfloor / n) + \frac{ \log_q |C| }{ n } \le 1 + O\left(\frac{ \log_q n }{ n } \right). 
-\]</span></p>
-<p>On the other hand, <span class="math display">\[
-    \begin{aligned}
-        h_q&#39;(\epsilon) 
-            &amp;= \frac{1}{\ln q} \left( \ln(1 - \epsilon) + (1 - \epsilon) \frac{1}{1 - \epsilon}  + \ln (q - 1) + \ln \left( \frac{1}{\epsilon} \right) - \epsilon \frac{1}{\epsilon}  \right) \\
-            &amp;= \frac{1}{\ln q} \left( \ln \left( \frac{1 - \epsilon}{\epsilon} \right) + \ln (q - 1)   \right).
-    \end{aligned}
-\]</span></p>
-<p>When <span class="math inline">\(\frac{1 - \epsilon}{\epsilon} = \frac{1}{\epsilon} - 1 \ge \frac{1}{q - 1}\)</span>, i.e., <span class="math inline">\(\epsilon \le 1 - 1 / q\)</span>, it holds that <span class="math inline">\(h_q&#39; \ge 0\)</span>. Conditioned on that <span class="math inline">\(\lfloor d / 2 - 1 / 2 \rfloor \ge 1\)</span>, i.e., <span class="math inline">\(d \ge 3\)</span>, we have <span class="math inline">\(d / 2 \le \lfloor d / 2 - 1 / 2 \rfloor + 1\)</span> and <span class="math display">\[
-    h_q( \lfloor d / 2 - 1 / 2 \rfloor / n) \ge h_q( d / (2n) ) + h&#39;_q(1 / n ) (1 / n) = h_q( d / (2n) ) + O( (\log_q n) / n).
-\]</span></p>
-<p>Define the <em>rate</em> of the code <span class="math inline">\(R = \frac{ \log_q |C| }{ n }\)</span>, and <em>relative distance</em> of the code as <span class="math inline">\(\delta = \frac{2d + 1}{n}\)</span>, we get</p>
+<h1 id="sampling-with-known-support-size">Sampling With Known Support Size</h1>
+<p>We use the technique developed in the <em>Sampling Game</em> section, to avoid using <span class="math inline">\(O( | \mathbb{Supp}(x) | \log M)\)</span> bits. We have seen that <span class="math inline">\(p\)</span> controls the tradeoff between the size of <span class="math inline">\(B\)</span>, and the successful probability of sampling an element (<span class="math inline">\(B \neq \emptyset\)</span>).</p>
+<p>We begin with the assumption that the size of <span class="math inline">\(\mathbb{Supp}(x)\)</span> is known.</p>
+<h2 id="insertion-only">Insertion Only</h2>
+<p>As before, we consider insertion only model first.</p>
 <blockquote>
-<p><span class="math display">\[
-R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right). 
-\]</span></p>
+<p><strong>Claim.</strong> There is an algorithm such that 1. with probability <span class="math inline">\(1 - \delta\)</span>, it returns an element from <span class="math inline">\(\mathbb{Supp}(x)\)</span> uniformly at random;<br />
+2. with probability <span class="math inline">\(\delta\)</span>, it returns nothing.</p>
+<p>Further, the space usage is <span class="math inline">\(O \left( \ln \frac{1}{\delta} \right)\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
 </blockquote>
-<p>In what's follows, we prove the inequalities for volume estimation. WLOG, we assume that <span class="math inline">\(r\)</span> is an integer.</p>
-<h1 id="upper-bound">Upper Bound</h1>
+<p>For simplicity, we assume a perfect hash function <span class="math inline">\(h\)</span> that maps elements in <span class="math inline">\([n]\)</span> to <span class="math inline">\(\{0, 1\}\)</span> independently with probability <span class="math inline">\(p\)</span> (to be determined). For each update <span class="math inline">\((t, \Delta)\)</span> in the stream, we process it only if <span class="math inline">\(h(t) = 1\)</span>. As we are dealing with insertion only model, we can use a hashset to maintain the elements with hash value 1.</p>
+<p>Let <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. As analysed before, with probability <span class="math inline">\((1 - p)^k\)</span>, the algorithm fails. To make the failure probability as small as <span class="math inline">\(\delta\)</span>, we have that <span class="math inline">\((1 - p)^k = \delta\)</span>, i.e., <span class="math display">\[
+    p = 1 - \delta^{ \frac{1}{k} } \le -\ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}. 
+\]</span></p>
+<p>The last inequality holds since the function <span class="math inline">\(y = - \ln x\)</span> is convex, and <span class="math inline">\(y = 1 - x\)</span> is the tangent line of <span class="math inline">\(y = - \ln x\)</span> at the point <span class="math inline">\((1, 0)\)</span>. By previous analysis, with probability at least <span class="math inline">\(1 - \delta\)</span>, the size of <span class="math inline">\(B\)</span> is bounded by <span class="math display">\[
+    \left( kp + \sqrt{2 k p (1 - p) \ln \frac{1}{\delta} } + \frac{2}{3} \ln \frac{1}{\delta} \right) \in O \left( \ln \frac{1}{\delta} \right). 
+\]</span></p>
+<h2 id="handling-deletion">Handling Deletion</h2>
+<p>When deletions are possible, we can't use a hashset to keep the sampled updates. E.g., suppose we have a sequence <span class="math inline">\((1, 6), (1, -6), (2, 5), (3, 7), (4, 9)\)</span>, and that <span class="math inline">\(h(1) = h(2) = 1, h(3) = h(4) = 0\)</span>. We need a hashset of size 2 to keep both the frequencies of element 1 and element 2. Even through the frequency of element <span class="math inline">\(1\)</span> is 0 finally, we don't this before we see the entire string.</p>
+<p>In general, <span class="math inline">\(h\)</span> maps <span class="math inline">\(np\)</span> elements in <span class="math inline">\([n]\)</span> to <span class="math inline">\(1\)</span>. If we use a hashset, its size can grow to <span class="math inline">\(O(n p)\)</span>.</p>
+<p>However, there is data structure that can handle deletions while using less than <span class="math inline">\(O(np)\)</span> space.</p>
 <blockquote>
-<p><strong>Theorem.</strong> For <span class="math inline">\(0 \le r \le n \cdot (1 - 1 / q)\)</span>, it holds that <span class="math inline">\(\mathbb{Vol} (r) \le q^{n h_q(r / n)}\)</span>.</p>
-</blockquote>
-<h2 id="algebraic-approach">Algebraic Approach</h2>
-<p><span class="math display">\[
-    \begin{aligned}
-        (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left( \frac{  n }{ n - r } \right)^{n - r }   
-            &amp;= (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left( \frac{  n }{ n - r } \right)^{n - r } \left( \frac{r}{n} + \frac{n - r}{n}  \right)^n \\
-            &amp;\ge (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left( \frac{  n }{ n - r } \right)^{n - r } \sum_{i = 0}^{ r} \binom{ n }{i} \left( \frac{r}{n} \right)^i  \left( \frac{n - r }{n } \right)^{n - i}    \\
-            &amp;\ge \sum_{i = 0}^{ r} \binom{ n }{i} (q - 1)^{ i }  \left( \left( \frac{n}{r} \right)^{ r  - i}  \left( \frac{n - r }{n } \right)^{r - i}  (q - 1)^{r - i}  \right) \\
-            &amp;\ge \sum_{i = 0}^{ r} \binom{ n }{i} (q - 1)^{ i } \\
-            &amp;= \mathbb{Vol}(r), 
-    \end{aligned}
-\]</span></p>
-<p>where the last inequality follows from that <span class="math display">\[
-    \frac{n}{r} \cdot \frac{n - r}{ n } \cdot (q - 1) = \Big( \frac{n}{r} - 1 \Big) \cdot (q - 1)\ge 1, 
-\]</span> as <span class="math inline">\(r / n \le 1 - 1 / q = q / (q - 1)\)</span>.</p>
-<p>Finally, let <span class="math inline">\(\epsilon \doteq \frac{r}{n}\)</span>, we have <span class="math display">\[
-    \begin{aligned}
-        \log \mathbb{Vol}(r) 
-            &amp;\le r \cdot \log (q - 1) + r \cdot \log \frac{1}{\epsilon} + (n - r) \cdot \log \frac{1}{1 - \epsilon} \\
-            &amp;= n \left( \epsilon \cdot \log (q - 1) + \epsilon \cdot \log \frac{1}{\epsilon} + (1 - \epsilon) \cdot \log \frac{1}{1 - \epsilon} \right) \\
-            &amp;= n \Big( \epsilon \cdot \log (q - 1) + \mathbb{H}_2(\epsilon) \Big) \\
-            &amp;= (\log q) \cdot  n \cdot h_q (\epsilon),
-    \end{aligned}
-\]</span> which proves the claim.</p>
-<h2 id="entropy">Entropy</h2>
-<p>We rely on sub-additivity of entropy.</p>
-<blockquote>
-<p>Let <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> be discrete random variables, then<br />
-1. <span class="math inline">\(H( X, Y ) \le H(X) + H(Y)\)</span>.<br />
-2. <span class="math inline">\(H(X | Y) \le H(X)\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Consider the ball <span class="math inline">\(\mathcal{B}(1^n, r)\)</span>, and a uniform random point <span class="math inline">\(X = (X_1, ..., X_n)\)</span> in the ball <span class="math inline">\(\mathcal{B}(1^n, r)\)</span>. Its entropy is <span class="math display">\[
-    H(X) = \log \mathbb{Vol}(r). 
-\]</span></p>
-<!-- Let $I$ be a uniform integer in $n$ and let $Y = X_I$ be the coordinate of $X$.  -->
-<p>We write <span class="math inline">\(Y = X_1\)</span>. By sub-additivity of entropy and by symmetry, <span class="math display">\[
-    \begin{aligned}
-        H(X) 
-            &amp;\le H(X_1) + H(X_2) + ... + H(X_n) 
-            &amp;= n H(Y). 
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(\epsilon \doteq \Pr[ Y \neq 1]\)</span> be the probability that <span class="math inline">\(Y\)</span> is not 1. Then by concavity of <span class="math inline">\(\log (\cdot)\)</span>, <span class="math display">\[
-    \begin{aligned}
-        H(Y) 
-            &amp;= \Pr[ Y = 1] \cdot \log \left( \frac{1}{\Pr[ Y = 1]}\right) + \sum_{i \neq 1} \Pr[ Y = i ] \cdot \log \left( \frac{1}{\Pr[ Y = i]}\right) \\
-            &amp;= (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \sum_{i \neq 1} \frac{ \Pr[ Y = i ] }{ \epsilon } \cdot \log \left( \frac{1}{\Pr[ Y = i]}\right) \\
-            &amp;\le (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \log \left( \sum_{i \neq 1} \frac{ \Pr[ Y = i ] }{ \epsilon } \frac{1}{\Pr[ Y = i]}\right) \\
-            &amp;= (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \log \left( \frac{ q - 1 }{ \epsilon } \right) \\
-    \end{aligned}
-\]</span> where then entropy of <span class="math inline">\(Y\)</span> is maximized when <span class="math inline">\(Y\)</span> is uniform of the elements that are not 1. Further, it can be verified that <span class="math inline">\(\epsilon &lt; r / n\)</span>. As <span class="math inline">\(h_q (\epsilon)\)</span> increases for <span class="math inline">\(\epsilon &lt; 1 - 1 / q\)</span>, hence <span class="math display">\[
-    H(Y) \le (1 - r / n) \cdot \log \left( \frac{1}{1 - r / n} \right) + \frac{r}{n} \cdot \log \left( \frac{ q - 1 }{ r / n } \right).
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<!-- ### Supplementary Material
-
-> **Definition.** Let $X$ be a discrete r.v., the entropy of $X$ is given by 
-> $$
-    H(X) = \sum_{a} \Pr[ X = a ] \log \frac{1}{ \Pr[ X = a] }
-> $$
-
-> **Definition.** Let $X, Y$ be discrete r.v., the entropy of $X$ conditioned $Y$ is given by 
-> $$
-    \begin{aligned}
-        H(X \mid Y) 
-            &= \mathbb{E}_{b \leftarrow Y} [ H(X \mid Y = b) ] \\
-            &= \sum_{b} \Pr[ Y = b] \sum_{a } \Pr[ X = a \mid Y = b] \log \frac{1}{ \Pr[ X = a \mid y = b] } \\
-            &= \sum_{b, a} \Pr[ Y = b,  X = a] \log \frac{1}{ \Pr[ X = a \mid y = b] } \\
-    \end{aligned}
-> $$
-
-> **Chain Rule.**
-> $$
-    \begin{aligned}
-        H(X \mid Y) + H(Y) 
-        &= \sum_{b, a} \Pr[ Y = b,  X = a] \log \left( \frac{1}{ \Pr[ X = a \mid y = b] } \cdot \frac{1}{ \Pr[ Y = b ] } \right) \\
-        &= \sum_{b, a} \Pr[ Y = b,  X = a] \log \left( \frac{1}{ \Pr[ X = a \mid y = b] } \cdot \frac{1}{ \Pr[ Y = b ] } \right) \\
-        &= H(X, Y)
-    \end{aligned}
-> $$
-
-> **Sub-additivity.** For convenience, we rewrite $p(a, b) = \Pr[X = a, Y = a]$, $p(a) = \Pr[ X = a]$, and $p(b) = \Pr[ Y = b]$. First, 
-> $$
-    \begin{aligned}
-        H(X, Y) - H(X) - H(Y) 
-            &= \sum_{a, b} p(a, b) \log \frac{1}{ p(a, b) } - \sum_{a, b} p(a, b) \log \frac{1}{ p(a)} - \sum_{a, b} \log \frac{1}{p(b)} \\
-            &= \sum_{a, b} p(a, b) \log \frac{ p(a) p(b) }{ p(a, b) } \\
-            &\le \log \sum_{a, b} p(a, b)  \frac{ p(a) p(b) }{ p(a, b) } \\
-            &= \log \sum_{a, b} p(a) p(b) \\
-            &= 0. 
-    \end{aligned}
-> $$
-> Second, we have 
-> $$
-    H(X \mid Y) = H(X, Y) - H(Y) \le H(X). 
-> $$ -->
-<h1 id="lower-bound">Lower Bound</h1>
-<blockquote>
-<p>For <span class="math inline">\(r \in \mathbb{N}_+\)</span>, it holds that <span class="math inline">\(\mathbb{Vol} (r) \ge q^{ n h_q ( \lfloor r \rfloor / n) - O( \log n) }\)</span>.</p>
-</blockquote>
-<p>We rely on the Stirling's approximation.</p>
-<blockquote>
-<p>For <span class="math inline">\(n \in \mathbb{N}_+\)</span>, <span class="math inline">\(\sqrt{2 \pi n} \left(\frac{n}{e} \right)^n \le n! \le e \sqrt{n} \left(\frac{n}{e} \right)^n\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \mathbb{Vol} (r) 
-            &amp;\ge \binom{n}{r} (q - 1)^r \\
-            &amp;\ge \frac{ \sqrt{2 \pi n } \left(\frac{n}{e} \right)^n }{ e \sqrt{r} \left(\frac{r}{e} \right)^r e \sqrt{n - r} \left(\frac{n - r}{e} \right)^{n - r} } (q - 1)^r \\
-            &amp;= (q - 1)^r \left(\frac{n}{r} \right)^r \left(\frac{n}{n - r} \right)^{n - r} \sqrt{ \frac{2 \pi n }{e^4 r (n - r)} } \\
-            &amp;= q^{n h_q ( r / n) - O(\log n) }
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>Hence, the upper bound is rather tight.</p>
-<h1 id="reference">Reference</h1>
-<p>[1] Anup Rao, <a target="_blank" rel="noopener" href="https://homes.cs.washington.edu/~anuprao/pubs/codingtheory/lecture3.pdf">Coding Theory Lecture 3: The Volume Bound and Finite Fields</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/31/Sparse-Recovery/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/31/Sparse-Recovery/" class="post-title-link" itemprop="url">Sparse Recovery</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-31 09:45:57" itemprop="dateCreated datePublished" datetime="2021-03-31T09:45:57+11:00">2021-03-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-08 23:55:01" itemprop="dateModified" datetime="2021-04-08T23:55:01+10:00">2021-04-08</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="model">Model</h1>
-<p>The focus of this article is recovering a sparse vector <span class="math inline">\(x \in \mathbb{R}^n\)</span> in the streaming setting. Initially, <span class="math inline">\(x = 0\)</span>. Then we see a sequence of updates <span class="math inline">\((i, \Delta)\)</span> each causing the change <span class="math inline">\(x_i \leftarrow x_i + \Delta\)</span>. There are three popular studied models</p>
+<p><strong>Sparse Recovery.</strong> Given an integer <span class="math inline">\(d\)</span> at the beginning of the stream, if <span class="math inline">\(\mathbb{Supp}(x) \le d\)</span> when the stream stops, there is a data structure that returns</p>
 <ol type="1">
-<li><strong>insertion only:</strong> <span class="math inline">\(\Delta = 1\)</span> for each update.<br />
-</li>
-<li><strong>strict turnstile:</strong> <span class="math inline">\(\Delta\)</span> can be negative, but it is guaranteed that <span class="math inline">\(x \ge 0\)</span> all the time.<br />
-</li>
-<li><strong>general turnstile:</strong> <span class="math inline">\(\Delta\)</span> can be negative, and entries of <span class="math inline">\(x\)</span> can be negative.</li>
+<li>indices in <span class="math inline">\(\mathbb{Supp}(x)\)</span>;</li>
+<li>and their values,</li>
 </ol>
-<p>Let <span class="math inline">\(\text{supp}(x) \subset [n]\)</span> be the set of nonzero indices of <span class="math inline">\(x\)</span>. The vector <span class="math inline">\(x\)</span> is called <span class="math inline">\(k\)</span> sparse if <span class="math inline">\(\text{supp}(x) \le k\)</span>.</p>
-<blockquote>
-<p><strong>Goal.</strong> Given an integer <span class="math inline">\(k\)</span>, design a data structure such that, if <span class="math inline">\(x\)</span> is <span class="math inline">\(k\)</span> sparse, the structure returns <span class="math inline">\(x\)</span> exactly; otherwise, the return can be arbitrary.</p>
+<p>using <span class="math inline">\(O(d (\log n + \log M) ) \subset O( d \log (nM) )\)</span> bits. It processes each update <span class="math inline">\((t, \Delta)\)</span> in the stream in <span class="math inline">\(O(d)\)</span> time and recovers <span class="math inline">\(x\)</span> in <span class="math inline">\(O(d^2 polylog(nM))\)</span> time. Its recovery can be wrong if <span class="math inline">\(\mathbb{Supp}(x) &gt; d\)</span>.</p>
 </blockquote>
-<p>As we can't actually store real numbers, we use the following assumption:</p>
-<blockquote>
-<p>The updates are integers and the entries of <span class="math inline">\(x\)</span> are bounded by <span class="math inline">\(\pm M\)</span>.</p>
-</blockquote>
-<p>With this restriction, it suffices to solve this problem in a finite field <span class="math inline">\(\mathbb{F}_p\)</span> where <span class="math inline">\(p \ge \max \{ n, M \}\)</span>. As opposed to the naive solution that keeps all entries of <span class="math inline">\(x\)</span> and uses <span class="math inline">\(O(n \log M)\)</span> bits of memory, we show that the memory can be reduced to <span class="math inline">\(O( k \log (nM) )\)</span> bits.</p>
-<h1 id="algorithm">Algorithm</h1>
-<p>The problem is easy to solve in the insertion only model. We can use a hash set that keeps the first <span class="math inline">\(k\)</span> occurrence of the indices. If the we detect the <span class="math inline">\(k + 1\)</span> new index, we can just report error.</p>
-<p>The scenario is a little more complicated for the other two models. E.g., let <span class="math inline">\(n = 4\)</span> and <span class="math inline">\(k = 1\)</span>. Consider the following stream <span class="math display">\[
-    (1, 1), (2, 1), (3, -1), (4, 1), (1, -1), (2, -1), (3, 1). 
+<p>It suffices to use such a data structure for the sampled set <span class="math inline">\(B\)</span> with <span class="math inline">\(d \in O( \ln \frac{1}{\delta} )\)</span>. We have seen that if we sampled each element in <span class="math inline">\(\mathbb{Supp}(x)\)</span> with probability <span class="math inline">\(p = 1 - \delta^{1 / k}\)</span>, then with probability at least <span class="math inline">\(1 - \delta\)</span>, we obtain a sampled set <span class="math inline">\(B\)</span> with size at most <span class="math inline">\(d\)</span>. Then we return one element from <span class="math inline">\(B\)</span> uniformly at random.</p>
+<p>Analyzing the probability of sampling an element is more subtle than the previous section. In previous section, each element is under-sampled with probability <span class="math inline">\(\frac{1 - \left(1 - p \right)^k }{ k }\)</span>. Here, conditioned on <span class="math inline">\(|B|\le d\)</span>, each element is sampled equally likely. However, <span class="math inline">\(|B| &gt; d\)</span>, the recovery of sampled elements fails, some element can be returned more frequently and some can be returned less frequently (the recovery behavior is un-defined). As the failure probability is bounded by <span class="math inline">\(\delta\)</span>, each element is returned with probability <span class="math display">\[
+    \left[ \frac{1 - \left(1 - p \right)^k }{ k } \pm \delta \right] \subseteq \left[ 1 - \left( 1 + \frac{ 1 }{ k } \right) \cdot \delta, 1 + \left( 1 - \frac{ 1 }{ k } \right) \cdot \delta \right]. 
 \]</span></p>
-<p>The vector <span class="math inline">\(x\)</span> is finally <span class="math inline">\(1\)</span>-sparse and the only non-zero index is revealed at the end of the stream.</p>
-<h2 id="solution-1">Solution 1</h2>
-<h3 id="encode">Encode</h3>
-<p>In the first approach, we use a matrix <span class="math inline">\(H \in \mathbb{F}_p^{m \times n}\)</span> (<span class="math inline">\(m\)</span> to be determined) and encode <span class="math inline">\(x\)</span> as <span class="math inline">\(\mathbb{Enc}(x) = H x\)</span>. If the following property holds, we are guaranteed to recover <span class="math inline">\(x\)</span> if it is <span class="math inline">\(k\)</span> sparse.</p>
-<blockquote>
-<p>For every <span class="math inline">\(k\)</span> sparse <span class="math inline">\(x, x&#39; \in \mathbb{F}_p^n\)</span>, if <span class="math inline">\(x \neq x&#39;\)</span>, then <span class="math inline">\(Hx \neq H x&#39;\)</span>.</p>
-</blockquote>
-<p>If <span class="math inline">\(H x \neq Hx&#39;\)</span>, then <span class="math inline">\(H (x - x&#39;) \neq 0\)</span>. Observe that <span class="math inline">\(x - x&#39;\)</span> is a <span class="math inline">\(2k\)</span> sparse vector. This is equivalent to that <span class="math inline">\(H z \neq 0\)</span> for every nonzero <span class="math inline">\(2k\)</span> sparse vector <span class="math inline">\(z \in \mathbb{F}_p^n\)</span>.</p>
-<p>Such <span class="math inline">\(H\)</span> does exists, with <span class="math inline">\(m = 2k\)</span>. Let <span class="math inline">\(a_1, a_2, ..., a_n \in \mathbb{F}_p\)</span> be different integers. Then <span class="math inline">\(H\)</span> is given as <span class="math display">\[
-    H = \begin{bmatrix}
-        1   &amp;1  &amp;...    &amp;1  &amp;...    &amp;1 \\
-        a_1 &amp;a_2    &amp;...    &amp;a_i    &amp;...    &amp;a_n    \\
-        a_1^2   &amp;a_2^2  &amp;...    &amp;a_i^2  &amp;...    &amp;a_n^2  \\
-        ...\\
-        a_1^{2k - 1}    &amp;a_2^{2k - 1}   &amp;...    &amp;a_i^{2k - 1}   &amp;...    &amp;a_n^{2k - 1}
-    \end{bmatrix}
+<h1 id="sampling-with-unknown-support-size">Sampling With UnKnown Support Size</h1>
+<p>Previously, we want to sample each element in <span class="math inline">\([n]\)</span> with probability <span class="math inline">\(1 - \delta^{ \frac{1}{k} } \le \ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}\)</span>, where <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. When this information is unavailable, we can guess by trying the values <span class="math display">\[
+    1 / 2, \quad 1 / 4, \quad 1 / 8, \quad 1 / 16,  ...
 \]</span></p>
-<p>Let <span class="math inline">\(S = \text{supp}(z) \subset [n]\)</span> be a set of size <span class="math inline">\(2k\)</span>. Denote <span class="math inline">\(z_S\)</span> be the vector by keeping only the nonzero dimensions of <span class="math inline">\(z\)</span> and <span class="math inline">\(H_S\)</span> be an <span class="math inline">\(2k \times 2k\)</span> matrix by keeping only columns indexed by <span class="math inline">\(S\)</span>. Then <span class="math inline">\(H z = H_S z_S\)</span>. We show that the rows of <span class="math inline">\(H_S\)</span> are linearly independently, hence its columns. It follows that if <span class="math inline">\(z_S \neq 0 \Longrightarrow H_S z_S \neq 0\)</span>.</p>
-<p>It is left to show that <span class="math inline">\(\forall c \in \mathbb{F}_p^{2k}\)</span>, <span class="math inline">\(c \neq 0 \rightarrow H_S^T c \neq 0\)</span>. Define the polynomial in <span class="math inline">\(\mathbb{F}_p\)</span> <span class="math display">\[
-    f(x) = c_{2k} x^{2k - 1} + c_{2k - 1} x^{2k - 1} + ... + c_1. 
+<p>We don't need to guess the value of <span class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta}\)</span> exactly. In order that the sparse recovery data structure works, any guess within a constant factor suffices.</p>
+<p>For simplicity, assume that <span class="math inline">\(n\)</span> is some power of <span class="math inline">\(2\)</span>. Now, instead of using one sampling set <span class="math inline">\(B\)</span>, we use <span class="math inline">\(\log n + 2\)</span> of them <span class="math inline">\(B_1, B_2, B_3, ...\)</span>, each associated with a sparse recovery structure with parameter <span class="math inline">\(d \in \Theta( \ln \frac{1}{\delta} )\)</span>. Assume that we have a perfect hash function <span class="math inline">\(h: [n] \rightarrow [\log n + 2]\)</span> such that it holds independently for every <span class="math inline">\(t \in [n]\)</span>, <span class="math display">\[
+\begin{aligned}
+    &amp;\Pr[ h(t) = i ]         = \frac{1}{2^i}, \forall i \in [\log n + 1], \\
+    &amp;\Pr[ h(t) = \log n + 2] = \frac{1}{ 2^{\log n + 1} }.   
+\end{aligned}
 \]</span></p>
-<p>Then <span class="math inline">\(H_S^T c = ( f(a_i ) )_{i \in [S] }\)</span>. As <span class="math inline">\(f(x)\)</span> has at most <span class="math inline">\(2k - 1\)</span> distinct roots, and the <span class="math inline">\((a_i)_{i \in [S] }\)</span> are different, there exists some <span class="math inline">\(i \in [S]\)</span> such that <span class="math inline">\(f(a_i) \neq 0\)</span>.</p>
-<h3 id="decode">Decode</h3>
-<p>Given <span class="math inline">\(y = \mathbb{Enc}(x) = H x\)</span>, how can we recover <span class="math inline">\(x\)</span>? We can loop over every subset <span class="math inline">\(S \subset [n ]\)</span> of size <span class="math inline">\(2k\)</span> and compute <span class="math inline">\(x&#39; = H_S^{-1} y\)</span>. If <span class="math inline">\(x&#39;\)</span> is <span class="math inline">\(k\)</span> sparse, by the property of <span class="math inline">\(H\)</span>, it is the unique <span class="math inline">\(k\)</span>-sparse vector such that <span class="math inline">\(H_S x&#39; = y\)</span>.</p>
-<p><strong>Remark:</strong> The proposed method is exponential respect to <span class="math inline">\(k\)</span>. However, there is an algorithm (called <em>syndrome decoding</em>) to perform the recovery in <span class="math inline">\(O(k^2 poly(\log p))\)</span> time.</p>
-<h4 id="space-and-time">Space and Time</h4>
+<p>The distribution is well defined, as <span class="math inline">\(\sum_{i \in [\log n + 1] } 1 / 2^i + 1 / 2^{ \log n + 1} = 1 - 1 / 2^{ \log n + 1} + 1 / 2^{ \log n + 1} = 1\)</span>.</p>
+<p>If <span class="math inline">\(k = 1\)</span>, some <span class="math inline">\(B_i\)</span> must recovers <span class="math inline">\(x\)</span> successfully.</p>
+<p>Otherwise, <span class="math inline">\(\exists i \in [\log n]\)</span>, such that <span class="math inline">\(\frac{1}{2^i} \ge \frac{1}{k} \ln \frac{1}{\delta} &gt; \frac{1}{2^{i + 1} }\)</span>. We study the following good events:</p>
 <blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(k \log (nM))\)</span> bits.</p>
+<p><strong>Event</strong> <span class="math inline">\(E_1:\)</span> for all <span class="math inline">\(j \ge i\)</span>, it holds that <span class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) = j \}| \le d\)</span>.</p>
 </blockquote>
-<p>This is because we don't store <span class="math inline">\(H\)</span>. For the finite field <span class="math inline">\(\mathbb{F}_p\)</span>, there exists at least one primitive element whose powers give all nonzero elements. We can pick such a primitive element <span class="math inline">\(a\)</span>, and set <span class="math inline">\(a_1 = a\)</span>, <span class="math inline">\(a_2 = a^2\)</span>, ..., <span class="math inline">\(a_n = a^n\)</span>. Storing <span class="math inline">\(y = Hx\)</span> requires only <span class="math inline">\(O(k \log (nM))\)</span> bits.</p>
+<p>Under <span class="math inline">\(E_1\)</span>, the sparse recovery structure associated with <span class="math inline">\(B_j\)</span> recovers <span class="math inline">\(B_j\)</span> successfully for all <span class="math inline">\(j \ge i\)</span>.</p>
 <blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> in the stream takes <span class="math inline">\(O(k)\)</span> time.</p>
+<p><strong>Event</strong> <span class="math inline">\(E_2:\)</span> <span class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) \ge i \}| &gt; 0\)</span>.</p>
 </blockquote>
-<h2 id="solution-2">Solution 2</h2>
-<p>We first show how to recover an <span class="math inline">\(1\)</span> sparse vector when negative updates are allowed, then use it as a black box to recover <span class="math inline">\(k\)</span> sparse vector.</p>
-<h3 id="sparse-recovery">1 sparse recovery</h3>
-<p>We show an algorithm that successes with probability <span class="math inline">\(n / p\)</span>.</p>
-<p>First, we pick a non-zero integer <span class="math inline">\(z\)</span> uniformly at random from <span class="math inline">\(\mathbb{F}_p\)</span>. Let <span class="math display">\[
-    H = \begin{bmatrix}
-        1   &amp;1  &amp;1  &amp;...    &amp;1  \\
-        1   &amp;2  &amp;3  &amp;...    &amp;n  \\
-        z   &amp;z^2    &amp;z^3    &amp;...    &amp;z^n
-    \end{bmatrix}.
+<p>Under <span class="math inline">\(E_2\)</span>, there exists at least one element that is mapped to <span class="math inline">\(B_j\)</span> for some <span class="math inline">\(j \ge i\)</span>.</p>
+<p>Under these two good events, we sample one element as follows:</p>
+<blockquote>
+<p>For <span class="math inline">\(j \leftarrow \log n + 2\)</span> downto <span class="math inline">\(1\)</span> do<br />
+<span class="math inline">\(\qquad\)</span> recover <span class="math inline">\(B_j\)</span>;<br />
+<span class="math inline">\(\qquad\)</span> if <span class="math inline">\(B_j \neq \emptyset\)</span> then<br />
+<span class="math inline">\(\qquad\qquad\)</span> return one element from <span class="math inline">\(B_j\)</span> uniformly at random.</p>
+</blockquote>
+<p><strong>Analysis the probability of <span class="math inline">\(E_1\)</span>:</strong></p>
+<p>For <span class="math inline">\(j \ge i\)</span>, it holds that <span class="math inline">\(\mathbb{E} [ |B_j| ] = k / 2^j\)</span>. Suppose that <span class="math inline">\(d = 2 \cdot C_d \cdot \ln \frac{1}{\delta}\)</span> for some constant <span class="math inline">\(C_d\)</span> (to be determined). Since <span class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta} \ge 1 / 2^{i + 1}\)</span>, we have that <span class="math display">\[
+    \frac{d}{\mathbb{E} [ |B_j| ]} \ge \frac{ 2^j }{ k } \cdot 2 \cdot C_d \cdot \ln \frac{1}{\delta} \ge C_d \cdot 2^{j - i}. 
 \]</span></p>
-<p>The algorithm consists of 3 parts.</p>
-<blockquote>
-<p><strong>Initialize:</strong><br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow \{ 0 \}^3\)</span><br />
-<span class="math inline">\(\qquad\)</span> Sample <span class="math inline">\(z\)</span> uniformly from <span class="math inline">\(1, ..., p - 1\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Updates</strong>: <span class="math inline">\((i, \Delta)\)</span><br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(w \leftarrow w + \Delta \cdot H_i\)</span>, where <span class="math inline">\(H_i\)</span> is the <span class="math inline">\(i\)</span>th column of <span class="math inline">\(H\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Output:</strong><br />
-<span class="math inline">\(\qquad\)</span> If <span class="math inline">\(w_1 = 0\)</span> or <span class="math inline">\(w_3 \neq w_1 \cdot z^{w_2 / w_1}\)</span>:<br />
-<span class="math inline">\(\qquad\qquad\)</span> <strong>Return</strong> <span class="math inline">\(x\)</span> is not <span class="math inline">\(1\)</span> sparse;<br />
-<span class="math inline">\(\qquad\)</span> Else:<br />
-<span class="math inline">\(\qquad\qquad\)</span> <strong>Return</strong> <span class="math inline">\(j \doteq w_2 / w_1\)</span></p>
-</blockquote>
-<h4 id="failure-analysis">Failure Analysis</h4>
-<blockquote>
-<p><strong>Theorem.</strong> The algorithm fails with probability <span class="math inline">\(n / p\)</span>.</p>
-</blockquote>
-<p>Observe that <span class="math display">\[
-    w_1 = \sum_{i \in [n] } x_i, \qquad
-    w_2 = \sum_{i \in [n] } i \cdot x_i, \qquad
-    w_3 = \sum_{i \in [n] } z^i \cdot x_i.
+<p>By Chernoff bound, <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ |B_j| \ge d \right] 
+            &amp;\le \left( \frac{e^{ \left( {d} / { \mathbb{E}  [ |B_j| ] } \right) - 1 } }{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right)^{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right) }  } \right)^{ \mathbb{E}  [ |B_j| ]} \\
+            &amp;\le \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d \left( \frac{1}{e} \right)^{ \mathbb{E}  [ |B_j| ]}.
+    \end{aligned}
 \]</span></p>
-<p>If <span class="math inline">\(w_1 = 0\)</span>, either <span class="math inline">\(x = 0\)</span> or there is cancellation. Conditioned on <span class="math inline">\(w_1 \neq 0\)</span>, if <span class="math inline">\(x\)</span> is <span class="math inline">\(1\)</span> sparse, then <span class="math display">\[
-    w_1 = x_j, \qquad w_2 = j \cdot x_j, \qquad w_3 = z^j \cdot x_j. 
-\]</span></p>
-<p>Hence, <span class="math inline">\(j = w_2 / w_1\)</span> is exactly the non-zero index, and <span class="math inline">\(w_3 = w_1 \cdot z^{j}\)</span>.</p>
-<p>If <span class="math inline">\(x\)</span> is not <span class="math inline">\(1\)</span> sparse, then <span class="math display">\[
-    w_3 - w_1 \cdot z^{j} 
-\]</span> is a polynomial of degree at most <span class="math inline">\(n\)</span>. It has at most <span class="math inline">\(n\)</span> distinct roots with one of them being <span class="math inline">\(0\)</span>. The probability that <span class="math inline">\(z\)</span> being a root is at most <span class="math inline">\((n - 1) / (p - 1) \le n / p\)</span>.</p>
-<h4 id="space-and-time-1">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(\log (nM))\)</span> bits.</p>
-</blockquote>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> takes <span class="math inline">\(O(1)\)</span> time.</p>
-</blockquote>
-<h3 id="k-sparse-recovery"><span class="math inline">\(k\)</span> sparse recovery</h3>
-<p>To apply the <span class="math inline">\(1\)</span> sparse recovery data structure, we partition <span class="math inline">\(x\)</span> into <span class="math inline">\(2k\)</span> subsets randomly. In particular, we use a pairwise hash function that maps each <span class="math inline">\(i \in [n]\)</span> to <span class="math inline">\([2k]\)</span> uniformly at random. For <span class="math inline">\(\ell \in [2k]\)</span>, let <span class="math inline">\(S_\ell\)</span> be the set of indices mapped to <span class="math inline">\(\ell\)</span>: <span class="math display">\[
-    S_\ell \doteq \{ i \in [n]: h(i) = \ell \}. 
-\]</span></p>
-<p>Then we run <span class="math inline">\(1\)</span> sparse recovery on each partition. If some partition contains only one nonzero index, then we recover it successfully.</p>
-<blockquote>
-<p><strong>Theorem.</strong> If <span class="math inline">\(x\)</span> is <span class="math inline">\(k\)</span> sparse, an nonzero dimension <span class="math inline">\(i\)</span> is recovered with probability <span class="math inline">\(1 / 2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> It suffices to prove that <span class="math inline">\(i\)</span> is the only nonzero index in <span class="math inline">\(S_{h (i) }\)</span>. For <span class="math inline">\(j \in \text{supp}(x)\)</span>, define the indicator variable <span class="math inline">\(X_j\)</span> which equals <span class="math inline">\(1\)</span> if <span class="math inline">\(h(j) = h(i)\)</span> and equals 0 otherwise. By Markov's inequality and linearity of expectation, <span class="math display">\[
-    \Pr\left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \ge 1 \right] \le \mathbb{E} \left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \right] = \sum_{ i \neq j \in \text{supp}(x) } \mathbb{E} \left[  X_j \right] \le \frac{k - 1}{2k} \le \frac{1}{2}.  
-\]</span></p>
-<p><strong>Remark.</strong> The Markov's inequality is rather tight here. Even if we have a fully independent hash function <span class="math inline">\(h\)</span>, the probability that none of the nonzero indices collides with <span class="math inline">\(i\)</span> is given by <span class="math display">\[
-    \left( 1 - \frac{1}{2k} \right)^{k - 1} \lessapprox \exp \left( - \frac{k - 1}{2k} \right) \approx \exp \left( - \frac{1}{2} \right) \approx 0.60653. 
+<p>By union bound, when <span class="math inline">\(C_d \ge e^2\)</span>, it holds that <span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ \exists j \ge i : |B_j| \ge d \right] 
+            &amp;\le \sum_{j \ge i} \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d \\
+            &amp;\le \left( \frac{e}{C_d } \right)^d \sum_{j = 0}^\infty \left( \frac{1}{2^{d} } \right)^j \\
+            &amp;\le \left( \frac{e}{C_d } \right)^d \frac{1}{1 - \frac{1}{2^{d} } } \\
+            &amp;\le 2 \cdot \delta^{2 e^2}. 
+    \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary.</strong> Running <span class="math inline">\(\log (k / \delta)\)</span> independent copies of the above structure reduce the failure probability to <span class="math inline">\(\delta\)</span>.</p>
-</blockquote>
-<h4 id="space-and-time-2">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span class="math inline">\(O(k (\log (k / \delta)) \log (nM))\)</span> bits.</p>
-</blockquote>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span class="math inline">\((i, \Delta)\)</span> takes <span class="math inline">\(O(\log (k / \delta))\)</span> time.</p>
-</blockquote>
-<h1 id="reference">Reference</h1>
-<p>[1]. Jelani Nelson, Chapter 4, <a target="_blank" rel="noopener" href="https://www.sketchingbigdata.org/fall20/lec/notes.pdf">Sketching Algorithms</a>, 2020.</p>
-<p>[2]. Moses Charikar, <a target="_blank" rel="noopener" href="http://web.stanford.edu/class/cs369g/files/lectures/lec11.pdf"><span class="math inline">\(\ell_{0}\)</span> Sampling and Sketching Distances</a>, CS369G: Algorithmic Techniques for Big Data, 2016</p>
+<p><strong>Analysis the probability of <span class="math inline">\(E_2\)</span>:</strong></p>
+<p>For each <span class="math inline">\(t \in \mathbb{Supp}(x)\)</span>, we have <span class="math display">\[
+    \Pr[ h(t) &lt; i ] = \left( 1 - \frac{1}{2^i} \right).
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    \Pr[ h(t) &lt; i : \forall t \in \mathbb{Supp}(x)  ] = \left( 1 - \frac{1}{2^i} \right)^k \le \left( 1 - \frac{1}{k} \ln \frac{1}{\delta} \right)^k \le \delta.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- 
+By Bernstein's inequality, with probability at least $1 - \delta$, it holds that 
+$$
+    |B_i| - \mathbb{E} \big[ |B_i| \big] \le \sqrt{2 k \frac{1}{2^i} \ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta } }{ 3 }. 
+$$
+
+And for $j > i$, let $\delta_j = \delta / 2^{ j- i}$. It holds with probability $1 - \delta_j$ that
+$$
+    \begin{aligned}
+        |B_j| - \mathbb{E} \big[ |B_j| \big] 
+        &\le \sqrt{2 k \frac{1}{2^j} \ln \frac{1}{\delta_j} } + \frac{2 \ln \frac{1}{\delta_j } }{ 3 } \\
+        &= \sqrt{2 k \frac{1}{2^j} \left( (j - i）\cdot \ln 2 + \ln \frac{1}{\delta} \right) } + \frac{2 \ln \frac{1}{\delta } }{ 3 } \\
+    \end{aligned}
+$$
+
+Suppose that $d = C_d \cdot \ln \frac{1}{\delta}$. For $j \ge i$, as $\frac{1}{k} \ln \frac{1}{\delta} > \frac{1}{2^{i + 1} }$, we have that $2^{i - j + 2} \ln \frac{1}{\delta} \ge \frac{2k}{2^j}$
+
+$$
+    \begin{aligned}
+        \Pr \left[ |B_j| - \mathbb{E} \big[ |B_j| \big]  \ge  d \right] 
+            &\le \exp \left( - \frac{d^2}{ \frac{2k }{2^j} + \frac{2 d}{3} }\right) \\
+            &\le \exp \left( -\frac{ d^2 }{ 2^{i - j + 2} \cdot \frac{1}{C_d} \cdot d + \frac{2}{3} d } \right) \\
+            &= \exp(- \Theta(d) )
+    \end{aligned}
+$$ -->
 
       
     </div>
@@ -587,7 +534,7 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/27/Hanson-Wright-Inequality/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/14/AMS-Sketch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -601,7 +548,7 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/03/27/Hanson-Wright-Inequality/" class="post-title-link" itemprop="url">Hanson-Wright Inequality</a>
+            <a href="/2021/04/14/AMS-Sketch/" class="post-title-link" itemprop="url">AMS Sketch</a>
         </h2>
 
         <div class="post-meta">
@@ -611,14 +558,14 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-03-27 21:26:12" itemprop="dateCreated datePublished" datetime="2021-03-27T21:26:12+11:00">2021-03-27</time>
+              <time title="Created: 2021-04-14 15:41:33" itemprop="dateCreated datePublished" datetime="2021-04-14T15:41:33+10:00">2021-04-14</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-28 21:21:55" itemprop="dateModified" datetime="2021-03-28T21:21:55+11:00">2021-03-28</time>
+                <time title="Modified: 2021-05-14 21:20:45" itemprop="dateModified" datetime="2021-05-14T21:20:45+10:00">2021-05-14</time>
               </span>
 
           
@@ -632,234 +579,112 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
     <div class="post-body" itemprop="articleBody">
 
       
-          <blockquote>
-<p>For <span class="math inline">\(p \in \mathbb{N}\)</span>, if <span class="math inline">\(X \sim N(0, \sigma^2)\)</span> then <span class="math display">\[
-\mathbb{E} [ X^p ] = 
-\begin{cases}
-0,  &amp; \text{ if } p \text{ is odd }. \\
-\sigma^p (p - 1) (p - 3) ... 1,  &amp; \text{ if } p \text{ is even }. \\
-\end{cases}
+          <h1 id="problem">Problem</h1>
+<p>There is a stream <span class="math inline">\(S\)</span> of elements, each consists of a pair <span class="math inline">\((t, \Delta) \in [n] \times \mathbb{R}\)</span>. Let <span class="math inline">\(f \in \mathbb{R}^n\)</span> be the frequency vector of <span class="math inline">\(S\)</span>, s.t., <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
+    f_i = \sum_{ (t, \Delta) \in S \wedge t = i} \Delta. 
 \]</span></p>
+<p>Given <span class="math inline">\(\epsilon \in (0, 1)\)</span>, design a data structure that outputs an <span class="math inline">\((1 \pm \epsilon)\)</span> estimate <span class="math inline">\(\Vert f \Vert_2^2\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>, and uses space of <span class="math inline">\(O( \frac{1}{\epsilon^2 } \ln \frac{1}{\delta} )\)</span>.</p>
+<h1 id="solution">Solution</h1>
+<p>Based on Count-Sketch.</p>
+<h2 id="algorithm">Algorithm</h2>
+<blockquote>
+<hr />
+<p><strong>Count-Sketch</strong><br />
+1. <span class="math inline">\(k \leftarrow O \left( \ln \frac{1}{ \delta} \right); m \leftarrow \frac{3}{\epsilon^2}\)</span>.<br />
+2. <span class="math inline">\(h_1, h_2, ..., h_k: [n] \rightarrow [m]\)</span>, pairwise independent hash functions.<br />
+3. <span class="math inline">\(g_1, g_2, ..., g_k: [n] \rightarrow \{-1, 1\}\)</span>, four-wise independent hash functions.<br />
+4. <span class="math inline">\(M \leftarrow \{ 0 \}^{k \times m}\)</span> be a <span class="math inline">\(k \times m\)</span> matrix initialized with zeros.<br />
+4. For <span class="math inline">\((t, \Delta) \in S:\)</span><br />
+5. <span class="math inline">\(\qquad\)</span> For <span class="math inline">\(i \in [k]:\)</span><br />
+6. <span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(M[i, h_i (t) ] \leftarrow M[i, h_i (t) ] + g_i(t) \cdot \Delta\)</span><br />
+<span class="math inline">\(\qquad\)</span></p>
+<p><strong>Estimation of <span class="math inline">\(\Vert f \Vert_2^2\)</span></strong><br />
+1. For <span class="math inline">\(i \in [k]:\)</span><br />
+2. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(M_i\)</span> be the <span class="math inline">\(i\)</span>-th row of <span class="math inline">\(M\)</span>.<br />
+3. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(a_i \leftarrow \Vert M_i \Vert_2\)</span>.<br />
+4. Return the median of <span class="math inline">\((a_i^2)_{i \in [k] }\)</span>.</p>
 </blockquote>
-<p><strong>Proof 1.</strong> For odd integer <span class="math inline">\(p\)</span>, the distribution <span class="math inline">\(X^p\)</span> is symmetric to the origin. Hence <span class="math inline">\(\mathbb{E} [ X^p ] = 0\)</span>. For even integer <span class="math inline">\(p = 2k\)</span>, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[X^p ] 
-            &amp;= \frac{1}{ \sqrt{2 \pi \sigma^2 } } \int t^p \exp \left( - \frac{t^2}{ 2 \sigma^2 } \right) \ dt \\
-            &amp;= \sigma^p  \frac{ 1 }{ \sqrt{2 \pi } } \int \left( \frac{t}{\sigma} \right)^p \exp \left( - \frac{t^2}{ 2 \sigma^2 } \right) \ d \frac{t}{\sigma} \\
-            &amp;= \sigma^p \frac{1}{ \sqrt{2 \pi } } \int t^p \exp \left( - \frac{t^2}{ 2 } \right) \ d t 
-    \end{aligned}
+<h2 id="analysis">Analysis</h2>
+<blockquote>
+<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall i \in [k], \mathbb{E}[ a_i^2 ] = \Vert f \Vert_2^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Consider a fixed <span class="math inline">\(i \in [k]\)</span>. <span class="math inline">\(\forall j \in [m]\)</span>, define the set <span class="math inline">\(h_i^{-1}[j]\)</span> as elements in <span class="math inline">\([n]\)</span> hashed to <span class="math inline">\(j\)</span>: <span class="math display">\[
+    h_i^{-1}[j] \doteq \{ t \in [n] : h(t) = j \}. 
 \]</span></p>
-<p>Define <span class="math display">\[
-    f(p) = \frac{1}{ \sqrt{2 \pi } } \int t^p \exp \left( - \frac{t^2}{ 2 } \right) \ d t. 
+<p>Once <span class="math inline">\(h_i\)</span> is fixed, it holds that <span class="math display">\[
+    M[i, j] = \sum_{ t \in h_i^{-1}[j] } g_i (t) \cdot f_t.
+\]</span></p>
+<p>By linearity of expectation and four-wise independence of <span class="math inline">\(g_i\)</span>, <span class="math display">\[
+    \underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t, t&#39; \in h_i^{-1}[j] } \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] \cdot f_t \cdot f_{t&#39;}. 
 \]</span></p>
 <p>It holds that <span class="math display">\[
-    \begin{aligned}
-        f(p) 
-            &amp;= -\frac{1}{ \sqrt{2 \pi } } \int t^{p - 1}  \ d \exp \left( - \frac{t^2}{ 2 } \right) \\
-            &amp;= (p - 1) \frac{1}{ \sqrt{2 \pi } } \int t^{ p - 2} \exp \left( - \frac{t^2}{ 2 } \right) \ d t \\
-            &amp;= (p - 1) f(p - 2) \\
-            &amp;... \\
-            &amp;= (p - 1) (p - 3) ...1 \cdot f(0) \\
-            &amp;= (p - 1) (p - 3) ...1 
-    \end{aligned}
+    \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] = 
+    \begin{cases}
+        1,  &amp; \text{ if } t = t&#39;,    \\
+        0,      &amp; \text{ otherwise }. 
+    \end{cases}
 \]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Proof 2.</strong> The moment generating function of <span class="math inline">\(X\)</span> is <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[ e^{tX} ] 
-            &amp;= \frac{1}{ \sqrt{2 \pi} \sigma } \int_{\mathbb{R} } \exp \left( t x - \frac{ x^2 }{ 2 \sigma^2 } \right) \ dx  \\
-            &amp;= \frac{1}{ \sqrt{2 \pi} } \int_{\mathbb{R} } \exp \left( t \sigma x - \frac{ x^2 }{ 2 } \right) \ dx  \\
-            &amp;= \exp \left( \sigma^2 t^2 / 2  \right)\frac{1}{ \sqrt{2 \pi} } \int_{\mathbb{R} } \exp \left( - \frac{ (x - t\sigma)^2 }{ 2 } \right) \ dx  \\
-            &amp;= \exp( \sigma^2 t^2 / 2). 
-    \end{aligned}
+<p>Therefore, <span class="math inline">\(\underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t \in h_i^{-1}[j] } f_t^2\)</span>.</p>
+<p><strong>Remark. This is a rather deep result, which says that whatever elements are hashed to bucket <span class="math inline">\(j\)</span>, <span class="math inline">\(\underset{g}{ \mathbb{E} } [ (M[i,j] )^2 ]\)</span> equals the sum of squares of these elements.</strong></p>
+<p>By linearity of expectation, when <span class="math inline">\(h_i\)</span> is fixed, <span class="math display">\[
+    \underset{g}{ \mathbb{E} } [ a_i^2 ] = \sum_{j \in [m] } \underset{g}{ \mathbb{E} } [ (M[i,j])^2 ] = \sum_{j \in [m] } \sum_{ t \in h_i^{-1}[j] } f_t^2 = \Vert f \Vert_2^2. 
 \]</span></p>
-<p>On the one hand, <span class="math display">\[
-    \mathbb{E}[ e^{tX} ] = \mathbb{E} \left[ \sum_{ k \in \mathbb{N} } \frac{ (tX)^k }{ k! } \right] = \sum_{ k \in \mathbb{N} }  \frac{ t^k \mathbb{E}[X^k] }{ k! } . 
-\]</span></p>
-<p>On the other hand, <span class="math display">\[
-    \exp( \sigma^2 t^2 / 2) = \sum_{ k \in \mathbb{N} } \frac{ (\sigma^2 t^2 / 2)^k }{ k! }. 
-\]</span></p>
-<p>Hence, for odd numbers of <span class="math inline">\(k\)</span>, <span class="math inline">\(\mathbb{E}[ X^k ] = 0\)</span>. For even numbers of <span class="math inline">\(k\)</span>, we have <span class="math display">\[
-    \frac{ t^k \mathbb{E}[X^k] }{ k! } = \frac{ (\sigma^2 t^2 / 2)^{k / 2} }{ (k / 2)! } \Longrightarrow \mathbb{E}[ X^k ] = \sigma^k \frac{ k! }{ 2^{k / 2} (k / 2)! }. 
-\]</span></p>
+<p>It follows that <span class="math inline">\(\underset{h}{ \mathbb{E} } \left[ \underset{g}{ \mathbb{E} } [ a_i^2 ] \right] = \Vert f \Vert_2^2\)</span>.</p>
+<p><strong>Remark. The proof holds even for <span class="math inline">\(m = 1\)</span>, i.e., we can use only one bucket to construct an unbiased estimator of <span class="math inline">\(\Vert f \Vert_2^2\)</span>.</strong></p>
 <p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p>If <span class="math inline">\(Z \sim N(0, \sigma^2)\)</span> then <span class="math display">\[
-\mathbb{E} [ |Z| ] = \sqrt \frac{2 \sigma }{\pi}. 
-\]</span></p>
+<p><strong>Theorem 2.</strong> <span class="math inline">\(\mathbb{Var}[ a_i^2 ] = \frac{\Vert x \Vert_2^4 }{ m }\)</span>.</p>
 </blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E} [ |Z| ] 
-            &amp;= \frac{1}{ \sqrt{ 2 \pi } \sigma} \int_{\mathbb{R} } |t| \exp \left( - \frac{t^2 }{ 2 \sigma^2} \right) \ d t \\
-            &amp;= \frac{ 2 \sigma }{ \sqrt{ 2 \pi } } \int_{\mathbb{R}_+} t \exp \left( - \frac{t^2 }{ 2 } \right) \ d t \\
-            &amp;= \frac{ 2 \sigma }{ \sqrt{ 2 \pi } } \int_{\mathbb{R}_+}  \exp \left( - \frac{t^2 }{ 2 } \right) \ d (t^2 / 2) \\
-            &amp;= \frac{ 2 \sigma }{ \sqrt{ 2 \pi } } \int_{\mathbb{R}_+}  \exp \left( - x \right) \ d x \\
-            &amp;= \sqrt{ \frac{ 2 \sigma }{ \pi } } 
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>(Khintchine Inequality).</strong> For any <span class="math inline">\(p \ge 1\)</span>, <span class="math inline">\(x \in {\mathbb{R} }^n\)</span>, and <span class="math inline">\((\sigma_i)\)</span> independent Rademacher random variables, it holds that <span class="math display">\[
-\left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_p = O( \sqrt{ p } \cdot \Vert x \Vert_2 )
+<p><strong>Proof.</strong></p>
+<p><span class="math inline">\(\forall t \in [n]\)</span>, define <span class="math inline">\(X_t \doteq g_i(t) \cdot x_t\)</span>.</p>
+<p><span class="math inline">\(\forall t \in [n], j \in [m]\)</span>, define <span class="math inline">\(Y_{t, j} \doteq \mathbb{1}[ h_i[t] = j ] \cdot X_t\)</span>. Then <span class="math display">\[
+    M[i,j] = \sum_{t \in [n] } Y_{t, j}, 
+\]</span> and hence</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \mathbb{Var}[a_i^2] 
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } (M[i, j])^2 \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \left( \sum_{t \in [n] } Y_{t, j} \right)^2 \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \sum_{t, t&#39; \in [n]} Y_{t, j} Y_{t&#39;, j} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \sum_{j \in [m] } Y_{t, j} Y_{t&#39;, j} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \left( \sum_{j \in [m] } \mathbb{1}[ h_i[t] = j ] \cdot \mathbb{1}[ h_i[t&#39;] = j ] \right) \cdot X_t \cdot X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t \in [n] } f_t^2 + \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] 
+\end{aligned}
 \]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\((Z_i)\)</span> be independent normal random variables that follow distribution <span class="math inline">\(N(0, 1)\)</span>. Suppose that <span class="math inline">\(p\)</span> is an even number, then<br />
-<span class="math display">\[
-    \begin{aligned}
-        \left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_p 
-            &amp;= \left\Vert \sqrt{\frac{\pi }{2 } } \mathbb{E}_Z \left[ \sum_{i \in [n] } |Z_i| \sigma_i x_i \right] \right\Vert_p \\
-            &amp;\le \sqrt{\frac{\pi }{2 } }  \left( \mathbb{E}_\sigma \mathbb{E}_Z \left[ \left| \sum_{i \in [n] } |Z_i| \sigma_i x_i  \right|^p \right] \right)^{ 1 / p } &amp; \text{ (Jensen) } \\
-            &amp;= \sqrt{ \frac{\pi }{2 } }  \left(  \mathbb{E}_Z \mathbb{E}_\sigma \left[ \left| \sum_{i \in [n] } |Z_i| \sigma_i x_i  \right|^p \right] \right)^{ 1 / p } &amp; \text{(Exchange Order) } \\
-            &amp;= \sqrt{\frac{\pi }{2 } }  \left( \mathbb{E}_Z \left[ \left| \sum_{i \in [n] } Z_i x_i  \right|^p \right] \right)^{ 1 / p } &amp; \sigma_i |Z_i| \sim Z_i \\
-            &amp;= \sqrt{\frac{\pi }{2 } } \left\Vert \sum_{i \in [n] } Z_i x_i  \right\Vert_p. 
-    \end{aligned}
+<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>, define <span class="math inline">\(Z_{t, t&#39;} = \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;}\)</span>. Then <span class="math display">\[
+    \mathbb{E}[ Z_{t, t&#39;} ] = \mathbb{E}[ \mathbb{1}[ h_i[t] = h_i[t&#39;] ] ]  \cdot \mathbb{E}[ X_t ] \cdot \mathbb{E}[ x_{t&#39;} ] = 0. 
 \]</span></p>
-<p>As <span class="math inline">\(\sum_{i \in [n] } Z_i x_i \sim N(0, \Vert x \Vert _2)\)</span>, we have <span class="math display">\[
-    \left\Vert \sum_{i \in [n] } Z_i x_i  \right\Vert_p^p =  \Vert x \Vert _2^p (p - 1) (p - 3) ... 1 \le  \Vert x \Vert _2^p \cdot p^{ p / 2}. 
+<p>Consider <span class="math inline">\(t &lt; t&#39; \in [n]\)</span>, <span class="math inline">\(s &lt; s&#39; \in [n]\)</span>. If <span class="math inline">\((t, t&#39;) \neq (s, s&#39;)\)</span>, then either <span class="math inline">\(t \neq s\)</span> or <span class="math inline">\(t&#39; \neq s&#39;\)</span>. Therefore, there must be an element that appears only once among the four. WLOG, suppose that <span class="math inline">\(t\)</span> is a unique element. Then <span class="math display">\[
+    Z_{t, t&#39;} Z_{s, s&#39;}
+            =  X_t \cdot \left( X_{t&#39;} \cdot X_s \cdot X_{s&#39;} \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right). 
 \]</span></p>
-<p>Putting together, we have <span class="math display">\[
-    \left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_p  \le \sqrt{ \frac{p \pi }{2} }  \Vert x \Vert _2. 
-\]</span></p>
-<p>When <span class="math inline">\(p\)</span> is not even, let <span class="math inline">\(q \le p + 1\)</span> be the smallest even number that is greater than <span class="math inline">\(p\)</span>. Then <span class="math display">\[
-    \left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_p  \le \left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_q \le \sqrt{ q }  \Vert x \Vert _2 = \sqrt{ \frac{(p + 1) \pi }{2 } }  \cdot  \Vert x \Vert _2.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>(Hanson-Wright Inequality).</strong> Let <span class="math inline">\(\sigma = (\sigma_1, .., \sigma_n) \in \mathbb{R}^n\)</span> be a sequence of <span class="math inline">\(n\)</span> independent Rademachers and <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> be real and symmetric matrix. For <span class="math inline">\(p \ge 2\)</span>, <span class="math display">\[
-\left\Vert \sigma^T A \sigma - \mathbb{E}[ \sigma^T A \sigma ] \right\Vert_p = O( \sqrt{p} \cdot  \Vert A \Vert _F + p \cdot \Vert A \Vert ), 
-\]</span> where <span class="math inline">\(\Vert A \Vert_F \doteq \sqrt{ \sum_{i, j \in [n]}A_{i,j}^2 }\)</span> and <span class="math inline">\(\Vert A \Vert \doteq \sum_{ \Vert x \Vert _2 =1} \Vert A x \Vert_2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(x = (x_1;, ..., x_n)\)</span> be independent of <span class="math inline">\(\sigma\)</span> but identically distributed to it. First, <span class="math display">\[
-    \sigma^T A \sigma = \sum_{i, j} A_{i, j} \sigma_i \sigma_j = \sum_{i} A_{i, i} + \sum_{i \neq j} A_{i, j} \sigma_i \sigma_j, \\
-    \mathbb{E} \left[ \sigma^T A \sigma \right]= \sum_{i}  A_{i, i} + \sum_{i \neq j} A_{i, j} \mathbb{E} [ \sigma_i ] \mathbb{E} [ \sigma_j ] = \sum_{i}  A_{i, i}. 
+<p>As <span class="math inline">\(g_i\)</span> is four-wise independent, and that <span class="math inline">\(t \neq t&#39;\)</span>, <span class="math inline">\(t \neq s\)</span> and <span class="math inline">\(t \neq s&#39;\)</span>, it holds that <span class="math inline">\(g_i(t)\)</span> is independent of <span class="math inline">\(\left( g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;) \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right)\)</span>. Hence, <span class="math display">\[
+    \mathbb{E}[ Z_{t, t&#39;} Z_{s, s&#39;}]  = 0. 
 \]</span></p>
 <p>Therefore, <span class="math display">\[
     \begin{aligned}
-        \left\Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \right\Vert_p 
-            &amp;= \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i \sigma_j  \right\Vert_p
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(b = (b_1, ..., b_n)\)</span> be a sequence of Bernoulli random variables each of expectation <span class="math inline">\(1 / 2\)</span>. Then <span class="math display">\[
-    \begin{aligned}
-        \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i \sigma_j \right\Vert_p
-            &amp;= \left\Vert 4 \mathbb{E}_b \left[ \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right] \right\Vert_p \\
-            &amp;\le 4 \left( \mathbb{E}_\sigma  \mathbb{E}_b \left\vert \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right\vert^p \right)^{1 / p } &amp; \text{ (Jensen) } \\
-            &amp;\le 4 \left( \mathbb{E}_b \mathbb{E}_\sigma  \left\vert \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right\vert^p \right)^{1 / p } &amp; \text{ (Exchange Order) } \\
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(\exists b&#39; = (b_1&#39;, ..., b_n&#39;) = \arg\max_{b} \mathbb{E}_\sigma \left| \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right|^p\)</span>. We have <span class="math display">\[
-    \begin{aligned}
-        \left( \mathbb{E}_b \mathbb{E}_\sigma  \left| \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right|^p \right)^{1 / p }
-            &amp;\le \left( \mathbb{E}_\sigma  \left| \sum_{i \neq j} A_{i,j} \sigma_i b_i&#39; \sigma_j (1 - b_j&#39;) \right|^p \right)^{1 / p } \\
-            &amp;= \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i b_i&#39; \sigma_j (1 - b_j&#39;) \right\Vert_p 
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(S \doteq \{ i : b_i&#39; = 1 \}\)</span> and <span class="math inline">\(\overline{S} = [n] \setminus S\)</span>. Further, let <span class="math inline">\(\sigma&#39;\)</span> and <span class="math inline">\(x&#39;\)</span> both be independent copies of <span class="math inline">\(\sigma\)</span>. Then <span class="math display">\[
-    \begin{aligned}
-        \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i b_i&#39; \sigma_j (1 - b_j&#39;) \right\Vert_p 
-            &amp;= \left\Vert \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i \sigma_j \right\Vert_p \\
-            &amp;= \left\Vert \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i x_j \right\Vert_p \\
-            &amp;= \left\vert \mathbb{E}_\sigma \mathbb{E}_x \left| \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i x_j  \right|^p \right\vert^{1 / p} \\
-            &amp;= \left\vert \mathbb{E}_\sigma \mathbb{E}_x \left| \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i x_j + \mathbb{E}_{x&#39;} \left[ \sum_{ (i, j) \in S \times S } A_{i,j} \sigma_i x_j&#39; \right] \right|^p \right\vert^{1 / p} &amp; ( \mathbb{E}[ x_j&#39; ] = 0 ) \\
-            &amp;\le \left\vert \mathbb{E}_\sigma \mathbb{E}_x \mathbb{E}_{x&#39;} \left| \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i x_j +   \sum_{ (i, j) \in S \times S } A_{i,j} \sigma_i x_j&#39;  \right|^p \right\vert^{1 / p} &amp; ( \text{Jensen} ) \\
-            &amp;= \left\vert \mathbb{E}_\sigma \mathbb{E}_x \left| \sum_{ (i, j) \in S \times [n] } A_{i,j} \sigma_i x_j   \right|^p \right\vert^{1 / p}  \\
-            &amp;= \left\vert \mathbb{E}_\sigma \mathbb{E}_x \left| \sum_{ (i, j) \in S \times [n] } A_{i,j} \sigma_i x_j + \mathbb{E}_{\sigma&#39; } \left[ \sum_{ (i, j) \in \overline{S} \times [n]} A_{i,j} \sigma_i&#39; x_j \right] \right|^p \right\vert^{1 / p}  &amp; ( \mathbb{E}[ \sigma_i&#39; ]  = 0 ) \\
-            &amp;\le \left\vert \mathbb{E}_\sigma \mathbb{E}_x \mathbb{E}_{\sigma&#39;} \left| \sum_{ (i, j) \in S \times [n] } A_{i,j} \sigma_i x_j + \sum_{ (i, j) \in \overline{S} \times [n] } A_{i,j} \sigma_i&#39; x_j \right|^p \right\vert^{1 / p}  &amp; ( \text{Jensen} ) \\
-            &amp;= \left\Vert \sum_{ i, j } A_{i,j} \sigma_i x_j \right\Vert_p   \\
-    \end{aligned}
-\]</span></p>
-<p>Now, <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-            &amp;\le \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i \sigma_j \right\Vert_p \\
-            &amp;\le 4 \left\Vert \sigma^T A x \right\Vert_p  \\
-            &amp;= 4 \left\vert \mathbb{E}_x \mathbb{E}_\sigma \left| \sigma^T A x  \right|^p \right\vert^{1 / p}  &amp; ( \text{ Exchange Order} )\\
-            &amp;\le 4 \left\vert \mathbb{E}_x \left( \sqrt{ \frac{ p \pi }{2 } } \sqrt{ \frac{p + 1}{ p }} \Vert Ax \Vert_2 \right)^p \right\vert^{1 / p}  &amp; ( \text{Khintchine} ) \\
-            &amp;\le 4 \sqrt{p \pi}  \Vert \Vert Ax \Vert_2 \Vert_p &amp; ( (p + 1) / p \le 2 ) \\
-            &amp;= 4 \sqrt{p \pi} \left\vert \mathbb{E}_x \left( \Vert Ax \Vert_2 \right)^p \right\vert^{1 / p} \\
-            &amp;= 4 \sqrt{p \pi}  \left( \left\vert \mathbb{E}_x \left( \Vert Ax \Vert_2^2 \right)^{p / 2} \right\vert^{2 / p} \right)^{1  / 2} \\
-            &amp;= 4 \sqrt{p \pi}  \left( \left\Vert \left\Vert Ax \right\Vert_2^2  \right\Vert_{2 / p} \right)^{1  / 2} \\
-            &amp;\le 4 \sqrt{p \pi}  \left( \left\Vert \left\Vert Ax \right\Vert_2^2  \right\Vert_{p} \right)^{1  / 2} 
-    \end{aligned}
-\]</span></p>
-<p>Observe that <span class="math display">\[
-    \mathbb{E}_x \Vert Ax \Vert_2^2 = \mathbb{E}_x  \left( \sum_{i, j} A_{i,j} x_i x_j \right)^2 = \sum_{i, j, i&#39;, j&#39;} A_{i, j} A_{i&#39;, j&#39;} \mathbb{E}_x[ x_i x_j x_{i&#39;} x_{j&#39;} ] = \sum_{i, j} A_{i,j}^2 = \Vert A \Vert_F. 
-\]</span></p>
-<p>Hence, <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-            &amp;\le 4 \sqrt{p \pi}  \Vert \Vert Ax \Vert_2 \Vert_p \\
-            &amp;\le 4 \sqrt{p \pi}  \left( \left\Vert \left\Vert Ax \right\Vert_2^2  -  \mathbb{E}_x \left\Vert Ax \right\Vert_2^2 + \mathbb{E}_x \left\Vert Ax \right\Vert_2^2 \right\Vert_{p} \right)^{1  / 2}  \\
-            &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  4 \sqrt{p \pi} \left( \left\Vert \left\Vert Ax \right\Vert_2^2  -  \mathbb{E}_x \left\Vert Ax \right\Vert_2^2  \right\Vert_{p} \right)^{1  / 2}      &amp; (\text{triangle inequality} ) \\
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(y = (y_1, ..., y_n)\)</span> be independent and identical copy of <span class="math inline">\(x\)</span>. Recall that <span class="math inline">\(b\)</span>'s are independent Bernoulli random variables with expectation <span class="math inline">\(1 / 2\)</span>. We have<br />
-<span class="math display">\[  
-    \begin{aligned}
-        \left\Vert \left\Vert Ax \right\Vert_2^2  -  \mathbb{E}_x \left\Vert Ax \right\Vert_2^2  \right\Vert_{p} 
-            &amp;\le \left\Vert \sum_{i \neq j} (Ax)_i (Ax)_j  \right\Vert_{p} \\
-            &amp;= \left\Vert 4 \mathbb{E}_b \left[ \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j) \right] \right\Vert_{p} \\
-            &amp;= 4 \left\Vert  \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j)  \right\Vert_{p} &amp; ( \text{Jensen} ) \\
-            &amp;= 4 \left\vert \mathbb{E}_b \mathbb{E}_x \left\vert \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j)  \right\vert^p \right\vert^{1 / p} &amp; ( \text{Exchange Order} ) \\
-            &amp;= 4 \left\vert \max_b \mathbb{E}_x \left\vert \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j)  \right\vert^p \right\vert^{1 / p}  \\
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(b^*\)</span> be the set of values that maximizes <span class="math inline">\(\mathbb{E}_x \left\vert \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j) \right\vert^p\)</span>. Define <span class="math inline">\(T \doteq \{ i : b^*_i = 1 \}\)</span>. Then <span class="math display">\[
-    \begin{aligned}
-        \left\vert \max_b \mathbb{E}_x \left\vert \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j)  \right\vert^p \right\vert^{1 / p}  
-            &amp;= \left\Vert \sum_{i \neq j} (Ax)_i b^*_i (Ax)_j (1 - b^*_j) \right\Vert_p \\
-            &amp;= \left\Vert \sum_{ (i, j) \in T \times \overline{T} } (Ax)_i (Ax)_j \right\Vert_p \\
-            &amp;= \left\Vert \sum_{ (i, j) \in T \times \overline{T} } (Ax)_i (Ay)_j \right\Vert_p \\
-            &amp;= \left\Vert \mathbb{E}_{\sigma, \sigma&#39; }  \left( \sum_{i \in T} (A x)_i + \sum_{i \in \overline{T} } ( A \sigma)_i \right) 
-            \left( \sum_{j \in T} (A \sigma&#39;)_j + \sum_{j \in \overline{T} } ( A y)_j \right)  \right\Vert_p  \\
-            &amp;\le \left\Vert \left( \sum_{i \in T} (A x)_i + \sum_{i \in \overline{T} } ( A \sigma)_i \right) 
-            \left( \sum_{j \in T} (A \sigma&#39;)_j + \sum_{j \in \overline{T} } ( A y)_j \right)    \right\Vert_p  &amp; (\text{Jensen}) \\
-            &amp;= \left\Vert y^T A^T A x \right\Vert_p
-    \end{aligned}
-\]</span></p>
-<p>The second last equality follows from that <span class="math inline">\(\mathbb{E}_\sigma [ (A \sigma)_i ] = 0\)</span> and <span class="math inline">\(\mathbb{E}_{\sigma&#39;} [ (A \sigma&#39;_j ] = 0\)</span>.</p>
-<p>Hence, <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-            &amp;\le 4 \sqrt{p \pi}  \Vert \Vert Ax \Vert_2 \Vert_p \\
-            &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  16 \sqrt{p \pi} \left( \left\Vert y^T A^T A x \right\Vert_p \right)^{1  / 2}  \\
-            &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  16 \sqrt{p \pi} \left( \sqrt{p \pi} \left\Vert \Vert A^T A x \Vert_2 \right\Vert_p \right)^{1  / 2}  &amp; (\text{Khintchine}) \\
-            &amp;= 4 \sqrt{p \pi} \Vert A \Vert_F +  16 (p \pi)^{3 / 4} \left( \left\Vert \Vert A^T A x \Vert_2 \right\Vert_p \right)^{1  / 2}  \\
-    \end{aligned}
-\]</span></p>
-<p>As <span class="math inline">\(A\)</span> is symmetric, <span class="math inline">\(A^T = A\)</span>. Further, by definition of <span class="math inline">\(\Vert A \Vert\)</span>, we have <span class="math display">\[
-    \frac{1}{ \Vert Ax \Vert_2 } \Vert A^T A x \Vert_2 = \left\Vert A \frac{ Ax }{ \Vert Ax \Vert_2 } \right\Vert_2 \le \Vert A \Vert. 
-\]</span></p>
-<p>Hence, <span class="math display">\[
-    \left\Vert \Vert A^T A x \Vert_2 \right\Vert_p 
-        = \left( \mathbb{E}_x \left\vert \Vert A^T A x \Vert_2 \right\vert^p \right)^{1 / p}
-        \le \left( \mathbb{E}_x \left\vert \Vert A \Vert \cdot \Vert A x \Vert_2 \right\vert^p \right)^{1 / p}
-        = \Vert A \Vert \cdot \Vert A x \Vert_{p}, 
-\]</span></p>
-<p>and <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-            &amp;\le 4 \sqrt{p \pi}  \Vert \Vert Ax \Vert_2 \Vert_p \\
-            &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  16 (p \pi)^{3 / 4} \Vert A \Vert^{1 / 2} \cdot \left( \left\Vert \Vert A x \Vert_2 \right\Vert_p \right)^{1  / 2}  \\
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(z = \left( \left\Vert \Vert A x \Vert_2 \right\Vert_p \right)^{1 / 2}\)</span>. It holds that <span class="math display">\[
-    z^2 - 4 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} \cdot z - \Vert A \Vert_F \le 0. 
-\]</span></p>
-<p>It follows that <span class="math display">\[
-    z \le \frac{ 4 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} + \sqrt{ \left( 4 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} \right)^2 + 4 \Vert A \Vert_F } }{ 2 } \le 2 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} + 2 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} + \sqrt{ \Vert A \Vert_F }. 
-\]</span></p>
-<p>and <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-              &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  16 (p \pi)^{3 / 4} \Vert A \Vert^{1 / 2} \cdot \left( 4 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} + \sqrt{ \Vert A \Vert_F } \right)  \\
-              &amp;= 4 \sqrt{p \pi} \Vert A \Vert_F +  64 (p \pi) \Vert A \Vert  + \sqrt{   4 \sqrt{ p \pi } \Vert A \Vert_F \cdot \left( 64 (p \pi) \Vert A \Vert \right) }   \\
-              &amp;\le 2 \left\{ 4 \sqrt{p \pi} \Vert A \Vert_F +  64 (p \pi) \Vert A \Vert \right\} \\
+        \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;} \right] 
+            &amp;= \mathbb{E} \left[ \left( \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;} \right)^2 \right] \\
+            &amp;= \mathbb{E} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;}^2  \right] \\
+            &amp;= \sum_{t \neq t&#39; \in [n]} \frac{ x_t^2 x_{t&#39;}^2}{ m } \\
+            &amp;= \frac{\Vert x \Vert_2^4 }{ m }. 
     \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><span class="math inline">\(\forall i \in [k], \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \ge \epsilon \Vert x \Vert_2^2] \le \frac{1}{3}\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> By Chebyshev's inequality.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><span class="math inline">\(\Pr \left[ \left| \{ i \in [k] : \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \le \epsilon \Vert x \Vert_2^2] \} \right| &gt; \frac{k}{2} \right] \ge 1 - \delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> By Chernoff bound.</p>
+<p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1] Jelani Nelson, "Algorithm for Big Data", Lecture 10, 2015</p>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
 
       
     </div>
@@ -878,7 +703,7 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/59/">59</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/12/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/14/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -944,7 +769,7 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">177</span>
+          <span class="site-state-item-count">180</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
