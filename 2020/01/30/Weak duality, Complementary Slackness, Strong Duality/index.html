@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Dual Program and Weak Duality Every linear program can be converted into Canonical form \[     \begin{array}{lr}         \max &amp; c^T x \\         \text{s.t. } &amp; Ax \le b \\             &amp;am">
+  <meta name="description" content="Every linear program can be converted into Canonical form \[     \begin{array}{lr}         \max &amp; c^T x \\         \text{s.t. } &amp; Ax \le b \\             &amp;x \ge 0     \end{array} \]">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Dual Program, Weak Duality, Complementary Slackness, Strong Duality">
 <meta property="og:url" content="http://example.com/2020/01/30/Weak%20duality,%20Complementary%20Slackness,%20Strong%20Duality/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Dual Program and Weak Duality Every linear program can be converted into Canonical form \[     \begin{array}{lr}         \max &amp; c^T x \\         \text{s.t. } &amp; Ax \le b \\             &amp;am">
+<meta property="og:description" content="Every linear program can be converted into Canonical form \[     \begin{array}{lr}         \max &amp; c^T x \\         \text{s.t. } &amp; Ax \le b \\             &amp;x \ge 0     \end{array} \]">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StrongDualitySpecialCase.jpg">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/MinimizeYB.png">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FarkasLemma3.png">
 <meta property="article:published_time" content="2020-01-30T00:47:54.000Z">
-<meta property="article:modified_time" content="2021-07-24T10:49:41.000Z">
+<meta property="article:modified_time" content="2022-04-01T11:39:02.000Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StrongDualitySpecialCase.jpg">
@@ -185,7 +185,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-07-24 20:49:41" itemprop="dateModified" datetime="2021-07-24T20:49:41+10:00">2021-07-24</time>
+                <time title="Modified: 2022-04-01 22:39:02" itemprop="dateModified" datetime="2022-04-01T22:39:02+11:00">2022-04-01</time>
               </span>
 
           
@@ -199,16 +199,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="dual-program-and-weak-duality">Dual Program and Weak Duality</h1>
-<p>Every linear program can be converted into Canonical form <span class="math display">\[
+        <p>Every linear program can be converted into Canonical form <span class="math display">\[
     \begin{array}{lr}
         \max &amp; c^T x \\
         \text{s.t. } &amp; Ax \le b \\
             &amp;x \ge 0
     \end{array}
-\]</span></p>
-<p>where <span class="math inline">\(c, x \in \mathbb{R}^n\)</span>, <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> and <span class="math inline">\(b \in \mathbb{R}^m\)</span>.</p>
-<p>Consider a conic combination (<span class="math inline">\(y \in \mathbb{R}^m\)</span> and <span class="math inline">\(y \ge 0\)</span>) of the linear constraints: <span class="math display">\[
+\]</span> for some <span class="math inline">\(c, x \in \mathbb{R}^n\)</span>, <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> and <span class="math inline">\(b \in \mathbb{R}^m\)</span>.</p>
+<h1 id="dual-program-and-weak-duality">Dual Program and Weak Duality</h1>
+<p>Next, we try to construct an upper bound for the optimal solution of this optimization problem, based on its linear constraints.</p>
+<p>If <span class="math inline">\(y \in \mathbb{R}^m\)</span> and <span class="math inline">\(y \ge 0\)</span>, then <span class="math inline">\(y^T (Ax)\)</span> is called a <em>conic combination</em> of the constraints. It holds that <span class="math display">\[
     y^T (Ax) \le y^T b. 
 \]</span></p>
 <p>If <span class="math inline">\(y\)</span> further satisfies the constraint <span class="math display">\[
@@ -240,32 +240,38 @@
     \end{array}
 \]</span></p>
 <p>Note that the <span class="math inline">\(\bar x\)</span>'s are unconstrained variables. Driven by the same philosophy, we hope to derive an upper bound by using the constraints: <span class="math display">\[
-\begin{aligned}
-    c^T x + \bar c^T \bar x + \hat c^T \hat x 
-        &amp; \le y^T (Ax + \bar A \bar x + \hat A \hat x) \\
-        &amp; + \bar y^T (Bx + \bar B \bar x + \hat B \hat x) \\
-        &amp; + \hat y^T (Cx + \bar C \bar x + \hat C \hat x) \\
-        &amp;\le y^T b + \bar y^T \bar b + \hat y^T \hat b
-\end{aligned}
+    \begin{aligned}
+        c^T x + \bar c^T \bar x + \hat c^T \hat x 
+            &amp; \le y^T (Ax + \bar A \bar x + \hat A \hat x) \\
+            &amp; + \bar y^T (Bx + \bar B \bar x + \hat B \hat x) \\
+            &amp; + \hat y^T (Cx + \bar C \bar x + \hat C \hat x) \\
+            &amp;\le y^T b + \bar y^T \bar b + \hat y^T \hat b
+    \end{aligned}
 \]</span></p>
 <ol type="1">
-<li><p>To guarantee the second inequality, we require that <span class="math inline">\(y^T \ge 0\)</span> (since the constraint <span class="math inline">\(Ax + \bar A \bar x + \hat A \hat x \le b\)</span> holds), <span class="math inline">\(\bar y^T\)</span> be unconstrained (since the constraint <span class="math inline">\(Bx + \bar B \bar x + \hat B \hat x = \bar b\)</span> holds), and <span class="math inline">\(\hat y^T \le 0\)</span> (since the constraint <span class="math inline">\(Cx + \bar C \bar x + \hat C \hat x \ge \hat b\)</span> holds). We see that the types of constraints in the primal determine the signs of variables in the dual.</p></li>
+<li><p>To guarantee the second inequality, we require that</p>
+<ul>
+<li><p><span class="math inline">\(y^T \ge 0\)</span> (since the constraint <span class="math inline">\(Ax + \bar A \bar x + \hat A \hat x \le b\)</span> holds),</p></li>
+<li><p><span class="math inline">\(\bar y^T\)</span> be unconstrained (since the constraint <span class="math inline">\(Bx + \bar B \bar x + \hat B \hat x = \bar b\)</span> holds), and</p></li>
+<li><p><span class="math inline">\(\hat y^T \le 0\)</span> (since the constraint <span class="math inline">\(Cx + \bar C \bar x + \hat C \hat x \ge \hat b\)</span> holds).</p></li>
+</ul>
+<p>We see that the types of constraints in the primal determine the signs of variables in the dual.</p></li>
 <li><p>The reverse is also true: the constraints in the dual are determined the signs of variables in the primal. The first inequality implies that (by proper rearranging): <span class="math display">\[
- \begin{aligned}
-     c^T x + \bar c^T \bar x + \hat c^T \hat x 
-         &amp; \le (y^T A + \bar y^T B + \hat y^T C)x \\
-         &amp; + (y^T \bar A + \bar y^T \bar B + \hat y^T \bar C) \bar x \\
-         &amp; + (y^T \hat A + \bar y^T \hat B + \hat y^T \hat C) \hat x
- \end{aligned}
+     \begin{aligned}
+         c^T x + \bar c^T \bar x + \hat c^T \hat x 
+             &amp; \le (y^T A + \bar y^T B + \hat y^T C)x \\
+             &amp; + (y^T \bar A + \bar y^T \bar B + \hat y^T \bar C) \bar x \\
+             &amp; + (y^T \hat A + \bar y^T \hat B + \hat y^T \hat C) \hat x
+     \end{aligned}
  \]</span></p>
 <p>As <span class="math inline">\(x \ge 0\)</span>, <span class="math inline">\(\bar x\)</span> unconstrained and <span class="math inline">\(\hat x \le 0\)</span>, a sufficient condition for the inequality to become true is <span class="math display">\[
- \begin{aligned}
-     c^T      &amp; \le (y^T A + \bar y^T B + \hat y^T C) \\
-     \bar c^T &amp; =   (y^T \bar A + \bar y^T \bar B + \hat y^T \bar C) \\
-     \hat c^T &amp; \ge (y^T \hat A + \bar y^T \hat B + \hat y^T \hat C) \\
- \end{aligned}
+     \begin{aligned}
+         c^T      &amp; \le (y^T A + \bar y^T B + \hat y^T C) \\
+         \bar c^T &amp; =   (y^T \bar A + \bar y^T \bar B + \hat y^T \bar C) \\
+         \hat c^T &amp; \ge (y^T \hat A + \bar y^T \hat B + \hat y^T \hat C) \\
+     \end{aligned}
  \]</span></p>
-<p>That gives the first set of constraints the dual variables <span class="math inline">\(y\)</span>, <span class="math inline">\(\bar y\)</span> and <span class="math inline">\(\hat y\)</span> need to satisfies. We have just seen that the sign of the primal variable determines the type of constraint in the dual.</p>
+<p>That gives the first set of constraints the dual variables <span class="math inline">\(y\)</span>, <span class="math inline">\(\bar y\)</span> and <span class="math inline">\(\hat y\)</span> need to satisfies, respectively. We have just seen that the sign of the primal variable determines the type of constraint in the dual.</p>
 <p>Of particular interest is the inequality constraint, which we will discuss in details in the next section.</p></li>
 </ol>
 <p>The rules of obtaining dual are summarized as follows:</p>
@@ -313,10 +319,10 @@
     \\ y^T (b - Ax) = 0.
 \]</span></p>
 <p>If the primal is in canonical form, then the fact that <span class="math inline">\(y^T A \ge c\)</span>, <span class="math inline">\(x \ge 0\)</span>, <span class="math inline">\(y \ge 0\)</span>, and <span class="math inline">\(b - Ax \ge 0\)</span> implies that <span class="math display">\[
-    \begin{array}{lrrr}
-        (y^T A - c^T)_i = 0  &amp;\vee &amp; x_i = 0,\,         &amp;\forall \ i \in [n] \\
-        y_j = 0             &amp;\vee  &amp; (b - Ax)_j = 0,\,  &amp;\forall \ j \in [m]
-    \end{array}
+    \begin{matrix}
+        (y^T A - c^T)_i = 0  &amp;\vee &amp; x_i = 0,\,         &amp;\forall \ i \in [n], \\
+        y_j = 0             &amp;\vee  &amp; (b - Ax)_j = 0,\,  &amp;\forall \ j \in [m],
+    \end{matrix}
 \]</span></p>
 <p>where <span class="math inline">\((y^T A - c^T)_i\)</span> is its <span class="math inline">\(i\)</span>-th coordinate of the vector <span class="math inline">\(y^T A - c^T \in \mathbb{R}^{1 \times n}\)</span>, and <span class="math inline">\((b - Ax)_j\)</span> is the <span class="math inline">\(j\)</span>-th coordinate of the vector <span class="math inline">\(b - Ax \in \mathbb{R}^{m \times 1}\)</span>.</p>
 <p>This is known as <strong><em>complementary slackness</em></strong>.</p>
@@ -369,7 +375,7 @@ $$ -->
     \end{array}
 \]</span></p>
 <p>The primal is feasible if <span class="math inline">\(c\)</span> is a linear combination of rows of <span class="math inline">\(A\)</span>, i.e., in the row space of <span class="math inline">\(A\)</span>. The dual is feasible if <span class="math inline">\(b\)</span> is a linear combination of columns of <span class="math inline">\(A\)</span>, i.e., in column space of <span class="math inline">\(A\)</span>, denoted as <span class="math inline">\(C(A)\)</span>.</p>
-<p>It if possible that neither the primal nor the dual is feasible.</p>
+<p>It is possible that neither the primal nor the dual is feasible.</p>
 <blockquote>
 <p><strong>Example.</strong> <span class="math display">\[
 A = \begin{bmatrix}
@@ -433,7 +439,7 @@ c=  \begin{bmatrix}
 \]</span></p>
 <p>Let <span class="math inline">\(y^\star\)</span> be the optimal solution for the primal. We see that <span class="math inline">\(y^\star\)</span> can not be an interior point of the feasible set <span class="math inline">\(F\)</span>. Otherwise, for small enough <span class="math inline">\(k &gt; 0\)</span>, <span class="math inline">\(y^\star - k \cdot b\)</span> belongs to <span class="math inline">\(F\)</span>. But <span class="math inline">\((y^\star - k \cdot b)^T b &lt; y^\star b\)</span>, contradicting <span class="math inline">\(y^\star\)</span> being optimal.</p>
 <p>Therefore, <span class="math inline">\(y^\star\)</span> must be on the boundary of the <span class="math inline">\(F\)</span>, and there must exit one or more constraints saturated by <span class="math inline">\(y^\star\)</span>. Define the set of indexes of the constraints that are saturated by <span class="math inline">\(y^\star\)</span> <span class="math display">\[
-    S \doteq \{ i \in [m] : (y^\star)^T A_i = c_i \} \subset [m],
+    S \doteq \{ i \in [m] : (y^\star)^T A_i = c_i \} \subseteq [m],
 \]</span></p>
 <p>where <span class="math inline">\(A_i\)</span> is the <span class="math inline">\(i\)</span>-th column of matrix <span class="math inline">\(A\)</span> and <span class="math inline">\(c_i\)</span> is the <span class="math inline">\(i\)</span>-th coordinator of vector <span class="math inline">\(c\)</span>. Let <span class="math inline">\(A_S\)</span> be set of columns indexed by <span class="math inline">\(S\)</span>.</p>
 <blockquote>
@@ -576,7 +582,7 @@ c=  \begin{bmatrix}
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-count">181</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

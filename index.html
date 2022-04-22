@@ -146,6 +146,196 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/21/Set-Cover/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/04/21/Set-Cover/" class="post-title-link" itemprop="url">Set Cover</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-21 17:31:38 / Modified: 23:21:00" itemprop="dateCreated datePublished" datetime="2022-04-21T17:31:38+10:00">2022-04-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="set-cover-problem">Set Cover Problem</h1>
+<p>Let <span class="math inline">\(\Omega = \{ \omega_1, \ldots, \omega_n \}\)</span> be a set, and <span class="math inline">\(S_1, \ldots, S_m\)</span> be subsets of <span class="math inline">\(\Omega\)</span>, such that <span class="math inline">\(S_j\)</span> is associated with weight <span class="math inline">\(w_j \in \R^+\)</span> for each <span class="math inline">\(j \in [m]\)</span>. The goal is solve the following the following optimization problem <span class="math display">\[
+    \begin{array}{lll}
+        &amp;\min_{J \subseteq [m]} &amp;\sum_{j \in J} w_j, \\
+        &amp;\text{s.t.}          &amp;\cup_{j \in J} S_j = \Omega.  
+    \end{array}
+\]</span> In case where <span class="math inline">\(w_j = 1\)</span> for each <span class="math inline">\(j \in [m]\)</span>, the problem is called the <em>unweighted</em> set cover problem.</p>
+<h1 id="linear-programming">Linear Programming</h1>
+<p>The linear program for the problem is <span class="math display">\[
+    \begin{array}{llr}
+        \min                &amp;\sum_{j \in [m]} w_j \cdot x_j    \\
+        \text{s.t.}         &amp;\sum_{j : \omega_i \in S_j} x_j \ge 1     &amp;\forall i \in [n]\\
+                            &amp;x_j \ge 0                      &amp;\forall j \in [m]
+    \end{array}
+\]</span></p>
+<p>The dual LP of the primal is <span class="math display">\[
+    \begin{array}{llr}
+        \max                &amp;\sum_{i \in [n]} y_i    \\
+        \text{s.t.}         &amp;\sum_{i: \omega_i \in S_j} y_i \le w_j     &amp;\forall j \in [m]\\
+                            &amp;y_i \ge 0                      &amp;\forall i \in [n]
+    \end{array}
+\]</span></p>
+<h1 id="rounding-the-optimal-primal-solution">Rounding the Optimal Primal Solution</h1>
+<p>For each element <span class="math inline">\(i \in [n]\)</span>, let <span class="math inline">\(E_i \doteq \{ j \in [m] : \omega_i \in S_j \}\)</span>, and let <span class="math inline">\(C = \max_{i \in [n]} |E_i|\)</span>.</p>
+<p>Suppose that <span class="math inline">\(x_j^*, j \in [m]\)</span> be the optimal solution to the primal LP.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math display">\[
+J \doteq \left\{ j \in [m] : x_j^* \ge \frac{1}{C} \right\}
+\]</span> is a <span class="math inline">\(C\)</span>-approximate solution to the set cover problem.</p>
+</blockquote>
+<p><strong>Proof.</strong> We prove first that <span class="math inline">\(S_j, j \in J\)</span> is a set cover, then we prove that it is a <span class="math inline">\(C\)</span> approximate one.</p>
+<p><strong>Feasibility.</strong> Since <span class="math inline">\(x_j^*\)</span> is the optimal solution to the primal LP, for each <span class="math inline">\(i \in [n]\)</span>, we have <span class="math display">\[
+    \sum_{j : \omega_i \in S_j} x_j \ge 1.
+\]</span> Therefore, , there exists at least one <span class="math inline">\(j \in E_i\)</span>, s.t., <span class="math display">\[
+    x_j^* \ge \frac{1}{|E_i|} \ge \frac{1}{C}. 
+\]</span></p>
+<p><strong>Approximation Ratio.</strong> The cost of the approximate solution is given by <span class="math display">\[
+    \sum_{j \in J} w_j 
+            \le \sum_{j \in J} w_j \cdot \big( x_j^* \cdot C \big) 
+            \le C \cdot \sum_{j \in [m]} w_j \cdot x_j^*.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark.</strong> This is a <span class="math inline">\(2\)</span>-approximation algorithm for the vertex cover problem, a special case of the set cover problem.</p>
+<h1 id="rounding-the-optimal-dual-solution">Rounding the Optimal Dual Solution</h1>
+<p>Let <span class="math inline">\(y_i^*, i \in [n]\)</span> be the optimal solution to the dual.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math display">\[
+J&#39; \doteq \left\{ j \in [m] : \sum_{i: \omega_i \in S_j} y^*_i = w_j \right\}
+\]</span> is a <span class="math inline">\(C\)</span>-approximate solution to the set cover problem.</p>
+</blockquote>
+<p><strong>Proof.</strong> We prove first that <span class="math inline">\(S_j, j \in J&#39;\)</span> is a set cover, then we prove that it is a <span class="math inline">\(C\)</span> approximate one.</p>
+<p><strong>Feasibility.</strong> Suppose that there exits an uncovered element <span class="math inline">\(\omega_k\)</span>, which implies that for each <span class="math inline">\(j \in E_k\)</span>, it holds that <span class="math display">\[
+    \sum_{i: \omega_i \in S_j} y^*_i &lt; w_j. 
+\]</span> But this implies that we can increase the value of <span class="math inline">\(y_k^*\)</span>, and therefore increase the value of <span class="math inline">\(\sum_{i \in [n]} y_i^*\)</span>, without violating the dual constraints, contradicting the <span class="math inline">\(y_i^*, i \in [n]\)</span> being optimal.</p>
+<p><strong>Approximation Ratio.</strong> The cost of the approximate solution is given by <span class="math display">\[
+    \sum_{j \in J&#39;} w_j 
+            = \sum_{j \in J&#39;} \left( \sum_{i: \omega_i \in S_j} y^*_i \right) 
+            \le \sum_{i \in [n]} \left( \sum_{i: \omega_i \in S_j} y^*_i \right) 
+            \le C \cdot \sum_{i \in [n]} y^*_i, 
+\]</span> where the last inequality holds, since each <span class="math inline">\(y_i^*\)</span> appears in at most <span class="math inline">\(C\)</span> constraints.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark.</strong> Via <em>complementary slackness</em>, if <span class="math inline">\(x_j^* &gt; 0\)</span>, we always have <span class="math display">\[
+    \sum_{i : \omega_i \in S_j} y^*_i = w_j. 
+\]</span> Since <span class="math inline">\(J \doteq \left\{ j \in [m] : x_j^* \ge 1 / C \right\}\)</span>, it holds that <span class="math inline">\(J \subseteq J&#39;\)</span>. Therefore, rounding the primal solution do no worse than rounding the dual one.</p>
+<h1 id="the-primal-dual-method">The Primal-Dual Method</h1>
+<p>Rounding the optimal dual solution requires to solve the dual LP optimally, which could be slow even though the LP can be solved in polynomial time. The following algorithm overcomes this drawback by constructing only a feasible dual solution.</p>
+<blockquote>
+<p><strong>Algorithm.</strong> <strong><span class="math inline">\(\mathcal{A}_{primal \text{-} dual}\)</span></strong><br />
+1. <span class="math inline">\(y_i \leftarrow 0\)</span>, for each <span class="math inline">\(i \in [n]\)</span><br />
+2. <span class="math inline">\(J \leftarrow \emptyset\)</span><br />
+3. <strong>while</strong> <span class="math inline">\(\exist \omega_k \notin \cup_{j \in J} S_j\)</span> <strong>do</strong><br />
+4. <span class="math inline">\(\qquad\)</span> increase <span class="math inline">\(y_k\)</span> until some constraint becomes tight,<br />
+6. <span class="math inline">\(\qquad\)</span> i.e., <span class="math inline">\(\exist S_\ell\)</span> with <span class="math inline">\(\omega_k \in S_j\)</span>, s.t., <span class="math inline">\(\sum_{i: \omega_i \in S_\ell} y_i = w_\ell\)</span><br />
+7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(J \leftarrow J \cup \{ \ell \}\)</span></p>
+</blockquote>
+<p>Clearly the <span class="math inline">\(y_i, i \in [n]\)</span> is a feasible solution to the dual.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Algorithm <span class="math inline">\(\mathcal{A}_{primal \text{-} dual}\)</span> returns a <span class="math inline">\(C\)</span>-approximate solution <span class="math inline">\(J\)</span> to the set cover problem.</p>
+</blockquote>
+<p><strong>Proof.</strong> We prove first that <span class="math inline">\(S_j, j \in J\)</span> is a set cover, then we prove that it is a <span class="math inline">\(C\)</span> approximate one.</p>
+<p><strong>Feasibility.</strong> Suppose that there exits an element <span class="math inline">\(\omega_k\)</span> that is not covered by <span class="math inline">\(J\)</span>, which implies that for each <span class="math inline">\(j \in E_k\)</span>, it holds that <span class="math display">\[
+    \sum_{i: \omega_i \in S_j} y_i &lt; w_j. 
+\]</span> But this implies that we can increase the value of <span class="math inline">\(y_k\)</span>, and therefore increase the value of <span class="math inline">\(\sum_{i \in [n]} y_i\)</span>, without violating the dual constraints, contradicting <span class="math inline">\(y_i\)</span> being optimal.</p>
+<p><strong>Approximation Ratio.</strong> The cost of the approximate solution is given by <span class="math display">\[
+    \sum_{j \in J} w_j 
+            = \sum_{j \in J} \left( \sum_{i: \omega_i \in S_j} y_i \right) 
+            \le \sum_{i \in [n]} \left( \sum_{i: \omega_i \in S_j} y_i \right) 
+            \le C \cdot \sum_{j \in [m]} y_i, 
+\]</span> where the last inequality holds, since each <span class="math inline">\(y_i\)</span> appears in at most <span class="math inline">\(C\)</span> constraints.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="randomized-rounding">Randomized Rounding</h1>
+<p>We present a randomized algorithm based on the optimal solution <span class="math inline">\(x_j^*\)</span> for the primal LP.</p>
+<p>Let <span class="math inline">\(T \in \mathbb{N}^+\)</span> be a positive integer to be determined later.</p>
+<blockquote>
+<p><strong>Algorithm.</strong> <span class="math inline">\(\mathcal{A}_{rnd}\)</span><br />
+1. <strong>for</strong> <span class="math inline">\(t \in [T]\)</span> <strong>do</strong><br />
+2. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(J_t \leftarrow \emptyset\)</span><br />
+3. <span class="math inline">\(\qquad\)</span> <strong>for</strong> each <span class="math inline">\(j \in [m]\)</span> <strong>do</strong><br />
+4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> add <span class="math inline">\(j\)</span> to <span class="math inline">\(J_t\)</span> with probability <span class="math inline">\(x_j^*\)</span><br />
+5. output <span class="math inline">\(J \leftarrow \cup_{t \in [T]} J_t\)</span></p>
+</blockquote>
+<blockquote>
+<p><strong>Theorem.</strong> The expected cost of <span class="math inline">\(J\)</span> is at most <span class="math inline">\(T \cdot \sum_{j \in [m]} w_j \cdot x_j^*\)</span>. Further, if <span class="math inline">\(T = 2 \ln n\)</span>, with probability at least <span class="math inline">\(1 - 1 / n\)</span>, <span class="math inline">\(J\)</span> is a set cover.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p><strong>Expected Cost.</strong> Since <span class="math inline">\(j\)</span> is included in <span class="math inline">\(J_t\)</span> with probability <span class="math inline">\(x_j^*\)</span> for each <span class="math inline">\(j \in [m]\)</span>, by linearity of expectation, the expected sum of weights of sets in <span class="math inline">\(J_t\)</span> is given by <span class="math display">\[
+    \sum_{j \in [m]} w_j \cdot x_j^*. 
+\]</span> Therefore, the expected cost of <span class="math inline">\(J\)</span> is at most <span class="math inline">\(T \cdot \sum_{j \in [m]} w_j \cdot x_j^*\)</span>.</p>
+<p><strong>Failure Probability.</strong> The probability that a fixed <span class="math inline">\(\omega_i\)</span> is not covered by <span class="math inline">\(J_t\)</span> is given by <span class="math display">\[
+    \begin{aligned}
+        \prod_{j : \omega_i \in S_j} (1 - x_j^*)
+        \le \exp \left( - \sum_{j : \omega_i \in S_j} x_j^* \right)
+        \le \exp (- 1). 
+    \end{aligned}
+\]</span> By independence, the probability that none of the <span class="math inline">\(J_t\)</span> covers <span class="math inline">\(\omega_i\)</span> is at most <span class="math display">\[
+    \big( \exp(-1) \big)^T = \exp(-T) = 1 / n^2. 
+\]</span> Applying union bound over all element <span class="math inline">\(\omega_i \in \Omega\)</span> finishes the proof.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="greedy-algorithm">Greedy Algorithm</h1>
+<p>Finally, we discuss a greedy algorithm for the set cover problem.</p>
+<p>We follows the convention that <span class="math inline">\(x / 0 = \infty\)</span>, <span class="math inline">\(\forall x \in \R^+\)</span>.</p>
+<blockquote>
+<p><strong>Algorithm.</strong> <span class="math inline">\(\mathcal{A}_{greedy}\)</span><br />
+1. <span class="math inline">\(\hat S_j \leftarrow S_j\)</span>, for each <span class="math inline">\(j \in [m]\)</span><br />
+2. <span class="math inline">\(J \leftarrow \emptyset\)</span><br />
+3. <strong>while</strong> <span class="math inline">\(\cup_{j \in J} S_j \neq \Omega\)</span> <strong>do</strong><br />
+4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\ell \leftarrow \min_{j \in [m]} \left( w_j / |\hat S_j| \right)\)</span><br />
+7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(J \leftarrow J \cup \{ \ell \}\)</span><br />
+8. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat S_j \leftarrow \hat S_j \setminus S_\ell\)</span>, <span class="math inline">\(\forall j \in [m]\)</span></p>
+</blockquote>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>D. P. Williamson and D. B. Shmoys, The Design of Approximation Algorithms. Cambridge: Cambridge University Press, 2011.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/31/Holder-s-Inequality/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -169,10 +359,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2022-03-31 22:17:27 / Modified: 23:35:38" itemprop="dateCreated datePublished" datetime="2022-03-31T22:17:27+11:00">2022-03-31</time>
+              <time title="Created: 2022-03-31 22:17:27" itemprop="dateCreated datePublished" datetime="2022-03-31T22:17:27+11:00">2022-03-31</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-02 23:35:20" itemprop="dateModified" datetime="2022-04-02T23:35:20+11:00">2022-04-02</time>
+              </span>
 
           
 
@@ -199,28 +395,54 @@ By concavity of the function <span class="math inline">\(f(t) = \ln t\)</span>: 
 \]</span> We obtain the <em>Young's Inequality:</em> <span class="math display">\[
     a b \le \frac{a^p}{p} + \frac{b^q}{q}, \qquad \forall a, b &gt; 0.  
 \]</span></p>
-<p><strong>Case 1.</strong> Suppose that both <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are simple, non-negative random variables. WLOG, assume that <span class="math inline">\(X = \sum a_i \mathbb{I}_{E_i}\)</span>, and <span class="math inline">\(Y = \sum b_i \mathbb{I}_{E_i}\)</span>. Further, define <span class="math inline">\(s = \mathbb{E}^{1 / p} \left[ |X|^p \right]\)</span> and <span class="math inline">\(t = \mathbb{E}^{1 / q} \left[ |Y|^q \right]\)</span>. We have <span class="math display">\[
+<p>Let <span class="math inline">\(s = \mathbb{E}^{1 / p} \left[ |X|^p \right]\)</span> and <span class="math inline">\(t = \mathbb{E}^{1 / q} \left[ |Y|^q \right]\)</span>. Then for each <span class="math inline">\(\omega \in \Omega\)</span>, it holds that <span class="math display">\[
+    \frac{|X(\omega)|}{s} \cdot \frac{|Y(\omega)|}{t} 
+    \le 
+    \frac{|X(\omega)|^p}{p \cdot s^p} + \frac{|Y(\omega)|^p}{q \cdot t^q}
+\]</span> Define a new random variable <span class="math display">\[
+    Z = \frac{|X|^p}{p \cdot s^p} + \frac{|Y|^p}{q \cdot t^q}. 
+\]</span> By monotonicity and linearity of integration, <span class="math display">\[
+    \mathbb{E}\left[ \frac{|X|}{s} \cdot \frac{|Y|}{t} \right]
+        \le 
+        \mathbb{E}\left[ \frac{|X|^p}{p \cdot s^p} \right]
+        + 
+        \mathbb{E}\left[ \frac{|Y|^p}{q \cdot t^q} \right]
+        = 1. 
+\]</span> <!-- 
+**Case 1.** Suppose that both $X$ and $Y$ are simple, non-negative random variables.
+WLOG, assume that $X = \sum a_i \mathbb{I}_{E_i}$, and $Y = \sum b_i \mathbb{I}_{E_i}$. 
+Further, define $s = \mathbb{E}^{1 / p} \left[ |X|^p \right]$ and $t = \mathbb{E}^{1 / q} \left[ |Y|^q \right]$.
+We have 
+$$
     \begin{aligned}
         \mathbb{E}\left[ \frac{|X|}{s} \cdot \frac{|Y|}{t} \right]
-            &amp;= \sum \frac{a_i}{s} \cdot \frac{b_i}{t} \cdot \mathbb{P}(E_i) \\
-            &amp;\le \sum \left( \frac{a_i^p}{s^p} + \frac{b_i^p}{t^q}\right) \cdot \mathbb{P}(E_i) \\
-            &amp;= \frac{1}{s^p} \cdot \mathbb{E} \left[ |X|^p \right] + \frac{1}{t^q} \cdot \mathbb{E} \left[ |Y|^q \right]  \\
-            &amp;= 1. 
+            &= \sum \frac{a_i}{s} \cdot \frac{b_i}{t} \cdot \mathbb{P}(E_i) \\
+            &\le \sum \left( \frac{a_i^p}{s^p} + \frac{b_i^p}{t^q}\right) \cdot \mathbb{P}(E_i) \\
+            &= \frac{1}{s^p} \cdot \mathbb{E} \left[ |X|^p \right] + \frac{1}{t^q} \cdot \mathbb{E} \left[ |Y|^q \right]  \\
+            &= 1. 
     \end{aligned}
-\]</span></p>
-<p><strong>Case 2.</strong> Suppose that both <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are random variables. Choose random variables <span class="math inline">\(X_n\)</span> and <span class="math inline">\(Y_n\)</span> such that <span class="math inline">\(0 \le X_n \uparrow |X|\)</span>, and <span class="math inline">\(0 \le Y_n \uparrow |Y|\)</span>. Following <strong>Case 1</strong> we have <span class="math display">\[
+$$ 
+
+**Case 2.** Suppose that both $X$ and $Y$ are random variables.
+Choose random variables $X_n$ and $Y_n$ such that $0 \le X_n \uparrow |X|$, and $0 \le Y_n \uparrow |Y|$. 
+Following **Case 1** we have 
+$$
     \mathbb{E}\left[ X_n \cdot Y_n \right] \le \mathbb{E}^{1 / p} \left[ X_n^p \right] \cdot \mathbb{E}^{1 / q} \left[ Y_n^q \right]. 
-\]</span></p>
-<p>Further, it follows by monotone convergence theorem that <span class="math display">\[
+$$
+
+Further, it follows by monotone convergence theorem that 
+$$
     \lim_n \mathbb{E}\left[ X_n Y_n \right] = \mathbb{E}\left[ |X| \cdot |Y| \right],
-\]</span> and <span class="math display">\[
+$$
+and 
+$$
     \begin{aligned}
         \lim_n \mathbb{E} \left[ X_n^p \right] = \mathbb{E} \left[ |X|^p \right], 
         \quad 
         \lim_n \mathbb{E} \left[ Y_n^q \right] = \mathbb{E} \left[ |Y|^q \right]. 
     \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
+$$
+--> <span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
 <p>[1] <em>P. Billingsley, Probability and measure Anniversary Edition, 3rd ed. New York: Wiley, 1995.</em></p>
 
@@ -328,117 +550,10 @@ By concavity of the function <span class="math inline">\(f(t) = \ln t\)</span>: 
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/30/Heavy-Tailed-Distribution/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/30/Heavy-Tailed-Distribution/" class="post-title-link" itemprop="url">Heavy-Tailed Distribution</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2022-03-30 00:22:13 / Modified: 20:53:14" itemprop="dateCreated datePublished" datetime="2022-03-30T00:22:13+11:00">2022-03-30</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\((\Omega, \mathcal{F}, \Pr)\)</span> be a probability space, and <span class="math inline">\(X: \Omega \rightarrow \mathbb{R}\)</span> be a random variable. Assume that there exists constants <span class="math inline">\(a \in (0, 1]\)</span>, <span class="math inline">\(b \in \R^+\)</span>, such that <span class="math display">\[
-    \mathbb{E}\left[|X|^{1 + a}\right] \le b. 
-\]</span></p>
-<blockquote>
-<p><strong>Theorem.</strong> Let <span class="math inline">\(T \in \R^+\)</span>. Then <span class="math display">\[
-\mathbb{E}\left[|X| \cdot \mathbb{I}_{\left[ |X| &gt; T \right]} \right] \le \frac{b}{ T^a}. 
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}\left[|X|^{1 + a}\right]
-            &amp;= \int_0^\infty \Pr\left[ |X|^{1 + a} &gt; r \right] \, dr 
-            = \int_0^\infty \Pr\left[ |X|^{1 + a} &gt; s^{1 + a} \right] \, ds^{1 + a} \\
-            &amp;= \int_0^\infty (1 + a) s^a \cdot \Pr\left[ |X| &gt; s \right] \, d s \\
-            &amp;\ge \int_0^T (1 + a) s^a \cdot \Pr\left[ |X| &gt; T \right] \, d s 
-            + (1 + a) \cdot T^a \cdot \int_T^\infty \Pr\left[ |X| &gt; s \right] \, d s \\
-            &amp;= T^{1 + a} \cdot \Pr[ |X| &gt; T ] + (1 + a) \cdot T^a \cdot \int_T^\infty \Pr\left[ |X| &gt; s \right] \, d s. 
-    \end{aligned}
-\]</span></p>
-<p>Next, observe that for <span class="math inline">\(s \in [0, T]\)</span>, <span class="math display">\[
-    \begin{aligned}
-        \Pr\left[ |X| \cdot \mathbb{I}_{\left[ |X| &gt; T \right]} &gt; s \right] 
-            &amp;= \Pr\left[ \left\{ \omega \in \Omega : |X(\omega)| &gt; s \wedge |X(\omega)| &gt; T  \right\} \right] 
-            % &amp;= \Pr\left[ \left\{ \omega \in \Omega : |X(\omega)| &gt; T  \right\} \right] \\
-            = \Pr\left[ |X| &gt; T \right] . 
-    \end{aligned}
-\]</span> and for <span class="math inline">\(s &gt; T\)</span>, <span class="math display">\[
-    \begin{aligned}
-        \Pr\left[ |X| \cdot \mathbb{I}_{\left[ |X| &gt; T \right]} &gt; s \right] 
-            &amp;= \Pr\left[ \left\{ \omega \in \Omega : |X(\omega)| &gt; s \wedge |X(\omega)| &gt; T  \right\} \right] 
-            = \Pr\left[ |X| &gt; s \right] . 
-    \end{aligned}
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}\left[|X| \cdot \mathbb{I}_{\left[ |X| &gt; T \right]} \right] 
-        &amp;= 
-        \int_0^T \Pr\left[ |X| \cdot \mathbb{I}_{\left[ |X| &gt; T \right]} &gt; s \right] \, d s 
-        + 
-        \int_T^\infty \Pr\left[ |X| \cdot \mathbb{I}_{\left[ |X| &gt; T \right]} &gt; s \right] \, d s \\
-        &amp;= T \cdot \Pr[ |X| &gt; T ] + \int_T^\infty \Pr\left[ |X| \cdot \mathbb{I}_{\left[ |X| &gt; T \right]} &gt; s \right]
-    \end{aligned}
-\]</span></p>
-<p>It concludes that <span class="math display">\[
-    T^a \cdot \mathbb{E}\left[|X| \cdot \mathbb{I}_{\left[ |X| &gt; T \right]} \right] 
-    \le 
-    \mathbb{E}\left[|X|^{1 + a}\right] \le b. 
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -504,7 +619,7 @@ By concavity of the function <span class="math inline">\(f(t) = \ln t\)</span>: 
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-count">181</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

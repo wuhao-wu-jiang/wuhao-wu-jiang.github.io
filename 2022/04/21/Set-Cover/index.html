@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Set Cover Problem Let \(\Omega &#x3D; \{ \omega_1, \ldots, \omega_n \}\) be a set, and \(S_1, \ldots, S_m\) be subsets of \(\Omega\), such that \(S_j\) is associated with weight \(w_j \in \R^+\) for each">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Set Cover">
+<meta property="og:url" content="http://example.com/2022/04/21/Set-Cover/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Set Cover Problem Let \(\Omega &#x3D; \{ \omega_1, \ldots, \omega_n \}\) be a set, and \(S_1, \ldots, S_m\) be subsets of \(\Omega\), such that \(S_j\) is associated with weight \(w_j \in \R^+\) for each">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-04-21T07:31:38.000Z">
+<meta property="article:modified_time" content="2022-04-21T13:21:00.000Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/04/21/Set-Cover/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Set Cover | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/21/Set-Cover/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Set Cover
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-21 17:31:38 / Modified: 23:21:00" itemprop="dateCreated datePublished" datetime="2022-04-21T17:31:38+10:00">2022-04-21</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="set-cover-problem">Set Cover Problem</h1>
+<p>Let <span class="math inline">\(\Omega = \{ \omega_1, \ldots, \omega_n \}\)</span> be a set, and <span class="math inline">\(S_1, \ldots, S_m\)</span> be subsets of <span class="math inline">\(\Omega\)</span>, such that <span class="math inline">\(S_j\)</span> is associated with weight <span class="math inline">\(w_j \in \R^+\)</span> for each <span class="math inline">\(j \in [m]\)</span>. The goal is solve the following the following optimization problem <span class="math display">\[
+    \begin{array}{lll}
+        &amp;\min_{J \subseteq [m]} &amp;\sum_{j \in J} w_j, \\
+        &amp;\text{s.t.}          &amp;\cup_{j \in J} S_j = \Omega.  
+    \end{array}
+\]</span> In case where <span class="math inline">\(w_j = 1\)</span> for each <span class="math inline">\(j \in [m]\)</span>, the problem is called the <em>unweighted</em> set cover problem.</p>
+<h1 id="linear-programming">Linear Programming</h1>
+<p>The linear program for the problem is <span class="math display">\[
+    \begin{array}{llr}
+        \min                &amp;\sum_{j \in [m]} w_j \cdot x_j    \\
+        \text{s.t.}         &amp;\sum_{j : \omega_i \in S_j} x_j \ge 1     &amp;\forall i \in [n]\\
+                            &amp;x_j \ge 0                      &amp;\forall j \in [m]
+    \end{array}
+\]</span></p>
+<p>The dual LP of the primal is <span class="math display">\[
+    \begin{array}{llr}
+        \max                &amp;\sum_{i \in [n]} y_i    \\
+        \text{s.t.}         &amp;\sum_{i: \omega_i \in S_j} y_i \le w_j     &amp;\forall j \in [m]\\
+                            &amp;y_i \ge 0                      &amp;\forall i \in [n]
+    \end{array}
+\]</span></p>
+<h1 id="rounding-the-optimal-primal-solution">Rounding the Optimal Primal Solution</h1>
+<p>For each element <span class="math inline">\(i \in [n]\)</span>, let <span class="math inline">\(E_i \doteq \{ j \in [m] : \omega_i \in S_j \}\)</span>, and let <span class="math inline">\(C = \max_{i \in [n]} |E_i|\)</span>.</p>
+<p>Suppose that <span class="math inline">\(x_j^*, j \in [m]\)</span> be the optimal solution to the primal LP.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math display">\[
+J \doteq \left\{ j \in [m] : x_j^* \ge \frac{1}{C} \right\}
+\]</span> is a <span class="math inline">\(C\)</span>-approximate solution to the set cover problem.</p>
+</blockquote>
+<p><strong>Proof.</strong> We prove first that <span class="math inline">\(S_j, j \in J\)</span> is a set cover, then we prove that it is a <span class="math inline">\(C\)</span> approximate one.</p>
+<p><strong>Feasibility.</strong> Since <span class="math inline">\(x_j^*\)</span> is the optimal solution to the primal LP, for each <span class="math inline">\(i \in [n]\)</span>, we have <span class="math display">\[
+    \sum_{j : \omega_i \in S_j} x_j \ge 1.
+\]</span> Therefore, , there exists at least one <span class="math inline">\(j \in E_i\)</span>, s.t., <span class="math display">\[
+    x_j^* \ge \frac{1}{|E_i|} \ge \frac{1}{C}. 
+\]</span></p>
+<p><strong>Approximation Ratio.</strong> The cost of the approximate solution is given by <span class="math display">\[
+    \sum_{j \in J} w_j 
+            \le \sum_{j \in J} w_j \cdot \big( x_j^* \cdot C \big) 
+            \le C \cdot \sum_{j \in [m]} w_j \cdot x_j^*.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark.</strong> This is a <span class="math inline">\(2\)</span>-approximation algorithm for the vertex cover problem, a special case of the set cover problem.</p>
+<h1 id="rounding-the-optimal-dual-solution">Rounding the Optimal Dual Solution</h1>
+<p>Let <span class="math inline">\(y_i^*, i \in [n]\)</span> be the optimal solution to the dual.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math display">\[
+J&#39; \doteq \left\{ j \in [m] : \sum_{i: \omega_i \in S_j} y^*_i = w_j \right\}
+\]</span> is a <span class="math inline">\(C\)</span>-approximate solution to the set cover problem.</p>
+</blockquote>
+<p><strong>Proof.</strong> We prove first that <span class="math inline">\(S_j, j \in J&#39;\)</span> is a set cover, then we prove that it is a <span class="math inline">\(C\)</span> approximate one.</p>
+<p><strong>Feasibility.</strong> Suppose that there exits an uncovered element <span class="math inline">\(\omega_k\)</span>, which implies that for each <span class="math inline">\(j \in E_k\)</span>, it holds that <span class="math display">\[
+    \sum_{i: \omega_i \in S_j} y^*_i &lt; w_j. 
+\]</span> But this implies that we can increase the value of <span class="math inline">\(y_k^*\)</span>, and therefore increase the value of <span class="math inline">\(\sum_{i \in [n]} y_i^*\)</span>, without violating the dual constraints, contradicting the <span class="math inline">\(y_i^*, i \in [n]\)</span> being optimal.</p>
+<p><strong>Approximation Ratio.</strong> The cost of the approximate solution is given by <span class="math display">\[
+    \sum_{j \in J&#39;} w_j 
+            = \sum_{j \in J&#39;} \left( \sum_{i: \omega_i \in S_j} y^*_i \right) 
+            \le \sum_{i \in [n]} \left( \sum_{i: \omega_i \in S_j} y^*_i \right) 
+            \le C \cdot \sum_{i \in [n]} y^*_i, 
+\]</span> where the last inequality holds, since each <span class="math inline">\(y_i^*\)</span> appears in at most <span class="math inline">\(C\)</span> constraints.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark.</strong> Via <em>complementary slackness</em>, if <span class="math inline">\(x_j^* &gt; 0\)</span>, we always have <span class="math display">\[
+    \sum_{i : \omega_i \in S_j} y^*_i = w_j. 
+\]</span> Since <span class="math inline">\(J \doteq \left\{ j \in [m] : x_j^* \ge 1 / C \right\}\)</span>, it holds that <span class="math inline">\(J \subseteq J&#39;\)</span>. Therefore, rounding the primal solution do no worse than rounding the dual one.</p>
+<h1 id="the-primal-dual-method">The Primal-Dual Method</h1>
+<p>Rounding the optimal dual solution requires to solve the dual LP optimally, which could be slow even though the LP can be solved in polynomial time. The following algorithm overcomes this drawback by constructing only a feasible dual solution.</p>
+<blockquote>
+<p><strong>Algorithm.</strong> <strong><span class="math inline">\(\mathcal{A}_{primal \text{-} dual}\)</span></strong><br />
+1. <span class="math inline">\(y_i \leftarrow 0\)</span>, for each <span class="math inline">\(i \in [n]\)</span><br />
+2. <span class="math inline">\(J \leftarrow \emptyset\)</span><br />
+3. <strong>while</strong> <span class="math inline">\(\exist \omega_k \notin \cup_{j \in J} S_j\)</span> <strong>do</strong><br />
+4. <span class="math inline">\(\qquad\)</span> increase <span class="math inline">\(y_k\)</span> until some constraint becomes tight,<br />
+6. <span class="math inline">\(\qquad\)</span> i.e., <span class="math inline">\(\exist S_\ell\)</span> with <span class="math inline">\(\omega_k \in S_j\)</span>, s.t., <span class="math inline">\(\sum_{i: \omega_i \in S_\ell} y_i = w_\ell\)</span><br />
+7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(J \leftarrow J \cup \{ \ell \}\)</span></p>
+</blockquote>
+<p>Clearly the <span class="math inline">\(y_i, i \in [n]\)</span> is a feasible solution to the dual.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Algorithm <span class="math inline">\(\mathcal{A}_{primal \text{-} dual}\)</span> returns a <span class="math inline">\(C\)</span>-approximate solution <span class="math inline">\(J\)</span> to the set cover problem.</p>
+</blockquote>
+<p><strong>Proof.</strong> We prove first that <span class="math inline">\(S_j, j \in J\)</span> is a set cover, then we prove that it is a <span class="math inline">\(C\)</span> approximate one.</p>
+<p><strong>Feasibility.</strong> Suppose that there exits an element <span class="math inline">\(\omega_k\)</span> that is not covered by <span class="math inline">\(J\)</span>, which implies that for each <span class="math inline">\(j \in E_k\)</span>, it holds that <span class="math display">\[
+    \sum_{i: \omega_i \in S_j} y_i &lt; w_j. 
+\]</span> But this implies that we can increase the value of <span class="math inline">\(y_k\)</span>, and therefore increase the value of <span class="math inline">\(\sum_{i \in [n]} y_i\)</span>, without violating the dual constraints, contradicting <span class="math inline">\(y_i\)</span> being optimal.</p>
+<p><strong>Approximation Ratio.</strong> The cost of the approximate solution is given by <span class="math display">\[
+    \sum_{j \in J} w_j 
+            = \sum_{j \in J} \left( \sum_{i: \omega_i \in S_j} y_i \right) 
+            \le \sum_{i \in [n]} \left( \sum_{i: \omega_i \in S_j} y_i \right) 
+            \le C \cdot \sum_{j \in [m]} y_i, 
+\]</span> where the last inequality holds, since each <span class="math inline">\(y_i\)</span> appears in at most <span class="math inline">\(C\)</span> constraints.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="randomized-rounding">Randomized Rounding</h1>
+<p>We present a randomized algorithm based on the optimal solution <span class="math inline">\(x_j^*\)</span> for the primal LP.</p>
+<p>Let <span class="math inline">\(T \in \mathbb{N}^+\)</span> be a positive integer to be determined later.</p>
+<blockquote>
+<p><strong>Algorithm.</strong> <span class="math inline">\(\mathcal{A}_{rnd}\)</span><br />
+1. <strong>for</strong> <span class="math inline">\(t \in [T]\)</span> <strong>do</strong><br />
+2. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(J_t \leftarrow \emptyset\)</span><br />
+3. <span class="math inline">\(\qquad\)</span> <strong>for</strong> each <span class="math inline">\(j \in [m]\)</span> <strong>do</strong><br />
+4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> add <span class="math inline">\(j\)</span> to <span class="math inline">\(J_t\)</span> with probability <span class="math inline">\(x_j^*\)</span><br />
+5. output <span class="math inline">\(J \leftarrow \cup_{t \in [T]} J_t\)</span></p>
+</blockquote>
+<blockquote>
+<p><strong>Theorem.</strong> The expected cost of <span class="math inline">\(J\)</span> is at most <span class="math inline">\(T \cdot \sum_{j \in [m]} w_j \cdot x_j^*\)</span>. Further, if <span class="math inline">\(T = 2 \ln n\)</span>, with probability at least <span class="math inline">\(1 - 1 / n\)</span>, <span class="math inline">\(J\)</span> is a set cover.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p><strong>Expected Cost.</strong> Since <span class="math inline">\(j\)</span> is included in <span class="math inline">\(J_t\)</span> with probability <span class="math inline">\(x_j^*\)</span> for each <span class="math inline">\(j \in [m]\)</span>, by linearity of expectation, the expected sum of weights of sets in <span class="math inline">\(J_t\)</span> is given by <span class="math display">\[
+    \sum_{j \in [m]} w_j \cdot x_j^*. 
+\]</span> Therefore, the expected cost of <span class="math inline">\(J\)</span> is at most <span class="math inline">\(T \cdot \sum_{j \in [m]} w_j \cdot x_j^*\)</span>.</p>
+<p><strong>Failure Probability.</strong> The probability that a fixed <span class="math inline">\(\omega_i\)</span> is not covered by <span class="math inline">\(J_t\)</span> is given by <span class="math display">\[
+    \begin{aligned}
+        \prod_{j : \omega_i \in S_j} (1 - x_j^*)
+        \le \exp \left( - \sum_{j : \omega_i \in S_j} x_j^* \right)
+        \le \exp (- 1). 
+    \end{aligned}
+\]</span> By independence, the probability that none of the <span class="math inline">\(J_t\)</span> covers <span class="math inline">\(\omega_i\)</span> is at most <span class="math display">\[
+    \big( \exp(-1) \big)^T = \exp(-T) = 1 / n^2. 
+\]</span> Applying union bound over all element <span class="math inline">\(\omega_i \in \Omega\)</span> finishes the proof.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="greedy-algorithm">Greedy Algorithm</h1>
+<p>Finally, we discuss a greedy algorithm for the set cover problem.</p>
+<p>We follows the convention that <span class="math inline">\(x / 0 = \infty\)</span>, <span class="math inline">\(\forall x \in \R^+\)</span>.</p>
+<blockquote>
+<p><strong>Algorithm.</strong> <span class="math inline">\(\mathcal{A}_{greedy}\)</span><br />
+1. <span class="math inline">\(\hat S_j \leftarrow S_j\)</span>, for each <span class="math inline">\(j \in [m]\)</span><br />
+2. <span class="math inline">\(J \leftarrow \emptyset\)</span><br />
+3. <strong>while</strong> <span class="math inline">\(\cup_{j \in J} S_j \neq \Omega\)</span> <strong>do</strong><br />
+4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\ell \leftarrow \min_{j \in [m]} \left( w_j / |\hat S_j| \right)\)</span><br />
+7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(J \leftarrow J \cup \{ \ell \}\)</span><br />
+8. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat S_j \leftarrow \hat S_j \setminus S_\ell\)</span>, <span class="math inline">\(\forall j \in [m]\)</span></p>
+</blockquote>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>D. P. Williamson and D. B. Shmoys, The Design of Approximation Algorithms. Cambridge: Cambridge University Press, 2011.</em></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/31/Holder-s-Inequality/" rel="prev" title="Holder's Inequality">
+      <i class="fa fa-chevron-left"></i> Holder's Inequality
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#set-cover-problem"><span class="nav-number">1.</span> <span class="nav-text">Set Cover Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#linear-programming"><span class="nav-number">2.</span> <span class="nav-text">Linear Programming</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rounding-the-optimal-primal-solution"><span class="nav-number">3.</span> <span class="nav-text">Rounding the Optimal Primal Solution</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rounding-the-optimal-dual-solution"><span class="nav-number">4.</span> <span class="nav-text">Rounding the Optimal Dual Solution</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#the-primal-dual-method"><span class="nav-number">5.</span> <span class="nav-text">The Primal-Dual Method</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#randomized-rounding"><span class="nav-number">6.</span> <span class="nav-text">Randomized Rounding</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#greedy-algorithm"><span class="nav-number">7.</span> <span class="nav-text">Greedy Algorithm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">8.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">181</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

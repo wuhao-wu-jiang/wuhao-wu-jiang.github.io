@@ -146,6 +146,195 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/04/Weighed-Sampling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/04/Weighed-Sampling/" class="post-title-link" itemprop="url">Weighed Random Sampling</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-04 09:44:36" itemprop="dateCreated datePublished" datetime="2021-03-04T09:44:36+11:00">2021-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-10 15:59:15" itemprop="dateModified" datetime="2021-03-10T15:59:15+11:00">2021-03-10</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<p>A stream of <span class="math inline">\(n\)</span> elements indexed by <span class="math inline">\([n] \doteq \{ 1, 2, 3, ..., n \}\)</span>. Each element <span class="math inline">\(i\)</span> is associated with a weight <span class="math inline">\(w_i\)</span>.</p>
+<p>The goal is to maintain a set <span class="math inline">\(S\)</span> of <span class="math inline">\(m\)</span> samples, such that</p>
+<ol type="1">
+<li><span class="math inline">\(S\)</span> is initialized with <span class="math inline">\(\{1, 2, ..., m \}\)</span>;<br />
+</li>
+<li><span class="math inline">\(\forall t &gt; m\)</span>, when element <span class="math inline">\(t\)</span> arrives, <span class="math inline">\(\forall i \in [t]\)</span>, the <span class="math inline">\(i\)</span>-th element is kept with probability <span class="math display">\[
+     p_i \doteq \min \left\{ 1, \frac{w_i}{ z_t } \right\},
+ \]</span> where <span class="math inline">\(z_t\)</span> is the unique solution to the equation <span class="math inline">\(\sum_{i \in [t] } p_i = m\)</span>, i.e., <span class="math display">\[
+     \left| \{ i \in [t] \wedge w_i \ge z_t \} \right| + \sum_{ i \in [t] \wedge w_i &lt; z_t } \frac{w_i}{ z_t } = m.
+ \]</span></li>
+</ol>
+<blockquote>
+<p><strong>Definition.</strong> <span class="math inline">\(L(t, x) \doteq \{ i \in [t ] : w_i \ge x \}\)</span>.<br />
+<strong>Definition.</strong> <span class="math inline">\(W(t, x) \doteq \sum_{ i \in [t] , w_i &lt; x } w_i\)</span>.<br />
+<strong>Definition.</strong><br />
+<span class="math display">\[
+\begin{aligned}
+f(t, x) 
+&amp;\doteq \left| \{ i \in [t] \wedge w_i \ge x \} \right| + \sum_{ i \in [t] , w_i &lt; x } \frac{w_i}{ x } \\
+&amp;= \left| L(t, x) \right| + \frac{1}{x} \cdot W(t, x). 
+\end{aligned}
+\]</span></p>
+</blockquote>
+<p>For given <span class="math inline">\(t \in [n]\)</span>, <span class="math inline">\(z_t\)</span> is the solution to <span class="math inline">\(f(t, z_t) = m\)</span>.</p>
+<h1 id="algorithm">Algorithm</h1>
+<p>Initially, we can set <span class="math inline">\(z_t = 0\)</span> for <span class="math inline">\(t \in [m]\)</span>, so that <span class="math inline">\(p_t = 1\)</span> and element <span class="math inline">\(t\)</span> is added to <span class="math inline">\(S\)</span>.</p>
+<p>Next, we discuss how to compute <span class="math inline">\(z_{t + 1}\)</span> based on <span class="math inline">\(z_t\)</span> and how to maintain <span class="math inline">\(S\)</span> when the <span class="math inline">\(t + 1\)</span>-th element arrives.</p>
+<h2 id="computing-z_t-1">Computing <span class="math inline">\(z_{t + 1}\)</span></h2>
+<p>We want to find the solution <span class="math inline">\(z_{t + 1}\)</span> for the equation <span class="math inline">\(f(t + 1, x ) = m\)</span> (in which <span class="math inline">\(t + 1\)</span> is fixed and <span class="math inline">\(x\)</span> is the variable). First, observe <span class="math display">\[
+    f(t + 1, z_t) = f(t, z_t ) + \min \left\{ \frac{w_{t + 1} }{ z_t}, 1 \right\} &gt; m.
+\]</span></p>
+<p>Hence, it holds that <span class="math inline">\(z_{t + 1} &gt; z_t\)</span>.</p>
+<p>W.L.O.G, assume that <span class="math inline">\(L(t + 1, z_t)\)</span> contains <span class="math inline">\(k\)</span> elements whose weights <span class="math inline">\(\{ x_1, x_2, .., x_k \}\)</span> are sorted in non-decreasing order: <span class="math display">\[
+    z_t \doteq x_0 \le x_1 \le x_2 \le ... \le x_k &lt; x_{k + 1} \doteq \infty.
+\]</span></p>
+<p>If we fix <span class="math inline">\(t + 1\)</span>, then for <span class="math inline">\(x &gt; z_t\)</span>, <span class="math inline">\(f(t + 1, x)\)</span> is a decreasing and piece-wise linear function on intervals <span class="math display">\[
+    ( x_0 , x_1 ], ( x_1 , x_2  ], ...  ( x_{k - 1} , x_k  ] ,( x_k , x_{k + 1}  ).
+\]</span> Here if <span class="math inline">\(x_{j - 1} = x_j\)</span> for some <span class="math inline">\(j \in [ k ]\)</span>, then we consider the interval <span class="math inline">\((x_{j -1}, x_j ]\)</span> an empty set and ignore it. If <span class="math inline">\(z_{t + 1} \in (x_{j -1}, x_j ]\)</span>, it holds that <span class="math display">\[
+    \begin{aligned}
+        &amp;f(t + 1, x_{ j - 1 } ) &gt; m &amp;\Longleftrightarrow    &amp; \quad | L(t + 1, x_{ j - 1 } ) | + \frac{ 1 }{ x_{ j - 1 } } \cdot W (t + 1,  x_{ j - 1 } )  &gt; m, \\
+        &amp;f(t + 1, x_j ) \le m     &amp;\Longleftrightarrow    &amp; \quad | L(t + 1, x_j ) | + \frac{ 1 }{ x_{ j  } } \cdot W (t + 1,  x_{ j  } )  \le m .
+    \end{aligned}
+\]</span></p>
+<p>When <span class="math inline">\(x \in(x_{j -1}, x_j ]\)</span>, <span class="math inline">\(| L (t + 1, x) |\)</span> is a constant that equals to <span class="math inline">\(|L(t + 1, x_j )|\)</span>. We have <span class="math display">\[
+    | L(t + 1, z_{t + 1} ) | + \frac{ 1 }{ z_{ t + 1  } } \cdot  W(t + 1, z_{ t + 1  } )= | L(t + 1, x_j ) | + \frac{ 1 }{  z_{ t + 1  } } \cdot W(t + 1, x_{ j  } )  = m. 
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    z_{t + 1} = \frac{ W(t + 1, x_{ j  } ) }{ m - \left| L(t + 1, x_j ) \right| } = \frac{ \sum_{ i \in [t + 1], w_i &lt; x_j } w_i }{ m - \left| L(t + 1, x_j ) \right| }. 
+\]</span></p>
+<p>The following code shows the detailed process for the search of <span class="math inline">\(z_{t + 1}\)</span>. It maintains</p>
+<ol type="1">
+<li><p>A set <span class="math inline">\(L\)</span>, such that at the beginning of the algorithm, <span class="math inline">\(L = L(t, z_t)\)</span>, and when the algorithm stops, <span class="math inline">\(L = L(t + 1, z_{t + 1} )\)</span>;</p></li>
+<li><p>The sum of weights <span class="math inline">\(W\)</span>, which equals to <span class="math inline">\(W(t, z_t)\)</span> at the beginning of the algorithm, and equals to <span class="math inline">\(W(t + 1, z_{t + 1} )\)</span> when the algorithm stops;</p></li>
+<li><p>A set <span class="math inline">\(C\)</span>, which contains elements <span class="math inline">\(L(t, z_t) \cup \{ t + 1 \} \setminus L(t + 1, z_{t + 1} )\)</span>.</p></li>
+</ol>
+<blockquote>
+<p><strong>Input</strong>: a) The weight <span class="math inline">\(w_{t + 1}\)</span>; b) The set <span class="math inline">\(L = L(t, z_t)\)</span>.<br />
+1. <span class="math inline">\(C \leftarrow \emptyset\)</span>;<br />
+2. <strong>If</strong> <span class="math inline">\(w_{t + 1} \ge z_t:\)</span><br />
+3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(L \leftarrow L \cup \{ t + 1 \}\)</span>.<br />
+4. <strong>Else:</strong><br />
+5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(C \leftarrow C \cup \{ t + 1 \}\)</span>.<br />
+6. <strong>While</strong> <span class="math inline">\(|L| \neq \emptyset\)</span> and <span class="math inline">\(W / \min_{i \in L } w_i + | L | &gt; m:\)</span><br />
+7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(W \leftarrow W + \min_{i \in L} w_i\)</span>;<br />
+8. <span class="math inline">\(\qquad\)</span> move the element <span class="math inline">\(i \in L\)</span> with minimum <span class="math inline">\(w_i\)</span> from <span class="math inline">\(L\)</span> to <span class="math inline">\(C\)</span>.<br />
+9. <span class="math inline">\(z_{t + 1} \leftarrow W / (m - |L| )\)</span>.</p>
+</blockquote>
+<h2 id="maintaining-s">Maintaining <span class="math inline">\(S\)</span></h2>
+<p>Denote <span class="math inline">\(S_t\)</span> the sampled set after <span class="math inline">\(t\)</span> elements are processed. Define <span class="math display">\[
+    D = [t] \setminus L( t, z_t ), \\
+    E = S_t \setminus L( t, z_t ).
+\]</span> By definition, it holds that <span class="math inline">\(|E| = s - |L(t, z_t) | = W(t, z_t ) / { z_t } = \sum_{i \in D} w_i / z_t\)</span>.</p>
+<p>When the element <span class="math inline">\(t + 1\)</span> comes, let <span class="math inline">\(S&#39; \doteq S_t \cup \{ t + 1 \}\)</span> elements. To obtain a set <span class="math inline">\(S_{t + 1}\)</span>, we need to discard one element in <span class="math inline">\(S&#39;\)</span>. Suppose that we have computed <span class="math inline">\(z_{t + 1}\)</span>. The elements <span class="math inline">\(\in [t + 1]\)</span> can be partitioned into three sets: <span class="math display">\[
+    [ t + 1 ] = L(t + 1, z_{t + 1} ) \cup C \cup D. 
+\]</span></p>
+<p>Similarly, the set <span class="math inline">\(S&#39;\)</span> can be decomposed into three parts: <span class="math display">\[
+    S&#39; = L(t + 1, z_{t + 1} ) \cup C \cup E. 
+\]</span></p>
+<ol type="1">
+<li><p>If <span class="math inline">\(i \in L(t + 1, z_{t + 1} )\)</span>, it must be kept in <span class="math inline">\(S_{t + 1}\)</span>.</p></li>
+<li><p>If <span class="math inline">\(i \in C\)</span>, it should be removed with probability <span class="math inline">\(1 - w_i / z_{t + 1}\)</span>. Since <span class="math inline">\(i \in C\)</span>, either <span class="math inline">\(i = t + 1\)</span> or <span class="math inline">\(i \in L(t , z_t)\)</span>. In both case, <span class="math inline">\(i\)</span> appears in <span class="math inline">\(S&#39;\)</span> with probability <span class="math inline">\(1\)</span>. On the other hand, we only keep it with probability <span class="math inline">\(w_i / z_{ t + 1} &lt; 1\)</span>. Let <span class="math inline">\(p\)</span> be the probability of discarding <span class="math inline">\(i\)</span>. Then <span class="math display">\[  
+     1 \cdot (1 - p) = \frac{w_i}{ z_{t + 1} }. 
+ \]</span> It follows that <span class="math inline">\(p = 1 - w_i / z_{t + 1}\)</span>.</p></li>
+<li><p>If if <span class="math inline">\(i \in E\)</span>, then it should be removed with probability <span class="math inline">\(p = 1 - z_t / z_{t + 1}\)</span>. Since <span class="math inline">\(i \in E\)</span>, it comes from <span class="math inline">\(D\)</span> and appears in <span class="math inline">\(S&#39;\)</span> with probability <span class="math inline">\(w_i / z_t\)</span>. As the target probability to keep <span class="math inline">\(i\)</span> should be <span class="math inline">\(w_i / z_{t + 1}\)</span>, it holds that <span class="math display">\[
+     \frac{w_i}{ z_t } \cdot (1 - p) = \frac{ w_i }{ z_{t + 1} }. 
+ \]</span> Therefore, it should be discarded with probability <span class="math inline">\(p = 1 - z_t / z_{t + 1}\)</span>.</p></li>
+</ol>
+<p>Finally, we claim that the sum of probabilities to discard an element equals to 1:</p>
+<blockquote>
+<p><span class="math display">\[
+\sum_{i \in C} \left( 1 - \frac{w_i}{ z_{ t + 1} } \right) + |E| \cdot  \left( 1 - \frac{z_t}{ z_{t + 1} } \right) = 1. 
+\]</span></p>
+</blockquote>
+<p><em>Proof:</em> <span class="math display">\[
+    \begin{aligned}
+        |S&#39;| - m 
+            &amp;= f(t, z_t ) + 1 - f(t + 1, z_{ t + 1} ) \\
+            &amp;= | L (t, z_t ) | + \frac{1}{z_t} \cdot \sum_{i \in [t], w_i &lt; z_t} w_i + 1 - | L (t + 1, z_{t + 1} | - \frac{1}{z_t} \cdot \sum_{i \in [t + 1], w_i &lt; z_{t + 1} } w_i \\
+            &amp;= \sum_{i \in C} \left( 1 - \frac{w_i}{ z_{ t + 1} } \right) + \sum_{ i \in D} \frac{w_i }{ z_t } \left( 1 - \frac{z_t}{ z_{t + 1} } \right) \\
+            &amp;= \sum_{i \in C} \left( 1 - \frac{w_i}{ z_{ t + 1} } \right) + |E| \cdot  \left( 1 - \frac{z_t}{ z_{t + 1} } \right) \\
+            &amp;= 1.
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>To decide which element from <span class="math inline">\(C \cup E\)</span> to discard, we can run the following pseudo-code:</p>
+<blockquote>
+<ol type="1">
+<li>Sample a real number <span class="math inline">\(r \in [0, 1]\)</span> uniformly at random.<br />
+</li>
+<li>For <span class="math inline">\(i \in C\)</span> do:<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> if <span class="math inline">\(r &lt; 1 - w_i / z_{t + 1}\)</span>:<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> discard <span class="math inline">\(i\)</span> and return;<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> else:<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(r \leftarrow 1 - w_i / z_{t + 1}\)</span>;<br />
+</li>
+<li>Discard one element from <span class="math inline">\(E\)</span> uniformly at random;</li>
+</ol>
+</blockquote>
+<h1 id="reference">Reference</h1>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/27/The-Number-Of-Empty-Bins/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -400,165 +589,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/12/Beyond-Chebyshev-s-Inequality/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/02/12/Beyond-Chebyshev-s-Inequality/" class="post-title-link" itemprop="url">Beyond Chebyshev's Inequality</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-02-12 13:56:18" itemprop="dateCreated datePublished" datetime="2021-02-12T13:56:18+11:00">2021-02-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-15 11:00:25" itemprop="dateModified" datetime="2021-02-15T11:00:25+11:00">2021-02-15</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>We consider the Count Sketch with single array.</p>
-<p><strong>Definitions</strong></p>
-<ol type="1">
-<li>Let <span class="math inline">\(S = (s_1, s_2, ..., s_n)\)</span> be a stream of <span class="math inline">\(n\)</span> elements from a domain <span class="math inline">\([d]\)</span>.<br />
-</li>
-<li><span class="math inline">\(A:\)</span> an array of size <span class="math inline">\(m\)</span>.<br />
-</li>
-<li><span class="math inline">\(h: [d] \rightarrow [m]\)</span> a hash function that assigns each value in <span class="math inline">\([d]\)</span> an integer uniformly at random from <span class="math inline">\([m]\)</span>.<br />
-</li>
-<li><span class="math inline">\(g: [d] \rightarrow \{ - 1, 1 \}\)</span> a hash function that assigns each value in <span class="math inline">\([d]\)</span> a random sign.</li>
-</ol>
-<p><strong>Algorithm</strong></p>
-<p>For each element <span class="math inline">\(s \in S\)</span>, Count-Sketch updates <span class="math inline">\(A\)</span> as follows:</p>
-<blockquote>
-<p>Update (<span class="math inline">\(s\)</span>):<br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(A[ h(s) ] \leftarrow A[ h(s) ] + g[s]\)</span></p>
-</blockquote>
-<p>After processing elements in <span class="math inline">\(S\)</span>, Count-Sketch answer query for an element's frequency as follows:</p>
-<blockquote>
-<p>Query (<span class="math inline">\(v\)</span>):<br />
-<span class="math inline">\(\qquad\)</span> return <span class="math inline">\(\hat f[v] \doteq g[v] \cdot A[ h(v) ]\)</span></p>
-</blockquote>
-<p><strong>Error Analysis</strong></p>
-<p>For a fixed <span class="math inline">\(v \in [d]\)</span>, let <span class="math inline">\(f[v]\)</span> be its true frequencies in <span class="math inline">\(S\)</span> (i.e., the number of times it appears in <span class="math inline">\(S\)</span>). Define indicator random variables <span class="math display">\[
-    X_1, X_2, ..., X_n, 
-\]</span></p>
-<p>such that for <span class="math inline">\(i \in [n]\)</span>, define <span class="math display">\[
-    X_i = \begin{cases}
-        &amp;1,     &amp;\text{ if } h(s_i) = h(v),     &amp;g(s_i) = g(v), \\
-        &amp;0,     &amp;\text{ if } h(s_i) \neq h(v),  &amp;               \\
-        &amp;-1,    &amp;\text{ if } h(s_i) = h(v),     &amp;g(s_i) \neq g(v), 
-    \end{cases}
-\]</span></p>
-<p>The <span class="math inline">\(X_i\)</span>'s are not independent. For <span class="math inline">\(i \in [n]\)</span>, if <span class="math inline">\(s_i \neq v\)</span>, it holds that <span class="math display">\[
-    \mathbb{E} [ X_i ] = 0. 
-\]</span></p>
-<p>For <span class="math inline">\(i, j \in [n], s_i \neq v, s_j \neq v\)</span>, we have <span class="math display">\[
-    \mathbb{ E } [X_i X_j ] = 
-        \begin{cases}
-            &amp;0,         &amp;\text{ if } s_i \neq s_j, \\
-            &amp;\frac{1}{m}&amp;\text{ if } s_i = s_j.
-        \end{cases}
-\]</span></p>
-<p>The estimation error of <span class="math inline">\(\hat f[v]\)</span> can be written as <span class="math display">\[
-    \left| \sum_{ i \in [n], s_i \neq v } X_i \right|. 
-\]</span></p>
-<p>For given <span class="math inline">\(\epsilon &gt; 0\)</span>, we want to bound. <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-    \end{aligned}
-\]</span></p>
-<p>To do this, we pick some parameter <span class="math inline">\(t &gt; 0\)</span> and define <span class="math inline">\(\mathcal{V}_{bad} \doteq \{ u \in [d], h(u) \ge t \}\)</span>, and consider <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-            &amp;\le  \Pr \left[  \exists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] + 
-            \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;\le \frac{n}{ t \cdot m} + \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right].
-    \end{aligned}
-\]</span></p>
-<p>We consider the second probability. <span class="math display">\[
-    \begin{aligned}
-        \mathbb{Var} \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right]
-            &amp;= \sum_{ i \in [n], s_i \neq v} \mathbb{Var} \left[ X_i \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;\quad + \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v } \mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] 
-    \end{aligned}
-\]</span></p>
-<p>The first term equals to <span class="math inline">\(\frac{n}{m}\)</span>. For the second term, if <span class="math inline">\(s_i \neq s_j\)</span>, then by independence of <span class="math inline">\(X_i\)</span> and <span class="math inline">\(X_j\)</span>, it holds that <span class="math display">\[
-\mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] = \mathbb{E} \left[ X_i \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \cdot \mathbb{E} \left[  X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right]=0.
-\]</span></p>
-<p>If <span class="math inline">\(s_i = s_j\)</span>, then <span class="math inline">\(X_i = X_j\)</span>. Hence, <span class="math display">\[
-    \begin{aligned}
-        \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v } \mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] 
-            &amp;= \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v, s_i = s_j } \mathbb{E} \left[ X_i^2 \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;= \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v, s_i = s_j, f[s_i] \le t } \frac{1}{m} \\
-            &amp;\le t^2 \cdot \frac{n}{t} \cdot \frac{1}{m} \\
-            &amp;= \frac{ t \cdot n}{m}.
-    \end{aligned}
-\]</span></p>
-<p>By Chebyshev's inequality, <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-            &amp;\le \frac{n}{ t \cdot m} + \frac{t \cdot n}{m \cdot \epsilon^2}.
-    \end{aligned}
-\]</span></p>
-<p>By setting <span class="math inline">\(t = \epsilon\)</span>, the probability is minimized to <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-            &amp;\le \frac{n}{m} \cdot \frac{2}{\epsilon}. 
-    \end{aligned}
-\]</span></p>
-<p>Note that this error bound is exactly the same as Count-Min sketch with a single array of size <span class="math inline">\(m\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -624,7 +658,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-count">181</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

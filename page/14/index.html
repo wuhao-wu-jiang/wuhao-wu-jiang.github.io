@@ -146,6 +146,176 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/14/AMS-Sketch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/14/AMS-Sketch/" class="post-title-link" itemprop="url">AMS Sketch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-04-14 15:41:33" itemprop="dateCreated datePublished" datetime="2021-04-14T15:41:33+10:00">2021-04-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-05-14 21:20:45" itemprop="dateModified" datetime="2021-05-14T21:20:45+10:00">2021-05-14</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<p>There is a stream <span class="math inline">\(S\)</span> of elements, each consists of a pair <span class="math inline">\((t, \Delta) \in [n] \times \mathbb{R}\)</span>. Let <span class="math inline">\(f \in \mathbb{R}^n\)</span> be the frequency vector of <span class="math inline">\(S\)</span>, s.t., <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
+    f_i = \sum_{ (t, \Delta) \in S \wedge t = i} \Delta. 
+\]</span></p>
+<p>Given <span class="math inline">\(\epsilon \in (0, 1)\)</span>, design a data structure that outputs an <span class="math inline">\((1 \pm \epsilon)\)</span> estimate <span class="math inline">\(\Vert f \Vert_2^2\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>, and uses space of <span class="math inline">\(O( \frac{1}{\epsilon^2 } \ln \frac{1}{\delta} )\)</span>.</p>
+<h1 id="solution">Solution</h1>
+<p>Based on Count-Sketch.</p>
+<h2 id="algorithm">Algorithm</h2>
+<blockquote>
+<hr />
+<p><strong>Count-Sketch</strong><br />
+1. <span class="math inline">\(k \leftarrow O \left( \ln \frac{1}{ \delta} \right); m \leftarrow \frac{3}{\epsilon^2}\)</span>.<br />
+2. <span class="math inline">\(h_1, h_2, ..., h_k: [n] \rightarrow [m]\)</span>, pairwise independent hash functions.<br />
+3. <span class="math inline">\(g_1, g_2, ..., g_k: [n] \rightarrow \{-1, 1\}\)</span>, four-wise independent hash functions.<br />
+4. <span class="math inline">\(M \leftarrow \{ 0 \}^{k \times m}\)</span> be a <span class="math inline">\(k \times m\)</span> matrix initialized with zeros.<br />
+4. For <span class="math inline">\((t, \Delta) \in S:\)</span><br />
+5. <span class="math inline">\(\qquad\)</span> For <span class="math inline">\(i \in [k]:\)</span><br />
+6. <span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(M[i, h_i (t) ] \leftarrow M[i, h_i (t) ] + g_i(t) \cdot \Delta\)</span><br />
+<span class="math inline">\(\qquad\)</span></p>
+<p><strong>Estimation of <span class="math inline">\(\Vert f \Vert_2^2\)</span></strong><br />
+1. For <span class="math inline">\(i \in [k]:\)</span><br />
+2. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(M_i\)</span> be the <span class="math inline">\(i\)</span>-th row of <span class="math inline">\(M\)</span>.<br />
+3. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(a_i \leftarrow \Vert M_i \Vert_2\)</span>.<br />
+4. Return the median of <span class="math inline">\((a_i^2)_{i \in [k] }\)</span>.</p>
+</blockquote>
+<h2 id="analysis">Analysis</h2>
+<blockquote>
+<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall i \in [k], \mathbb{E}[ a_i^2 ] = \Vert f \Vert_2^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Consider a fixed <span class="math inline">\(i \in [k]\)</span>. <span class="math inline">\(\forall j \in [m]\)</span>, define the set <span class="math inline">\(h_i^{-1}[j]\)</span> as elements in <span class="math inline">\([n]\)</span> hashed to <span class="math inline">\(j\)</span>: <span class="math display">\[
+    h_i^{-1}[j] \doteq \{ t \in [n] : h(t) = j \}. 
+\]</span></p>
+<p>Once <span class="math inline">\(h_i\)</span> is fixed, it holds that <span class="math display">\[
+    M[i, j] = \sum_{ t \in h_i^{-1}[j] } g_i (t) \cdot f_t.
+\]</span></p>
+<p>By linearity of expectation and four-wise independence of <span class="math inline">\(g_i\)</span>, <span class="math display">\[
+    \underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t, t&#39; \in h_i^{-1}[j] } \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] \cdot f_t \cdot f_{t&#39;}. 
+\]</span></p>
+<p>It holds that <span class="math display">\[
+    \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] = 
+    \begin{cases}
+        1,  &amp; \text{ if } t = t&#39;,    \\
+        0,      &amp; \text{ otherwise }. 
+    \end{cases}
+\]</span></p>
+<p>Therefore, <span class="math inline">\(\underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t \in h_i^{-1}[j] } f_t^2\)</span>.</p>
+<p><strong>Remark. This is a rather deep result, which says that whatever elements are hashed to bucket <span class="math inline">\(j\)</span>, <span class="math inline">\(\underset{g}{ \mathbb{E} } [ (M[i,j] )^2 ]\)</span> equals the sum of squares of these elements.</strong></p>
+<p>By linearity of expectation, when <span class="math inline">\(h_i\)</span> is fixed, <span class="math display">\[
+    \underset{g}{ \mathbb{E} } [ a_i^2 ] = \sum_{j \in [m] } \underset{g}{ \mathbb{E} } [ (M[i,j])^2 ] = \sum_{j \in [m] } \sum_{ t \in h_i^{-1}[j] } f_t^2 = \Vert f \Vert_2^2. 
+\]</span></p>
+<p>It follows that <span class="math inline">\(\underset{h}{ \mathbb{E} } \left[ \underset{g}{ \mathbb{E} } [ a_i^2 ] \right] = \Vert f \Vert_2^2\)</span>.</p>
+<p><strong>Remark. The proof holds even for <span class="math inline">\(m = 1\)</span>, i.e., we can use only one bucket to construct an unbiased estimator of <span class="math inline">\(\Vert f \Vert_2^2\)</span>.</strong></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem 2.</strong> <span class="math inline">\(\mathbb{Var}[ a_i^2 ] = \frac{\Vert x \Vert_2^4 }{ m }\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p><span class="math inline">\(\forall t \in [n]\)</span>, define <span class="math inline">\(X_t \doteq g_i(t) \cdot x_t\)</span>.</p>
+<p><span class="math inline">\(\forall t \in [n], j \in [m]\)</span>, define <span class="math inline">\(Y_{t, j} \doteq \mathbb{1}[ h_i[t] = j ] \cdot X_t\)</span>. Then <span class="math display">\[
+    M[i,j] = \sum_{t \in [n] } Y_{t, j}, 
+\]</span> and hence</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \mathbb{Var}[a_i^2] 
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } (M[i, j])^2 \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \left( \sum_{t \in [n] } Y_{t, j} \right)^2 \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \sum_{t, t&#39; \in [n]} Y_{t, j} Y_{t&#39;, j} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \sum_{j \in [m] } Y_{t, j} Y_{t&#39;, j} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \left( \sum_{j \in [m] } \mathbb{1}[ h_i[t] = j ] \cdot \mathbb{1}[ h_i[t&#39;] = j ] \right) \cdot X_t \cdot X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t \in [n] } f_t^2 + \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] 
+\end{aligned}
+\]</span></p>
+<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>, define <span class="math inline">\(Z_{t, t&#39;} = \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;}\)</span>. Then <span class="math display">\[
+    \mathbb{E}[ Z_{t, t&#39;} ] = \mathbb{E}[ \mathbb{1}[ h_i[t] = h_i[t&#39;] ] ]  \cdot \mathbb{E}[ X_t ] \cdot \mathbb{E}[ x_{t&#39;} ] = 0. 
+\]</span></p>
+<p>Consider <span class="math inline">\(t &lt; t&#39; \in [n]\)</span>, <span class="math inline">\(s &lt; s&#39; \in [n]\)</span>. If <span class="math inline">\((t, t&#39;) \neq (s, s&#39;)\)</span>, then either <span class="math inline">\(t \neq s\)</span> or <span class="math inline">\(t&#39; \neq s&#39;\)</span>. Therefore, there must be an element that appears only once among the four. WLOG, suppose that <span class="math inline">\(t\)</span> is a unique element. Then <span class="math display">\[
+    Z_{t, t&#39;} Z_{s, s&#39;}
+            =  X_t \cdot \left( X_{t&#39;} \cdot X_s \cdot X_{s&#39;} \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right). 
+\]</span></p>
+<p>As <span class="math inline">\(g_i\)</span> is four-wise independent, and that <span class="math inline">\(t \neq t&#39;\)</span>, <span class="math inline">\(t \neq s\)</span> and <span class="math inline">\(t \neq s&#39;\)</span>, it holds that <span class="math inline">\(g_i(t)\)</span> is independent of <span class="math inline">\(\left( g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;) \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right)\)</span>. Hence, <span class="math display">\[
+    \mathbb{E}[ Z_{t, t&#39;} Z_{s, s&#39;}]  = 0. 
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;} \right] 
+            &amp;= \mathbb{E} \left[ \left( \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;} \right)^2 \right] \\
+            &amp;= \mathbb{E} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;}^2  \right] \\
+            &amp;= \sum_{t \neq t&#39; \in [n]} \frac{ x_t^2 x_{t&#39;}^2}{ m } \\
+            &amp;= \frac{\Vert x \Vert_2^4 }{ m }. 
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><span class="math inline">\(\forall i \in [k], \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \ge \epsilon \Vert x \Vert_2^2] \le \frac{1}{3}\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> By Chebyshev's inequality.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><span class="math inline">\(\Pr \left[ \left| \{ i \in [k] : \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \le \epsilon \Vert x \Vert_2^2] \} \right| &gt; \frac{k}{2} \right] \ge 1 - \delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> By Chernoff bound.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/02/The-Volume-of-Hamming-Ball/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -583,302 +753,10 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/27/Hanson-Wright-Inequality/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/27/Hanson-Wright-Inequality/" class="post-title-link" itemprop="url">Hanson-Wright Inequality</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-27 21:26:12" itemprop="dateCreated datePublished" datetime="2021-03-27T21:26:12+11:00">2021-03-27</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-03-28 21:21:55" itemprop="dateModified" datetime="2021-03-28T21:21:55+11:00">2021-03-28</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>For <span class="math inline">\(p \in \mathbb{N}\)</span>, if <span class="math inline">\(X \sim N(0, \sigma^2)\)</span> then <span class="math display">\[
-\mathbb{E} [ X^p ] = 
-\begin{cases}
-0,  &amp; \text{ if } p \text{ is odd }. \\
-\sigma^p (p - 1) (p - 3) ... 1,  &amp; \text{ if } p \text{ is even }. \\
-\end{cases}
-\]</span></p>
-</blockquote>
-<p><strong>Proof 1.</strong> For odd integer <span class="math inline">\(p\)</span>, the distribution <span class="math inline">\(X^p\)</span> is symmetric to the origin. Hence <span class="math inline">\(\mathbb{E} [ X^p ] = 0\)</span>. For even integer <span class="math inline">\(p = 2k\)</span>, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[X^p ] 
-            &amp;= \frac{1}{ \sqrt{2 \pi \sigma^2 } } \int t^p \exp \left( - \frac{t^2}{ 2 \sigma^2 } \right) \ dt \\
-            &amp;= \sigma^p  \frac{ 1 }{ \sqrt{2 \pi } } \int \left( \frac{t}{\sigma} \right)^p \exp \left( - \frac{t^2}{ 2 \sigma^2 } \right) \ d \frac{t}{\sigma} \\
-            &amp;= \sigma^p \frac{1}{ \sqrt{2 \pi } } \int t^p \exp \left( - \frac{t^2}{ 2 } \right) \ d t 
-    \end{aligned}
-\]</span></p>
-<p>Define <span class="math display">\[
-    f(p) = \frac{1}{ \sqrt{2 \pi } } \int t^p \exp \left( - \frac{t^2}{ 2 } \right) \ d t. 
-\]</span></p>
-<p>It holds that <span class="math display">\[
-    \begin{aligned}
-        f(p) 
-            &amp;= -\frac{1}{ \sqrt{2 \pi } } \int t^{p - 1}  \ d \exp \left( - \frac{t^2}{ 2 } \right) \\
-            &amp;= (p - 1) \frac{1}{ \sqrt{2 \pi } } \int t^{ p - 2} \exp \left( - \frac{t^2}{ 2 } \right) \ d t \\
-            &amp;= (p - 1) f(p - 2) \\
-            &amp;... \\
-            &amp;= (p - 1) (p - 3) ...1 \cdot f(0) \\
-            &amp;= (p - 1) (p - 3) ...1 
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Proof 2.</strong> The moment generating function of <span class="math inline">\(X\)</span> is <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[ e^{tX} ] 
-            &amp;= \frac{1}{ \sqrt{2 \pi} \sigma } \int_{\mathbb{R} } \exp \left( t x - \frac{ x^2 }{ 2 \sigma^2 } \right) \ dx  \\
-            &amp;= \frac{1}{ \sqrt{2 \pi} } \int_{\mathbb{R} } \exp \left( t \sigma x - \frac{ x^2 }{ 2 } \right) \ dx  \\
-            &amp;= \exp \left( \sigma^2 t^2 / 2  \right)\frac{1}{ \sqrt{2 \pi} } \int_{\mathbb{R} } \exp \left( - \frac{ (x - t\sigma)^2 }{ 2 } \right) \ dx  \\
-            &amp;= \exp( \sigma^2 t^2 / 2). 
-    \end{aligned}
-\]</span></p>
-<p>On the one hand, <span class="math display">\[
-    \mathbb{E}[ e^{tX} ] = \mathbb{E} \left[ \sum_{ k \in \mathbb{N} } \frac{ (tX)^k }{ k! } \right] = \sum_{ k \in \mathbb{N} }  \frac{ t^k \mathbb{E}[X^k] }{ k! } . 
-\]</span></p>
-<p>On the other hand, <span class="math display">\[
-    \exp( \sigma^2 t^2 / 2) = \sum_{ k \in \mathbb{N} } \frac{ (\sigma^2 t^2 / 2)^k }{ k! }. 
-\]</span></p>
-<p>Hence, for odd numbers of <span class="math inline">\(k\)</span>, <span class="math inline">\(\mathbb{E}[ X^k ] = 0\)</span>. For even numbers of <span class="math inline">\(k\)</span>, we have <span class="math display">\[
-    \frac{ t^k \mathbb{E}[X^k] }{ k! } = \frac{ (\sigma^2 t^2 / 2)^{k / 2} }{ (k / 2)! } \Longrightarrow \mathbb{E}[ X^k ] = \sigma^k \frac{ k! }{ 2^{k / 2} (k / 2)! }. 
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p>If <span class="math inline">\(Z \sim N(0, \sigma^2)\)</span> then <span class="math display">\[
-\mathbb{E} [ |Z| ] = \sqrt \frac{2 \sigma }{\pi}. 
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E} [ |Z| ] 
-            &amp;= \frac{1}{ \sqrt{ 2 \pi } \sigma} \int_{\mathbb{R} } |t| \exp \left( - \frac{t^2 }{ 2 \sigma^2} \right) \ d t \\
-            &amp;= \frac{ 2 \sigma }{ \sqrt{ 2 \pi } } \int_{\mathbb{R}_+} t \exp \left( - \frac{t^2 }{ 2 } \right) \ d t \\
-            &amp;= \frac{ 2 \sigma }{ \sqrt{ 2 \pi } } \int_{\mathbb{R}_+}  \exp \left( - \frac{t^2 }{ 2 } \right) \ d (t^2 / 2) \\
-            &amp;= \frac{ 2 \sigma }{ \sqrt{ 2 \pi } } \int_{\mathbb{R}_+}  \exp \left( - x \right) \ d x \\
-            &amp;= \sqrt{ \frac{ 2 \sigma }{ \pi } } 
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>(Khintchine Inequality).</strong> For any <span class="math inline">\(p \ge 1\)</span>, <span class="math inline">\(x \in {\mathbb{R} }^n\)</span>, and <span class="math inline">\((\sigma_i)\)</span> independent Rademacher random variables, it holds that <span class="math display">\[
-\left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_p = O( \sqrt{ p } \cdot \Vert x \Vert_2 )
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\((Z_i)\)</span> be independent normal random variables that follow distribution <span class="math inline">\(N(0, 1)\)</span>. Suppose that <span class="math inline">\(p\)</span> is an even number, then<br />
-<span class="math display">\[
-    \begin{aligned}
-        \left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_p 
-            &amp;= \left\Vert \sqrt{\frac{\pi }{2 } } \mathbb{E}_Z \left[ \sum_{i \in [n] } |Z_i| \sigma_i x_i \right] \right\Vert_p \\
-            &amp;\le \sqrt{\frac{\pi }{2 } }  \left( \mathbb{E}_\sigma \mathbb{E}_Z \left[ \left| \sum_{i \in [n] } |Z_i| \sigma_i x_i  \right|^p \right] \right)^{ 1 / p } &amp; \text{ (Jensen) } \\
-            &amp;= \sqrt{ \frac{\pi }{2 } }  \left(  \mathbb{E}_Z \mathbb{E}_\sigma \left[ \left| \sum_{i \in [n] } |Z_i| \sigma_i x_i  \right|^p \right] \right)^{ 1 / p } &amp; \text{(Exchange Order) } \\
-            &amp;= \sqrt{\frac{\pi }{2 } }  \left( \mathbb{E}_Z \left[ \left| \sum_{i \in [n] } Z_i x_i  \right|^p \right] \right)^{ 1 / p } &amp; \sigma_i |Z_i| \sim Z_i \\
-            &amp;= \sqrt{\frac{\pi }{2 } } \left\Vert \sum_{i \in [n] } Z_i x_i  \right\Vert_p. 
-    \end{aligned}
-\]</span></p>
-<p>As <span class="math inline">\(\sum_{i \in [n] } Z_i x_i \sim N(0, \Vert x \Vert _2)\)</span>, we have <span class="math display">\[
-    \left\Vert \sum_{i \in [n] } Z_i x_i  \right\Vert_p^p =  \Vert x \Vert _2^p (p - 1) (p - 3) ... 1 \le  \Vert x \Vert _2^p \cdot p^{ p / 2}. 
-\]</span></p>
-<p>Putting together, we have <span class="math display">\[
-    \left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_p  \le \sqrt{ \frac{p \pi }{2} }  \Vert x \Vert _2. 
-\]</span></p>
-<p>When <span class="math inline">\(p\)</span> is not even, let <span class="math inline">\(q \le p + 1\)</span> be the smallest even number that is greater than <span class="math inline">\(p\)</span>. Then <span class="math display">\[
-    \left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_p  \le \left\Vert \sum_{i \in [n] } \sigma_i x_i \right\Vert_q \le \sqrt{ q }  \Vert x \Vert _2 = \sqrt{ \frac{(p + 1) \pi }{2 } }  \cdot  \Vert x \Vert _2.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>(Hanson-Wright Inequality).</strong> Let <span class="math inline">\(\sigma = (\sigma_1, .., \sigma_n) \in \mathbb{R}^n\)</span> be a sequence of <span class="math inline">\(n\)</span> independent Rademachers and <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> be real and symmetric matrix. For <span class="math inline">\(p \ge 2\)</span>, <span class="math display">\[
-\left\Vert \sigma^T A \sigma - \mathbb{E}[ \sigma^T A \sigma ] \right\Vert_p = O( \sqrt{p} \cdot  \Vert A \Vert _F + p \cdot \Vert A \Vert ), 
-\]</span> where <span class="math inline">\(\Vert A \Vert_F \doteq \sqrt{ \sum_{i, j \in [n]}A_{i,j}^2 }\)</span> and <span class="math inline">\(\Vert A \Vert \doteq \sum_{ \Vert x \Vert _2 =1} \Vert A x \Vert_2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(x = (x_1;, ..., x_n)\)</span> be independent of <span class="math inline">\(\sigma\)</span> but identically distributed to it. First, <span class="math display">\[
-    \sigma^T A \sigma = \sum_{i, j} A_{i, j} \sigma_i \sigma_j = \sum_{i} A_{i, i} + \sum_{i \neq j} A_{i, j} \sigma_i \sigma_j, \\
-    \mathbb{E} \left[ \sigma^T A \sigma \right]= \sum_{i}  A_{i, i} + \sum_{i \neq j} A_{i, j} \mathbb{E} [ \sigma_i ] \mathbb{E} [ \sigma_j ] = \sum_{i}  A_{i, i}. 
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    \begin{aligned}
-        \left\Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \right\Vert_p 
-            &amp;= \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i \sigma_j  \right\Vert_p
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(b = (b_1, ..., b_n)\)</span> be a sequence of Bernoulli random variables each of expectation <span class="math inline">\(1 / 2\)</span>. Then <span class="math display">\[
-    \begin{aligned}
-        \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i \sigma_j \right\Vert_p
-            &amp;= \left\Vert 4 \mathbb{E}_b \left[ \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right] \right\Vert_p \\
-            &amp;\le 4 \left( \mathbb{E}_\sigma  \mathbb{E}_b \left\vert \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right\vert^p \right)^{1 / p } &amp; \text{ (Jensen) } \\
-            &amp;\le 4 \left( \mathbb{E}_b \mathbb{E}_\sigma  \left\vert \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right\vert^p \right)^{1 / p } &amp; \text{ (Exchange Order) } \\
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(\exists b&#39; = (b_1&#39;, ..., b_n&#39;) = \arg\max_{b} \mathbb{E}_\sigma \left| \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right|^p\)</span>. We have <span class="math display">\[
-    \begin{aligned}
-        \left( \mathbb{E}_b \mathbb{E}_\sigma  \left| \sum_{i \neq j} A_{i,j} \sigma_i b_i \sigma_j (1 - b_j) \right|^p \right)^{1 / p }
-            &amp;\le \left( \mathbb{E}_\sigma  \left| \sum_{i \neq j} A_{i,j} \sigma_i b_i&#39; \sigma_j (1 - b_j&#39;) \right|^p \right)^{1 / p } \\
-            &amp;= \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i b_i&#39; \sigma_j (1 - b_j&#39;) \right\Vert_p 
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(S \doteq \{ i : b_i&#39; = 1 \}\)</span> and <span class="math inline">\(\overline{S} = [n] \setminus S\)</span>. Further, let <span class="math inline">\(\sigma&#39;\)</span> and <span class="math inline">\(x&#39;\)</span> both be independent copies of <span class="math inline">\(\sigma\)</span>. Then <span class="math display">\[
-    \begin{aligned}
-        \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i b_i&#39; \sigma_j (1 - b_j&#39;) \right\Vert_p 
-            &amp;= \left\Vert \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i \sigma_j \right\Vert_p \\
-            &amp;= \left\Vert \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i x_j \right\Vert_p \\
-            &amp;= \left\vert \mathbb{E}_\sigma \mathbb{E}_x \left| \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i x_j  \right|^p \right\vert^{1 / p} \\
-            &amp;= \left\vert \mathbb{E}_\sigma \mathbb{E}_x \left| \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i x_j + \mathbb{E}_{x&#39;} \left[ \sum_{ (i, j) \in S \times S } A_{i,j} \sigma_i x_j&#39; \right] \right|^p \right\vert^{1 / p} &amp; ( \mathbb{E}[ x_j&#39; ] = 0 ) \\
-            &amp;\le \left\vert \mathbb{E}_\sigma \mathbb{E}_x \mathbb{E}_{x&#39;} \left| \sum_{ (i, j) \in S \times \overline{S} } A_{i,j} \sigma_i x_j +   \sum_{ (i, j) \in S \times S } A_{i,j} \sigma_i x_j&#39;  \right|^p \right\vert^{1 / p} &amp; ( \text{Jensen} ) \\
-            &amp;= \left\vert \mathbb{E}_\sigma \mathbb{E}_x \left| \sum_{ (i, j) \in S \times [n] } A_{i,j} \sigma_i x_j   \right|^p \right\vert^{1 / p}  \\
-            &amp;= \left\vert \mathbb{E}_\sigma \mathbb{E}_x \left| \sum_{ (i, j) \in S \times [n] } A_{i,j} \sigma_i x_j + \mathbb{E}_{\sigma&#39; } \left[ \sum_{ (i, j) \in \overline{S} \times [n]} A_{i,j} \sigma_i&#39; x_j \right] \right|^p \right\vert^{1 / p}  &amp; ( \mathbb{E}[ \sigma_i&#39; ]  = 0 ) \\
-            &amp;\le \left\vert \mathbb{E}_\sigma \mathbb{E}_x \mathbb{E}_{\sigma&#39;} \left| \sum_{ (i, j) \in S \times [n] } A_{i,j} \sigma_i x_j + \sum_{ (i, j) \in \overline{S} \times [n] } A_{i,j} \sigma_i&#39; x_j \right|^p \right\vert^{1 / p}  &amp; ( \text{Jensen} ) \\
-            &amp;= \left\Vert \sum_{ i, j } A_{i,j} \sigma_i x_j \right\Vert_p   \\
-    \end{aligned}
-\]</span></p>
-<p>Now, <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-            &amp;\le \left\Vert \sum_{i \neq j} A_{i,j} \sigma_i \sigma_j \right\Vert_p \\
-            &amp;\le 4 \left\Vert \sigma^T A x \right\Vert_p  \\
-            &amp;= 4 \left\vert \mathbb{E}_x \mathbb{E}_\sigma \left| \sigma^T A x  \right|^p \right\vert^{1 / p}  &amp; ( \text{ Exchange Order} )\\
-            &amp;\le 4 \left\vert \mathbb{E}_x \left( \sqrt{ \frac{ p \pi }{2 } } \sqrt{ \frac{p + 1}{ p }} \Vert Ax \Vert_2 \right)^p \right\vert^{1 / p}  &amp; ( \text{Khintchine} ) \\
-            &amp;\le 4 \sqrt{p \pi}  \Vert \Vert Ax \Vert_2 \Vert_p &amp; ( (p + 1) / p \le 2 ) \\
-            &amp;= 4 \sqrt{p \pi} \left\vert \mathbb{E}_x \left( \Vert Ax \Vert_2 \right)^p \right\vert^{1 / p} \\
-            &amp;= 4 \sqrt{p \pi}  \left( \left\vert \mathbb{E}_x \left( \Vert Ax \Vert_2^2 \right)^{p / 2} \right\vert^{2 / p} \right)^{1  / 2} \\
-            &amp;= 4 \sqrt{p \pi}  \left( \left\Vert \left\Vert Ax \right\Vert_2^2  \right\Vert_{2 / p} \right)^{1  / 2} \\
-            &amp;\le 4 \sqrt{p \pi}  \left( \left\Vert \left\Vert Ax \right\Vert_2^2  \right\Vert_{p} \right)^{1  / 2} 
-    \end{aligned}
-\]</span></p>
-<p>Observe that <span class="math display">\[
-    \mathbb{E}_x \Vert Ax \Vert_2^2 = \mathbb{E}_x  \left( \sum_{i, j} A_{i,j} x_i x_j \right)^2 = \sum_{i, j, i&#39;, j&#39;} A_{i, j} A_{i&#39;, j&#39;} \mathbb{E}_x[ x_i x_j x_{i&#39;} x_{j&#39;} ] = \sum_{i, j} A_{i,j}^2 = \Vert A \Vert_F. 
-\]</span></p>
-<p>Hence, <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-            &amp;\le 4 \sqrt{p \pi}  \Vert \Vert Ax \Vert_2 \Vert_p \\
-            &amp;\le 4 \sqrt{p \pi}  \left( \left\Vert \left\Vert Ax \right\Vert_2^2  -  \mathbb{E}_x \left\Vert Ax \right\Vert_2^2 + \mathbb{E}_x \left\Vert Ax \right\Vert_2^2 \right\Vert_{p} \right)^{1  / 2}  \\
-            &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  4 \sqrt{p \pi} \left( \left\Vert \left\Vert Ax \right\Vert_2^2  -  \mathbb{E}_x \left\Vert Ax \right\Vert_2^2  \right\Vert_{p} \right)^{1  / 2}      &amp; (\text{triangle inequality} ) \\
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(y = (y_1, ..., y_n)\)</span> be independent and identical copy of <span class="math inline">\(x\)</span>. Recall that <span class="math inline">\(b\)</span>'s are independent Bernoulli random variables with expectation <span class="math inline">\(1 / 2\)</span>. We have<br />
-<span class="math display">\[  
-    \begin{aligned}
-        \left\Vert \left\Vert Ax \right\Vert_2^2  -  \mathbb{E}_x \left\Vert Ax \right\Vert_2^2  \right\Vert_{p} 
-            &amp;\le \left\Vert \sum_{i \neq j} (Ax)_i (Ax)_j  \right\Vert_{p} \\
-            &amp;= \left\Vert 4 \mathbb{E}_b \left[ \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j) \right] \right\Vert_{p} \\
-            &amp;= 4 \left\Vert  \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j)  \right\Vert_{p} &amp; ( \text{Jensen} ) \\
-            &amp;= 4 \left\vert \mathbb{E}_b \mathbb{E}_x \left\vert \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j)  \right\vert^p \right\vert^{1 / p} &amp; ( \text{Exchange Order} ) \\
-            &amp;= 4 \left\vert \max_b \mathbb{E}_x \left\vert \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j)  \right\vert^p \right\vert^{1 / p}  \\
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(b^*\)</span> be the set of values that maximizes <span class="math inline">\(\mathbb{E}_x \left\vert \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j) \right\vert^p\)</span>. Define <span class="math inline">\(T \doteq \{ i : b^*_i = 1 \}\)</span>. Then <span class="math display">\[
-    \begin{aligned}
-        \left\vert \max_b \mathbb{E}_x \left\vert \sum_{i \neq j} (Ax)_i b_i (Ax)_j (1 - b_j)  \right\vert^p \right\vert^{1 / p}  
-            &amp;= \left\Vert \sum_{i \neq j} (Ax)_i b^*_i (Ax)_j (1 - b^*_j) \right\Vert_p \\
-            &amp;= \left\Vert \sum_{ (i, j) \in T \times \overline{T} } (Ax)_i (Ax)_j \right\Vert_p \\
-            &amp;= \left\Vert \sum_{ (i, j) \in T \times \overline{T} } (Ax)_i (Ay)_j \right\Vert_p \\
-            &amp;= \left\Vert \mathbb{E}_{\sigma, \sigma&#39; }  \left( \sum_{i \in T} (A x)_i + \sum_{i \in \overline{T} } ( A \sigma)_i \right) 
-            \left( \sum_{j \in T} (A \sigma&#39;)_j + \sum_{j \in \overline{T} } ( A y)_j \right)  \right\Vert_p  \\
-            &amp;\le \left\Vert \left( \sum_{i \in T} (A x)_i + \sum_{i \in \overline{T} } ( A \sigma)_i \right) 
-            \left( \sum_{j \in T} (A \sigma&#39;)_j + \sum_{j \in \overline{T} } ( A y)_j \right)    \right\Vert_p  &amp; (\text{Jensen}) \\
-            &amp;= \left\Vert y^T A^T A x \right\Vert_p
-    \end{aligned}
-\]</span></p>
-<p>The second last equality follows from that <span class="math inline">\(\mathbb{E}_\sigma [ (A \sigma)_i ] = 0\)</span> and <span class="math inline">\(\mathbb{E}_{\sigma&#39;} [ (A \sigma&#39;_j ] = 0\)</span>.</p>
-<p>Hence, <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-            &amp;\le 4 \sqrt{p \pi}  \Vert \Vert Ax \Vert_2 \Vert_p \\
-            &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  16 \sqrt{p \pi} \left( \left\Vert y^T A^T A x \right\Vert_p \right)^{1  / 2}  \\
-            &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  16 \sqrt{p \pi} \left( \sqrt{p \pi} \left\Vert \Vert A^T A x \Vert_2 \right\Vert_p \right)^{1  / 2}  &amp; (\text{Khintchine}) \\
-            &amp;= 4 \sqrt{p \pi} \Vert A \Vert_F +  16 (p \pi)^{3 / 4} \left( \left\Vert \Vert A^T A x \Vert_2 \right\Vert_p \right)^{1  / 2}  \\
-    \end{aligned}
-\]</span></p>
-<p>As <span class="math inline">\(A\)</span> is symmetric, <span class="math inline">\(A^T = A\)</span>. Further, by definition of <span class="math inline">\(\Vert A \Vert\)</span>, we have <span class="math display">\[
-    \frac{1}{ \Vert Ax \Vert_2 } \Vert A^T A x \Vert_2 = \left\Vert A \frac{ Ax }{ \Vert Ax \Vert_2 } \right\Vert_2 \le \Vert A \Vert. 
-\]</span></p>
-<p>Hence, <span class="math display">\[
-    \left\Vert \Vert A^T A x \Vert_2 \right\Vert_p 
-        = \left( \mathbb{E}_x \left\vert \Vert A^T A x \Vert_2 \right\vert^p \right)^{1 / p}
-        \le \left( \mathbb{E}_x \left\vert \Vert A \Vert \cdot \Vert A x \Vert_2 \right\vert^p \right)^{1 / p}
-        = \Vert A \Vert \cdot \Vert A x \Vert_{p}, 
-\]</span></p>
-<p>and <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-            &amp;\le 4 \sqrt{p \pi}  \Vert \Vert Ax \Vert_2 \Vert_p \\
-            &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  16 (p \pi)^{3 / 4} \Vert A \Vert^{1 / 2} \cdot \left( \left\Vert \Vert A x \Vert_2 \right\Vert_p \right)^{1  / 2}  \\
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(z = \left( \left\Vert \Vert A x \Vert_2 \right\Vert_p \right)^{1 / 2}\)</span>. It holds that <span class="math display">\[
-    z^2 - 4 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} \cdot z - \Vert A \Vert_F \le 0. 
-\]</span></p>
-<p>It follows that <span class="math display">\[
-    z \le \frac{ 4 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} + \sqrt{ \left( 4 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} \right)^2 + 4 \Vert A \Vert_F } }{ 2 } \le 2 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} + 2 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} + \sqrt{ \Vert A \Vert_F }. 
-\]</span></p>
-<p>and <span class="math display">\[
-    \begin{aligned}
-        \Vert \sigma^T A \sigma - \mathbb{E} [ \sigma^T A \sigma ] \Vert_p 
-              &amp;\le 4 \sqrt{p \pi} \Vert A \Vert_F +  16 (p \pi)^{3 / 4} \Vert A \Vert^{1 / 2} \cdot \left( 4 (p \pi)^{1 / 4} \Vert A \Vert^{1 / 2} + \sqrt{ \Vert A \Vert_F } \right)  \\
-              &amp;= 4 \sqrt{p \pi} \Vert A \Vert_F +  64 (p \pi) \Vert A \Vert  + \sqrt{   4 \sqrt{ p \pi } \Vert A \Vert_F \cdot \left( 64 (p \pi) \Vert A \Vert \right) }   \\
-              &amp;\le 2 \left\{ 4 \sqrt{p \pi} \Vert A \Vert_F +  64 (p \pi) \Vert A \Vert \right\} \\
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1] Jelani Nelson, "Algorithm for Big Data", Lecture 10, 2015</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/60/">60</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/page/61/">61</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -944,7 +822,7 @@ R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">180</span>
+          <span class="site-state-item-count">181</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
