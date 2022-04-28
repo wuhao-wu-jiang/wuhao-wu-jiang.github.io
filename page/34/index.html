@@ -146,6 +146,267 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/01/Counting-Triangle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/01/Counting-Triangle/" class="post-title-link" itemprop="url">Counting Triangle</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-01 22:20:20" itemprop="dateCreated datePublished" datetime="2020-03-01T22:20:20+11:00">2020-03-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-04 21:52:23" itemprop="dateModified" datetime="2022-02-04T21:52:23+11:00">2022-02-04</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<ol type="1">
+<li><p>Let <span class="math inline">\(G = \left&lt; V, E \right&gt;\)</span> be an undirected graph with <span class="math inline">\(|V| = n\)</span> vertices and <span class="math inline">\(|E| = m\)</span> edges.</p></li>
+<li><p>The number of triangle in <span class="math inline">\(G\)</span> is denoted as <span class="math inline">\(\Delta\)</span>.</p></li>
+<li><p>For each <span class="math inline">\(v \in V\)</span>, let <span class="math inline">\(N(v) \doteq \{ u : (v, u) \in E \}\)</span> be the set of neighbors of <span class="math inline">\(v\)</span>.</p></li>
+<li><p>The degree of <span class="math inline">\(v\)</span> is <span class="math inline">\(d_v \doteq | N(v) |\)</span>.</p></li>
+<li><p>Define <span class="math inline">\(\lambda(v)\)</span> be the number of triangles whose vertices contains <span class="math inline">\(v\)</span>.</p></li>
+<li><p>Similarly, for each <span class="math inline">\(e = (u, v) \in E\)</span>, define <span class="math inline">\(\lambda(e)\)</span> the number of triangles whose edges contains <span class="math inline">\(e\)</span>.</p></li>
+</ol>
+<h1 id="exact-algorithm">Exact Algorithm</h1>
+<blockquote>
+<p><strong>Theorem.</strong> The number of triangles in <span class="math inline">\(G\)</span> can be computed in <span class="math inline">\(O \big ( m^{1.5} \big)\)</span> time.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>WLOG, we assume that the vertices in <span class="math inline">\(V\)</span> are labelled from <span class="math inline">\(1\)</span> to <span class="math inline">\(n\)</span> in increasing order according to their degrees, such that <span class="math display">\[
+    d_1 \le d_2 \le ... \le d_n.
+\]</span></p>
+<p>Each triangle in <span class="math inline">\(G\)</span> can be represented by a unique triple <span class="math inline">\((u, v, w) \in [n]^3\)</span> such that <span class="math inline">\(d_u \le d_v \le d_w\)</span>. To count the number of such triples, we can execute the following algorithm.</p>
+<blockquote>
+<p><strong>For</strong> each <span class="math inline">\(u \in [n]\)</span> <strong>do</strong><br />
+<span class="math inline">\(\quad\)</span> <strong>For</strong> <span class="math inline">\(v \in N(u)\)</span> of <span class="math inline">\(u\)</span> s.t. <span class="math inline">\(d_v \ge d_u\)</span> <strong>do</strong><br />
+<span class="math inline">\(\quad\quad\)</span> <strong>For</strong> <span class="math inline">\(w \in N(u)\)</span> of <span class="math inline">\(u\)</span> s.t. <span class="math inline">\(d_w \ge d_v\)</span> <strong>do</strong><br />
+<span class="math inline">\(\qquad\quad\)</span> Check whether <span class="math inline">\((u, v, w)\)</span> is a triangle.</p>
+</blockquote>
+<p>It is left to prove that the algorithm has complexity <span class="math inline">\(O(m^{1.5})\)</span>.</p>
+<blockquote>
+<p><strong>Lemma.</strong> For each <span class="math inline">\((u, v) \in E\)</span>, such that <span class="math inline">\(d_u \le d_v\)</span>, the number of <span class="math inline">\(w \in N(u)\)</span> such that <span class="math inline">\(d_w \ge d_v\)</span> is bounded by <span class="math inline">\(O(\sqrt{m})\)</span>.</p>
+</blockquote>
+<ul>
+<li><p>The claim is trivial if <span class="math inline">\(d_u \le \sqrt{m}\)</span>.</p></li>
+<li><p>Otherwise, suppose that <span class="math inline">\(d_u \ge \sqrt{m}\)</span>. But the number of <span class="math inline">\(w \in V\)</span> such that <span class="math inline">\(d_w \ge d_u \ge \sqrt{m}\)</span> is bounded by <span class="math inline">\(O( m / \sqrt{ m }) = O(\sqrt{ m })\)</span>.</p></li>
+</ul>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="sampling-algorithms">Sampling Algorithms</h1>
+<h2 id="subgraph-sampling">Subgraph Sampling</h2>
+<blockquote>
+<ol type="1">
+<li>Sample each edge independently with some probability <span class="math inline">\(p\)</span>.<br />
+</li>
+<li>Count the number of triangles, <span class="math inline">\(\tilde \Delta\)</span>, in the sampled subgraph.<br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( 1 / p^3 \big) \cdot \tilde \Delta\)</span>.</li>
+</ol>
+</blockquote>
+<h3 id="properties">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span class="math inline">\(X\)</span> is an unbiased estimator of <span class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> For each triangle in <span class="math inline">\(G\)</span>, define the indicator random variable <span class="math inline">\(Z\)</span> for its inclusion in teh sampled subgraph. Then <span class="math inline">\(\mathbb{E}[Z] = p^3\)</span>. Let <span class="math inline">\(S\)</span> be the collection of such random variable. By linearity of expectation. <span class="math display">\[
+    \mathbb{E} \left[ \sum_{Z \in S } Z \right] = \sum_{Z \in S } \mathbb{E} \left[  Z \right] = p^3 \cdot \Delta. 
+\]</span></p>
+<p>It follows that <span class="math inline">\((1 / p^3) \sum_{Z \in S} Z\)</span> is an unbiased estimator of <span class="math inline">\(\Delta\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Let <span class="math inline">\(\Delta^N\)</span> be the number of triangles that share an edge.</p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span class="math inline">\(X\)</span> has variance <span class="math display">\[
+(1 / p^6) \cdot \left( \Delta \cdot \big( p^3 - p^6 \big) + 2 \cdot \Delta^N \cdot \big( p^5 - p^6 \big) \right).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ \frac{1}{p^3} \sum_{Z \in S } Z \right] 
+            &amp;= \frac{1}{p^6} \cdot \left(  \sum_{Z \in S } \mathbb{Var} \left[ Z \right] + \sum_{Z, Z&#39; \in S } \mathbb{Cov} \left[ Z, Z&#39; \right] \right) \\
+            &amp;= \frac{1}{p^6} \cdot \left( \sum_{Z \in S } \mathbb{Var} \left[ Z \right] + \sum_{Z, Z&#39; \in S \wedge Z \text{ shares an edge with } Z&#39; } \mathbb{Cov} \left[ Z, Z&#39; \right] \right) \\
+            &amp;= \frac{1}{p^6} \cdot \left( \sum_{Z \in S } \big( p^3 - p^6 \big) + \sum_{Z, Z&#39; \in S \wedge Z \text{ shares an edge with } Z&#39; } \big( p^5 - p^6 \big) \right) \\
+            &amp;= \frac{1}{p^6} \cdot \left( \Delta \cdot \big( p^3 - p^6 \big) + 2 \cdot \Delta^N \cdot \big( p^5 - p^6 \big) \right).
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<h2 id="vertex-sampling">Vertex Sampling</h2>
+<blockquote>
+<ol type="1">
+<li>Sample a vertex <span class="math inline">\(v\)</span> uniformly at random from <span class="math inline">\(V\)</span>.<br />
+</li>
+<li>Compute <span class="math inline">\(\lambda(v)\)</span>.<br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( n / 3 \big) \cdot \lambda(v)\)</span>.</li>
+</ol>
+</blockquote>
+<h3 id="properties-1">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span class="math inline">\(X\)</span> is an unbiased estimator of <span class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \mathbb{E}[X] = \frac{n}{3} \cdot \sum_{v \in V} \frac{1}{n} \cdot \lambda(v) = \frac{1}{3} \cdot \sum_{v \in V} \lambda(v) = \Delta. 
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span class="math inline">\(X\)</span> has variance <span class="math inline">\(\left( (n / 9) \cdot \sum_{v \in V} \lambda(v)^2 \right) - \Delta^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ X \right] 
+            = \mathbb{E}[X^2] - \mathbb{E}[X]^2 
+            = \left( \frac{n}{9} \cdot \sum_{v \in V} \lambda(v)^2 \right) - \Delta^2. 
+    \end{aligned}
+\]</span><br />
+<span class="math inline">\(\square\)</span></p>
+<h2 id="edge-sampling">Edge Sampling</h2>
+<blockquote>
+<ol type="1">
+<li>Sample an edge <span class="math inline">\(e\)</span> uniformly at random from <span class="math inline">\(E\)</span>.<br />
+</li>
+<li>Compute <span class="math inline">\(\lambda(e)\)</span>.<br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( m / 3 \big) \cdot \lambda(e)\)</span>.</li>
+</ol>
+</blockquote>
+<h3 id="properties-2">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span class="math inline">\(X\)</span> is an unbiased estimator of <span class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \mathbb{E}[X] = \frac{m}{3} \cdot \sum_{e \in E} \frac{1}{m} \cdot \lambda(e) = \frac{1}{3} \cdot \sum_{e \in E} \lambda(e) = \Delta. 
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span class="math inline">\(X\)</span> has variance <span class="math inline">\(\left( (m / 9) \cdot \sum_{e \in E} \lambda(v)^2 \right) - \Delta^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ X \right] 
+            = \mathbb{E}[X^2] - \mathbb{E}[X]^2 
+            = \left( \frac{m}{9} \cdot \sum_{e \in E} \lambda(e)^2 \right) - \Delta^2. 
+    \end{aligned}
+\]</span><br />
+<span class="math inline">\(\square\)</span></p>
+<h2 id="triangle-sampling">Triangle Sampling</h2>
+<blockquote>
+<ol type="1">
+<li>Sample an edge <span class="math inline">\(e = (u, v)\)</span> uniformly at random from <span class="math inline">\(E\)</span>.<br />
+</li>
+<li>Sample a vertex uniformly at random from <span class="math inline">\(\begin{cases} N(u), &amp; \text{w.p.} &amp; d_u / (d_u + d_v) , \\ N(v), &amp; \text{w.p.} &amp; d_v / (d_u + d_v) . \end{cases}\)</span><br />
+</li>
+<li><span class="math inline">\(I \leftarrow \begin{cases} 1, &amp; \text{if} (u, v, w) \text{ constitutes a triangle}, \\ 0, &amp; \text{otherwise}. \end{cases}\)</span><br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( m / 6 \big) \cdot \big( d_u + d_v \big) \cdot I\)</span>.</li>
+</ol>
+</blockquote>
+<h3 id="properties-3">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span class="math inline">\(X\)</span> is an unbiased estimator of <span class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Conditioned on the sampled edge <span class="math inline">\(e = (u, v)\)</span>, <span class="math display">\[
+    \mathbb{E}[ I \mid e = (u, v) ] = \frac{ 2 \cdot |N(u) \cap N(v) |  }{d_u + d_v} = 2 \cdot \frac{ \lambda(e) }{d_u + d_v}. 
+\]</span> Hence, <span class="math inline">\((1 / 2) \cdot (d_u + d_v) \cdot I\)</span> is an unbiased estimator of <span class="math inline">\(\lambda(e)\)</span>. It follows that <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E}[(m / 6) \cdot (d_u + d_v) \cdot I] 
+            &amp;= \frac{m}{3} \cdot \mathbb{E}[(1 / 2) \cdot (d_u + d_v) \cdot I] \\
+            &amp;= \frac{m}{3} \cdot \sum_{e \in E} \frac{1}{m} \cdot \mathbb{E}[(1 / 2) \cdot (d_u + d_v) \cdot I \mid e = (u, v) ] \\
+            &amp;= \frac{1}{3} \sum_{e \in E} \lambda(e) = \Delta. 
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span class="math inline">\(X\)</span> has variance <span class="math inline">\((m / 18) \cdot \sum_{e = (u, v) \in E} (d_u + d_v) \cdot \lambda(e) - \Delta^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ X \right] 
+            &amp;= \mathbb{E}[X^2] - \mathbb{E}[X]^2 \\
+            &amp;= \frac{m^2}{36} \cdot \sum_{e = (u, v) \in E} \frac{1}{m} \cdot (d_u + d_v)^2 \cdot  \frac{ 2 \cdot \lambda(e) }{d_u + d_v} - \Delta^2 \\
+            &amp;= \frac{m}{18} \cdot \sum_{e = (u, v) \in E} (d_u + d_v) \cdot  \lambda(e) - \Delta^2. 
+    \end{aligned}
+\]</span><br />
+<span class="math inline">\(\square\)</span></p>
+<h2 id="wedge-sampling">Wedge Sampling</h2>
+<p>A wedge is a triple <span class="math inline">\((u, v, w) \in V^3\)</span> such that <span class="math inline">\((u, v), (v, w) \in E\)</span>. If a wedge is closed, i.e., <span class="math inline">\((v, w) \in E\)</span>, then it constitutes a triangle. Note that each triangle contains <span class="math inline">\(3\)</span> wedges. Denote <span class="math inline">\(W\)</span> the number of wedges in <span class="math inline">\(G\)</span>.</p>
+<blockquote>
+<ol type="1">
+<li>Sample a wedge <span class="math inline">\((u, v, w)\)</span> uniformly at random.<br />
+</li>
+<li><span class="math inline">\(I \leftarrow \begin{cases} 1, &amp; \text{if} (u, v, w) \text{ constitutes a triangle}, \\ 0, &amp; \text{otherwise}. \end{cases}\)</span><br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( W / 3 \big) \cdot I\)</span>.</li>
+</ol>
+</blockquote>
+<h3 id="properties-4">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span class="math inline">\(X\)</span> is an unbiased estimator of <span class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \mathbb{E}[ I ] = \frac{ 3 \cdot \Delta }{ W }. 
+\]</span> Therefore, <span class="math inline">\(X = (W / 3 ) \cdot I\)</span> is an unbiased estimator of <span class="math inline">\(\Delta\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span class="math inline">\(X\)</span> has variance <span class="math inline">\(W \cdot \Delta / 3 - \Delta^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var}[ I ] = \frac{ 3 \cdot \Delta }{ W } - \left( \frac{ 3 \cdot \Delta }{ W } \right)^2
+    \end{aligned}
+\]</span> Therefore, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var}[ X ] =  W \cdot \Delta / 3  - \Delta^2
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1]. <a target="_blank" rel="noopener" href="https://cs.stanford.edu/~rishig/courses/ref/l1.pdf">CS167: Reading in Algorithms Counting Triangles<span class="math inline">\(^∗\)</span> Tim Roughgarden<span class="math inline">\(^\dagger\)</span></a><br />
+[1] B. Wu, K. Yi, and Z. Li, “Counting Triangles in Large Graphs by Random Sampling,” IEEE Transactions on Knowledge and Data Engineering, 2016.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/27/Primal-Dual-Algorithm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -413,193 +674,6 @@ g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/24/Eigenvalues-and-Eigenvectors/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/24/Eigenvalues-and-Eigenvectors/" class="post-title-link" itemprop="url">Eigenvalues, Eigenvectors and SVD</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-02-24 21:57:00" itemprop="dateCreated datePublished" datetime="2020-02-24T21:57:00+11:00">2020-02-24</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-19 11:27:33" itemprop="dateModified" datetime="2022-03-19T11:27:33+11:00">2022-03-19</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="eigenvector-and-eigenvalues">Eigenvector and Eigenvalues</h1>
-<blockquote>
-<p><strong>Theorem</strong>. Given a symmetric matrix <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> that is positive semi-definitive, there exists an orthogonal matrix <span class="math inline">\(V \in \mathbb{R}^{n \times n}\)</span>, and a diagonal matrix <span class="math inline">\(\Sigma \in \mathbb{R}^{n \times n}\)</span> with all entries non-negative, such that <span class="math display">\[
-A = V \Sigma V^T. 
-\]</span></p>
-</blockquote>
-<p>We need the following fact for the proof.</p>
-<blockquote>
-<p><strong>Fact.</strong> If a function <span class="math inline">\(f: S \rightarrow \mathbb{R}\)</span> is continuous on a closed set <span class="math inline">\(S\)</span>, then it achieves maximum value at some point of <span class="math inline">\(S\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Consider the maximization problem: <span class="math display">\[
-    \begin{aligned}
-    &amp;\max &amp; \frac{1}{2} x^T A x \\
-    &amp;s.t. &amp;  x^T x = 1
-    \end{aligned}
-\]</span></p>
-<blockquote>
-<p><em><strong>Question to ponder:</strong> Explain the geometric meaning of the term <span class="math inline">\(x^T A x\)</span>.</em></p>
-</blockquote>
-<p>The corresponding Lagrange function is given by <span class="math display">\[
-    L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1)
-\]</span></p>
-<p>Taking derivative with respect to <span class="math inline">\(x\)</span> gives <span class="math display">\[
-    \frac{\partial L}{\partial x} = Ax - \lambda x. 
-\]</span></p>
-<p><strong><em>Existence of maximum solution:</em></strong> Note that <span class="math inline">\(\{ x : x^T x = 1 \}\)</span> is defined the boundary of the unit cycle, which is a closed set. Combined with the fact that <span class="math inline">\(f \doteq (1 / 2) \cdot x^T A x\)</span> is a continuous function (with respect to <span class="math inline">\(x\)</span>), it takes its maximum value at some point in <span class="math inline">\(\{ x : x^T x = 1 \}\)</span>. Denote this point <span class="math inline">\(v_1 \in \{ x : x^T x = 1 \}\)</span>.</p>
-<p><strong><em>Gradient at the maximum point:</em></strong> At this point, it holds that <span class="math display">\[
-    \frac{\partial L}{\partial x} \mid_{x = v_1} = Av_1 - \lambda v_1 = 0, 
-\]</span></p>
-<p>which implies that <span class="math inline">\(v_1\)</span> is an eigenvector of <span class="math inline">\(A\)</span>. Denote its corresponding eigenvalue <span class="math inline">\(\lambda_1\)</span>.</p>
-<blockquote>
-<p><em><strong>Question to ponder:</strong> Prove that <span class="math inline">\(\lambda_1\)</span> is the largest eigenvalue.</em></p>
-</blockquote>
-<p>After finding <span class="math inline">\(v_1\)</span>, consider a new optimization problem: <span class="math display">\[
-    \begin{aligned}
-    &amp;\max   &amp; \frac{1}{2} x^T A x \\
-    &amp;s.t.   &amp;  x^T x = 1 \\
-    &amp;       &amp;  v_1^T x = 0
-    \end{aligned}
-\]</span></p>
-<p>That is, we want to find a new unit vector that is orthogonal to <span class="math inline">\(v_1\)</span> while maximizing <span class="math inline">\(\frac{1}{2} x^T A x\)</span>.</p>
-<p><strong><em>Existence of maximum solution.</em></strong> By the lemma and the facts: 1. <span class="math inline">\(\{x : x^T x = 1\} \cap \{ x : v_1^T x = 0 \}\)</span> is closed.<br />
-2. <span class="math inline">\(\frac{1}{2} x^T A x\)</span> is continuous.</p>
-<p>Denote this maximum point <span class="math inline">\(v_2\)</span>. Now consider the new Lagrange function for the optimization <span class="math display">\[
-    L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1) - \beta(v_1^T x - 0).
-\]</span></p>
-<p><strong><em>Gradient at the maximum point:</em></strong> At this point, it holds that <span class="math display">\[
-    \frac{\partial L}{\partial x} \mid_{x = v_2} = Av_2 - \lambda v_2 - \beta v_1 = 0.
-\]</span></p>
-<p>Left multiplying <span class="math inline">\(v_1^T\)</span> gives <span class="math display">\[
-    (v_1^T A)v_2 - \lambda v_1^T v_2 - \beta v_1^T v_1 = (A v_1)^T v_2  - \beta = \lambda_1 v_1^T v_2 - \beta = -\beta = 0,
-\]</span> where <span class="math inline">\(v_1^T A = (A v_1)^T\)</span> follows from the symmetry of <span class="math inline">\(A\)</span>, i.e., <span class="math inline">\(A = A^T\)</span>.</p>
-<p>Therefore, <span class="math display">\[
-    Av_2 - \lambda v_2 = 0.
-\]</span></p>
-<p>It follows that <span class="math inline">\(v_2\)</span> is an eigenvector of <span class="math inline">\(A\)</span>. Denote its associated eigenvalue <span class="math inline">\(\lambda_2\)</span>.</p>
-<p>In a similar manner, we can define <span class="math display">\[
-    \begin{aligned}
-    &amp;\max   &amp; \frac{1}{2} x^T A x \\
-    &amp;s.t.   &amp;  x^T x = 1 \\
-    &amp;       &amp;  v_1^T x = 0 \\
-    &amp;       &amp;  v_2^T x = 0 \\
-    \end{aligned}
-\]</span></p>
-<p>There exists an optimal point <span class="math inline">\(v_3\)</span>. The derivative of Lagrange function at this point is <span class="math display">\[
-    \frac{\partial L}{\partial x} \mid_{x = v_3} = Av_3 - \lambda v_3 - \beta_1 v_1 - \beta_2 v_2 = 0,
-\]</span> for some parameters <span class="math inline">\(\lambda, \beta_1, \beta_2\)</span>. Left multiplying <span class="math inline">\(v_1^T\)</span> or <span class="math inline">\(v_2^T\)</span> gives <span class="math inline">\(\beta_1 = 0\)</span> and <span class="math inline">\(\beta_2 = 0\)</span> so that <span class="math inline">\(v_3\)</span> is an eigenvector of <span class="math inline">\(A\)</span>.</p>
-<p>Following the procedure, we can find <span class="math inline">\(n\)</span> eigenvectors <span class="math inline">\(v_1, v_2, \ldots, v_n\)</span> of <span class="math inline">\(A\)</span>. Define <span class="math display">\[
-    \Sigma =
-        \begin{bmatrix}
-            \lambda_1   &amp;           &amp;   \\
-                        &amp;\lambda_2  &amp;   \\
-                        &amp;           &amp;   \ldots \\
-                        &amp;           &amp;      &amp; \lambda_n 
-        \end{bmatrix}, 
-    \qquad
-    V =
-        \begin{bmatrix}
-            v_1, v_2, \ldots, v_n
-        \end{bmatrix}.
-\]</span></p>
-<p>Then <span class="math display">\[
-    A V = V \Sigma.
-\]</span></p>
-<p>Hence, <span class="math display">\[
-    A = V \Sigma V^{-1} = V \Sigma V^T.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="singular-vector-decomposition">Singular Vector Decomposition</h1>
-<p>In general, a matrix <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> is considered a linear mapping from <span class="math inline">\(\mathbb{R}^n\)</span> to <span class="math inline">\(\mathbb{R}^m\)</span>. It takes a vector <span class="math inline">\(x \in \mathbb{R}^n\)</span> to a new one <span class="math inline">\(Ax \in \mathbb{R}^m\)</span>. We are interested in the following question.</p>
-<blockquote>
-<p>Is there a vector <span class="math inline">\(x\)</span>, whose length ratio, <span class="math display">\[
-\max_{x \in \mathbb{R}^n } \frac{ \Vert Ax  \Vert }{ \Vert x \Vert }, 
-\]</span> is maximized by the mapping?</p>
-</blockquote>
-<p>As <span class="math inline">\(\Vert x \Vert\)</span> is a number, <span class="math display">\[
-    \frac{ \Vert Ax \Vert  }{ \Vert x \Vert } = \left\Vert A \frac{x}{\Vert x \Vert} \right\Vert .
-\]</span></p>
-<p>Hence, it suffices to consider unit vectors, and the following optimization problem: <span class="math display">\[
-    \begin{aligned}
-        &amp;\max &amp; \frac{1}{2} x^T A^T Ax \\
-        &amp;s.t. &amp;  x^T x = 1
-    \end{aligned}.
-\]</span></p>
-<p>In this case, the objective function is <span class="math inline">\(0.5 \cdot \Vert Ax \Vert^2 = 0.5 \cdot (Ax)^T (Ax) = 0.5 \cdot x^T A^T A x\)</span>.</p>
-<p>Following similar process of previous section, we can find a set of eigenvectors <span class="math inline">\(v_1, v_2, \ldots, v_n\)</span> of <span class="math inline">\(A^T A\)</span>. Define <span class="math inline">\(U \in \mathbb{R}^{m \times n}\)</span> <span class="math display">\[
-    U 
-        = A V { \sqrt{\Sigma^{-1} } } 
-        = AV 
-        \begin{bmatrix}
-        \sqrt { 1 / \lambda_1}  &amp;                       &amp; \\
-                                &amp;\sqrt { 1 / \lambda_2} &amp; \\
-                                &amp;                       &amp; \ldots \\
-                                &amp;                       &amp; &amp;\sqrt {1/\lambda_n}
-        \end{bmatrix}.
-\]</span></p>
-<p>Then <span class="math inline">\(U { \sqrt \Sigma } V^T = A\)</span>, which is called the <em>singular vector decomposition</em> of <span class="math inline">\(A\)</span>.</p>
-<p>Finally, we can verify that the columns of <span class="math inline">\(U\)</span> are perpendicular: <span class="math inline">\(\forall i \neq j, i, j \in [n]\)</span>, <span class="math display">\[
-    u_i^T u_j 
-        = \left(\sqrt{\frac{1}{\lambda_i}} A V_i \right)^T 
-            \left( \sqrt{\frac{1}{\lambda_j}} A V_j \right) 
-        = \sqrt {\frac{1}{\lambda_i}} \sqrt{\frac{1}{\lambda_j}} v_i^T A^T A v_j  = 0,
-\]</span> as <span class="math inline">\(v_i\)</span> and <span class="math inline">\(v_j\)</span> are orthogonal eigenvectors of <span class="math inline">\(A^T A\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -669,7 +743,7 @@ A = V \Sigma V^T.
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">181</span>
+          <span class="site-state-item-count">182</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
