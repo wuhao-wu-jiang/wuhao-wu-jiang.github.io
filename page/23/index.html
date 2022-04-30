@@ -146,6 +146,281 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/19/PAC-Learning-From-Countable-Hypothesis-Family/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/19/PAC-Learning-From-Countable-Hypothesis-Family/" class="post-title-link" itemprop="url">PAC Learning From Countable Hypothesis Family</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-19 15:17:27" itemprop="dateCreated datePublished" datetime="2020-11-19T15:17:27+11:00">2020-11-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-27 11:22:12" itemprop="dateModified" datetime="2021-03-27T11:22:12+11:00">2021-03-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>We generalize the PAC learning problem of finding an hypothesis from a finite hypothesis family to the one from a countable hypothesis family.</p>
+<h1 id="problem-setting">Problem Setting</h1>
+<ol type="1">
+<li><p><span class="math inline">\(\mathcal{X}:\)</span> the input space.</p></li>
+<li><p><span class="math inline">\(\mathcal{Y} \doteq \{-1, 1\}:\)</span> the output space.</p></li>
+<li><p><span class="math inline">\(\mathcal{Z} \doteq \mathcal{X} \times \mathcal{Y}:\)</span> the product space of <span class="math inline">\(\mathcal{X}\)</span> and <span class="math inline">\(\mathcal{Y}\)</span>.</p></li>
+<li><p><span class="math inline">\(\mathcal{D}:\)</span> an unknown distribution defined on <span class="math inline">\(\mathcal{X} \times \mathcal{Y}\)</span>.</p></li>
+<li><p><span class="math inline">\(\mathcal{H}:\)</span> an countable family of hypothesis, s.t., each <span class="math inline">\(h \in \mathcal{H}\)</span> is a function from <span class="math inline">\(\mathcal{X}\)</span> to <span class="math inline">\(\mathcal{Y}\)</span>.</p></li>
+<li><p><span class="math inline">\(\ell: \mathcal{Y} \times \mathcal{Y} \rightarrow [0, 1]\)</span>, a loss function that takes two points in <span class="math inline">\(\mathcal{Y}\)</span> and outputs a value between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p></li>
+<li><p><span class="math inline">\(L_\mathcal{D} (h):\)</span> the expected loss of a hypothesis <span class="math inline">\(h\)</span> is defined as <span class="math display">\[
+ L_\mathcal{D} (h) = \mathbb{E}_{ (x, y) \sim \mathcal{D} } [ \ell( h(x), y) ]
+ \]</span></p>
+<p>where <span class="math inline">\((x, y) \sim \mathcal{D}\)</span> implies that the pair <span class="math inline">\((x, y) \in \mathcal{Z}\)</span> is sampled according to the distribution <span class="math inline">\(\mathcal{D}\)</span>.</p></li>
+<li><p><span class="math inline">\(h^* \doteq \arg\min_{h \in \mathcal{H} } L_\mathcal{D} (h):\)</span> the hypothesis that minimize the expected loss.</p></li>
+<li><p><span class="math inline">\(\mu_h:\)</span> an alias for <span class="math inline">\(L_\mathcal{D} (h)\)</span>, when the distribution <span class="math inline">\(\mathcal{D}\)</span> discussed in the context is unique.</p></li>
+<li><p><span class="math inline">\(B(\mu_h, \epsilon) \doteq \{ r \in \mathbb{R} : |r - \mu_h | &lt; \epsilon \}:\)</span> an open ball, which is an open interval in <span class="math inline">\(\mathbb{R}\)</span> centered at <span class="math inline">\(\mu_h\)</span> with length <span class="math inline">\(2 \epsilon\)</span>, where <span class="math inline">\(\epsilon &gt; 0\)</span>.</p></li>
+<li><p><span class="math inline">\(S \sim \mathcal{D}^n:\)</span> a set of <span class="math inline">\(n\)</span> i.i.d samples drawn from <span class="math inline">\(\mathcal{D}\)</span>, where <span class="math inline">\(n \in \mathbb{N}^+\)</span> is some positive integer. In particular, when <span class="math inline">\(S \sim \mathcal{D}^n\)</span>, it can be represented as <span class="math display">\[
+ S = \{ (x_1, y_1), (x_2, y_2), ..., (x_n, y_n) : (x_i, y_i) \sim \mathcal  {D}, \forall i \in [n] \}.
+ \]</span> We also view <span class="math inline">\(S\)</span> as a point in <span class="math inline">\(\mathcal{Z}^n\)</span>.</p></li>
+<li><p><span class="math inline">\(L_{S}(h) \doteq \frac{1}{ |S| } \sum_{ (x, y) \in S } \ell( h(x) , y ) :\)</span> the empirical loss of a hypothesis <span class="math inline">\(h\)</span> on a sample set <span class="math inline">\(S\)</span>.</p></li>
+<li><p>Given a <span class="math inline">\(h \in \mathcal{H}\)</span>, its restriction on <span class="math inline">\(\mathcal{C} \subset \mathcal{X}\)</span> is a function <span class="math inline">\(h_S\)</span> defined on <span class="math inline">\(S\)</span>, such that <span class="math display">\[
+h_\mathcal{C} (x) = h(x), \forall x \in \mathcal{C} 
+\]</span></p></li>
+<li><p>The restriction of <span class="math inline">\(\mathcal{H}\)</span> on <span class="math inline">\(\mathcal{C}\)</span> is the set of possible restriction of a function in <span class="math inline">\(\mathcal{H}\)</span> to <span class="math inline">\(\mathcal{C}\)</span> <span class="math display">\[
+        \mathcal{H}_\mathcal{C}  = \{ h_\mathcal{C}  : \mathcal{C}  \rightarrow \mathcal{Y} : h \in \mathcal{H} \}
+\]</span></p>
+<p>As <span class="math inline">\(\mathcal{Y} = \{ -1, +1 \}\)</span>, the set of possible functions defined on <span class="math inline">\(\mathcal{C}\)</span> is bounded by <span class="math inline">\(2^{n}\)</span>. Hence, <span class="math display">\[
+    |\mathcal{H}_\mathcal{C} | \le 2^{n}.
+\]</span></p></li>
+<li><p>The growth function <span class="math inline">\(\Pi_{\mathcal{H} } (n): \mathbb{N}^+ \rightarrow \mathbb{N}^+\)</span> of <span class="math inline">\(\mathcal{H}\)</span> is defined as <span class="math display">\[
+   \Pi_{\mathcal{H} } (n) = \max_{\mathcal{C} \subset \mathcal{X}, |C| = n} | \mathcal{H}_\mathcal{C} |
+   \]</span></p></li>
+</ol>
+<p>Ideally, we would like to find <span class="math inline">\(h^*\)</span>. The problem is difficult, as</p>
+<ul>
+<li>The space <span class="math inline">\(\mathcal{X} \times \mathcal{Y}\)</span> could be infinite.</li>
+<li>The distribution <span class="math inline">\(\mathcal{D}\)</span> is unknown.</li>
+</ul>
+<p>To deal with the possibly infinite space <span class="math inline">\(\mathcal{X} \times \mathcal{Y}\)</span> and the unknown distribution <span class="math inline">\(\mathcal{D}\)</span>, we investigate <span class="math inline">\(\mathcal{H}\)</span> on a finite sample set <span class="math inline">\(S\)</span>. Due to the randomness inherited in sampling <span class="math inline">\(S\)</span>, we allow our solution to be approximate and to make error. For a given pair of parameters of <span class="math inline">\(\epsilon &gt; 0\)</span> and <span class="math inline">\(\delta &gt; 0\)</span>, we relax the goal to designing an <span class="math inline">\((\epsilon, \delta)\)</span>-learning algorithm <span class="math inline">\(A\)</span> that returns an <span class="math inline">\(h&#39;\)</span>, that is</p>
+<blockquote>
+<ul>
+<li><span class="math inline">\(\epsilon\)</span>-approximate: <span class="math inline">\(\mu_{h&#39;} \le \mu_{h^*} + \epsilon\)</span>,<br />
+</li>
+<li>probably correct: <span class="math inline">\(A\)</span> return an <span class="math inline">\(h&#39;\)</span> that does not satisfies the above condition with probability at most <span class="math inline">\(\delta\)</span>.</li>
+</ul>
+</blockquote>
+<p>Combined, <span class="math inline">\(A\)</span> should return an <span class="math inline">\(\epsilon\)</span>-approximate solution <span class="math inline">\(h&#39;\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
+<h1 id="the-algorithm">The Algorithm</h1>
+<blockquote>
+<p>An <span class="math inline">\((\epsilon, \delta)\)</span> approximate algorithm <span class="math inline">\(A\)</span><br />
+1. Draw a set <span class="math inline">\(S\)</span> of <span class="math inline">\(n =\)</span> samples independently from <span class="math inline">\(\mathcal{D}\)</span>.<br />
+2. Return an <span class="math inline">\(h&#39;\)</span> such that <span class="math display">\[
+h&#39; = \arg\min_{h \in \mathcal{H} } L_{S} (h)
+\]</span></p>
+</blockquote>
+<p>A key result of the algorithm states that <span class="math inline">\(L_S(h)\)</span> is a good approximation of <span class="math inline">\(\mu_h\)</span> for all <span class="math inline">\(h \in \mathcal{H}\)</span> simultaneously.</p>
+<blockquote>
+<p>Theorem. If <span class="math inline">\(n \ge\)</span>, then <span class="math display">\[
+\Pr_{S \sim \mathcal{D}^n } [ \exists h \in \mathcal{H} : L_S(h) \notin B(\mu_h, \epsilon / 2 )  ] \le \delta
+\]</span></p>
+</blockquote>
+<p>An immediate corollary is that <span class="math inline">\(h&#39;\)</span> is <span class="math inline">\(\epsilon\)</span>-approximate with probability at least <span class="math inline">\(1 - \delta\)</span>: <span class="math display">\[
+\mu_{h&#39;} \le L_S(h&#39;) + \frac{\epsilon}{2} \le L_S(h^*) + \frac{\epsilon}{2} \le \mu_{h^*} + \epsilon.
+\]</span></p>
+<h2 id="proof-of-the-theorem">Proof of The Theorem</h2>
+<p>The proof relies on a technique called double sampling. Alongside with <span class="math inline">\(S\)</span>, we create another sample set <span class="math inline">\(S&#39; \sim \mathcal{D}^n\)</span> independently, termed the "ghost sample". Let <span class="math display">\[
+S = \{ (x_1, y_1), (x_2, y_2), ..., (x_n, y_n) \}
+\]</span> and <span class="math display">\[
+S&#39; = \{ (x_1&#39;, y_1&#39;), (x_2&#39;, y_2&#39;), ..., (x_n&#39;, y_n&#39;) \}.
+\]</span></p>
+<p>Then, we define</p>
+<ol start="16" type="1">
+<li><span class="math inline">\(\sigma:\)</span> a random swap that exchanges the <span class="math inline">\(i\)</span>-th (<span class="math inline">\(i \in [n]\)</span>) element of <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> independently with probability 0.5. Call the resulting sample sets <span class="math inline">\(\sigma S\)</span> and <span class="math inline">\(\sigma S&#39;\)</span>. Let <span class="math inline">\(\sigma S[i]\)</span> (<span class="math inline">\(\sigma S&#39;[i]\)</span>) be the <span class="math inline">\(i\)</span>-th element of <span class="math inline">\(\sigma S[i]\)</span> (<span class="math inline">\(\sigma S&#39;[i]\)</span>). So <span class="math display">\[
+\Pr \left[ 
+    \sigma S [i] = (x_i,  y_i) \wedge
+    \sigma S&#39;[i] = (x_i&#39;, y_i&#39;)
+ \right] = 0.5 \\
+ \Pr \left[ 
+    \sigma S [i] = (x_i&#39;, y_i&#39;) \wedge
+    \sigma S&#39;[i] = (x_i,  y_i)
+ \right] = 0.5
+\]</span></li>
+</ol>
+<p>We use the gap of <span class="math inline">\(|L_{\sigma S} (h) - L_{\sigma S&#39;} (h)|\)</span> as a proxy of <span class="math inline">\(|L_S(h) - \mu_h|\)</span>. This enables us to focus on finite sets <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> without worrying about the infinite size of <span class="math inline">\(\mathcal{H}\)</span>.</p>
+<p>For convenience, we use <span class="math inline">\(\underset{S}{\Pr}[\cdot]\)</span> (<span class="math inline">\(\underset{S&#39;}{\Pr}[\cdot]\)</span>) as shorthand for <span class="math inline">\(\underset{S \sim \mathcal{D}^n}{\Pr}[\cdot]\)</span> (<span class="math inline">\(\underset{S&#39; \sim \mathcal{D}^n}{\Pr}[\cdot]\)</span>). The road map of our proof is as follows.</p>
+<blockquote>
+<p>Lemma 1.<br />
+<span class="math display">\[
+\Pr_{S}[ \exists h : L_S(h) \notin B(\mu_h, \epsilon ) ] \le 2 \max_{S, S&#39; \in \mathcal{Z}^n } \Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma S&#39; } (h) | \ge \frac{\epsilon}{2} \right]
+\]</span></p>
+</blockquote>
+<p>On the left hand side of the inequality, the probability measures the event of a random set <span class="math inline">\(S\)</span> sampling from <span class="math inline">\(\mathcal{D}\)</span>. On the right hand side, we can pick a fixed pair of <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> that maximize <span class="math display">\[
+\Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma S&#39; } (h) | \ge \frac{\epsilon}{2} \right],
+\]</span></p>
+<p>and the probability measures the event of the random swap <span class="math inline">\(\sigma\)</span>. Fixing <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> significantly simplifies the structure of <span class="math inline">\(\mathcal{H}\)</span>. By Hoeffding inequality and union bound, we will prove that</p>
+<blockquote>
+<p>Lemma 2. For any fixed pair of <span class="math inline">\(S, S&#39; \in \mathcal{Z}^n\)</span>, <span class="math display">\[
+\Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma S&#39; } (h) | \ge \frac{\epsilon}{2} \right] \le 2 \Pi_\mathcal{H} (2n) \exp( - \frac{n^2 \epsilon^2 }{2} )
+\]</span></p>
+</blockquote>
+<h3 id="proof-of-lemma-1."><strong>Proof of Lemma 1.</strong></h3>
+<p>The proof of Lemma 1 consists of three steps.</p>
+<h4 id="step-1"><strong>Step 1</strong></h4>
+<blockquote>
+<p><span class="math display">\[
+\Pr_{S}[ \exists h : L_S(h) \notin B(\mu_h, \epsilon ) ] \le 2 \Pr_{S , S&#39;} [ \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge  L_{S&#39;} (h) \in B(\mu_h, \epsilon / 2)  ].
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> By Hoeffding inequality, for a fixed <span class="math inline">\(h \in \mathcal{H}\)</span>, when <span class="math inline">\(n \ge \frac{2}{\epsilon^2} \ln 4\)</span> <span class="math display">\[
+    \Pr_{S&#39;} [ L_{S&#39;} (h) \notin B(\mu_h, \epsilon / 2) ] \le 2 \exp \left(- 2 n \left( \frac{\epsilon }{ 2 } \right)^2 \right) = 2 \exp \left( - \frac{n \epsilon^2}{2} \right) \le \frac{1}{2}
+\]</span></p>
+<p>It follows that <span class="math display">\[
+    \Pr_{S , S&#39;} [ \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge  L_{S&#39;} (h) \in B(\mu_h, \epsilon / 2)  ] 
+        \ge 
+    \frac{1}{2} \Pr_{S}[ \exists h : L_S(h) \notin B(\mu_h, \epsilon ) ]
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark:</strong> Mathematically, I don't know how to make prove this step rigorously. Suppose that for every <span class="math inline">\(i \in [n]\)</span>, we know that the events <span class="math inline">\(E_i\)</span> and <span class="math inline">\(F_i\)</span> are measurable and independent. If <span class="math inline">\(\Pr[ F_i ] \ge 1 / 2\)</span>, then <span class="math inline">\(\Pr[ E_i \wedge F_i ] \ge 1 / 2\)</span>. But, can we claim that <span class="math display">\[
+    \Pr[ \cup (E_i \wedge F_i) ] \ge \frac{1}{2} \Pr[ \cup E_i ]. 
+\]</span></p>
+<h4 id="step-2"><strong>Step 2</strong></h4>
+<blockquote>
+<p><span class="math display">\[
+\Pr_{S} [ \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge  L_{S&#39;} (h) \in B(\mu_h, \epsilon / 2) ] 
+\le 
+\Pr_{S, S&#39;} \left[ \exists h : |L_S (h) - L_{S&#39;} (h) | \ge \frac{\epsilon}{2} \right]
+\]</span></p>
+</blockquote>
+<p><strong>Proof</strong>. Observe that <span class="math display">\[
+    \{  \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge  L_{S&#39;} (h) \in B(\mu_h, \epsilon / 2)  \} 
+        \subset 
+    \left\{  \exists h : |L_S (h) - L_{S&#39;} (h) | \ge \frac{\epsilon}{2} \right\}. 
+\]</span> By monotonicity of probability, we finish the proof.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h4 id="step-3"><strong>Step 3</strong></h4>
+<blockquote>
+<p><span class="math display">\[
+\Pr_{S, S&#39; } \left[  \exists h : |L_S (h) - L_{S&#39;} (h) | \ge \frac{\epsilon}{2} \right] 
+\le 
+\max_{S, S&#39; \in \mathcal{Z}^n } \Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma S&#39; } (h) | \ge \frac{\epsilon}{2} \right]
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> We claim that <span class="math inline">\(\sigma S\)</span> and <span class="math inline">\(\sigma S&#39;\)</span> have the same joint distribution as <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> (if <span class="math inline">\(S, S&#39; \sim \mathcal{D}^n\)</span>). For points <span class="math inline">\(\forall Z, Z&#39; \in \mathcal{Z}^n\)</span>, by symmetry, it holds that <span class="math display">\[
+\Pr_{S, S&#39;} [ S = Z, S&#39; = Z&#39;] = \Pr_{S, S&#39;, \sigma} [ \sigma S = Z, \sigma S&#39; = Z&#39;]
+\]</span></p>
+<p>The right hand side can be viewed as the successful probability of the following experiment:</p>
+<ul>
+<li>Sample independently <span class="math inline">\(S \sim \mathcal{D}^n\)</span> and <span class="math inline">\(S&#39; \sim \mathcal{D}^n\)</span>.<br />
+</li>
+<li>For each <span class="math inline">\(i \in [n]\)</span>, exchange the <span class="math inline">\(i\)</span>-th elements of <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> independently with probability <span class="math inline">\(0.5\)</span>.</li>
+<li>After the random swap, <span class="math inline">\(\sigma S = Z\)</span> and <span class="math inline">\(\sigma S&#39; = Z&#39;\)</span>.</li>
+</ul>
+<p>Now, <span class="math inline">\(\forall \mathcal{E} \subset \mathcal{Z}^{2n}\)</span>, it holds that <span class="math display">\[
+\begin{aligned}
+    \Pr_{S, S&#39;} [ (S, S&#39;) \in \mathcal{E} ] 
+        &amp;= \Pr_{S, S&#39;, \sigma} [ (\sigma S, \sigma S&#39;) \in \mathcal{E} ] \\
+        &amp;= \mathbb{E}_{S, S&#39;} [ \Pr_\sigma [(\sigma S, \sigma S&#39;) \in \mathcal{E} ] \mid S, S&#39; ] \\
+        &amp;\le \max_{S, S&#39; \in \mathcal{Z}^n } \Pr_\sigma [(\sigma S, \sigma S&#39;) \in \mathcal{E} ]
+\end{aligned}
+\]</span></p>
+<p>Replacing <span class="math inline">\(\mathcal{E}\)</span> with the set <span class="math inline">\(\{Z, Z&#39; \in \mathcal{Z}^n : \exists h : |L_Z (h) - L_{Z&#39;} (h) | \ge \frac{\epsilon}{2} \}\)</span> finishes the proof.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- *Remark of the proof of step 1.* If we define 
+$$
+\mathcal{H}(S, \epsilon) \doteq \{ h \in \mathcal{H} :L_S(h) \notin B(\mu_h, \epsilon ) \}.
+$$
+*which is the set of hypothesis whose empirical loss on $S$ is $\epsilon$ more than its expectation. Then,* 
+$$
+\begin{aligned}
+    \Pr_{S} [ \exists h : L_S(h) \notin B(\mu_h, \epsilon ) ] \cdot \frac{1}{2} 
+    &= \Pr_{S } [ \mathcal{H}(S, \epsilon) \neq \emptyset ] \cdot \frac{1}{2} \\
+    &\le \Pr_{S } [ \mathcal{H}(S, \epsilon) \neq \emptyset] \\
+    & \ \ \cdot \Pr_{S, S' } [ \exists h \in \mathcal{H}(S, \epsilon) : L_{S'} (h) \in B(\mu_h, \epsilon / 2 ) \mid \mathcal{H}(S, \epsilon) \neq \emptyset ] \\
+    &= \Pr_{S, S' } [ \exists h : L_S (h) \notin B(\mu_h, \epsilon )  \wedge L_{S'} (h) \in B(\mu_h, \epsilon / 2 )  ]
+\end{aligned}
+$$
+
+*Note that the event $\mathcal{H}(S, \epsilon) \neq \emptyset$ is equivalent to the one* 
+$$
+\cup_{h \in \mathcal{H} } \{ L_S(h) \notin B(\mu_h, \epsilon ) \} 
+$$
+
+*For a fixed $h \in \mathcal{H}$, the event $\{ L_S(h) \notin B(\mu_h, \epsilon ) \}$ is measurable when $S$ consists of a finite number of i.i.d samples from $\mathcal{D}$. If $\mathcal{H}$ consists of countable number of $h$, then $\cup_{h \in \mathcal{H} } \{ L_S(h) \notin B(\mu_h, \epsilon ) \}$ is a countable union and should be measurable.*  -->
+<h3 id="proof-of-lemma-2."><strong>Proof of Lemma 2.</strong></h3>
+<p>Let <span class="math display">\[
+S = \{ (x_1, y_1), (x_2, y_2), ..., (x_n, y_n) \}
+\]</span> and <span class="math display">\[
+S&#39; = \{ (x_1&#39;, y_1&#39;), (x_2&#39;, y_2&#39;), ..., (x_n&#39;, y_n&#39;) \}.
+\]</span> be a pair of fixed sample sets. Define the set <span class="math inline">\(\mathcal{C} = \{ x_1, x_2, ..., x_n, x_1&#39;, x_2&#39;, ..., x_n&#39; \} \subset \mathcal{X}\)</span> (with duplicates removed). The size of <span class="math inline">\(\mathcal{C}\)</span> is bounded by <span class="math inline">\(2n\)</span> and therefore the size of restriction of <span class="math inline">\(\mathcal{H}\)</span> on <span class="math inline">\(\mathcal{C}\)</span> is bounded by <span class="math inline">\(\Pi_\mathcal{H} (2n)\)</span>.</p>
+<p>First, fix a hypothesis <span class="math inline">\(h\)</span>. For all <span class="math inline">\(i \in [n]\)</span>, define <span class="math inline">\(a_i = |\ell( h( x_i ), y_i) - \ell( h( x_i&#39; ), y_i&#39; ) | \le 1\)</span> and let <span class="math inline">\(V_i \in \{-1, 1\}\)</span> be a random variable with equal probability: <span class="math display">\[
+\Pr[ V_i = -1 ] = \Pr[ V_i = 1] = 0.5
+\]</span></p>
+<p>If we apply a random swap <span class="math inline">\(\sigma\)</span> to <span class="math inline">\((S, S&#39;)\)</span>, then <span class="math inline">\(L_{ \sigma S} (h_S) - L_{ \sigma S&#39; } (h_S)\)</span> has the same distribution as <span class="math inline">\(\sum_{i \in [n] } \frac{1}{n} a_i V_i\)</span>. Since <span class="math display">\[
+\mathbb{E} \left[ \sum_{i \in [n] } \frac{1}{n} a_i V_i \right] = \sum_{i \in [n] } \frac{1}{n} a_i \mathbb{E}[ V_i ] = 0,
+\]</span></p>
+<p>by Hoeffding inequality, <span class="math display">\[
+\begin{aligned}
+    \Pr_\sigma \left[ |L_{ \sigma S} (h) - L_{ \sigma  S&#39; } (h) | \ge \frac{\epsilon}{2} \right] 
+        &amp;= \Pr \left[ \left| \sum_{i \in [n] } \frac{1}{n} a_i V_i - 0 \right| \ge \frac{\epsilon}{2} \right] \\
+        &amp;\le 2 \exp \left( - \frac{ 2 }{  \sum_{i \in [n] } a_i^2 } \left( \frac{n \epsilon}{2} \right)^2 \right)  \\
+        &amp;\le 2 \exp \left( - \frac{n^2 \epsilon^2 }{2} \right)
+\end{aligned}
+\]</span></p>
+<p>The last inequality follows from that <span class="math inline">\(\sum_{i \in [n] } a_i^2 \le n\)</span>.</p>
+<p>Since for each <span class="math inline">\(h \in \mathcal{H}\)</span>, it has the same behavior on <span class="math inline">\(\mathcal{C}\)</span> as some function in <span class="math inline">\(\mathcal{H}_\mathcal{C}\)</span>. We can apply union bound on <span class="math inline">\(\mathcal{H}_\mathcal{C}\)</span>. <span class="math display">\[
+\Pr_\sigma \left[ \exists h : |L_{ \sigma S} (h) - L_{ \sigma  S&#39; } (h) | \ge \frac{\epsilon}{2} \right] \le 2 |\mathcal{H}_\mathcal{C} | \exp \left( - \frac{n^2 \epsilon^2 }{2} \right) \le 2 \Pi_\mathcal{H} (2n) \exp \left( - \frac{n^2 \epsilon^2 }{2} \right)
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] Ethan Fetaya, "Lecture 02 - Introduction to Statistical Learning Theory", Weizmann Institute of Science, 2016</p>
+<p>[2].R. Schapire and D. Bieber, “Lecture 05 - COS 511: Theoretical Machine Learning,”, Princeton University, 2013</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/13/Advanced-Composition/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -516,293 +791,6 @@ Bounding this probability by <span class="math inline">\(\delta\)</span> gives <
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/06/Gaussian-Distribution/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/06/Gaussian-Distribution/" class="post-title-link" itemprop="url">Gaussian Distribution</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-06 23:00:19" itemprop="dateCreated datePublished" datetime="2020-11-06T23:00:19+11:00">2020-11-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-09 22:00:48" itemprop="dateModified" datetime="2021-06-09T22:00:48+10:00">2021-06-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="gaussian-distribution">Gaussian Distribution</h1>
-<p>We show how Gaussian distribution (a.k.a. normal distribution) is constructed and list some of its basic properties.</p>
-<p>Suppose we would like to have a distribution in <span class="math inline">\(\mathbb{R}\)</span>, such that</p>
-<ol type="1">
-<li>It is centered at the origin.<br />
-</li>
-<li>Its density function decreases exponentially with respect to the square distance to the origin.</li>
-</ol>
-<blockquote>
-<p><em>Remark: if we replace 2 with "a density function decreases exponentially with the distance to the origin", we obtain Laplace distribution.</em></p>
-</blockquote>
-<p>The density function <span class="math inline">\(p(x)\)</span> should be inversely and exponentially proportional to <span class="math inline">\(x^2\)</span>: <span class="math display">\[
-    p(x) \propto \exp(-x^2 )
-\]</span></p>
-<p>Denote <span class="math inline">\(M\)</span> the value of<br />
-<span class="math display">\[
-    M \doteq \int_{-\infty}^\infty \exp(-x^2) \ dx, 
-\]</span></p>
-<p>then the close form of <span class="math inline">\(p(x)\)</span> is <span class="math display">\[
-    p(x)  = \frac{1}{M} \exp(- x^2). 
-\]</span></p>
-<p>It is easy to verity that <span class="math inline">\(p(x)\)</span> is a valid density function: <span class="math inline">\(\int_{-\infty}^\infty p(x) \ dx = 1\)</span>.</p>
-<h1 id="closed-form">Closed Form</h1>
-<blockquote>
-<p><strong>Theorem.</strong> $ p(x) =  ( - x^2 ) $ is a density function.</p>
-</blockquote>
-<p>In general, it is not hard to construct a distribution. Let <span class="math inline">\(h(x)\)</span> be any integrable function on a domain <span class="math inline">\(\mathcal{D}\)</span> such that <span class="math display">\[
-    M = \int_\mathcal{D} h(x) \ dx &lt; \infty
-\]</span></p>
-<p>Then we can view <span class="math inline">\(h(x)\)</span> as almost an density function of some distribution. The only obstacle is that <span class="math inline">\(M\)</span> might not be <span class="math inline">\(1\)</span>. However this is easy to fix. We scale the value of <span class="math inline">\(h(x)\)</span> by a constant factor at each point by setting <span class="math display">\[
-    p(x) = \frac{1}{M} h(x).
-\]</span></p>
-<p>In this case, we don't even need to know the exact value of <span class="math inline">\(M\)</span>. We only need to guarantee that</p>
-<blockquote>
-<p>The value of <span class="math inline">\(M\)</span> exists and is finite.</p>
-</blockquote>
-<p>Then we can safely rely on <span class="math inline">\(M\)</span> as a normalized. For example, we know that <span class="math display">\[
-    \int_0^\infty x^{0.2} e^{-x} \ dx \le  \int_0^1 e^{-x} \ dx  + \int_1^\infty x e^{-x} \ dx &lt; \infty.
-\]</span></p>
-<p>We can construct a density function as discussed above. It turns out that this is a special case of <em>Gamma distribution</em>.</p>
-<p>For Gaussian distribution, we are lucky as the closed form of <span class="math inline">\(M\)</span> does exists, due to the following "squaring trick": <span class="math display">\[
-\begin{aligned}
-    M^2 &amp;= \Big( \int_{-\infty}^\infty \exp( -x^2 ) \  dx \Big)^2 \\
-        &amp;= \int_{-\infty}^\infty \exp( -x^2 ) \  dx \ \cdot \int_{-\infty}^\infty \exp( -y^2 ) \  dy \\
-        &amp;= \int_{-\infty}^\infty \int_{-\infty}^\infty \exp( -(x + y) ^2 ) \  dx  dy. 
-\end{aligned}
-\]</span></p>
-<p>Denote <span class="math inline">\(r \doteq \sqrt{ x^2 + y^2}\)</span> the distance of <span class="math inline">\((x, y)\)</span> to <span class="math inline">\((0, 0)\)</span>. We are integrating the function <span class="math inline">\(\exp( - r^2)\)</span> over the plane <span class="math inline">\(\mathbb{R}^2\)</span>. It is natural to switch to polar coordinate system <span class="math inline">\((r, \theta)\)</span>, where <span class="math inline">\(\theta\)</span> is the angle of a point. Here is an informal but intuitive explanation. As the picture below demonstrates, if <span class="math inline">\(r\)</span> increases by <span class="math inline">\(dr\)</span> and <span class="math inline">\(\theta\)</span> increases by <span class="math inline">\(d\theta\)</span>, the new area spanned by <span class="math inline">\(dr\)</span> and <span class="math inline">\(d \theta\)</span> is roughly <span class="math inline">\(r dr d \theta\)</span>.<br />
-We can also calculate this algebraically<br />
-<span class="math display">\[
-\frac{1}{2} [(r + dr)^2 - r^2] d\theta = r dr d \theta + \frac{1}{2} (dr)^2 d \theta \approx r dr d \theta.
-\]</span></p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration1.png?raw=true" width="400" height="340" /></p>
-</div>
-<p>Finally, <span class="math display">\[
-\begin{aligned}
-    M^2 &amp;= \int_{0}^{ 2 \pi} \int_{0}^\infty \exp( -r^2 ) r d r d \theta \\
-        &amp;= \int_{0}^{ 2 \pi} \frac{1}{2}  \int_{0}^\infty \exp( -r^2 ) d r^2 d \theta \\
-        &amp;= \int_{0}^{ 2 \pi} \frac{1}{2} d \theta \\
-        &amp;= \pi.
-\end{aligned}
-\]</span></p>
-<h1 id="basic-properties">Basic Properties</h1>
-<h2 id="expectation"><strong>Expectation</strong></h2>
-<p>As the distribution is symmetric to <span class="math inline">\(0\)</span>, it has expectation 0.</p>
-<h2 id="variance"><strong>Variance</strong></h2>
-<p>As its expectation is 0, the variance is given by</p>
-<p><span class="math display">\[
-\begin{aligned}
-    \int_{-\infty}^\infty  \frac{ x^2 }{ \sqrt \pi } \exp( -x^2 ) \ dx 
-        &amp;= -\frac{1}{2 \sqrt \pi } \int_{-\infty}^\infty x \ d \exp( -x^2 ) \\
-        &amp;= \frac{1}{2 \sqrt \pi } \int_{-\infty}^\infty \exp( -x^2 ) d x\\
-        &amp;= \frac{1}{2 \sqrt \pi } \sqrt \pi \\
-        &amp;= \frac{1}{2}
-\end{aligned}
-\]</span></p>
-<h2 id="general-gaussian-distribution">General Gaussian Distribution</h2>
-<p>We have proved that if <span class="math inline">\(X\)</span> is a random variable with density function <span class="math inline">\(p(x) = \frac{1}{\sqrt \pi} \exp( -x^2)\)</span>, then <span class="math display">\[
-    \mathbb{Var}[X] = \frac{1}{2}.
-\]</span></p>
-<p>Define another random variable <span class="math inline">\(Y \doteq \sqrt{2} X\)</span>, whose variance is <span class="math display">\[
-    \mathbb{Var}[X] = 2 \mathbb{Var}[X] = 1.
-\]</span></p>
-<p>To obtain its density function of <span class="math inline">\(Y\)</span>, we first scale the function <span class="math inline">\(p(x)\)</span> horizontally by a factor of <span class="math inline">\(\sqrt 2\)</span> to get <span class="math display">\[
-    \frac{1}{ \sqrt{ \pi } } \exp \Big( -\frac{x^2}{2} \Big).
-\]</span></p>
-<p>Now the area under the curve <span class="math inline">\(f(x) = \frac{1}{ \sqrt{ \pi } } \exp \big( - x^2 / {2} \big)\)</span> is <span class="math inline">\(\sqrt 2\)</span>. We normalize this area to <span class="math inline">\(1\)</span> and obtain <span class="math inline">\(Y\)</span>'s density function as <span class="math display">\[
-    p(y) = \frac{1}{ \sqrt{2 \pi } } \exp \Big( -\frac{y^2}{2} \Big)
-\]</span></p>
-<p>In what follows, we use <span class="math inline">\(N(0, 1)\)</span> to denote a Gaussian distribution with mean 0 and variance <span class="math inline">\(1\)</span>. We can also scale <span class="math inline">\(X\)</span> by a factor of <span class="math inline">\(\sqrt 2 \sigma\)</span> for any <span class="math inline">\(\sigma &gt; 0\)</span>, to get <span class="math inline">\(Y = \sqrt 2 \sigma X\)</span>. It have variance <span class="math inline">\(\sigma^2\)</span> and density function <span class="math display">\[
-    p(y) = \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp \Big( - \Big(\frac{y}{ \sqrt{2} \sigma } \Big)^2 \Big) = \frac{1}{ \sqrt{2 \pi \sigma^2 } } \exp \Big( -\frac{y^2}{ 2 \sigma^2 } \Big).
-\]</span></p>
-<p>Finally, we can shift the center of <span class="math inline">\(0\)</span> by any real number <span class="math inline">\(\mu \in \mathbb{R}\)</span> to obtain a new density function <span class="math display">\[
-    p(y) = \frac{1}{ \sqrt{ \pi \cdot 2  \sigma^2 } } \exp\Big( -\frac{ (y - \mu)^2 }{ 2 \sigma^2 } \Big).
-\]</span></p>
-<p>The corresponding distribution is denoted as <span class="math inline">\(N(\mu, \sigma^2)\)</span>.</p>
-<em>The picture below shows a few Gaussian distributions.</em>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution.png?raw=true" width="700" height="430" /></p>
-</div>
-<h1 id="advanced-properties">Advanced Properties</h1>
-<h2 id="sum-of-normal-random-variables">Sum of Normal Random Variables</h2>
-<blockquote>
-<p>If <span class="math inline">\(X \sim N(0, a^2)\)</span> and <span class="math inline">\(Y \sim N(0, b^2)\)</span>, then <span class="math inline">\(X + Y \sim N(0, a^2 + b^2)\)</span>.</p>
-</blockquote>
-<p>The demonstration here follows from [1]. The key observation is that the joint distribution of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is rotation invariant with the origin.</p>
-<p>As an example, we plot below the joint distribution of <span class="math inline">\(X, Y \sim N(0, 1)\)</span>.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-3D-0.png?raw=true" width="500" height="330" /></p>
-</div>
-<p>The figure below shows the same distribution. Observe again that the probability mass concentrates at a small region centered at origin.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-3D-1.png?raw=true" width="500" height="330" /></p>
-</div>
-<p>Therefore, for any <span class="math inline">\(t \in \mathbb{R}\)</span>, the set <span class="math display">\[
-    \{ (x, y) \in \mathbb{R}^2 : ax + by \le t \}
-\]</span> has the same probability measure as the one <span class="math display">\[
-    \Big\{ (x, y) \in \mathbb{R}^2 : x \le \frac{ t}{ \sqrt{a^2 + b^2} } \Big\}.
-\]</span></p>
-<p>Observe that the latter can be obtained by rotating the former with respect to the origin (see the figure below).</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration2.png?raw=true" width="500" height="250" /></p>
-</div>
-<p>Now, the probability of the latter set is given by <span class="math display">\[
-    \Pr \Big[ X \le \frac{ t}{ \sqrt{a^2 + b^2} } \Big] = \Pr\Big[  \sqrt{a^2 + b^2} X \le t \Big]
-\]</span></p>
-<p>It concludes that <span class="math inline">\(X + Y\)</span> has the same distribution as <span class="math inline">\(\sqrt{a^2 + b^2} X \sim N(0, a^2 + b^2)\)</span>.</p>
-<!-- **Remark**: we can also verify this algebraically:
-$$
-    \begin{aligned}
-        \Pr [ X + Y \le t ] 
-            &= \int_{-\infty}^t \int_{-\infty }^{ t - x } \frac{1}{ 2 \pi } \exp \Big(-\frac{x^2 + y^2 }{2} \Big) \ dx 
-    \end{aligned}
-$$ -->
-<!-- $$
-    \Pr [X + Y \le t] = \int_{-\infty}^{ \frac{ t}{ \sqrt{a^2 + b^2} }  } \frac{1}{ \sqrt{2 \pi} } \exp \Big(-\frac{x^2}{2} \Big) \ dx 
-$$
-
-Hence
-$$
-\begin{aligned}
-    \frac{ \partial }{ \partial t} \Pr[X + Y \le t]
-        &= \frac{ \partial }{ \partial t} \int_{-\infty}^{ \frac{ t}{ \sqrt{a^2 + b^2} }  } \frac{1}{ \sqrt{2 \pi} }\exp \Big(-\frac{x^2}{2} \Big) \ dx \\
-        &= \frac{1}{ \sqrt{2 \pi (a^2 + b^2) } } \exp \Big( -\frac{x^2}{2 (a^2 + b^2) } \Big).
-\end{aligned}
-$$ -->
-<h2 id="concentration-inequalities">Concentration Inequalities</h2>
-<h3 id="bound-1"><strong>Bound 1</strong></h3>
-<blockquote>
-<p>If <span class="math inline">\(X \sim N(0, \sigma^2)\)</span>, then <span class="math inline">\(\forall t &gt; 0\)</span>, <span class="math display">\[
-\Pr[ |X| \ge t] \le \exp \Big( -\frac{t^2}{ 2\sigma^2} \Big)
-\]</span></p>
-</blockquote>
-<p><strong>Remark</strong>: it is possible to get a tighter bound by using more advanced techniques.</p>
-<p><strong>Intuition:</strong> in previous figures, it seems Gaussian distributions have a shape bump around its mean. This is kind of mis-leading, because the x-axis and y-axis are scaled. In the figure below, we plot <span class="math inline">\(N(0, 1)\)</span>, with ratio between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> axes being approximate <span class="math inline">\(1:1\)</span>. We see only a small bump around its mean. Although the distribution span the entire range of <span class="math inline">\(\mathbb{R}\)</span>, the probability mass is centered tightly around the origin.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Concentration.png?raw=true" width="600" height="400" /></p>
-</div>
-<h4 id="proof-by-moment-generating-function">Proof by Moment Generating Function</h4>
-<p>We prove a weaker version by a factor of <span class="math inline">\(2\)</span>. For all <span class="math inline">\(\lambda \in \mathbb{R}\)</span>, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[ e^{\lambda X} ] 
-            &amp;= \frac{1}{\sqrt{2 \pi \sigma} }\int e^{\lambda x} e^{ - \frac{x^2}{2 \sigma^2 } } \ d x \\
-            &amp;= \frac{ e^{\lambda^2 \sigma^2 / 2} }{\sqrt{2 \pi \sigma} }\int e^{ - \frac{ (x - \lambda \sigma^2)^2}{2 \sigma^2 } } \ d x \\
-            &amp;= e^{\lambda^2 \sigma^2 / 2}.
-    \end{aligned}
-\]</span></p>
-<p>Via Markov's inequality, for all <span class="math inline">\(\lambda \ge 0\)</span>, we have <span class="math display">\[
-    \begin{aligned}
-        \Pr[ X \ge t] 
-            &amp;\le \frac{ \mathbb{E}[ e^{\lambda X} ]  }{ e^{\lambda t} } 
-            &amp;\le e^{\lambda^2 \sigma^2 / 2 - \lambda t}.
-    \end{aligned}
-\]</span></p>
-<p>Setting <span class="math inline">\(\lambda = \frac{t}{\sigma^2}\)</span>, we get <span class="math display">\[
-    \Pr[ X \ge t ] \le e^{ - \frac{t^2}{2 \sigma^2} }.
-\]</span></p>
-<p>It concludes that <span class="math inline">\(\Pr[ |X| \ge t ] \le 2 e^{ - \frac{t^2}{2 \sigma^2} }.\)</span></p>
-<h4 id="proof-by-geometry">Proof by Geometry</h4>
-<p>Let <span class="math inline">\(T = \Pr[ |X| \ge t]\)</span>. Then <span class="math display">\[
-    T^2 = \int_{ |x| \ge t, |y| \ge t} \frac{1}{ 2 \pi \sigma^2 } \exp \Big( - \frac{ x^2 + y^2}{2 \sigma^2} \Big). 
-\]</span></p>
-<p>As <span class="math display">\[
-    \{ (x, y) \in \mathbb{R}^2: |x| \ge t \wedge |y| \ge t \} \subset
-    \{ (x, y) \in \mathbb{R}^2: x^2 + y^2 \ge 2 t^2 \} 
-\]</span></p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/Normal-Distribution-Integration3.png?raw=true" width="400" height="400" /></p>
-</div>
-<p>It follows that <span class="math display">\[
-\begin{aligned}
-    T^2 
-        &amp;\le \int_{ \sqrt 2 t}^\infty \int_{0}^{2 \pi } \frac{1}{ 2 \pi \sigma^2 } \exp \Big( - \frac{ r^2 }{2 \sigma^2} \Big) r \ d\theta dr\\
-        &amp;\le \int_{ \sqrt 2 t }^\infty \exp \Big( - \frac{ r^2 }{2 \sigma^2} \Big) \ d \frac{r^2}{ 2\sigma^2} \\
-        &amp;\le \int_{ \frac{ t^2 }{  \sigma^2 } }^\infty \exp ( - z ) \ d z \\
-        &amp;= \exp \Big( -\frac{t^2}{ \sigma^2} \Big).
-\end{aligned}
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    T \le \exp \Big( - \frac{t^2}{ 2\sigma^2} \Big).
-\]</span></p>
-<h3 id="bound-2"><strong>Bound 2</strong></h3>
-<blockquote>
-<p>If <span class="math inline">\(X \sim N(0, \sigma^2)\)</span>, then <span class="math inline">\(\forall t &gt; 0\)</span>, <span class="math display">\[
-\Pr[ X \ge t] \le \frac{ \sigma }{ \sqrt{2 \pi }  t } \exp \Big( -\frac{t^2}{ 2\sigma^2} \Big).
-\]</span> By symmetry we also have <span class="math display">\[
-\Pr[ X \le -t] \le \frac{ \sigma }{ \sqrt{2 \pi }  t } \exp \Big( -\frac{t^2}{ 2\sigma^2} \Big).
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \Pr[X &gt; t] 
-            &amp;= \int_{t}^\infty \frac{1}{ \sqrt{2 \pi \sigma^2} } \exp \Big( - \frac{ x^2 }{ 2 \sigma^2 } \Big) \ dx \\
-            &amp;\le \int_{t}^\infty \frac{1}{ \sqrt{2 \pi \sigma^2} } \frac{x}{t} \exp \Big( - \frac{ x^2 }{ 2  \sigma^2 } \Big) \ dx \\
-            &amp;\le  \frac{ \sigma }{ \sqrt{2 \pi }  t }  \int_{t}^\infty  \exp \Big( - \frac{ x^2 }{ 2  \sigma^2 } \Big) \ d \frac{ x^2 }{ 2 \sigma^2 } \\
-            &amp;=  - \frac{ \sigma }{ \sqrt{2 \pi }  t }  \exp \Big( - \frac{ x^2 }{ 2  \sigma^2 } \Big) \mid_{t}^\infty \\
-            &amp;=  \frac{ \sigma }{ \sqrt{2 \pi }  t }  \exp \Big( - \frac{ t^2 }{ 2 \sigma^2 } \Big).  
-    \end{aligned}
-\]</span></p>
-<p>This bound is more useful only when we know that <span class="math inline">\(t \ge \frac{ \sigma }{ \sqrt{2 \pi } }\)</span>.</p>
-<h1 id="reference">Reference</h1>
-<p>[1] B. Eisenberg and R. Sullivan, “Why Is the Sum of Independent Normal Random Variables Normal?,” Mathematics Magazine, vol. 81, no. 5, pp. 362–366, Dec. 2008</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -872,7 +860,7 @@ $$ -->
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">183</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

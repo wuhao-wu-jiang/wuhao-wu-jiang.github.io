@@ -146,6 +146,183 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/08/Sparse-Vector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/02/08/Sparse-Vector/" class="post-title-link" itemprop="url">Sparse Vector</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-02-08 17:59:19" itemprop="dateCreated datePublished" datetime="2022-02-08T17:59:19+11:00">2022-02-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-12 17:32:57" itemprop="dateModified" datetime="2022-02-12T17:32:57+11:00">2022-02-12</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Let <span class="math inline">\((\mathcal{X}, \Vert \cdot \Vert)\)</span> be a matrix space.</p>
+<blockquote>
+<p><strong>Definition.</strong> Two elements <span class="math inline">\(D, D&#39; \in \mathcal{X}\)</span> are neighboring, denoted as <span class="math inline">\(D \sim D&#39;\)</span>, if <span class="math inline">\(\Vert D&#39;, D&#39; \Vert = 1\)</span>.<br />
+<strong>Definition.</strong> A function <span class="math inline">\(q: \mathcal{X} \rightarrow \mathbb{R}\)</span> has sensitivity <span class="math inline">\(\Delta \in \mathbb{R}^+\)</span>, if <span class="math display">\[
+\Delta = \sup_{ D, D&#39; \in \mathcal{X}, D \sim D&#39; } | q(D) - q(D&#39;) |. 
+\]</span></p>
+</blockquote>
+<h1 id="problem">Problem</h1>
+<blockquote>
+<p>Let <span class="math inline">\(q_i: \mathcal{X} \rightarrow \mathbb{R}, i \in \mathbb{N}^+\)</span> be a sequence of functions with sensitivity <span class="math inline">\(\Delta\)</span>. Let <span class="math inline">\(T \in \mathbb{R}\)</span> be a threshold. Design an <span class="math inline">\(\epsilon\)</span>-differentially private algorithm, that reports the first <span class="math inline">\(i \in \mathbb{N}^+\)</span> for which <span class="math inline">\(q_i(D)\)</span> is near or above <span class="math inline">\(T\)</span>.</p>
+</blockquote>
+<h1 id="algorithm">Algorithm</h1>
+<blockquote>
+<p><strong>Definition.</strong> For each <span class="math inline">\(b \in \mathbb{R}^+\)</span>, let <span class="math inline">\(\mathcal{Lap}(b)\)</span> be the Laplacian distribution with parameter <span class="math inline">\(b\)</span>.</p>
+</blockquote>
+<p>The algorithm is described as follows.</p>
+<blockquote>
+<p><strong>Algorithm <span class="math inline">\(\mathcal{A}\)</span>.</strong><br />
+1. <span class="math inline">\(\hat T \leftarrow T + Z\)</span> where <span class="math inline">\(Z \sim \mathcal{Lap}(3 \Delta / \epsilon)\)</span><br />
+2. <strong>for</strong> <span class="math inline">\(i \in \mathbb{N}^+\)</span> <strong>do</strong><br />
+3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat q_i(D) \leftarrow q_i(D) + X_i\)</span>, where <span class="math inline">\(X_i \sim \mathcal{Lap}( 3 \Delta / \epsilon)\)</span><br />
+4. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span class="math inline">\(\hat q_i(D) \ge \hat T\)</span> <strong>then</strong><br />
+5. <span class="math inline">\(\qquad\qquad\)</span> <strong>output</strong> <span class="math inline">\(\bot\)</span><br />
+6. <span class="math inline">\(\qquad\qquad\)</span> <strong>halt</strong><br />
+7. <span class="math inline">\(\qquad\)</span> <strong>else</strong><br />
+8. <span class="math inline">\(\qquad\qquad\)</span> <strong>output</strong> <span class="math inline">\(\top\)</span></p>
+</blockquote>
+<h1 id="privacy-guarantee">Privacy Guarantee</h1>
+<p>Let <span class="math inline">\(D&#39;\)</span> be a neighboring dataset of <span class="math inline">\(D\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> For each <span class="math inline">\(i \in \mathbb{N}^+\)</span>, let <span class="math inline">\(s_i \doteq \underbrace{\top \ldots \top}_{ i - 1 \text{ occurrences} } \bot\)</span>. Then <span class="math display">\[
+e^{-\epsilon}
+\le 
+\frac{\Pr[ \mathcal{A}(D) = s_i ]}{\Pr[ \mathcal{A}(D&#39;) = s_i ]} 
+\le 
+e^{\epsilon}.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Fix an <span class="math inline">\(i \in \mathbb{N}^+\)</span>. Let <span class="math inline">\(M(D) = \max_{1 \le j \le i - 1} \Big( q_j(D) + X_j \Big)\)</span>. The event <span class="math inline">\(\mathcal{A}(D) = s_i\)</span> happens if and only if<br />
+<span class="math display">\[
+    M(D) &lt; \hat T \le \hat q_i(D). 
+\]</span></p>
+<p>Denote <span class="math inline">\(\vec X_{i - 1} \doteq (X_1, \ldots, X_{i - 1})\)</span>. Fix a sequence <span class="math inline">\(\vec x_{i - 1} = (x_1, \ldots, x_{i - 1} ) \in \mathbb{R}\)</span>. Conditioned on <span class="math inline">\(\vec X_{i - 1} = \vec x_{i - 1}\)</span>, the probability density of <span class="math inline">\(\Pr\big[ \mathcal{A}(D) = s_i \big]\)</span> is given by <span class="math display">\[
+    \begin{aligned}
+        p\big[ \mathcal{A}(D) = s_i \big] 
+            &amp;= p\big[ M(D) &lt; \hat T \le \hat q_i(D) \big] \\
+            &amp;= p\big[ M(D) &lt; T + Z \le q_i(D) + X_i \big] \\
+            &amp;= \int \int p_Z(z) \cdot p_{X_i}(x) \cdot \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big] \, dx \, dz,
+    \end{aligned}
+\]</span> where <span class="math inline">\(p_Z(z)\)</span> and <span class="math inline">\(p_{X_i}(x)\)</span> are probability densities of <span class="math inline">\(Z\)</span> and <span class="math inline">\(X_i\)</span>, respectively.</p>
+<p>Similarly, the conditional probability density of <span class="math inline">\(\Pr\big[ \mathcal{A}(D&#39;) = s_i \big]\)</span> is given by <span class="math display">\[
+    \begin{aligned}
+        p\big[ \mathcal{A}(D&#39;) = s_i \big] 
+            &amp;= p\big[ M(D&#39;) &lt; \hat T \le \hat q_i(D&#39;) \big] \\
+            &amp;= p\big[ M(D&#39;) &lt; T + Z \le q_i(D&#39;) + X_i \big] \\
+            &amp;= \int \int  p_Z(z&#39;) \cdot p_{X_i}(x&#39;) \cdot \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] \, dx&#39; \, dz&#39;.
+    \end{aligned}
+\]</span></p>
+<p>Suppose that the following equations holds: <span class="math display">\[
+    \begin{aligned}
+        T + z&#39; - M(D&#39;) &amp;= T + z - M(D), \\
+        q_i(D&#39;) + x&#39; - (T + z&#39;) &amp;= q_i(D) + x - (T + z).
+    \end{aligned}
+\]</span></p>
+<p>Then <span class="math display">\[
+    \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] 
+    = \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big].
+\]</span></p>
+<p>But this implies that <span class="math display">\[
+    \begin{aligned}
+        |z&#39; - z|    &amp;= |M(D&#39;) - M| \le \Delta \\
+        |x&#39; - x|    &amp;= |z&#39; - q_i(D&#39;) - (z - q_i(D))| \\
+                    &amp;= |M(D) - M(D&#39;) + q_i(D) - q_i(D&#39;)| \\
+                    &amp;\le 2 \cdot \Delta.
+    \end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+    \begin{aligned}
+        \frac{p\big[ \mathcal{A}(D) = s_i \big]}{p\big[ \mathcal{A}(D&#39;) = s_i \big] } 
+            &amp;= \frac{ 
+                \int \int p_Z(z) \cdot p_{X_i}(x) \cdot \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big] \, dx \, dz 
+            }
+            {
+                \int \int  p_Z(z&#39;) \cdot p_{X_i}(x&#39;) \cdot \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] \, dx&#39; \, dz&#39;
+            } \\
+            &amp;\le \exp \Big( \Delta \cdot \frac{\epsilon}{3\Delta}\Big) \cdot \exp \Big( 2 \cdot \Delta \cdot \frac{\epsilon}{3\Delta} \Big) \\
+            &amp;\le \exp(\epsilon).
+    \end{aligned}
+\]</span></p>
+<p>Integrating over <span class="math inline">\(\vec X_{i - 1} = \vec x_{i - 1}\)</span> for all possible <span class="math inline">\(\vec x_{i - 1}\)</span> proves that <span class="math inline">\(\Pr\big[ \mathcal{A}(D) = s_i \big] \le e^\epsilon \cdot \Pr\big[ \mathcal{A}(D&#39;) = s_i \big]\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="utility-guarantee">Utility Guarantee</h1>
+<p>Suppose that the algorithm outputs <span class="math inline">\(\top\)</span> at the <span class="math inline">\(i\)</span>-th query, we measure the empirical error by <span class="math inline">\(\max \{0, q_i(D) - T \}\)</span>, i.e., if <span class="math inline">\(q_i(D)\)</span> does not exceed <span class="math inline">\(T\)</span>, then we regards the empirical error as <span class="math inline">\(0\)</span>. Similarly, for an output <span class="math inline">\(\bot\)</span>, the empirical error is measured by <span class="math inline">\(\max \{0, T - q_i(D) \}\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Fix a sequence of <span class="math inline">\(k\)</span> queries <span class="math inline">\(q_1, \ldots, q_k\)</span> to be performed by the algorithm. With probability at most <span class="math inline">\(\beta\)</span>, the maximum empirical error exceeds <span class="math display">\[
+\frac{6 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta}.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \Pr \left[ |Z| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta} \right] 
+        \le \exp \left( 2 \cdot \ln \frac{k + 1}{\beta} \right)
+        = \frac{\beta}{k + 1}. 
+\]</span> Similarly, for each <span class="math inline">\(i \in [k]\)</span>, <span class="math display">\[
+    \Pr \left[ |X_i| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta} \right] 
+        \le \exp \left( 2 \cdot \ln \frac{k + 1}{\beta} \right)
+        = \frac{\beta}{k + 1}. 
+\]</span></p>
+<p>By union bound, with probability at most <span class="math inline">\(\beta\)</span>, it holds that <span class="math display">\[
+    |Z| + \max_{i \in [k]} |X_i| \ge \frac{6 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta}.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,”</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/04/Dijkstra-s-Algorithm-With-d-Ary-Heap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -346,112 +523,6 @@ Example:</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/09/Borel-Set/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/01/09/Borel-Set/" class="post-title-link" itemprop="url">Borel Set</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-01-09 22:13:17" itemprop="dateCreated datePublished" datetime="2022-01-09T22:13:17+11:00">2022-01-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-01-20 00:07:10" itemprop="dateModified" datetime="2022-01-20T00:07:10+11:00">2022-01-20</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(d \in \mathbb{N}^+\)</span> be a positive integer, and <span class="math inline">\(x = (x_1, \ldots, x_n)\)</span> be a generic point in <span class="math inline">\(\mathbb{R}^d\)</span>.</p>
-<blockquote>
-<p><strong>Definition (Rectangle).</strong> Let <span class="math inline">\(a_j, b_j \in \mathbb{R}\)</span> with <span class="math inline">\(a_j &lt; b_j\)</span>, for <span class="math inline">\(j \in [d]\)</span>. The following set of points is called a rectangle in <span class="math inline">\(\mathbb{R}^d\)</span>: <span class="math display">\[
-\times_{i \in [d]} (a_i, b_i] \doteq \{ x \in \mathbb{R}^d : x_i \in (a_i, b_i], \forall i \in [d] \}. 
-\]</span> Let <span class="math inline">\(\mathcal{S}_0\)</span> be the collection of all possible rectangles.</p>
-</blockquote>
-<blockquote>
-<p><strong>Definition (Borel Sets).</strong> Let <span class="math inline">\(\mathcal{R}^d = \sigma(\mathcal{S}_0)\)</span> be the <span class="math inline">\(\sigma\)</span>-algebra generated by the rectangles. Elements in <span class="math inline">\(\mathcal{R}^d\)</span> are called <strong><em>Borel sets</em></strong>.</p>
-</blockquote>
-<h1 id="properties">Properties</h1>
-<blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(\mathcal{R}^d\)</span> contains the open sets.</p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(G\)</span> be an open set in <span class="math inline">\(\mathbb{R}^d\)</span>. For each <span class="math inline">\(x \in G\)</span>, there exits a rectangle <span class="math inline">\(R_x = \times_{i \in [d]} (a_i, b_i]\)</span> such that</p>
-<ol type="1">
-<li><span class="math inline">\(x \in R_x \subset G\)</span>.</li>
-<li><span class="math inline">\(a_i, b_i\)</span> are rational numbers, for each <span class="math inline">\(i \in [d]\)</span>.</li>
-</ol>
-<p>Therefore, <span class="math inline">\(G = \cup_{x \in G} R_x\)</span>. However, there are countable number of rectangles whose endpoints are rational numbers. Hence <span class="math inline">\(G \in \mathcal{R}^d\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary.</strong> <span class="math inline">\(\mathcal{R}^d\)</span> contains the closed sets.</p>
-</blockquote>
-<blockquote>
-<p><strong>Theorem.</strong> Let <span class="math display">\[
-\begin{aligned}
-\mathcal{S}_1 
-&amp;\doteq \Big\{ \times_{i \in [d]} [a_i, b_i) : a_j &lt; b_j , \forall j \in [d] \Big\} \\
-\mathcal{S}_2 
-&amp;\doteq \Big\{ \times_{i \in [d]} (a_i, b_i) : a_j &lt; b_j , \forall j \in [d] \Big\} \\
-\mathcal{S}_3 
-&amp;\doteq \Big\{ \times_{i \in [d]} [a_i, b_i] : a_j \le b_j , \forall j \in [d] \Big\}
-\end{aligned}
-\]</span> Then <span class="math inline">\(\sigma(\mathcal{S}_0) = \sigma(\mathcal{S}_1) = \sigma(\mathcal{S}_2) = \sigma(\mathcal{S}_3)\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> We just prove that <span class="math inline">\(\sigma(\mathcal{S}_0) = \sigma(\mathcal{S}_2)\)</span>.</p>
-<ol type="1">
-<li><p><span class="math inline">\(\times_{i \in [d] } (a_i, b_i] = \cap_{n \ge 1} \Big( \times_{i \in [d]} (a_i, b_i + 1 / n] \Big)\)</span>, therefore <span class="math inline">\(\times_{i \in [d] } (a_i, b_i] \in \sigma(\mathcal{S}_2)\)</span>. It follows that <span class="math inline">\(\sigma(\mathcal{S}_0) \subset \sigma(\mathcal{S}_2)\)</span></p></li>
-<li><p><span class="math inline">\(\times_{i \in [d] } (a_i, b_i) = \cup_{n \ge 1} \Big( \times_{i \in [d]} (a_i, b_i - 1 / n] \Big)\)</span>, therefore <span class="math inline">\(\times_{i \in [d] } (a_i, b_i) \in \sigma(\mathcal{S}_0)\)</span>. It follows that <span class="math inline">\(\sigma(\mathcal{S}_2) \subset \sigma(\mathcal{S}_0)\)</span></p></li>
-</ol>
-<p>Via similar argument, we can prove that <span class="math inline">\(\sigma(\mathcal{S}_0) = \sigma(\mathcal{S}_3)\)</span>, <span class="math inline">\(\sigma(\mathcal{S}_1) = \sigma(\mathcal{S}_2)\)</span> and <span class="math inline">\(\sigma(\mathcal{S}_1) = \sigma(\mathcal{S}_3)\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -521,7 +592,7 @@ Example:</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">182</span>
+          <span class="site-state-item-count">183</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
