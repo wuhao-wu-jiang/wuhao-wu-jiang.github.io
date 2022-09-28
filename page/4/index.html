@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.3.0">
+<meta name="generator" content="Hexo 5.4.2">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -319,7 +319,7 @@ Let <span class="math inline">\(w\)</span> be the assignment constructed by the 
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-02-12 17:32:57" itemprop="dateModified" datetime="2022-02-12T17:32:57+11:00">2022-02-12</time>
+                <time title="Modified: 2022-09-26 12:05:39" itemprop="dateModified" datetime="2022-09-26T12:05:39+10:00">2022-09-26</time>
               </span>
 
           
@@ -333,119 +333,252 @@ Let <span class="math inline">\(w\)</span> be the assignment constructed by the 
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Let <span class="math inline">\((\mathcal{X}, \Vert \cdot \Vert)\)</span> be a matrix space.</p>
+          <p>Let <span class="math inline">\((\mathcal{X}, \Vert \cdot
+\Vert)\)</span> be a matrix space.</p>
 <blockquote>
-<p><strong>Definition.</strong> Two elements <span class="math inline">\(D, D&#39; \in \mathcal{X}\)</span> are neighboring, denoted as <span class="math inline">\(D \sim D&#39;\)</span>, if <span class="math inline">\(\Vert D&#39;, D&#39; \Vert = 1\)</span>.<br />
-<strong>Definition.</strong> A function <span class="math inline">\(q: \mathcal{X} \rightarrow \mathbb{R}\)</span> has sensitivity <span class="math inline">\(\Delta \in \mathbb{R}^+\)</span>, if <span class="math display">\[
-\Delta = \sup_{ D, D&#39; \in \mathcal{X}, D \sim D&#39; } | q(D) - q(D&#39;) |. 
+<p><strong>Definition.</strong> Two elements <span
+class="math inline">\(D, D&#39; \in \mathcal{X}\)</span> are
+neighboring, denoted as <span class="math inline">\(D \sim
+D&#39;\)</span>, if <span class="math inline">\(\Vert D&#39;, D&#39;
+\Vert = 1\)</span>.<br />
+<strong>Definition.</strong> A function <span class="math inline">\(q:
+\mathcal{X} \rightarrow \mathbb{R}\)</span> has sensitivity <span
+class="math inline">\(\Delta \in \mathbb{R}^+\)</span>, if <span
+class="math display">\[
+\Delta = \sup_{ D, D&#39; \in \mathcal{X}, D \sim D&#39; } | q(D) -
+q(D&#39;) |.
 \]</span></p>
 </blockquote>
 <h1 id="problem">Problem</h1>
 <blockquote>
-<p>Let <span class="math inline">\(q_i: \mathcal{X} \rightarrow \mathbb{R}, i \in \mathbb{N}^+\)</span> be a sequence of functions with sensitivity <span class="math inline">\(\Delta\)</span>. Let <span class="math inline">\(T \in \mathbb{R}\)</span> be a threshold. Design an <span class="math inline">\(\epsilon\)</span>-differentially private algorithm, that reports the first <span class="math inline">\(i \in \mathbb{N}^+\)</span> for which <span class="math inline">\(q_i(D)\)</span> is near or above <span class="math inline">\(T\)</span>.</p>
+<p>Let <span class="math inline">\(q_i: \mathcal{X} \rightarrow
+\mathbb{R}, i \in \mathbb{N}^+\)</span> be a sequence of functions with
+sensitivity <span class="math inline">\(\Delta\)</span>. Let <span
+class="math inline">\(t \in \mathbb{R}\)</span> be a threshold. Design
+an <span class="math inline">\(\epsilon\)</span>-differentially private
+algorithm, that reports the first <span class="math inline">\(i \in
+\mathbb{N}^+\)</span> for which <span
+class="math inline">\(q_i(D)\)</span> is near or above <span
+class="math inline">\(t\)</span>.</p>
 </blockquote>
 <h1 id="algorithm">Algorithm</h1>
 <blockquote>
-<p><strong>Definition.</strong> For each <span class="math inline">\(b \in \mathbb{R}^+\)</span>, let <span class="math inline">\(\mathcal{Lap}(b)\)</span> be the Laplacian distribution with parameter <span class="math inline">\(b\)</span>.</p>
+<p><strong>Definition.</strong> For each <span class="math inline">\(b
+\in \mathbb{R}^+\)</span>, let <span
+class="math inline">\(\mathcal{Lap}(b)\)</span> be the Laplacian
+distribution with parameter <span class="math inline">\(b\)</span>.</p>
 </blockquote>
 <p>The algorithm is described as follows.</p>
 <blockquote>
-<p><strong>Algorithm <span class="math inline">\(\mathcal{A}\)</span>.</strong><br />
-1. <span class="math inline">\(\hat T \leftarrow T + Z\)</span> where <span class="math inline">\(Z \sim \mathcal{Lap}(3 \Delta / \epsilon)\)</span><br />
-2. <strong>for</strong> <span class="math inline">\(i \in \mathbb{N}^+\)</span> <strong>do</strong><br />
-3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat q_i(D) \leftarrow q_i(D) + X_i\)</span>, where <span class="math inline">\(X_i \sim \mathcal{Lap}( 3 \Delta / \epsilon)\)</span><br />
-4. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span class="math inline">\(\hat q_i(D) \ge \hat T\)</span> <strong>then</strong><br />
-5. <span class="math inline">\(\qquad\qquad\)</span> <strong>output</strong> <span class="math inline">\(\bot\)</span><br />
-6. <span class="math inline">\(\qquad\qquad\)</span> <strong>halt</strong><br />
-7. <span class="math inline">\(\qquad\)</span> <strong>else</strong><br />
-8. <span class="math inline">\(\qquad\qquad\)</span> <strong>output</strong> <span class="math inline">\(\top\)</span></p>
+<p><strong>Algorithm <span
+class="math inline">\(\mathcal{A}\)</span>.</strong><br />
+1. <span class="math inline">\(\hat t \leftarrow t + Z\)</span> where
+<span class="math inline">\(Z \sim \mathcal{Lap}(3 \Delta /
+\epsilon)\)</span><br />
+2. <strong>for</strong> <span class="math inline">\(i \in
+\mathbb{N}^+\)</span> <strong>do</strong><br />
+3. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\hat q_i(D) \leftarrow q_i(D) + X_i\)</span>,
+where <span class="math inline">\(X_i \sim \mathcal{Lap}( 3 \Delta /
+\epsilon)\)</span><br />
+4. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span
+class="math inline">\(\hat q_i(D) \ge \hat t\)</span>
+<strong>then</strong><br />
+5. <span class="math inline">\(\qquad\qquad\)</span>
+<strong>output</strong> <span class="math inline">\(\bot\)</span><br />
+6. <span class="math inline">\(\qquad\qquad\)</span>
+<strong>halt</strong><br />
+7. <span class="math inline">\(\qquad\)</span>
+<strong>else</strong><br />
+8. <span class="math inline">\(\qquad\qquad\)</span>
+<strong>output</strong> <span class="math inline">\(\top\)</span></p>
 </blockquote>
 <h1 id="privacy-guarantee">Privacy Guarantee</h1>
-<p>Let <span class="math inline">\(D&#39;\)</span> be a neighboring dataset of <span class="math inline">\(D\)</span>.</p>
+<p>Let <span class="math inline">\(D&#39;\)</span> be a neighboring
+dataset of <span class="math inline">\(D\)</span>.</p>
 <blockquote>
-<p><strong>Theorem.</strong> For each <span class="math inline">\(i \in \mathbb{N}^+\)</span>, let <span class="math inline">\(s_i \doteq \underbrace{\top \ldots \top}_{ i - 1 \text{ occurrences} } \bot\)</span>. Then <span class="math display">\[
+<p><strong>Theorem.</strong> For each <span class="math inline">\(i \in
+\mathbb{N}^+\)</span>, let <span class="math inline">\(s_i \doteq
+\underbrace{\top \ldots \top}_{ i - 1 \text{ occurrences} }
+\bot\)</span>. Then <span class="math display">\[
 e^{-\epsilon}
-\le 
-\frac{\Pr[ \mathcal{A}(D) = s_i ]}{\Pr[ \mathcal{A}(D&#39;) = s_i ]} 
-\le 
+\le
+\frac{\Pr[ \mathcal{A}(D) = s_i ]}{\Pr[ \mathcal{A}(D&#39;) = s_i ]}
+\le
 e^{\epsilon}.
 \]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> Fix an <span class="math inline">\(i \in \mathbb{N}^+\)</span>. Let <span class="math inline">\(M(D) = \max_{1 \le j \le i - 1} \Big( q_j(D) + X_j \Big)\)</span>. The event <span class="math inline">\(\mathcal{A}(D) = s_i\)</span> happens if and only if<br />
+<p><strong>Proof.</strong> Fix an <span class="math inline">\(i \in
+\mathbb{N}^+\)</span>. For each dataset <span
+class="math inline">\(D\)</span> and each <span
+class="math inline">\(\vec x_{i - 1} = (x_1, \ldots, x_{i - 1} ) \in
+\mathbb{R}^{i - 1}\)</span>, define <span class="math display">\[
+    M(D, \vec x_{i - 1}) = \max_{1 \le j \le i - 1} \Big( q_j(D) + x_j
+\Big).
+\]</span></p>
+<p>Denote <span class="math inline">\(\vec X_{i - 1} \doteq (X_1,
+\ldots, X_{i - 1})\)</span>, and The event <span
+class="math inline">\(\mathcal{A}(D) = s_i\)</span> happens if and only
+if<br />
 <span class="math display">\[
-    M(D) &lt; \hat T \le \hat q_i(D). 
+    M(D, \vec X_{i - 1}) &lt; \hat t \le \hat q_i(D).
 \]</span></p>
-<p>Denote <span class="math inline">\(\vec X_{i - 1} \doteq (X_1, \ldots, X_{i - 1})\)</span>. Fix a sequence <span class="math inline">\(\vec x_{i - 1} = (x_1, \ldots, x_{i - 1} ) \in \mathbb{R}\)</span>. Conditioned on <span class="math inline">\(\vec X_{i - 1} = \vec x_{i - 1}\)</span>, the probability density of <span class="math inline">\(\Pr\big[ \mathcal{A}(D) = s_i \big]\)</span> is given by <span class="math display">\[
+<p>Fix a sequence <span class="math inline">\(\vec x_{i - 1} = (x_1,
+\ldots, x_{i - 1} ) \in \mathbb{R}^{i - 1}\)</span>. Since the random
+variables <span class="math inline">\(Z, \vec X_{i - 1}, X_i\)</span>
+are independent, <!-- 
+Conditioned on $\vec X_{i - 1} = \vec x_{i - 1}$, the probability density of $\Pr\big[ \mathcal{A}(D) = s_i \big]$ is given by
+--> <span class="math display">\[
     \begin{aligned}
-        p\big[ \mathcal{A}(D) = s_i \big] 
-            &amp;= p\big[ M(D) &lt; \hat T \le \hat q_i(D) \big] \\
-            &amp;= p\big[ M(D) &lt; T + Z \le q_i(D) + X_i \big] \\
-            &amp;= \int \int p_Z(z) \cdot p_{X_i}(x) \cdot \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big] \, dx \, dz,
+        \Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec x_{i
+- 1} \big]
+            &amp;= \Pr \big[ M(D, \vec x_{i - 1}) &lt; \hat t \le \hat
+q_i(D) \big] \\
+            &amp;= \Pr \big[ M(D, \vec x_{i - 1}) &lt; t + Z \le q_i(D)
++ X_i \big] \\
+            &amp;= \int \int p(z) \cdot p(x_i) \cdot \mathbb{I} \Big[
+M(D, \vec x_{i - 1}) &lt; t + z \le q_i(D) + x_i \Big] \, d x_i \, dz,
     \end{aligned}
-\]</span> where <span class="math inline">\(p_Z(z)\)</span> and <span class="math inline">\(p_{X_i}(x)\)</span> are probability densities of <span class="math inline">\(Z\)</span> and <span class="math inline">\(X_i\)</span>, respectively.</p>
-<p>Similarly, the conditional probability density of <span class="math inline">\(\Pr\big[ \mathcal{A}(D&#39;) = s_i \big]\)</span> is given by <span class="math display">\[
+\]</span> where <span class="math inline">\(p(z)\)</span> and <span
+class="math inline">\(p(x_i)\)</span> are probability densities of <span
+class="math inline">\(Z\)</span> and <span
+class="math inline">\(X_i\)</span>, respectively. Similarly, the
+conditional probability density of <span class="math inline">\(\Pr\big[
+\mathcal{A}(D&#39;) = s_i \big]\)</span> is given by <span
+class="math display">\[
     \begin{aligned}
-        p\big[ \mathcal{A}(D&#39;) = s_i \big] 
-            &amp;= p\big[ M(D&#39;) &lt; \hat T \le \hat q_i(D&#39;) \big] \\
-            &amp;= p\big[ M(D&#39;) &lt; T + Z \le q_i(D&#39;) + X_i \big] \\
-            &amp;= \int \int  p_Z(z&#39;) \cdot p_{X_i}(x&#39;) \cdot \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] \, dx&#39; \, dz&#39;.
+        \Pr \big[ \mathcal{A}(D&#39;) = s_i \Vert \vec X_{i - 1} = \vec
+x_{i - 1} \big]
+            &amp;= \Pr \big[ M(D&#39;, \vec x_{i - 1}) &lt; \hat t \le
+\hat q_i(D&#39;) \big] \\
+            &amp;= \Pr \big[ M(D&#39;, \vec x_{i - 1}) &lt; t + Z \le
+q_i(D&#39;) + X_i \big] \\
+            &amp;= \int \int  p(z&#39;) \cdot p(x_i&#39;) \cdot
+\mathbb{I} \Big[ M(D&#39;, \vec x_{i - 1}) &lt; t + z&#39; \le
+q_i(D&#39;) + x_i&#39; \Big] \, d x_i&#39; \, dz&#39;.
     \end{aligned}
 \]</span></p>
-<p>Suppose that the following equations holds: <span class="math display">\[
+<p>Suppose that the following equations holds: <span
+class="math display">\[
     \begin{aligned}
-        T + z&#39; - M(D&#39;) &amp;= T + z - M(D), \\
-        q_i(D&#39;) + x&#39; - (T + z&#39;) &amp;= q_i(D) + x - (T + z).
+        t + z&#39; - M(D&#39;, \vec x_{i - 1}) &amp;= t + z - M(D, \vec
+x_{i - 1}), \\
+        q_i(D&#39;) + x_i&#39; - (t + z&#39;) &amp;= q_i(D) + x_i - (t +
+z).
     \end{aligned}
 \]</span></p>
 <p>Then <span class="math display">\[
-    \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] 
-    = \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big].
+    \mathbb{I} \Big[ M(D&#39;, \vec x_{i - 1}) &lt; t + z&#39; \le
+q_i(D&#39;) + x_i&#39; \Big]
+    = \mathbb{I} \Big[ M(D, \vec x_{i - 1}) &lt; t + z \le q_i(D) + x_i
+\Big].
 \]</span></p>
 <p>But this implies that <span class="math display">\[
     \begin{aligned}
-        |z&#39; - z|    &amp;= |M(D&#39;) - M| \le \Delta \\
-        |x&#39; - x|    &amp;= |z&#39; - q_i(D&#39;) - (z - q_i(D))| \\
-                    &amp;= |M(D) - M(D&#39;) + q_i(D) - q_i(D&#39;)| \\
+        |z&#39; - z|    &amp;= |M(D&#39;, \vec x_{i - 1}) - M(D, \vec
+x_{i - 1})| \le \Delta \\
+        |x_i&#39; - x_i|    &amp;= |z&#39; - q_i(D&#39;) - z + q_i(D)|
+\\
+                    &amp;= |M(D&#39;, \vec x_{i - 1}) - M(D, \vec x_{i -
+1}) + q_i(D) - q_i(D&#39;)| \\
                     &amp;\le 2 \cdot \Delta.
     \end{aligned}
 \]</span></p>
-<p>Therefore, <span class="math display">\[
+Further, observe that $$
+<span class="math display">\[\begin{vmatrix}
+        \begin{aligned}    
+        
+                \frac{d x_i&#39;}{d_{x_i}},     &amp;\frac{d
+x_i&#39;}{d_z} \\
+                \frac{d z&#39;}{d_{x_i}},     &amp;\frac{d z&#39;}{d_z}
+            
+        \end{aligned}
+    \end{vmatrix}\]</span>
+=
+<span class="math display">\[\begin{vmatrix}
+        1,     &amp;0 \\
+        0,     &amp;1
+    \end{vmatrix}\]</span>
+<p>= 1, $$</p>
+<p>Therefore, by integration by substitution, <span
+class="math display">\[
     \begin{aligned}
-        \frac{p\big[ \mathcal{A}(D) = s_i \big]}{p\big[ \mathcal{A}(D&#39;) = s_i \big] } 
-            &amp;= \frac{ 
-                \int \int p_Z(z) \cdot p_{X_i}(x) \cdot \mathbf{1}\big[ M(D) &lt; T + z \le q_i(D) + x \big] \, dx \, dz 
+        \frac{\Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec
+x_{i - 1} \big]}{\Pr \big[ \mathcal{A}(D&#39;) = s_i \Vert \vec X_{i -
+1} = \vec x_{i - 1} \big] }
+            &amp;= \frac{
+                \int \int p(z) \cdot p(x_i) \cdot \mathbb{I} \Big[ M(D,
+\vec x_{i - 1}) &lt; t + z \le q_i(D) + x_i \Big] \, d x_i \, dz
             }
             {
-                \int \int  p_Z(z&#39;) \cdot p_{X_i}(x&#39;) \cdot \mathbf{1}\big[ M(D&#39;) &lt; T + z&#39; \le q_i(D&#39;) + x&#39; \big] \, dx&#39; \, dz&#39;
+                \int \int  p(z&#39;) \cdot p(x_i&#39;) \cdot \mathbb{I}
+\Big[ M(D&#39;, \vec x_{i - 1}) &lt; t + z&#39; \le q_i(D&#39;) +
+x_i&#39; \Big] \, d x_i&#39; \, dz&#39;
             } \\
-            &amp;\le \exp \Big( \Delta \cdot \frac{\epsilon}{3\Delta}\Big) \cdot \exp \Big( 2 \cdot \Delta \cdot \frac{\epsilon}{3\Delta} \Big) \\
+            &amp;= \frac{
+                \int \int p(z) \cdot p(x_i) \cdot \mathbb{I} \Big[ M(D,
+\vec x_{i - 1}) &lt; t + z \le q_i(D) + x_i \Big] \, d x_i \, dz
+            }
+            {
+                \int \int  p(z&#39;) \cdot p(x_i&#39;) \cdot \mathbb{I}
+\Big[ M(D, \vec x_{i - 1}) &lt; t + z \le q_i(D) + x_i \Big] \, d x_i \,
+dz
+            } \\
+            &amp;\le \exp \Big( \Delta \cdot
+\frac{\epsilon}{3\Delta}\Big) \cdot \exp \Big( 2 \cdot \Delta \cdot
+\frac{\epsilon}{3\Delta} \Big) \\
             &amp;\le \exp(\epsilon).
     \end{aligned}
 \]</span></p>
-<p>Integrating over <span class="math inline">\(\vec X_{i - 1} = \vec x_{i - 1}\)</span> for all possible <span class="math inline">\(\vec x_{i - 1}\)</span> proves that <span class="math inline">\(\Pr\big[ \mathcal{A}(D) = s_i \big] \le e^\epsilon \cdot \Pr\big[ \mathcal{A}(D&#39;) = s_i \big]\)</span>.</p>
+<p>Integrating over <span class="math inline">\(\vec X_{i - 1} = \vec
+x_{i - 1}\)</span> for all possible <span class="math inline">\(\vec
+x_{i - 1}\)</span> proves that <span class="math inline">\(\Pr\big[
+\mathcal{A}(D) = s_i \big] \le e^\epsilon \cdot \Pr\big[
+\mathcal{A}(D&#39;) = s_i \big]\)</span>.</p>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="utility-guarantee">Utility Guarantee</h1>
-<p>Suppose that the algorithm outputs <span class="math inline">\(\top\)</span> at the <span class="math inline">\(i\)</span>-th query, we measure the empirical error by <span class="math inline">\(\max \{0, q_i(D) - T \}\)</span>, i.e., if <span class="math inline">\(q_i(D)\)</span> does not exceed <span class="math inline">\(T\)</span>, then we regards the empirical error as <span class="math inline">\(0\)</span>. Similarly, for an output <span class="math inline">\(\bot\)</span>, the empirical error is measured by <span class="math inline">\(\max \{0, T - q_i(D) \}\)</span>.</p>
+<p>Suppose that the algorithm outputs <span
+class="math inline">\(\top\)</span> at the <span
+class="math inline">\(i\)</span>-th query, we measure the empirical
+error by <span class="math inline">\(\max \{0, q_i(D) - t \}\)</span>,
+i.e., if <span class="math inline">\(q_i(D)\)</span> does not exceed
+<span class="math inline">\(t\)</span>, then we regards the empirical
+error as <span class="math inline">\(0\)</span>. Similarly, for an
+output <span class="math inline">\(\bot\)</span>, the empirical error is
+measured by <span class="math inline">\(\max \{0, t - q_i(D)
+\}\)</span>.</p>
 <blockquote>
-<p><strong>Theorem.</strong> Fix a sequence of <span class="math inline">\(k\)</span> queries <span class="math inline">\(q_1, \ldots, q_k\)</span> to be performed by the algorithm. With probability at most <span class="math inline">\(\beta\)</span>, the maximum empirical error exceeds <span class="math display">\[
+<p><strong>Theorem.</strong> Fix a sequence of <span
+class="math inline">\(k\)</span> queries <span
+class="math inline">\(q_1, \ldots, q_k\)</span> to be performed by the
+algorithm. With probability at most <span
+class="math inline">\(\beta\)</span>, the maximum empirical error
+exceeds <span class="math display">\[
 \frac{6 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta}.
 \]</span></p>
 </blockquote>
 <p><strong>Proof.</strong> <span class="math display">\[
-    \Pr \left[ |Z| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta} \right] 
+    \Pr \left[ |Z| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k +
+1}{\beta} \right]
         \le \exp \left( 2 \cdot \ln \frac{k + 1}{\beta} \right)
-        = \frac{\beta}{k + 1}. 
-\]</span> Similarly, for each <span class="math inline">\(i \in [k]\)</span>, <span class="math display">\[
-    \Pr \left[ |X_i| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta} \right] 
+        = \frac{\beta}{k + 1}.
+\]</span> Similarly, for each <span class="math inline">\(i \in
+[k]\)</span>, <span class="math display">\[
+    \Pr \left[ |X_i| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k +
+1}{\beta} \right]
         \le \exp \left( 2 \cdot \ln \frac{k + 1}{\beta} \right)
-        = \frac{\beta}{k + 1}. 
+        = \frac{\beta}{k + 1}.
 \]</span></p>
-<p>By union bound, with probability at most <span class="math inline">\(\beta\)</span>, it holds that <span class="math display">\[
-    |Z| + \max_{i \in [k]} |X_i| \ge \frac{6 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta}.
+<p>By union bound, with probability at most <span
+class="math inline">\(\beta\)</span>, it holds that <span
+class="math display">\[
+    |Z| + \max_{i \in [k]} |X_i| \ge \frac{6 \cdot \Delta}{\epsilon}\ln
+\frac{k + 1}{\beta}.
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1] <em>C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,”</em></p>
+<p>[1] <em>C. Dwork and A. Roth, “The Algorithmic Foundations of
+Differential Privacy,”</em></p>
 
       
     </div>
