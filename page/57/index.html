@@ -146,6 +146,149 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/18/Hashing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/18/Hashing/" class="post-title-link" itemprop="url">Hashing</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-18 15:07:42" itemprop="dateCreated datePublished" datetime="2018-07-18T15:07:42+10:00">2018-07-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-05-03 00:17:49" itemprop="dateModified" datetime="2020-05-03T00:17:49+10:00">2020-05-03</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Let <span class="math inline">\(S = \{ x_1, x_2, ..., x_m \}\)</span> be a set of distinct element from domain <span class="math inline">\(U\)</span>. A function <span class="math inline">\(h: U \rightarrow [n]\)</span> that takes element from <span class="math inline">\(U\)</span> to a smaller domain <span class="math inline">\([n]\)</span> is called a hash function, where <span class="math inline">\([n] = \{ 0, 1, ..., n - 1\}\)</span> and <span class="math inline">\(n \le |U|\)</span>. In the case where <span class="math inline">\(n &lt; |U|\)</span>, there must be some <span class="math inline">\(i \in [n]\)</span>, s.t., <span class="math inline">\(|h^{-1}(i)| &gt; 1\)</span>. We are interested in the number of total duplicate value in <span class="math inline">\(h(S) = \{ h(x_1), h(x_2), ..., h(x_m) \}\)</span>.</p>
+<p>If both <span class="math inline">\(S\)</span> and <span class="math inline">\(h\)</span> are fixed, there is nothing uncertain. There are two ways to add some randomness to our analysis</p>
+<ol type="1">
+<li><p><span class="math inline">\(h\)</span> is fixed, and <span class="math inline">\(S\)</span> follows some distribution on <span class="math inline">\(U\)</span>. As an example, let <span class="math inline">\(U = [0, 2^{20} - 1]\)</span> and <span class="math inline">\(h(x) = x \ \&amp; \ 1023\)</span> that returns the last <span class="math inline">\(10\)</span> bits of <span class="math inline">\(x\)</span> (in binary form). If <span class="math inline">\(S\)</span> is sampled uniformly at random from <span class="math inline">\(U\)</span>, then on average for each <span class="math inline">\(x_i \in S\)</span>, there are <span class="math inline">\(\frac{m - 1}{1024}\)</span> elements that have the same value as <span class="math inline">\(x_i\)</span> under <span class="math inline">\(h\)</span>.</p></li>
+<li><p>The assumption that <span class="math inline">\(S\)</span> follows some distribution is too strong. Instead we assume that given <span class="math inline">\(S\)</span>, we select a function <span class="math inline">\(h\)</span> uniformly, from a set of functions <span class="math inline">\(\mathcal{H}\)</span>. Now we are going to analyze the probability <span class="math inline">\(P[ h(x_i) = h(x_j) ]\)</span> for <span class="math inline">\(i \neq j\)</span>.</p></li>
+</ol>
+<p>Let <span class="math inline">\(p &gt; |U|\)</span> be a prime number and <span class="math display">\[
+\mathcal{H} \doteq \{ h(x) = ax + b \mod p \mod n | 1 \le a &lt; p, 0 \le b &lt; p \}
+\]</span></p>
+<p>It follows that if <span class="math inline">\(h\)</span> is sampled uniformly at random, <span class="math inline">\(P[h(x_i) = h(x_j)] \le 1 / n\)</span> for <span class="math inline">\(i \neq j\)</span>.</p>
+<h5 id="lemma-1.">Lemma 1.</h5>
+<p>For <span class="math inline">\(x_i \neq x_j\)</span>, and <span class="math inline">\(s, t \in [p], s \neq t\)</span>, there is a unique pair <span class="math inline">\((a,b) \in [p]^+ \times [p]\)</span> <span class="math display">\[
+    a x_i + b \mod p = s \\
+    a x_j + b \mod p = t
+\]</span> where <span class="math inline">\([p]^+ \doteq \{1, 2, ..., p-1 \}\)</span>.</p>
+<p><strong>Proof</strong>: Since <span class="math inline">\([p]\)</span> is a finite filed and <span class="math inline">\(x_i \neq x_j\)</span>, the matrix</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+x_i \mod p, 1 \\
+x_j \mod p, 1
+\end{bmatrix} \in [p]^{2 \times 2}
+\]</span></p>
+<p>is invertible. Therefore,</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+a \\ 
+b
+\end{bmatrix} 
+= 
+\begin{bmatrix}
+x_i \mod p, 1 \\
+x_j \mod p, 1
+\end{bmatrix}^{-1}
+\begin{bmatrix}
+s \\ 
+t
+\end{bmatrix}
+\]</span> is unique. Moreover, <span class="math inline">\(a \neq 0\)</span>. Otherwise <span class="math inline">\(b = s\)</span> and <span class="math inline">\(b = t\)</span>, a contradiction to <span class="math inline">\(s \neq t\)</span>.</p>
+<h5 id="lemma-2.">Lemma 2.</h5>
+<p>For <span class="math inline">\(x_i \neq x_j\)</span>, <span class="math display">\[
+\begin{aligned}
+P[h(x_i = x_j)] 
+&amp;= \sum_{s, t \in [p], s \neq t, s \mod n = t \mod n} P[ h(x_i) = s \wedge h(x_j) = t] \\
+&amp;= \sum_{s, t \in [p], s \neq t, s = t \mod n} \frac{1}{ (p-1)p } \\
+&amp;= \sum_{s \in [p]} \sum_{t \in [p], t \neq s, t = s \mod n} \frac{1}{ (p-1)p } \\
+&amp;\le \sum_{s \in [p]} \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
+&amp;= p \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
+&amp;= \frac{1}{ n }
+\end{aligned}
+\]</span></p>
+<h5 id="lemma-3.">Lemma 3.</h5>
+<p>The expected number of pair <span class="math inline">\(x_i, x_j\)</span>, s.t., <span class="math inline">\(x_i \neq x_j \wedge h(x_i) = h(x_j)\)</span> is given by</p>
+<p><span class="math display">\[
+E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] = \sum_{x_i \neq x_j} P[h(x_i = x_j)] = \binom{m}{2} \frac{1}{n} = \frac{m (m - 1)}{ 2n }
+\]</span></p>
+<p>When <span class="math inline">\(m^2 \le n\)</span>, then <span class="math inline">\(E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] \le \frac{1}{2}\)</span>. By Markov inequality,</p>
+<p><span class="math display">\[
+P[\exists \quad \text{collision}] \le \frac{1}{ 2 }
+\]</span></p>
+<p>Lemma 4.</p>
+<p>With probability at most <span class="math inline">\(1/2\)</span>, some bin contains more than <span class="math inline">\(\frac{m}{n} + \sqrt{2m}\)</span> balls.</p>
+<p>For a fixed bin, let <span class="math inline">\(Y\)</span> denote the number of ball in this bin. Further, define <span class="math display">\[
+Y_i = \begin{cases}
+1, \qquad \text{if the } i \text{-th ball falls into the bin} \\
+0, \qquad \text{otherwise}
+\end{cases}
+\]</span> Then <span class="math inline">\(Y = \sum_i Y_i\)</span>, and <span class="math display">\[
+E[Y] = \frac{m}{n} \\
+\]</span> By pair-wise independence, we have <span class="math display">\[
+Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
+\]</span> Therefore, by Chebyshev inequality, we have <span class="math display">\[
+\Pr \left[ |Y - E[Y]| \ge \sqrt{2n} \sqrt{ m \frac{1}{n} \left(1 - \frac{1}{n} \right)} \right] = \Pr[|Y - E[Y]| \ge \sqrt{2n} \cdot \sigma] \le \frac{Var[Y]}{2n\sigma^2} = \frac{1}{2n}
+\]</span> Finally, applying union bound over <span class="math inline">\(n\)</span> bins, we get <span class="math display">\[
+\Pr[\text{some bin gets more than } \sqrt{2m} \text{ balls} ] \le \frac{1}{2}
+\]</span></p>
+<h5 id="reference">Reference:</h5>
+<ol type="1">
+<li>Sanjeev Arora, Cos 521: Advanced Algorithm Design, Lecture 1: Course Intro and Hashing</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/17/Sampling-Probability/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -386,161 +529,6 @@ x_{2n} - x_{2n - 1} = \frac{1}{x_{2n - 1} } - \frac{1}{x_{2n - 2} }  = - \frac{ 
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/06/20/Bennett-s-Inequality/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/06/20/Bennett-s-Inequality/" class="post-title-link" itemprop="url">Bennett's Inequality</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-06-20 21:56:51" itemprop="dateCreated datePublished" datetime="2018-06-20T21:56:51+10:00">2018-06-20</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-15 10:41:12" itemprop="dateModified" datetime="2021-06-15T10:41:12+10:00">2021-06-15</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p>Suppose <span class="math inline">\(X_1, \ldots, X_n\)</span> are independent random variables for which <span class="math inline">\(|X_i| \le M\)</span> and <span class="math inline">\(\mathbb{E} [ X_i ] = \mu_i\)</span> and <span class="math inline">\(\mathbb{E} [ X_i^2 ] \le v_i^2\)</span> for each <span class="math inline">\(i\)</span>, for nonnegative constants <span class="math inline">\(M\)</span> and <span class="math inline">\(v_i^2\)</span>. Let <span class="math inline">\(V \doteq \sum_{i \in [n] } v_i^2\)</span>. Then for all <span class="math inline">\(t \ge 0\)</span>, <span class="math display">\[
-\begin{aligned}
-\Pr \left[ \sum_{i \in [n ] } (X_i - \mu_i) \ge t \right] 
-&amp;\le \left(  \frac{ \exp \left( Mt / V \right)  }{ \left( 1 + Mt / V \right)^{  1 + Mt / V  } } \right)^{V / M^2} \\
-&amp;=\exp \left( - \frac{ t^2 }{ 2 V } \Phi \left( \frac{M t}{V} \right) \right),
-\end{aligned}
-\]</span> where <span class="math inline">\(\Phi\)</span> is a function defined on <span class="math inline">\([-1, \infty)\)</span> by <span class="math display">\[
-\Phi (x) \doteq \frac{ (1 + x) \ln (1 + x) - x }{ x^2 / 2 } \quad \text{for } t \neq 0, \text{ and } \Phi(0) = 1.
-\]</span></p>
-</blockquote>
-<p><strong>Remark:</strong> Let's perform a sanity check before proving it. Suppose that <span class="math inline">\(X_1, \ldots, X_n\)</span> are i.i.d. Bernoulli random variables each with mean <span class="math inline">\(\mu\)</span>. Then <span class="math inline">\(X_i \le 1\)</span>, <span class="math inline">\(\mathbb{E}[ X_i^2 ] = \mu\)</span> and <span class="math inline">\(V = n \mu\)</span>. Define <span class="math inline">\(t = \epsilon \cdot n \mu\)</span>. The Bennett's inequality states that <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \sum_{i \in [n ] } X_i - n \mu \ge \epsilon \cdot n \mu \right] 
-        &amp;\le \left(  \frac{ \exp \left( \epsilon  \right)  }{ \left( 1 + \epsilon  \right)^{  1 + \epsilon   } } \right)^{ n \mu },
-    \end{aligned}
-\]</span></p>
-<p>which is just the standard Chernoff Bound.</p>
-<p><strong>Proof.</strong> For all <span class="math inline">\(\lambda \ge 0\)</span>, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E} [ \exp( \lambda X_i ) ] 
-            &amp;= 1 + \lambda \mu_i + \sum_{k \ge 2} \frac{ \lambda^k \mathbb{E} [ X_i^k ] }{ k! } \\
-            &amp;= 1 + \lambda \mu_i + \sum_{k \ge 2} \frac{ \lambda^k \mathbb{E} [ X_i^2 X_i^{k - 2} ] }{ k! } \\
-            &amp;\le 1 + \lambda \mu_i + \frac{ \mathbb{E} [ X_i^2 ] }{ M^2 } \cdot \sum_{k \ge 2} \frac{ \lambda^k M^k  }{ k! } \quad \text{ since } |X_i^2 X_i^{k - 2}| \le X_i^2 M^{k - 2}\\
-            &amp;\le 1 + \lambda \mu_i + \frac{ v_i^2 }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right) \\
-            &amp;\le \exp \left( \lambda \mu_i + \frac{ v_i^2 }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right) \right) 
-    \end{aligned}
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E} [ \exp( \lambda (X_i - \mu_i) ) ] 
-            &amp;\le \exp \left( \frac{ v_i^2 }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right) \right).
-    \end{aligned}
-\]</span></p>
-<p>Via Markov's inequality, <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \sum_{i \in [n ] } (X_i - \mu_i) \ge t \right] 
-        &amp;\le 
-        \frac{ \mathbb{E} \left[ \exp \left( \lambda \sum_{i \in [n ] } (X_i - \mu_i) \right) \right] }{ \exp( \lambda t) } \\
-        &amp;\le \exp \left( -\lambda t + \frac{ V }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right) \right) \\
-        &amp;= \exp \left( -\lambda \Big( t + \frac{V}{M} \Big) + \frac{ V }{ M^2 } \cdot \left( e^{\lambda M} - 1 \right) \right) 
-    \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(f(\lambda) = -\lambda t + \frac{ V }{ M^2 } \cdot \left( e^{\lambda M} - 1 - \lambda M \right)\)</span>. Letting <span class="math display">\[
-    \begin{aligned}
-            f&#39;(\lambda) 
-            =&amp; - \Big( t + \frac{V}{M} \Big) +  \frac{V}{M} e^{\lambda M}  = 0.
-    \end{aligned}
-\]</span></p>
-<p>We get <span class="math inline">\(\lambda = \frac{1}{M} \ln \left( \frac{M t}{V} + 1 \right)\)</span>. Hence, <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \sum_{i \in [n ] } (X_i - \mu_i) \ge t \right] 
-        &amp;\le \exp \left( - \frac{1}{M} \Big( t + \frac{V}{M} \Big) \ln \left( \frac{M t}{V} + 1 \right) + \frac{ V }{ M^2 } \cdot \frac{M t}{V} \right) \\
-        &amp;\le \exp \left( \left\{ \frac{M t}{V} - \Big( 1 + \frac{M t}{V} \Big) \ln \left( 1 + \frac{M t}{V} \right) \right\} \cdot \frac{V}{M^2}\right).
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span>.</p>
-<h1 id="reference">Reference</h1>
-<p>[1] <em>David Pollard. <a target="_blank" rel="noopener" href="http://www.stat.yale.edu/~pollard/Books/Mini/">Chapter 2, MiniEmpirical</a>, 2015. Manuscript</em></p>
-<!-- Let $X_1, X_2, ..., X_n$ be a set of $i.i.d$ copies of $X$ and $\bar{X} = \frac{1}{n}\sum_{i=1}^n X_i$. Then
-$$
-\begin{aligned}
-    \Pr \{ \bar{X} \ge \mu + t\} 
-    &= \Pr \{ e^{ \lambda \bar{X} } \ge e^{\lambda (\mu + t)} \} \\
-    &\le \frac{  \mathbb{E}  [ \exp ( \lambda \bar{ X} ) ] }{ \exp \{ \lambda(\mu + t) \} } \\
-    &= \frac{ \mathbb{E} [ \exp (\lambda\sum_{i=1}^n X_i ) ]}{ \exp \{ \lambda n(\mu + t) \}  } \\
-    &= \frac{ \prod_{i=1}^n  \mathbb{E} [ \exp (\lambda X ) ]}{ \exp \{ \lambda n(\mu + t) \} } \\
-    &= \frac{ \prod_{i=1}^n  \sum_{j=1}^\infty \frac{\lambda^j  \mathbb{E} [X^j]}{j!}  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &= \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \sum_{j=2}^\infty \frac{\lambda^j  \mathbb{E} [X^{j-2}X^2]}{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\ 
-    &\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \sum_{j=2}^\infty \frac{\lambda^j M^{j-2}  \mathbb{E} [X^2]}{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} \sum_{j=2}^\infty \frac{\lambda^j M^{j} }{j!})  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &\le \frac{ \prod_{i=1}^n  （1 + \lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M))  }{ \exp \{ \lambda n(\mu + t) \} } \\
-    &= \left( \frac{  \exp \left\{\lambda \mu + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M ) \right\} }{ \exp( \lambda   (\mu + t) ) } \right)^n \\
-    &= \left( \exp \left( -\lambda t + \frac{ \mathbb{E} [X^2]}{M^2} (e^{\lambda M} - 1 - \lambda M ) \right)  \right)^n \\
-\end{aligned}
-$$
-
-By setting the derivative of $\lambda$ to 0, we get 
-$$
--t + { \mathbb{E} [X^2] \over M^2} ( M e^{\lambda M} - M) = 0 \rightarrow  \lambda = {1 \over M} \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 })}
-$$
-Therefore, 
-$$
-\begin{aligned}
-    \Pr \{ \overline{X} \ge \mu + t\} 
-    &\le \left( \exp \left\{ - {t \over M} \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } }) + \frac{ \mathbb{E} [X^2]}{M^2}{ {( {t M \over  \mathbb{E} [X^2] }  + 1  - 1 - \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } } ) } } ) \right\} \right)^n \\
-    &=  \exp \left\{ \frac{n \mathbb{E} [X^2]}{M^2}{ {( {t M \over  \mathbb{E} [X^2] }  - ({t M \over  \mathbb{E} [X^2] }  + 1 ) \ln { {( {t M \over  \mathbb{E} [X^2] }  + 1 } })} }) \right\} \\
-    &= \exp \left\{ \frac{n \mathbb{E} [X^2]}{M^2} f(\frac{tM}{ \mathbb{E} [X^2]})\right\}
-\end{aligned}
-$$
-where  $f(x) = x - (1 + x) \ln (1 + x)$. -->
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -610,7 +598,7 @@ where  $f(x) = x - (1 + x) \ln (1 + x)$. -->
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">185</span>
+          <span class="site-state-item-count">186</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

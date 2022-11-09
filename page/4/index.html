@@ -146,6 +146,607 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/06/Report-Noisy-Max-and-Exponential-Mechanism/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/06/Report-Noisy-Max-and-Exponential-Mechanism/" class="post-title-link" itemprop="url">Report Noisy Max and Exponential Mechanism</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-03-06 11:12:45" itemprop="dateCreated datePublished" datetime="2022-03-06T11:12:45+11:00">2022-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-10-18 13:29:00" itemprop="dateModified" datetime="2022-10-18T13:29:00+11:00">2022-10-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Let <span class="math inline">\(d \in \mathbb{N}^+\)</span> be a
+positive integer, and <span class="math inline">\(\vec{u} \in
+\mathbb{N}^d\)</span> be a vector.</p>
+<blockquote>
+<p><strong>Definition.</strong> Two vectors <span
+class="math inline">\(\vec{u}, \vec{v} \in \mathbb{N}^d\)</span> are
+neighboring, denoted as <span class="math inline">\(\vec{u} \sim
+\vec{v}\)</span>, if <span class="math inline">\(\Vert \vec{u} - \vec{v}
+\Vert_\infty = 1\)</span>.</p>
+</blockquote>
+<p>We are interested in the following research problem.</p>
+<blockquote>
+<p><strong>Problem.</strong> Design an <span
+class="math inline">\(\epsilon\)</span>-differentially private algorithm
+to report <span class="math display">\[
+\underset{i \in [d]}{\arg\max} \, u_i.
+\]</span></p>
+</blockquote>
+<h1 id="laplacian-mechanism">Laplacian Mechanism</h1>
+<p>Since <span class="math inline">\(\Vert \vec{u} - \vec{v}
+\Vert_\infty = 1\)</span>, it is possible that <span
+class="math inline">\(\Vert \vec{u} - \vec{v} \Vert_1 = d\)</span>. A
+naive approach would be adding independent Laplacian noise <span
+class="math inline">\(X_i \sim \mathcal{Lap}( \epsilon / d)\)</span> to
+each coordinate of <span class="math inline">\(\vec{u}\)</span>, and
+then return <span class="math display">\[
+    \mathcal{M}(\vec{u}) \doteq \underset{ i \in [d] }{\arg \max} \big(
+u_i + X_i \big).
+\]</span></p>
+<blockquote>
+<p><strong>Theorem (Privacy Guarantee).</strong> The algorithm is <span
+class="math inline">\(\epsilon\)</span>-differentially private.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>This follows directly from Laplacian mechanism.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Utility Guarantee).</strong> With probability at
+least <span class="math inline">\(1 - \beta\)</span>, it holds that
+<span class="math display">\[
+u_{ \mathcal{M}(\vec{u}) } \ge \left( \max_{i \in [d] } u_i \right) -
+\frac{d}{\epsilon} \ln \frac{d}{\beta}.
+\]</span> <strong>Proof.</strong> For each <span class="math inline">\(i
+\in [d]\)</span>, <span class="math display">\[
+\Pr \left[ |X_i| \ge \frac{d}{\epsilon} \ln \frac{d}{\beta} \right] \le
+\frac{\beta}{d}.
+\]</span> Via union bound, <span class="math display">\[
+\Pr \left[ \exists i \in [d] : |X_i| \ge \frac{d}{\epsilon} \ln
+\frac{d}{\beta} \right] \le \beta.
+\]</span> <span class="math inline">\(\square\)</span></p>
+</blockquote>
+<h1 id="report-noisy-max">Report Noisy Max</h1>
+<h2 id="laplacian-noise">Laplacian Noise</h2>
+<p>It is possible to add Laplacian noise <span class="math inline">\(X_i
+\sim \mathcal{Lap}(2 / \epsilon)\)</span> to each coordinate of <span
+class="math inline">\(\vec{u}\)</span>, and then return <span
+class="math display">\[
+    \mathcal{M}(\vec{u}) \doteq \underset{ i \in [d] }{\arg \max} \big(
+u_i + X_i \big).
+\]</span></p>
+<blockquote>
+<p><strong>Theorem (Privacy Guarantee).</strong> The algorithm is <span
+class="math inline">\(\epsilon\)</span>-differentially private.</p>
+</blockquote>
+<p><strong>Proof.</strong> We prove that for each <span
+class="math inline">\(k \in [d]\)</span>, and each <span
+class="math inline">\(\vec{u}, \vec{v} \in \mathbb{N}^d\)</span> s.t.,
+<span class="math inline">\(\vec{v} \sim \vec{u}\)</span>, it holds that
+<span class="math display">\[
+    e^{-\epsilon} \cdot \Pr[ \mathcal{M}(\vec{v}) = k] \le
+    \Pr[ \mathcal{M}(\vec{u}) = i ]
+    \le
+    e^\epsilon \cdot \Pr[ \mathcal{M}(\vec{v}) = k].
+\]</span> By symmetry, we prove the claim for just <span
+class="math inline">\(k = n\)</span>.</p>
+<p>For each <span class="math inline">\(\vec{u} \in
+\mathbb{N}^d\)</span> and each sequence <span
+class="math inline">\(\vec{s} = (s_1, \ldots, s_{n - 1} ) \in
+\mathbb{R}^{n - 1}\)</span>, define <span class="math display">\[
+    z (\vec{u}, \vec s) = \max_{j \in [n - 1] } \big(  u_j + s_j \big).
+\]</span></p>
+<p>Let <span class="math inline">\(X_j \sim \mathcal{Lap}(\epsilon / 2),
+j \in [n]\)</span>, and denote <span class="math inline">\(\vec X_{n -
+1} \doteq (X_1, \ldots, X_{n - 1})\)</span>. The event <span
+class="math inline">\(\mathcal{M}(\vec{u}) = n\)</span> happens if and
+only if<br />
+<span class="math display">\[
+    z( \vec{u} , \vec X_{n - 1} ) &lt; u_n + X_n.
+\]</span></p>
+<p>Fix a sequence <span class="math inline">\(\vec s = (s_1, \ldots,
+s_{n - 1} ) \in \mathbb{R}^{n - 1}\)</span>: <span
+class="math display">\[
+    \begin{aligned}
+        \Pr\big[ \mathcal{M}(\vec{u}) = n \Vert \vec X_{n - 1} = \vec s
+\big]
+            &amp;= \Pr \big[ X_n &gt; z( \vec{u} , \vec{s} ) - u_n \big]
+\\
+            &amp;= \begin{cases}
+                    \begin{aligned}
+                        \frac{1}{2} \exp \left( -\frac{\epsilon}{2}
+\cdot | z( \vec{u} , \vec{s} ) - u_n| \right),
+                    \end{aligned}    
+                    &amp;\text{ if } z( \vec{u} , \vec{s} ) - u_n &gt;
+0, \\
+                    \begin{aligned}
+                        1 - \frac{1}{2} \exp \left( -\frac{\epsilon}{2}
+\cdot | z( \vec{u} , \vec{s} ) - u_n| \right),
+                    \end{aligned}    
+                    &amp;\text{ if } z( \vec{u} , \vec{s} ) - u_n \le 0.
+            \end{cases}
+    \end{aligned}
+\]</span></p>
+<p>Similarly, <span class="math display">\[
+    \begin{aligned}
+        \Pr\big[ \mathcal{M}(\vec{v}) = n \Vert \vec X_{n - 1} = \vec s
+\big]
+            &amp;= \Pr \big[ X_n &gt; z( \vec{v} , \vec{s} ) - v_n \big]
+\\
+            &amp;= \begin{cases}
+                    \begin{aligned}
+                        \frac{1}{2} \exp \left( -\frac{\epsilon}{2}
+\cdot | z( \vec{v} , \vec{s} ) - v_n | \right),
+                    \end{aligned}    
+                    &amp;\text{ if } z( \vec{v} , \vec{s} ) - v_n &gt;
+0, \\
+                    \begin{aligned}
+                        1 - \frac{1}{2} \exp \left( -\frac{\epsilon}{2}
+\cdot | z( \vec{v} , \vec{s} ) - v_n| \right),
+                    \end{aligned}    
+                    &amp;\text{ if } z( \vec{v} , \vec{s} ) - v_n \le 0.
+            \end{cases}
+    \end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(\Delta \doteq z( \vec{u} , \vec{s} )
+- u_n - (z( \vec{v} , \vec{s} ) - v_n)\)</span>. The assumption <span
+class="math inline">\(\Vert \vec{u} - \vec{v} \Vert_\infty = 1\)</span>
+implies that <span class="math inline">\(|\Delta| \le 2\)</span>. WLOG,
+assume that <span class="math inline">\(z( \vec{u} , \vec{s} ) - u_n \le
+z( \vec{v} , \vec{s} ) - v_n\)</span>. Then <span
+class="math display">\[
+    \Pr \big[ X_n &gt; z( \vec{v} , \vec{s} ) - v_n \big]
+        = \Pr \big[ X_n + \Delta &gt; z( \vec{u} , \vec{s} ) - u_n
+\big].
+\]</span></p>
+<p>Define <span class="math inline">\(Y_n \doteq X_n + \Delta\)</span>,
+which is also a Laplacian random variable with distribution <span
+class="math inline">\(\mathcal{L}ap (\Delta, 2 / \epsilon)\)</span>. It
+follows that <span class="math inline">\(Y_n\)</span> is <span
+class="math inline">\((\epsilon, 0)\)</span>-close to <span
+class="math inline">\(X_n\)</span>, and <span class="math display">\[
+    \begin{aligned}
+        \frac{
+            \Pr\big[ \mathcal{M}(\vec{u}) = n \Vert \vec X_{n - 1} =
+\vec s \big]
+        }{
+            \Pr \big[ \mathcal{M}(\vec{v}) = n \Vert \vec X_{n - 1} =
+\vec s \big]
+        }
+            =
+            \frac{
+                \Pr \big[ X_n &gt; z( \vec{u} , \vec{s} ) - u_n \big]
+            }{
+                \Pr \big[ Y_n &gt; z( \vec{u} , \vec{s} ) - u_n \big]
+            }
+            \le e^\epsilon.
+    \end{aligned}
+\]</span></p>
+<p><strong>Remark 1.</strong> We can also verifies this via the close
+form expressions.</p>
+<p>If <span class="math inline">\(0 \le z( \vec{u} , \vec{s} ) -
+u_n\)</span>, clearly we have <span class="math display">\[
+    \begin{aligned}
+        \frac{\Pr\big[ \mathcal{M}(\vec{u}) = n \Vert \vec X_{n - 1} =
+\vec s \big] }{ \Pr \big[ \mathcal{M}(\vec{v}) = n \Vert \vec X_{n - 1}
+= \vec s \big] }
+            \le \exp(\epsilon).
+    \end{aligned}
+\]</span></p>
+<p>Consider <span class="math inline">\(z( \vec{v} , \vec{s} ) - v_n \le
+0\)</span>. Let <span class="math inline">\(a \doteq |z( \vec{u} ,
+\vec{s} ) - u_n|\)</span>, <span class="math inline">\(|b \doteq z(
+\vec{v} , \vec{s} ) - v_n|\)</span>, and <span class="math inline">\(c =
+1 / 2 \cdot \exp \left( - {\epsilon} / {2} \cdot b \right) \in [0, 1 /
+2]\)</span>. Then <span class="math inline">\(a, b \ge 0\)</span>, <span
+class="math inline">\(a - b \le 2\)</span>, and <span
+class="math display">\[
+    \begin{aligned}
+        \frac{\Pr\big[ \mathcal{M}(\vec{u}) = n \Vert \vec X_{n - 1} =
+\vec s \big] }{ \Pr \big[ \mathcal{M}(\vec{v}) = n \Vert \vec X_{n - 1}
+= \vec s \big] }
+            &amp;=        
+            \frac{
+                1 - \frac{1}{2} \exp \left( -\frac{\epsilon}{2} \cdot a
+\right)
+            }{
+                1 - \frac{1}{2} \exp \left( -\frac{\epsilon}{2} \cdot b
+\right)       
+            } \\
+            &amp;=       
+            \frac{
+                1 - c \cdot \exp \left( -\frac{\epsilon}{2} \cdot (a -
+b) \right)
+            }{
+                1 - c       
+            } \\
+            &amp;\le       
+            \frac{
+                1 - c \cdot \exp \left( -\epsilon \right)
+            }{
+                1 - c       
+            } \\                           
+            &amp;=       
+            \frac{1}{e^\epsilon}
+            \frac{
+                e^\epsilon - 1 + 1 - c
+            }{
+                1 - c       
+            } \\
+            &amp;=       
+            \frac{1}{e^\epsilon}
+            \left(
+                \frac{
+                    e^\epsilon - 1
+                }{
+                    1 - c       
+                }  
+                + 1
+            \right) \\
+            &amp;\le       
+            \frac{1}{e^\epsilon}
+            \left(
+                \frac{
+                    e^\epsilon - 1
+                }{
+                    1 - 1 / 2       
+                }  
+                + 1
+            \right) \\                                 
+            &amp;=       
+            \frac{1}{e^\epsilon}
+            \left(
+                    2 e^\epsilon - 1
+            \right) \\                   
+            &amp;\le \exp(\epsilon).
+    \end{aligned}
+\]</span></p>
+<p>Finally, consider <span class="math inline">\(z( \vec{u} , \vec{s} )
+- u_n &lt; 0, z( \vec{v} , \vec{s} ) - v_n &gt; 0\)</span>. Let <span
+class="math inline">\(a \doteq |z( \vec{u} , \vec{s} ) - u_n|\)</span>,
+<span class="math inline">\(|b \doteq z( \vec{v} , \vec{s} ) -
+v_n|\)</span>, and <span class="math inline">\(c = 1 / 2 \cdot \exp
+\left( - {\epsilon} / {2} \cdot b \right) \in [0, 1 / 2]\)</span>. Then
+<span class="math inline">\(a, b \ge 0\)</span>, <span
+class="math inline">\(a + b \le 2\)</span>, and <span
+class="math display">\[
+    \begin{aligned}
+        \frac{\Pr\big[ \mathcal{M}(\vec{u}) = n \Vert \vec X_{n - 1} =
+\vec s \big] }{ \Pr \big[ \mathcal{M}(\vec{v}) = n \Vert \vec X_{n - 1}
+= \vec s \big] }
+            &amp;=        
+            \frac{
+                1 - \frac{1}{2} \exp \left( -\frac{\epsilon}{2} \cdot a
+\right)
+            }{
+                \frac{1}{2} \exp \left( -\frac{\epsilon}{2} \cdot b
+\right)       
+            } \\
+            &amp;=       
+            \frac{
+                1 - c \cdot \exp \left( -\frac{\epsilon}{2} \cdot (a -
+b) \right)
+            }{
+                c       
+            } \\
+            &amp;\le       
+            \frac{
+                1 - c \cdot \exp \left( -\epsilon \right)
+            }{
+                c       
+            } \\                           
+            &amp;=       
+            \frac{1}{c} -
+            \frac{
+                1
+            }{
+                e^\epsilon       
+            } \\
+            &amp;\le       
+            2 - \exp(-\epsilon) \\
+            &amp;\le \exp(\epsilon).
+    \end{aligned}
+\]</span></p>
+<p>Integrating over <span class="math inline">\(\vec X_{n - 1} = \vec
+s\)</span> for all possible <span class="math inline">\(\vec s\)</span>
+finishes the proof.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Utility Guarantee).</strong> With probability at
+least <span class="math inline">\(1 - \beta\)</span>, it holds that
+<span class="math display">\[
+u_{ \mathcal{M}(\vec{u}) } \ge \left( \max_{i \in [d] } u_i \right) -
+\frac{1}{\epsilon} \ln \frac{d}{\beta}.
+\]</span> <strong>Proof.</strong> For each <span class="math inline">\(i
+\in [d]\)</span>, <span class="math display">\[
+\Pr \left[ |X_i| \ge \frac{1}{\epsilon} \ln \frac{d}{\beta} \right] \le
+\frac{\beta}{d}.
+\]</span> Via union bound, <span class="math display">\[
+\Pr \left[ \exists i \in [d] : |X_i| \ge \frac{1}{\epsilon} \ln
+\frac{d}{\beta} \right] \le \beta.
+\]</span> <span class="math inline">\(\square\)</span></p>
+</blockquote>
+<h2 id="exponential-noise">Exponential Noise</h2>
+<p>It is possible to add Exponential noise <span
+class="math inline">\(X_i \sim \mathcal{Exp}(2 / \epsilon)\)</span> to
+each coordinate of <span class="math inline">\(\vec{u}\)</span>, and
+then return <span class="math display">\[
+    \mathcal{M}(\vec{u}) \doteq \underset{ i \in [d] }{\arg \max} \big(
+u_i + X_i \big).
+\]</span></p>
+<p>Following the same vein, we have <span class="math display">\[
+    \begin{aligned}
+        \Pr\big[ \mathcal{M}(\vec{u}) = n \Vert \vec X_{n - 1} = \vec s
+\big]
+            &amp;= \Pr \big[ X_n &gt; z( \vec{u} , \vec{s} ) - u_n \big]
+\\
+            &amp;= \begin{cases}
+                    \begin{aligned}
+                        \exp \left( -\frac{\epsilon}{2} \cdot | z(
+\vec{u} , \vec{s} ) - u_n| \right),
+                    \end{aligned}    
+                    &amp;\text{ if } z( \vec{u} , \vec{s} ) - u_n &gt;
+0, \\
+                    \begin{aligned}
+                        1 ,
+                    \end{aligned}    
+                    &amp;\text{ if } z( \vec{u} , \vec{s} ) - u_n \le 0.
+            \end{cases}
+    \end{aligned}
+\]</span></p>
+<p>And <span class="math display">\[
+    \begin{aligned}
+        \Pr\big[ \mathcal{M}(\vec{v}) = n \Vert \vec X_{n - 1} = \vec s
+\big]
+            &amp;= \Pr \big[ X_n &gt; z( \vec{v} , \vec{s} ) - v_n \big]
+\\
+            &amp;= \begin{cases}
+                    \begin{aligned}
+                        \exp \left( -\frac{\epsilon}{2} \cdot | z(
+\vec{v} , \vec{s} ) - v_n | \right),
+                    \end{aligned}    
+                    &amp;\text{ if } z( \vec{v} , \vec{s} ) - v_n &gt;
+0, \\
+                    \begin{aligned}
+                        1 ,
+                    \end{aligned}    
+                    &amp;\text{ if } z( \vec{v} , \vec{s} ) - v_n \le 0.
+            \end{cases}
+    \end{aligned}
+\]</span></p>
+<p>It is straightforward to check that <span class="math display">\[
+    \begin{aligned}
+        \frac{\Pr\big[ \mathcal{M}(\vec{u}) = n \Vert \vec X_{n - 1} =
+\vec s \big] }{ \Pr \big[ \mathcal{M}(\vec{v}) = n \Vert \vec X_{n - 1}
+= \vec s \big] }
+            \le \exp(\epsilon).
+    \end{aligned}
+\]</span></p>
+<h1 id="exponential-mechanism">Exponential Mechanism</h1>
+<p>The exponential mechanism is defined by its output
+distribution:<br />
+<span class="math display">\[
+    \Pr[\mathcal{M}(\vec{u}) = i] \propto \exp \left( \epsilon
+\cdot   u_i  / 2 \right), \quad \forall i \in [d].
+\]</span></p>
+<p>Normalizing these probabilities give <span class="math display">\[
+    \Pr[\mathcal{M}(\vec{u}) = i]
+        = \frac{
+            \exp \left( \epsilon \cdot u_i / 2 \right)
+        }{
+            \sum_{j \in [d] } \exp \left( \epsilon \cdot u_j / 2 \right)
+        },
+        \quad \forall i \in [d].
+\]</span></p>
+<blockquote>
+<p><strong>Theorem (Privacy Guarantee).</strong> The algorithm is <span
+class="math inline">\(\epsilon\)</span>-differentially private.</p>
+</blockquote>
+<p><strong>Proof.</strong> Fix a <span class="math inline">\(\vec{u} \in
+\mathbb{N}^d\)</span>. We prove that for each <span
+class="math inline">\(i \in [d]\)</span>, and each <span
+class="math inline">\(\vec{v} \sim \vec{u}\)</span>, it holds that <span
+class="math display">\[
+    e^{-\epsilon} \cdot \Pr[ \mathcal{M}(\vec{v}) = i] \le \Pr[
+\mathcal{M}(\vec{u}) = i ] \le e^\epsilon \cdot \Pr[
+\mathcal{M}(\vec{v}) = i].
+\]</span> By symmetry, we prove the claim for just <span
+class="math inline">\(i = n\)</span>.</p>
+<p><span class="math display">\[
+    \begin{aligned}
+        \frac{\Pr[ \mathcal{M}(\vec{u}) = n] }{\Pr[ \mathcal{M}(\vec{v})
+= n] }
+        &amp;= \frac{
+            \exp \left( \epsilon \cdot u_n / 2 \right)
+        }{
+            \exp \left( \epsilon \cdot v_n / 2 \right)
+        }
+        \cdot \frac{
+            \sum_{j \in [d] } \exp \left( \epsilon \cdot  v_j / 2
+\right)
+        }{
+            \sum_{j \in [d] } \exp \left( \epsilon \cdot u_j / 2 \right)
+        } \\
+        &amp;\le
+        \exp( \epsilon / 2 )
+        \cdot \exp( \epsilon / 2 ) \\
+        &amp;= \exp( \epsilon ).
+    \end{aligned}
+\]</span></p>
+<p>The inequality follows since <span class="math display">\[
+    \begin{aligned}
+        u_i - v_i \le \Vert \vec{u} - \vec{v} \Vert_\infty \le 1,
+        \implies \exp( \epsilon (u_i - v_i) / 2) \le \exp( \epsilon  /
+2), \, \forall i \in [d].
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Utility Guarantee).</strong> With probability at
+least <span class="math inline">\(1 - \beta\)</span>, it holds that
+<span class="math display">\[
+u_{ \mathcal{M}(\vec{u}) } \ge \left( \max_{i \in [d] } u_i \right) -
+\frac{2}{\epsilon} \cdot \ln \frac{|S|}{|S_{OPT}| \cdot \beta}.
+\]</span> <strong>Proof.</strong> For each <span class="math inline">\(t
+\in \mathbb{R}\)</span>, the un-normalized probability mass assigned to
+the set <span class="math inline">\(S \doteq \{ i \in [d] : u_i \le t
+\}\)</span> is at most <span class="math inline">\(|S| \cdot \exp \left(
+\epsilon \cdot t / 2\right)\)</span>.</p>
+</blockquote>
+<p>On the other hand, the un-normalized probability mass assigned to the
+set <span class="math inline">\(S_{OPT} \subseteq [d]\)</span>
+consisting of optimal solutions is <span class="math inline">\(|S_{OPT}|
+\cdot \exp \left( \epsilon \cdot \left( \max_{i \in [d] } u_i \right) /
+2\right)\)</span>.</p>
+<p><span class="math display">\[
+    \begin{aligned}
+        \Pr \left[ u_{ \mathcal{M}(\vec{u}) } \le t \right]
+        &amp;\le
+        \frac{
+            |S| \cdot \exp \left( \epsilon \cdot t / 2\right)
+        }
+        {
+            |S_{OPT}| \cdot \exp \left( \epsilon \cdot \left( \max_{i
+\in [d] } u_i \right) / 2 \right)
+        } \\
+        &amp;\le \frac{|S|}{|S_{OPT}|} \exp \left( \epsilon \left( t -
+\max_{i \in [d] } u_i \right) / 2 \right).
+    \end{aligned}
+\]</span></p>
+<p>To bound the last term by <span class="math inline">\(\beta\)</span>,
+we can set <span class="math display">\[
+    t = \left( \max_{i \in [d] } u_i \right) - \frac{2}{\epsilon} \cdot
+\ln \frac{|S|}{|S_{OPT}| \cdot \beta}.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="gumbel-noise">Gumbel Noise</h2>
+<p>A random variable <span class="math inline">\(X\)</span> follows the
+Gumbel distribution <span class="math inline">\(\mathcal{Gumbel}(\mu,
+b)\)</span> if its density is given by <span class="math display">\[
+    p(x)
+        \doteq \frac{1}{b} \cdot \exp \left( - (x - \mu) / b - e^{- (x -
+\mu) / b}  \right)
+        = \frac{1}{b} \cdot e^{ - (x - \mu) / b } \cdot \exp \left(-
+e^{- (x - \mu) / b} \right), \forall x \in \mathbb{R}.
+\]</span> It follows that the cumulative distribution of <span
+class="math inline">\(X\)</span> is <span class="math display">\[
+    \begin{aligned}
+        \Pr[ X \le t ]
+            &amp;= \int_{-\infty}^t \frac{1}{b} \cdot e^{ - (x - \mu) /
+b } \cdot \exp \left(- e^{- (x - \mu) / b} \right) \, d x \\
+            &amp;= - \int_{-\infty}^t \exp \left(- e^{- (x - \mu) / b}
+\right) \, d e^{ -  (x - \mu) / b } \\
+            &amp;= \int^{\infty}_{\exp(- (t - \mu) / b)} \exp \left(- y
+\right) \, d y \\
+            &amp;= \exp \left(- e^{ - (t - \mu) / b } \right).
+    \end{aligned}
+\]</span></p>
+<blockquote>
+<p><strong>Theorem.</strong> If we add Gumbel noise <span
+class="math inline">\(X_i \sim \mathcal{Gumbel}(0, 2 /
+\epsilon)\)</span> to each coordinate of <span
+class="math inline">\(\vec{u}\)</span>, and then return <span
+class="math display">\[
+\mathcal{M}(\vec{u}) \doteq \underset{ i \in [d] }{\arg \max} \big( u_i
++ X_i \big),  
+\]</span> the output has the same distribution as the one of exponential
+mechanism.</p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(b = 2 /
+\epsilon\)</span>, and <span class="math inline">\(Z_i \doteq u_i +
+X_i\)</span>. Then <span class="math inline">\(Z_i \sim
+\mathcal{Gumbel}(u_i, b)\)</span>, and <span class="math display">\[
+    \begin{aligned}
+        \Pr[ \mathcal{M}(\vec{u}) = n]
+            &amp;= \int_{-\infty}^\infty \left( p(z_n) \cdot \prod_{i
+\in [n - 1]} \Pr[ Z_i \le z_n ] \right) \, d z_n \\
+            &amp;= \int_{-\infty}^\infty \left(
+                    \frac{1}{b} \cdot e^{ - (z_n - u_n) / b } \cdot \exp
+\left(- e^{- (z_n - u_n) / b} \right)
+                    \cdot
+                    \prod_{i \in [n - 1]} \exp \left(- e^{- (z_n - u_i)
+/ b } \right)
+                \right) \, d z_n  \\
+            &amp;= e^{ u_n / b } \cdot \int_{-\infty}^\infty \left(
+                    \frac{1}{b} \cdot e^{ - z_n / b } \cdot \exp \left(-
+e^{- z_n / b} \cdot \sum_{i \in [n ]}  e^{ u_i / b } \right)
+                \right) \, d z_n  \\
+            &amp;= - e^{ u_n / b } \cdot \int_{\infty}^0
+                    \exp \left( - y \cdot \sum_{i \in [n ]}  e^{ u_i / b
+} \right)
+                \, d y
+            &amp; (y \doteq e^{-z_n/b} ) \\
+            &amp;= \frac{ \exp \left( u_n / b \right) }{
+                \sum_{i \in [n]} \exp \left( u_i / b \right)
+            }.
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>C. Dwork and A. Roth, “The Algorithmic Foundations of
+Differential Privacy,”</em></p>
+<p>[2] <a
+target="_blank" rel="noopener" href="https://lips.cs.princeton.edu/the-gumbel-max-trick-for-discrete-distributions/"><em>The
+Gumbel-Max Trick for Discrete Distributions</em></a></p>
+<p>[3] <em>D. Durfee and R. M. Rogers, “Practical Differentially Private
+Top-k Selection with Pay-what-you-get Composition,” in Advances in
+Neural Information Processing Systems, 2019, vol. 32. Accessed: Sep. 13,
+2022.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/11/Approximate-Densest-Subgraph/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -319,7 +920,7 @@ Let <span class="math inline">\(w\)</span> be the assignment constructed by the 
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-09-26 12:05:39" itemprop="dateModified" datetime="2022-09-26T12:05:39+10:00">2022-09-26</time>
+                <time title="Modified: 2022-10-15 22:19:32" itemprop="dateModified" datetime="2022-10-15T22:19:32+11:00">2022-10-15</time>
               </span>
 
           
@@ -361,7 +962,7 @@ algorithm, that reports the first <span class="math inline">\(i \in
 class="math inline">\(q_i(D)\)</span> is near or above <span
 class="math inline">\(t\)</span>.</p>
 </blockquote>
-<h1 id="algorithm">Algorithm</h1>
+<h1 id="mechanism-one">Mechanism One</h1>
 <blockquote>
 <p><strong>Definition.</strong> For each <span class="math inline">\(b
 \in \mathbb{R}^+\)</span>, let <span
@@ -393,7 +994,7 @@ class="math inline">\(\hat q_i(D) \ge \hat t\)</span>
 8. <span class="math inline">\(\qquad\qquad\)</span>
 <strong>output</strong> <span class="math inline">\(\top\)</span></p>
 </blockquote>
-<h1 id="privacy-guarantee">Privacy Guarantee</h1>
+<h2 id="privacy-guarantee">Privacy Guarantee</h2>
 <p>Let <span class="math inline">\(D&#39;\)</span> be a neighboring
 dataset of <span class="math inline">\(D\)</span>.</p>
 <blockquote>
@@ -408,9 +1009,9 @@ e^{-\epsilon}
 e^{\epsilon}.
 \]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> Fix an <span class="math inline">\(i \in
-\mathbb{N}^+\)</span>. For each dataset <span
-class="math inline">\(D\)</span> and each <span
+<p><strong>Proof.</strong></p>
+<p>Fix an <span class="math inline">\(i \in \mathbb{N}^+\)</span>. For
+each dataset <span class="math inline">\(D\)</span> and each <span
 class="math inline">\(\vec x_{i - 1} = (x_1, \ldots, x_{i - 1} ) \in
 \mathbb{R}^{i - 1}\)</span>, define <span class="math display">\[
     M(D, \vec x_{i - 1}) = \max_{1 \le j \le i - 1} \Big( q_j(D) + x_j
@@ -536,6 +1137,141 @@ x_{i - 1}\)</span> proves that <span class="math inline">\(\Pr\big[
 \mathcal{A}(D) = s_i \big] \le e^\epsilon \cdot \Pr\big[
 \mathcal{A}(D&#39;) = s_i \big]\)</span>.</p>
 <p><span class="math inline">\(\square\)</span></p>
+<h1 id="mechanism-two">Mechanism Two</h1>
+<blockquote>
+<p><strong>Definition.</strong> For each <span class="math inline">\(b
+\in \mathbb{R}^+\)</span>, let <span
+class="math inline">\(\mathcal{Exp}(b)\)</span> be the exponential
+distribution with parameter <span class="math inline">\(b\)</span>.</p>
+</blockquote>
+<p>The algorithm is described as follows.</p>
+<blockquote>
+<p><strong>Algorithm <span
+class="math inline">\(\mathcal{A}\)</span>.</strong><br />
+1. <span class="math inline">\(\hat t \leftarrow t + Z\)</span> where
+<span class="math inline">\(Z \sim \mathcal{Exp}(3 \Delta /
+\epsilon)\)</span><br />
+2. <strong>for</strong> <span class="math inline">\(i \in
+\mathbb{N}^+\)</span> <strong>do</strong><br />
+3. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\hat q_i(D) \leftarrow q_i(D) + X_i\)</span>,
+where <span class="math inline">\(X_i \sim \mathcal{Exp}( 3 \Delta /
+\epsilon)\)</span><br />
+4. <span class="math inline">\(\qquad\)</span> <strong>if</strong> <span
+class="math inline">\(\hat q_i(D) \ge \hat t\)</span>
+<strong>then</strong><br />
+5. <span class="math inline">\(\qquad\qquad\)</span>
+<strong>output</strong> <span class="math inline">\(\bot\)</span><br />
+6. <span class="math inline">\(\qquad\qquad\)</span>
+<strong>halt</strong><br />
+7. <span class="math inline">\(\qquad\)</span>
+<strong>else</strong><br />
+8. <span class="math inline">\(\qquad\qquad\)</span>
+<strong>output</strong> <span class="math inline">\(\top\)</span></p>
+</blockquote>
+<h2 id="privacy-guarantee-1">Privacy Guarantee</h2>
+<p>Let <span class="math inline">\(D&#39;\)</span> be a neighboring
+dataset of <span class="math inline">\(D\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> For each <span class="math inline">\(i \in
+\mathbb{N}^+\)</span>, let <span class="math inline">\(s_i \doteq
+\underbrace{\top \ldots \top}_{ i - 1 \text{ occurrences} }
+\bot\)</span>. Then <span class="math display">\[
+e^{-\epsilon}
+\le
+\frac{\Pr[ \mathcal{A}(D) = s_i ]}{\Pr[ \mathcal{A}(D&#39;) = s_i ]}
+\le
+e^{\epsilon}.
+\]</span></p>
+</blockquote>
+<p>THe analysis is very similar to the one for report noisy max.
+Informally speaking, we are applying report noisy max twice, one for
+<span class="math inline">\(\hat t\)</span> being max among <span
+class="math inline">\((\hat t, \hat q(D_1), \ldots, \hat q(D_{i -
+1}))\)</span>, one for <span class="math inline">\(\hat q(D_i)\)</span>
+being max among <span class="math inline">\((\hat t, \hat q(D_1),
+\ldots, \hat q(D_{i}))\)</span>.</p>
+<p><strong>Proof.</strong></p>
+<p>Fix an <span class="math inline">\(i \in \mathbb{N}^+\)</span>. For
+each dataset <span class="math inline">\(D\)</span> and each <span
+class="math inline">\(\vec x_{i - 1} = (x_1, \ldots, x_{i - 1} ) \in
+\mathbb{R}^{i - 1}\)</span>, define <span class="math display">\[
+    M(D, \vec x_{i - 1}) = \max_{1 \le j \le i - 1} \Big( q_j(D) + x_j
+\Big).
+\]</span></p>
+<p>Denote <span class="math inline">\(\vec X_{i - 1} \doteq (X_1,
+\ldots, X_{i - 1})\)</span>, and The event <span
+class="math inline">\(\mathcal{A}(D) = s_i\)</span> happens if and only
+if<br />
+<span class="math display">\[
+    M(D, \vec X_{i - 1}) &lt; \hat t \le \hat q_i(D).
+\]</span></p>
+<p>Fix a sequence <span class="math inline">\(\vec x_{i - 1} = (x_1,
+\ldots, x_{i - 1} ) \in \mathbb{R}^{i - 1}\)</span>. Since the random
+variables <span class="math inline">\(Z, \vec X_{i - 1}, X_i\)</span>
+are independent, <span class="math display">\[
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec x_{i
+- 1} \big]
+            &amp;= \Pr \big[ M(D, \vec x_{i - 1}) &lt; \hat t \le \hat
+q_i(D) \big] \\
+            &amp;= \Pr \big[ M(D, \vec x_{i - 1}) &lt; t + Z \le q_i(D)
++ X_i \big] \\
+            &amp;= \int_{M(D, \vec x_{i - 1}) - t}^\infty \left( p(z)
+\cdot \int_{z - q_i (D)}^\infty p(x_i) \, d x_i \right) \, dz \\
+            &amp;= \int_{M(D, \vec x_{i - 1}) - t}^\infty
+                p(z) \cdot
+                \exp \left( -\frac{\epsilon}{3 \Delta} \cdot \max \big\{
+0, z - q_i (D) \big\}
+            \right) \, dz
+    \end{aligned}
+\]</span> where <span class="math inline">\(p(z)\)</span> and <span
+class="math inline">\(p(x_i)\)</span> are probability densities of <span
+class="math inline">\(Z\)</span> and <span
+class="math inline">\(X_i\)</span>, respectively. For now, let <span
+class="math display">\[
+    \kappa \doteq M(D, \vec x_{i - 1}) - M(D&#39;, \vec x_{i - 1}) \in
+[- \Delta, \Delta] .
+\]</span> Following similar vein, the conditional probability density of
+<span class="math inline">\(\Pr\big[ \mathcal{A}(D&#39;) = s_i
+\big]\)</span> is given by <span class="math display">\[
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D&#39;) = s_i \Vert \vec X_{i - 1} = \vec
+x_{i - 1} \big]
+            &amp;= \Pr \big[ M(D&#39;, \vec x_{i - 1}) &lt; \hat t \le
+\hat q_i(D&#39;) \big] \\
+            &amp;= \Pr \big[ M(D&#39;, \vec x_{i - 1}) &lt; t + Z \le
+q_i(D&#39;) + X_i \big] \\
+            &amp;= \int_{M(D&#39;, \vec x_{i - 1}) - t}^\infty \left(
+p(z) \cdot \int_{z - q_i (D&#39;)}^\infty p(x_i) \, d x_i \right) \, dz
+\\
+            &amp;= \int_{M(D&#39;, \vec x_{i - 1}) - t}^\infty
+                p(z) \cdot
+                \exp \left( -\frac{\epsilon}{3 \Delta} \cdot \max \big\{
+0, z - q_i (D&#39;) \big\}
+            \right) \, dz \\
+            &amp;\stackrel{y \doteq z + \kappa}{=} \int_{M(D, \vec x_{i
+- 1}) - t}^\infty
+                p(y - \kappa) \cdot
+                \exp \left( -\frac{\epsilon}{3 \Delta} \cdot \max \big\{
+0, y - \kappa - q_i (D&#39;) \big\}
+            \right) \, dy
+    \end{aligned}
+\]</span></p>
+<p>Comparing the integrands we have <span class="math display">\[
+    \begin{aligned}
+        \frac{\Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec
+x_{i - 1} \big]}{\Pr \big[ \mathcal{A}(D&#39;) = s_i \Vert \vec X_{i -
+1} = \vec x_{i - 1} \big] }
+            &amp;\le \exp(\epsilon).
+    \end{aligned}
+\]</span></p>
+<p>Integrating over <span class="math inline">\(\vec X_{i - 1} = \vec
+x_{i - 1}\)</span> for all possible <span class="math inline">\(\vec
+x_{i - 1}\)</span> proves that <span class="math inline">\(\Pr\big[
+\mathcal{A}(D) = s_i \big] \le e^\epsilon \cdot \Pr\big[
+\mathcal{A}(D&#39;) = s_i \big]\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
 <h1 id="utility-guarantee">Utility Guarantee</h1>
 <p>Suppose that the algorithm outputs <span
 class="math inline">\(\top\)</span> at the <span
@@ -579,93 +1315,6 @@ class="math display">\[
 <h1 id="reference">Reference</h1>
 <p>[1] <em>C. Dwork and A. Roth, “The Algorithmic Foundations of
 Differential Privacy,”</em></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/04/Dijkstra-s-Algorithm-With-d-Ary-Heap/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/02/04/Dijkstra-s-Algorithm-With-d-Ary-Heap/" class="post-title-link" itemprop="url">Dijkstra's Algorithm With d-Ary Heap</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2022-02-04 23:26:53 / Modified: 23:50:55" itemprop="dateCreated datePublished" datetime="2022-02-04T23:26:53+11:00">2022-02-04</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>A <span class="math inline">\(d\)</span>-ary min heap with <span class="math inline">\(n\)</span> elements has the following time complexity:</p>
-<ul>
-<li><strong>Insertion.</strong> <span class="math inline">\(O\big((\log n) / (\log d) \big)\)</span>.<br />
-</li>
-<li><strong>Extract-Min.</strong> <span class="math inline">\(O\big(d \cdot (\log n) / (\log d) \big)\)</span>.<br />
-</li>
-<li><strong>Decrease-Key.</strong> <span class="math inline">\(O\big((\log n) / (\log d) \big)\)</span>.</li>
-</ul>
-<p>Recall that for a single source shortest path query on a graph with <span class="math inline">\(n\)</span> vertices and <span class="math inline">\(m\)</span> edges, the Dijkstra's Algorithm performs <span class="math inline">\(n\)</span> extract-min operations, and <span class="math inline">\(m\)</span> decrease-key operation. Working with <span class="math inline">\(d\)</span>-ary min heap, it has time complexity <span class="math display">\[
-    O \left( n \cdot d \cdot \frac{\log n}{\log d} + m \cdot \frac{\log n}{\log d} \right)
-\]</span></p>
-<p>Setting <span class="math inline">\(d = m / n\)</span> minimizes this to <span class="math display">\[
-    O \left( m \cdot \log_{m / n} n \right) = O \left( m \cdot \frac{\log n}{\log (m / n)} \right). 
-\]</span></p>
-<p>Consider the following cases:</p>
-<ul>
-<li><p><span class="math inline">\(m = O(n)\)</span>, then the time complexity is <span class="math inline">\(O(n \log n)\)</span>.</p></li>
-<li><p><span class="math inline">\(m = \Theta (n \log n)\)</span>, then the time complexity is <span class="math display">\[
-      O \left( n \cdot (\log n) \cdot \frac{\log n}{\log \log n } \right). 
-  \]</span><br />
-Example:</p>
-<ol type="1">
-<li>when <span class="math inline">\(n = 2^{20} = 1\)</span>M, <span class="math inline">\((\log n) / (\log \log n) = 20 / (\log 20) \approx 4.6\)</span>.</li>
-<li>when <span class="math inline">\(n = 2^{30} = 1\)</span>G, <span class="math inline">\((\log n) / (\log \log n) = 30 / (\log 20) \approx 6.1\)</span>.</li>
-</ol></li>
-<li><p><span class="math inline">\(m = \Theta \big( n^{1 + \epsilon} \big)\)</span> for some <span class="math inline">\(\epsilon &gt; 0\)</span>, then the time complexity is <span class="math display">\[
-      O \left( \frac{m}{\epsilon} \right). 
-  \]</span></p></li>
-</ul>
 
       
     </div>
@@ -750,7 +1399,7 @@ Example:</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">185</span>
+          <span class="site-state-item-count">186</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

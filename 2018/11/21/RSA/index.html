@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence \(x\), the encrypt message is \(y\). One solution is to perform XOR operation. Suppo">
+  <meta name="description" content="We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence \(x\), the encrypted message is \(y\). XOR Encryption One solution is to via the X">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RSA">
 <meta property="og:url" content="http://example.com/2018/11/21/RSA/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence \(x\), the encrypt message is \(y\). One solution is to perform XOR operation. Suppo">
+<meta property="og:description" content="We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence \(x\), the encrypted message is \(y\). XOR Encryption One solution is to via the X">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2018-11-21T10:52:18.000Z">
-<meta property="article:modified_time" content="2019-12-04T09:52:46.000Z">
+<meta property="article:modified_time" content="2022-10-11T08:07:43.311Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 
@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-12-04 20:52:46" itemprop="dateModified" datetime="2019-12-04T20:52:46+11:00">2019-12-04</time>
+                <time title="Modified: 2022-10-11 19:07:43" itemprop="dateModified" datetime="2022-10-11T19:07:43+11:00">2022-10-11</time>
               </span>
 
           
@@ -195,51 +195,151 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>We discuss the problem of sending a message secretly over the internet. Suppose the original message is a sequence <span class="math inline">\(x\)</span>, the encrypt message is <span class="math inline">\(y\)</span>.</p>
-<p>One solution is to perform XOR operation. Suppose there is a key <span class="math inline">\((k)_2\)</span> that is known both to the sender the receiver. Then the sender encrypt the message by <span class="math display">\[
-(y)_2 = (x)_2 \oplus k
-\]</span> The receiver can decrypt the message by <span class="math display">\[
-(x)_2 = (y)_2 \oplus k
-\]</span> Given <span class="math inline">\(x\)</span> with length <span class="math inline">\(n\)</span>, if <span class="math inline">\(k\)</span> is chosen uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>, then <span class="math inline">\((y)_2\)</span> is a sequence uniformly at random from <span class="math inline">\(\{0, 1\}^n\)</span>. If the message is sent only one time, the eavesdropper can't get more information about <span class="math inline">\(x\)</span> after seeing <span class="math inline">\(y\)</span>.</p>
-<p>Two drawbacks exists. First, how can the sender exchange the key <span class="math inline">\(k\)</span> with the receiver without meeting each other. Second, if the many messages are sent, there are frequency pattern associated with <span class="math inline">\(y\)</span>, making it breakable.</p>
-<p>RSA encryption algorithm overcomes the first issue by generating two keys for the receiver: the secrete key and the public key. The public key is distributed across the internet. The sender encrypts the message <span class="math inline">\(x\)</span> with the public key. Only the receiver who has the secret key can decrypt the message. The mathematics behind is explained as follows.</p>
-<p>Question to ponder: can we attack RSA by the frequency pattern?</p>
-<p>First generate two prime number <span class="math inline">\(p, q\)</span> and let <span class="math inline">\(N = pq\)</span>. Further, we find a integer <span class="math inline">\(e\)</span>, such that</p>
+        <p>We discuss the problem of sending a message secretly over the
+internet. Suppose the original message is a sequence <span
+class="math inline">\(x\)</span>, the encrypted message is <span
+class="math inline">\(y\)</span>.</p>
+<h1 id="xor-encryption">XOR Encryption</h1>
+<p>One solution is to via the XOR operation. Suppose there is a key
+<span class="math inline">\(k\)</span> that is known both to the sender
+the receiver. Given an integer <span class="math inline">\(n \in
+\mathbb{N}\)</span>, denote <span class="math inline">\((n)_2\)</span>
+its binary representation.</p>
+<blockquote>
+<p><strong>Sender Encryption.</strong> $ (y)_2 = (x)_2 (k)_2. $</p>
+</blockquote>
+<blockquote>
+<p><strong>Receiver Decryption.</strong> $ (x)_2 = (y)_2 (k)_2. $</p>
+</blockquote>
+<h2 id="analysis">Analysis</h2>
+<p>Given <span class="math inline">\(x\)</span> with length <span
+class="math inline">\(n\)</span>, if <span
+class="math inline">\(k\)</span> is sampled uniformly at random from
+<span class="math inline">\(\{0, 1\}^n\)</span>, then <span
+class="math inline">\((y)_2\)</span> is a sequence uniformly at random
+from <span class="math inline">\(\{0, 1\}^n\)</span>. If the message is
+sent only one time, the eavesdropper can't get more information about
+<span class="math inline">\(x\)</span> after seeing <span
+class="math inline">\(y\)</span>.</p>
+<p>Two drawbacks exists.</p>
 <ol type="1">
-<li><span class="math inline">\(e\)</span> is coprime to <span class="math inline">\((p - 1)(q - 1)\)</span>, i.e., <span class="math inline">\(\exists d\)</span>, such that <span class="math inline">\(ed \equiv 1 \mod (p - 1)(q - 1)\)</span>.</li>
-<li><span class="math inline">\(e \neq p\)</span>, <span class="math inline">\(e \neq q\)</span>.</li>
+<li><p>How can the sender exchange the key <span
+class="math inline">\(k\)</span> with the receiver without meeting each
+other?</p></li>
+<li><p>If the many messages are sent, there are frequency pattern
+associated with <span class="math inline">\(y\)</span>, making it
+breakable.</p></li>
 </ol>
-<p>Question to ponder: does such <span class="math inline">\(e\)</span> exists?</p>
-<p>Answer: YES. There are <span class="math inline">\(O(\frac{(p - 1)(q - 1) }{ \log (p - 1)(q - 1) } - \frac{ \sqrt{ (p - 1)(q - 1) } }{ \log \sqrt { (p - 1)(q - 1) } } )\)</span> prime numbers in <span class="math inline">\((\sqrt{(p - 1)(q - 1)}, (p - 1)(q - 1))\)</span>, which can not be prime factors of <span class="math inline">\((q - 1)(p - 1)\)</span>.</p>
-<p>Then we give out the pair as <em>public key</em>: <span class="math display">\[
-(n, e)
+<h1 id="rsa-encryption">RSA Encryption</h1>
+<p>RSA encryption algorithm overcomes the first issue by generating two
+keys for the receiver: the secrete key and the public key. The public
+key is distributed across the internet. The sender encrypts the message
+<span class="math inline">\(x\)</span> with the public key. Only the
+receiver who has the secret key can decrypt the message. The mathematics
+behind is explained as follows.</p>
+<blockquote>
+<p><strong>Question to ponder</strong>: can we attack RSA by the
+frequency pattern?</p>
+</blockquote>
+<h2 id="generation">Generation</h2>
+<p>First generate two prime number <span class="math inline">\(p,
+q\)</span> and let <span class="math inline">\(N = pq\)</span>. Further,
+we find a integer <span class="math inline">\(e\)</span>, such that</p>
+<ol type="1">
+<li><span class="math inline">\(e\)</span> is coprime to <span
+class="math inline">\((p - 1)(q - 1)\)</span>, i.e., <span
+class="math inline">\(\exists d\)</span>, such that <span
+class="math display">\[
+     ed \equiv 1 \pmod{(p - 1)(q - 1)}.
+\]</span></li>
+<li><span class="math inline">\(e \neq p\)</span>, <span
+class="math inline">\(e \neq q\)</span>.</li>
+</ol>
+<blockquote>
+<p><strong>Question to ponder</strong>: does such <span
+class="math inline">\(e\)</span> exists?</p>
+</blockquote>
+<p><strong>Answer</strong>: <em>YES. There are <span
+class="math inline">\(\Omega \left( \frac{(p - 1)(q - 1) }{ \log (p -
+1)(q - 1) } - \frac{ \sqrt{ (p - 1)(q - 1) } }{ \log \sqrt { (p - 1)(q -
+1) } } \right)\)</span> prime numbers in <span
+class="math inline">\(\left( \sqrt{(p - 1)(q - 1)}, (p - 1)(q - 1)
+\right)\)</span>. Find three primes within this range, denoted as <span
+class="math inline">\(p_1, p_2, p_3\)</span>. Then <span
+class="math inline">\(p_1 \cdot p_2 \cdot p_3 &gt; (p - 1) (q -
+1)\)</span>, so at least one of them is not a prime factors of <span
+class="math inline">\((q - 1)(p - 1)\)</span>.</em></p>
+<h2 id="encryption-and-decryption">Encryption and Decryption</h2>
+<p>Release the pair as <em>public key</em>: <span
+class="math display">\[
+    (N, e).
 \]</span></p>
-<p>And keep in secrete the triple as <em>private key</em>: <span class="math display">\[
-(p, q, d)
+<p>And keep in secrete the triple as <em>private key</em>: <span
+class="math display">\[
+    (p, q, d).
 \]</span></p>
 <p>The algorithm for encryption and decryption is as follows:</p>
-<p>Encryption: <span class="math display">\[
-y = f(x) = x^e \pmod N
+<blockquote>
+<p><strong>Sender Encryption.</strong> $ y x^e N. $</p>
+</blockquote>
+<blockquote>
+<p><strong>Receiver Decryption.</strong> $ x y^d N. $</p>
+</blockquote>
+<p>To prove the correctness of the algorithm, we have</p>
+<blockquote>
+<p><strong>Theorem</strong> $ x^{e d} x N. $</p>
+</blockquote>
+<p><strong>Proof One.</strong> The first proof relies on the
+<strong>Chinese Reminder Theorem</strong>, which states that for each
+pair of <span class="math inline">\(a &lt; b \in \mathbb{N}^+\)</span>,
+<span class="math display">\[
+    \text{if } \quad
+    \begin{Bmatrix}
+        a \equiv b \pmod p \\
+        a \equiv b \pmod q
+    \end{Bmatrix}, \quad
+    \text{then }\quad
+    p | (b - a) \,\text{ and }\, q | (b - a).
 \]</span></p>
-<p>Decryption: <span class="math display">\[
-g(y) = y^d \pmod N
+<p>If follows that <span class="math inline">\(N | (b - a)\)</span>,
+since <span class="math inline">\(p\)</span> and <span
+class="math inline">\(q\)</span> are primes and <span
+class="math inline">\(N\)</span> is their least common multiple.</p>
+<p>Since <span class="math inline">\(ed \equiv 1 \pmod{(p - 1)(q -
+1)}\)</span>, there exists some <span class="math inline">\(k \in
+\mathbb{N}\)</span>, s.t., <span class="math inline">\(e d = k (p - 1)(q
+- 1) + 1\)</span>. Hence, <span class="math display">\[
+    m   \stackrel{\cdot}{\equiv}    x^{ed} \pmod{N}
+        \equiv                      x^{k(p - 1)(q - 1) + 1} \pmod{N}.
+\]</span> By Fermat's Little Theorem, <span class="math display">\[
+    m \equiv x  \pmod p,\, \text{ and }\,  m \equiv x \pmod q.
 \]</span></p>
-<p>The key theorem states:</p>
-<p><em>Theorem</em>: <span class="math display">\[
-g(y) = x
+<p>Hence <span class="math inline">\(N | (m - x)\)</span> and <span
+class="math inline">\(m \equiv x \pmod N\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Proof Two.</strong> <span class="math display">\[
+    y^d \equiv x^{ed} \equiv x^{k(p - 1)(q - 1) + 1} \pmod N.
 \]</span></p>
-<p><em>Proof 1:</em> the first proof relies on a result derived from the Chinese Reminder Theorem, which i that for any integer <span class="math inline">\(a &lt; b\)</span>, we have <span class="math display">\[
-a \equiv b \mod p \vee a \equiv b \mod q
-\]</span> Then, <span class="math inline">\(p | (b - a)\)</span> and <span class="math inline">\(q | (b - a)\)</span>. If follows that <span class="math inline">\(N | (b - a)\)</span>, since <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span> are primes and <span class="math inline">\(N\)</span> is their least common multiple.</p>
-<p>Now define <span class="math inline">\(m = x^{ed} = x^{k(p - 1)(q - 1) + 1}\)</span>. By Fermat's Little Theorem, <span class="math display">\[
-m \equiv x  \mod p \wedge m \equiv x \mod q
-\]</span></p>
-<p>Hence <span class="math inline">\(N | (m - x)\)</span> and <span class="math inline">\(m \equiv x \mod N\)</span>.</p>
-<p><em>Proof 2:</em> <span class="math display">\[
-y^d = x^{ed} = x^{k(p - 1)(q - 1) + 1} \pmod N
-\]</span></p>
-<p>Case 1: this is the easy case in which <span class="math inline">\(x\)</span> is coprime to <span class="math inline">\(N\)</span>. Then by Fermat-Euler theorem, <span class="math inline">\(x^{\varphi(N)} = 1 \pmod N\)</span>. It follows immediately that <span class="math inline">\(x^{ed} = x \pmod N\)</span>.</p>
-<p>Case 2: otherwise, <span class="math inline">\(x = lp\)</span> for some <span class="math inline">\(1 \le l \le q\)</span> or <span class="math inline">\(x = lq\)</span> for some <span class="math inline">\(1\le l \le p\)</span>. WLOG, we just consider the former case. Now <span class="math inline">\(y^d = (lp)^{k(p - 1)(q - 1) + 1} \pmod N\)</span>. On the other hand, as <span class="math inline">\((lp)^{k(p - 1)}\)</span> is relative prime to <span class="math inline">\(q\)</span>, we conclude that <span class="math inline">\(((lp)^{k(p-1)})^{q- 1} = mq + 1\)</span> for some integer <span class="math inline">\(m\)</span>, by Fermat's little theorem. Therefore, <span class="math inline">\(y^d = (mq + 1) x = (mq + 1) (lp) = mlpq + lp = lp = x \pmod N\)</span> , which finishes our proof.</p>
+<p>Case 1: this is the easy case in which <span
+class="math inline">\(x\)</span> is coprime to <span
+class="math inline">\(N\)</span>. Then by Fermat-Euler theorem, <span
+class="math inline">\(x^{\varphi(N)} \equiv 1 \pmod N\)</span>. It
+follows immediately that <span class="math inline">\(x^{ed} \equiv x
+\pmod N\)</span>.</p>
+<p>Case 2: otherwise, <span class="math inline">\(x \equiv \ell
+p\)</span> for some <span class="math inline">\(1 \le \ell \le
+q\)</span> or <span class="math inline">\(x \equiv \ell q\)</span> for
+some <span class="math inline">\(1 \le \ell \le p\)</span>. WLOG, we
+just consider the former case. Now <span class="math inline">\(y^d
+\equiv (\ell p)^{k(p - 1)(q - 1) + 1} \pmod N\)</span>. On the other
+hand, as <span class="math inline">\((\ell p)^{k(p - 1)}\)</span> is
+relative prime to <span class="math inline">\(q\)</span>, we conclude
+that <span class="math inline">\(((\ell p)^{k(p-1)})^{q- 1} \equiv mq +
+1\)</span> for some integer <span class="math inline">\(m\)</span>, by
+Fermat's little theorem. Therefore, <span class="math inline">\(y^d
+\equiv (mq + 1) x \equiv (mq + 1) (\ell p) \equiv m \ell p q + \ell p
+\equiv \ell p \equiv x \pmod N\)</span> , which finishes our proof.</p>
+<p><span class="math inline">\(\square\)</span></p>
 
     </div>
 
@@ -320,6 +420,7 @@ y^d = x^{ed} = x^{k(p - 1)(q - 1) + 1} \pmod N
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#xor-encryption"><span class="nav-number">1.</span> <span class="nav-text">XOR Encryption</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#analysis"><span class="nav-number">1.1.</span> <span class="nav-text">Analysis</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rsa-encryption"><span class="nav-number">2.</span> <span class="nav-text">RSA Encryption</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#generation"><span class="nav-number">2.1.</span> <span class="nav-text">Generation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#encryption-and-decryption"><span class="nav-number">2.2.</span> <span class="nav-text">Encryption and Decryption</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -333,7 +434,7 @@ y^d = x^{ed} = x^{k(p - 1)(q - 1) + 1} \pmod N
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">185</span>
+          <span class="site-state-item-count">186</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

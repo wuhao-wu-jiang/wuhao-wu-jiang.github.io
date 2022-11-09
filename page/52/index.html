@@ -146,6 +146,105 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/09/16/Max-Cut/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/09/16/Max-Cut/" class="post-title-link" itemprop="url">Max Cut</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-09-16 17:10:22" itemprop="dateCreated datePublished" datetime="2018-09-16T17:10:22+10:00">2018-09-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-07-13 22:56:31" itemprop="dateModified" datetime="2022-07-13T22:56:31+10:00">2022-07-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Given an undirected graph <span class="math inline">\(G = (V, E)\)</span>, the maximum cut problem asks for a subset <span class="math inline">\(S \subset V\)</span> that maximizes the number of edges which cross <span class="math inline">\(S\)</span>, i.e., <span class="math display">\[
+  S = \arg \max_{S&#39; \subset S} \delta(S),
+\]</span> where <span class="math inline">\(\delta(S) = |\{ \ (i, j) \ \mid \ (i, j) \in E \wedge i \in S, j \notin S\}|\)</span>.</p>
+<h1 id="programming-formulation">Programming Formulation</h1>
+<p>To solve the problem, we assign each vertex <span class="math inline">\(i \in V\)</span> a binary indicator <span class="math inline">\(x_i \in \{-1, 1\}\)</span> for the event that <span class="math inline">\(i\)</span> belongs to <span class="math inline">\(S\)</span>. WLOG, we assume that <span class="math inline">\(i \in S\)</span> if <span class="math inline">\(x_i = 1\)</span>. The value of <span class="math inline">\(\delta(S)\)</span> can be written as <span class="math display">\[
+  \delta(S) = \sum_{(i,j) \in E} \frac{1 - x_i x_j}{2}
+\]</span></p>
+<p>Its correctness can be verified as follows: 1. if <span class="math inline">\(i, j \in V\)</span> belongs to the same partition, i.e, <span class="math inline">\(i, j \in S\)</span> or <span class="math inline">\(i, j \in V - S\)</span>, then <span class="math inline">\(x_i x_j = 1\)</span> and <span class="math inline">\((1 - x_i x_j) / 2 = 0\)</span> 2. Otherwise, <span class="math inline">\(x_i x_j = -1\)</span> and <span class="math inline">\((1 - x_i x_j) / {2} = 1\)</span>.</p>
+<h1 id="convex-relaxation">Convex Relaxation</h1>
+<p>We consider a relaxation of the above programming: <span class="math display">\[
+  \begin{array}{lrl}
+    \max          &amp;\sum_{(i,j) \in E} \frac{1 - x_i^T x_j}{2} \\
+    \text{s.t.},  &amp; x_i^T x_i = 1 &amp;\forall i \in V \\
+                  &amp; x_i \in \mathbb{R}^n   &amp;\forall i \in V
+  \end{array}
+\]</span></p>
+<p>Note that this can be transformed into a convex optimization: <span class="math display">\[
+  \begin{aligned}
+    &amp;&amp;\max  &amp;&amp;\sum_{(i,j) \in E} \frac{1 - y_{i,j}}{2} &amp;&amp;\\
+    &amp;&amp;s.t., &amp;&amp; y_{i,i} = 1        &amp;&amp;\forall i \in V \\
+    &amp;&amp;      &amp;&amp; y_{i,j} = y_{j,i}  &amp;&amp;\forall i, j \in V \\
+    &amp;&amp;      &amp;&amp; Y = (y_{i,j}) \succcurlyeq 0
+  \end{aligned}
+\]</span></p>
+<p>The above problem can be solved within <span class="math inline">\(\epsilon\)</span> additive error in polynomial time in terms of input size and <span class="math inline">\(\log 1/\epsilon\)</span>.</p>
+<h1 id="rounding">Rounding</h1>
+<p>To round the fractional solution to integral solution, we take a random unit vector <span class="math inline">\(v \in \mathbb{R}^n\)</span>. For each vertex <span class="math inline">\(i\)</span>, if <span class="math inline">\(v^T x_i \ge 0\)</span> we set <span class="math inline">\(x_i&#39; = 1\)</span> otherwise we set <span class="math inline">\(x_i&#39; = 0\)</span>. For any pair <span class="math inline">\(i, j \in V\)</span>, if <span class="math inline">\(x_i = x_j\)</span>, then we set <span class="math inline">\(\theta_{i,j} = 0\)</span>. Otherwise, consider the two dimensional subspace in <span class="math inline">\(\mathbb{R}^n\)</span> spanned by <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span>. Denote the angle between <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span> as <span class="math inline">\(\theta_{i,j}\)</span>. We have <span class="math display">\[
+  \theta_{i, j} = \arccos x_i^T x_j.
+\]</span> Notice that <span class="math display">\[
+  \sum_{(i,j) \in E} \frac{1 - x_i x_j}{2} = \sum_{(i,j) \in E} \frac{1 - \cos \theta_{i,j}}{2}.
+\]</span> Furthermore, the probability that <span class="math inline">\(x_i&#39;\)</span> and <span class="math inline">\(x_j&#39;\)</span> are assigned different values is given by <span class="math inline">\(\theta_{i,j} / \pi\)</span>. By linearity of expectation, the expected cut value is <span class="math display">\[
+  \mathbb{E} \left[ \sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2} \right] 
+  = \sum_{(i,j) \in E} \frac{\theta_{i,j}}{\pi}
+\]</span></p>
+<p>As <span class="math inline">\(\max_{0 \le \theta \le \pi} \frac{\pi}{\theta}\frac{1 - \cos \theta}{2} \approx 1.138\)</span>, <span class="math inline">\(\mathbb{E} \left[\sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2} \right]\)</span> is greater approximately <span class="math inline">\(1/1.138 = 0.878 \cdot \sum_{(i,j) \in E} \frac{1 - x_i x_j}{2}\)</span>.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2018/09/14/Facility-Location-Problem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -934,160 +1033,6 @@ a = \frac{\ln \frac{1}{\delta}}{n} + \sqrt{\frac{2 Var[X_1] \ln \frac{1}{\delta}
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/09/02/Interval-Estimate/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/09/02/Interval-Estimate/" class="post-title-link" itemprop="url">Interval Estimate</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-09-02 19:23:25" itemprop="dateCreated datePublished" datetime="2018-09-02T19:23:25+10:00">2018-09-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2018-09-16 19:52:14" itemprop="dateModified" datetime="2018-09-16T19:52:14+10:00">2018-09-16</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\(X\)</span> be a Bernoulli random variable with unknown probability <span class="math display">\[
-\begin{aligned}
-P[X = 1] &amp;= \mu. \\
-P[X = 0] &amp;= 1 - \mu
-\end{aligned}
-\]</span></p>
-<p>where <span class="math inline">\(\frac{1}{n} \le \mu \le 1\)</span> for some integer <span class="math inline">\(n &gt; 0\)</span>. The goal is to estimate <span class="math inline">\(\mu\)</span> (denoted by <span class="math inline">\(\tilde \mu\)</span>) via sampling.</p>
-<p>By law of large number, <span class="math inline">\(\tilde \mu\)</span> converges to <span class="math inline">\(\mu\)</span> when we sample enough numbers of <span class="math inline">\(X\)</span>. The convergence behavior is captured by Chernoff inequality and <span class="math inline">\(O(\frac{1}{\delta^2 \mu}\log{1 \over p_{fail} })\)</span> samples are needed to get an estimation <span class="math inline">\(\tilde \mu\)</span> such that <span class="math inline">\(P [ \tilde \mu \in (1 \pm \delta) \mu] \ge 1 - p_{fail}\)</span> (See Exercise 1). Such an <span class="math inline">\(\tilde \mu\)</span> is called an <span class="math inline">\((\delta, p_{fail})\)</span>-estimation of <span class="math inline">\(\mu\)</span>.</p>
-<p>As <span class="math inline">\(\mu \ge \frac{1}{n}\)</span>, <span class="math inline">\(O(\frac{n}{\delta^2}\log{1 \over p_{fail} })\)</span> samples are enough. The problem is, if <span class="math inline">\(\mu\)</span> is much larger than <span class="math inline">\(1/n\)</span>, we waste a lot of samples. E.g., when <span class="math inline">\(n = 1000\)</span> and <span class="math inline">\(\mu = \frac{1}{2}\)</span>, <span class="math inline">\(\frac{1}{\delta^2 \mu}\log{1 \over p_{fail} }\)</span> gives us <span class="math inline">\(\frac{2}{\delta^2}\log{1 \over p_{fail} }\)</span> while <span class="math inline">\(\frac{n}{\delta^2}\log{1 \over p_{fail} }\)</span> equals to <span class="math inline">\(\frac{1000}{\delta^2}\log{1 \over p_{fail} }\)</span>.</p>
-<p>Can we obtain an <span class="math inline">\((\delta, p_{fail})\)</span>-estimation <span class="math inline">\(\tilde \mu\)</span> with just <span class="math inline">\(O(\frac{1}{\delta^2 \mu}\log{1 \over p_{fail} })\)</span> samples, even though <span class="math inline">\(\mu\)</span> itself is unknown?</p>
-<p>Yes we can (with the lost of a factor <span class="math inline">\(\log \log n\)</span>, which is almost negligible). First we relax the goal a little bit -- finding a <span class="math inline">\(\tilde \mu \in [\mu/2, 2 \mu]\)</span> instead of a <span class="math inline">\(\tilde \mu \in (1 \pm \delta) \mu\)</span>. We show how to achieve this with <span class="math inline">\(O(\frac{1}{\mu}\log{\log n \over p_{fail} })\)</span> samples.</p>
-<p>The high level idea is to divide <span class="math inline">\([\frac{1}{n}, 1]\)</span> into a set of intervals <span class="math display">\[
-\{ [\frac{1}{n}, \frac{1}{2^{ \log n  -1} }], ..., [\frac{1}{2^{i} }, \frac{1}{2^{i - 1} }], ...,, [\frac{1}{4}, \frac{1}{2}],   [\frac{1}{2}, 1]\}
-\]</span> Let <span class="math inline">\([\frac{1}{2^{j} }, \frac{1}{2^{j - 1} }]\)</span> <span class="math inline">\((j \in N)\)</span> be the interval that <span class="math inline">\(u\)</span> belongs to.</p>
-<figure>
-<img src="http://imglf6.nosdn.127.net/img/Y1FUYmVJRmJqaTNrbC9RWmRCdlpzYVQyNS9OR00wSUwzdGgwRU9rZGV0anhzUlpaMVhBWVB3PT0.jpg?imageView&amp;thumbnail=1969y285&amp;type=jpg&amp;quality=96&amp;stripmeta=0&amp;type=jpg" alt="Figure" /><figcaption aria-hidden="true">Figure</figcaption>
-</figure>
-<p>Given an integer <span class="math inline">\(i\)</span>, such that <span class="math inline">\(i \le j - 2\)</span> or <span class="math inline">\(i \ge j + 1\)</span>, we can determine whether <span class="math inline">\(\mu \ge \frac{1}{2^i}\)</span> with high probability. We generate <span class="math inline">\(O(2^i \log \frac{\log n}{p_{fail} })\)</span> samples and test whether their average (i.e., <span class="math inline">\(\tilde \mu\)</span>) is greater than <span class="math inline">\(\frac{1}{2^i}\)</span>. If <span class="math inline">\(\tilde \mu &gt; \frac{1}{2^i}\)</span>, by Chernoff inequality, <span class="math inline">\(\mu &gt; \frac{1}{2^i}\)</span> with high probability and the test returns true.</p>
-<p>To search for the interval <span class="math inline">\([\frac{1}{2^{j} }, \frac{1}{2^{j - 1} }]\)</span> that <span class="math inline">\(\mu\)</span> belongs to, we perform the test for increasing values of <span class="math inline">\(i = 1, 2, ...\)</span> until we find the first <span class="math inline">\(i\)</span>, such that the test for <span class="math inline">\(\mu \ge \frac{1}{2^i}\)</span> returns true. We claim that with high probability, <span class="math inline">\(i\)</span> takes one of the following values: <span class="math inline">\(\{j - 1, j, j + 1 \}\)</span>. The reason is that the test returns false (with high probability) when <span class="math inline">\(i \le j - 2\)</span>. The results for <span class="math inline">\(i = j - 1\)</span> and <span class="math inline">\(j\)</span> are undetermined. Even if the test fails to return true for both <span class="math inline">\(i = j - 1\)</span> and <span class="math inline">\(j\)</span>, it returns true for <span class="math inline">\(i = j + 1\)</span> with high probability.</p>
-<p>Finally, after we find an <span class="math inline">\(i \in \{j - 1, j, j + 1 \}\)</span>, we know that <span class="math inline">\(\mu \ge \frac{1}{2 \cdot 2^i}\)</span>. Therefore, <span class="math inline">\(O(2^i \log \frac{\log n}{p_{fail} })\)</span> samples gives an <span class="math inline">\((\delta, p_{fail})\)</span>-estimate of <span class="math inline">\(\mu\)</span>.</p>
-<p>Then the total number of samples we generate is at most: <span class="math display">\[
-\sum_{k = 1}^{j+1}O(2^k\log \frac{\log n}{p_{fail} }) = O(2^{j+2}\log \frac{\log n}{p_{fail} }) = O(\frac{1}{\mu}\log \frac{\log n}{p_{fail} })
-\]</span></p>
-<p>The procedure code is shown by Algorithm 1.</p>
-<blockquote>
-<p><strong>Algorithm 1</strong></p>
-<ol type="1">
-<li><strong>for</strong> <span class="math inline">\(i \leftarrow 1\)</span> to <span class="math inline">\(\log n - 1\)</span> <strong>do</strong></li>
-<li><span class="math inline">\(\quad\)</span> Let <span class="math inline">\(\theta = 6 \cdot 2^i \log \frac{\log n}{p_{fail} }\)</span>.</li>
-<li><span class="math inline">\(\quad\)</span> Let <span class="math inline">\(Y = 0\)</span></li>
-<li><span class="math inline">\(\quad\)</span> <strong>for</strong> <span class="math inline">\(j \leftarrow 1\)</span> to <span class="math inline">\(\theta\)</span> <strong>do</strong></li>
-<li><span class="math inline">\(\quad\)</span><span class="math inline">\(\quad\)</span> Generate a sample of <span class="math inline">\(X\)</span>, denoted by <span class="math inline">\(X_j\)</span>.</li>
-<li><span class="math inline">\(\quad\)</span><span class="math inline">\(\quad\)</span> <span class="math inline">\(Y = Y + X_j\)</span>.</li>
-<li><span class="math inline">\(\quad\)</span> <strong>if</strong> <span class="math inline">\(\frac{Y}{\theta} &gt; \frac{1}{2^i}\)</span> <strong>then</strong></li>
-<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(\quad\)</span> <strong>return</strong> <span class="math inline">\(\frac{Y}{\theta}\)</span></li>
-<li><strong>return</strong> <span class="math inline">\(\frac{1}{n}\)</span></li>
-</ol>
-</blockquote>
-<p>To analyse Algorithm 1, we use the following Chernoff Bounds.</p>
-<p><strong>Chernoff Bound</strong></p>
-<blockquote>
-<p>Let <span class="math inline">\(X_1, X_2, ..., X_\theta\)</span> be <span class="math inline">\(i.i.d.\)</span> Bernoulli random variables with mean <span class="math inline">\(\mu\)</span> and <span class="math inline">\(Y = \frac{1}{\theta} \sum_{k =1}^\theta X_k\)</span>. Then</p>
-<ol type="1">
-<li><span class="math inline">\(P[Y \ge (1 + \delta) \mu] \le \exp(- \frac{\delta^2}{\delta + 2} \theta \mu)\)</span>.</li>
-<li><span class="math inline">\(P[Y \le (1 - \delta) \mu] \le \exp(- \frac{\delta^2}{2} \theta \mu)\)</span></li>
-</ol>
-</blockquote>
-<p>Corollary</p>
-<blockquote>
-<p>For an integer <span class="math inline">\(k \ge 1\)</span>,</p>
-<ol type="1">
-<li><span class="math inline">\(P[Y \ge 2^k \mu] \le \exp (- \frac{(2^k -1)^2}{2^k + 1} \theta \mu) \le \exp(- \frac{2^{2k - 2} }{2^k + 1} \theta \mu) = \exp(-\frac{2^k}{4(1+ {1} / {2^k})} \theta \mu) \le \exp(-\frac{2^k}{6} \theta \mu)\)</span></li>
-<li><span class="math inline">\(P[Y \le \frac{1}{2^k}\mu] \le \exp(-\frac{(1-\frac{1}{2^k})^2}{2} \theta \mu) \le \exp(-\frac{1}{8}\theta \mu)\)</span></li>
-</ol>
-</blockquote>
-<p><strong>Theorem</strong></p>
-<blockquote>
-<p>Let <span class="math inline">\(X_1, X_2, ..., X_\theta\)</span> be <span class="math inline">\(i.i.d.\)</span> Bernoulli random variables with mean <span class="math inline">\(\mu \in [\frac{1}{2^j}, \frac{1}{2^{j - 1} }]\)</span> and <span class="math inline">\(Y = \frac{1}{\theta} \sum_{k =1}^\theta X_k\)</span>. Suppose <span class="math inline">\(\theta = 6 \cdot 2^i \log \frac{\log n}{p_{fail} }\)</span> for some <span class="math inline">\(i\)</span>, then</p>
-<ol type="1">
-<li><span class="math inline">\(P[Y \ge \frac{1}{2^i}] \le \frac{p_{fail} }{\log n}\)</span>, if <span class="math inline">\(i \le j - 2\)</span>,</li>
-<li><span class="math inline">\(P[Y \le \frac{1}{2^i}] \le \frac{p_{fail} }{2^{i - j - 1} \log n}\)</span>, if <span class="math inline">\(i \ge j + 1\)</span>.</li>
-</ol>
-</blockquote>
-<p>Proof: First consider <span class="math inline">\(i \le j - 2\)</span>. Then <span class="math inline">\(\frac{1}{2^i} \ge 2^{j - 1 - i} \mu\)</span> , <span class="math inline">\(2^{j - 1} \mu \ge 1\)</span> and <span class="math display">\[
-\begin{aligned}
-P[Y \ge \frac{1}{2^i}] 
-&amp;\le P[Y \ge 2^{j - 1 - i} \mu] \\
-&amp;\le \exp(-\frac{2^{j- 1 - i} }{6}\theta \mu) \\
-&amp;= \exp(-\frac{2^{j - 1} \mu \cdot 2^{-i}\theta}{6}) \\
-&amp;\le\exp(-\frac{2^{-i}\theta}{6}) \\
-&amp;\le \frac{p_{fail} }{\log n}
-\end{aligned}
-\]</span></p>
-<p>For <span class="math inline">\(i \ge j + 1\)</span>, we have <span class="math inline">\(\frac{1}{2^{i} } \le \frac{1}{2^{i - j} } \mu\)</span> , <span class="math inline">\(i - j \ge 1\)</span> and <span class="math display">\[
-\begin{aligned}
-P[ Y \le \frac{1}{2^{i} }] &amp;\le P [Y \le \frac{1}{2^{i - j} } \mu] \\
-&amp;\le \exp(-\frac{\mu \theta}{8}) \\
-&amp;\le \exp(-\frac{2^{-j}\theta }{8}) \\
-&amp;\le \frac{p_{fail} }{2^{i - j -1}\log n}
-\end{aligned}
-\]</span></p>
-<p>It follows that by union bound the test fails for all <span class="math inline">\(i = 1, 2, ..., j - 2, j + 1\)</span> is at most <span class="math inline">\(\frac{p_{fail} }{\log n} \cdot (j - 1) \le p_{fail}\)</span>.</p>
-<h5 id="exercise">Exercise</h5>
-<ol type="1">
-<li>Given a Bernoulli random variable <span class="math inline">\(X\)</span> with mean <span class="math inline">\(\mu\)</span>, prove that (with Chernoff bound) if we generate <span class="math inline">\(\Omega(\frac{1}{\delta^2 \mu}\log{1 \over p_{fail} })\)</span> independent samples, we get an estimate of <span class="math inline">\(X\)</span> with relative error <span class="math inline">\(\delta\)</span> with probability <span class="math inline">\(1 - p_{fail}\)</span>.</li>
-</ol>
-<h5 id="reference">Reference:</h5>
-<ol type="1">
-<li>Tang Youze, Xiaokui Xiao, and Yanchen Shi. "Influence maximization: Near-optimal time complexity meets practical efficiency." <em>Proceedings of the 2014 ACM SIGMOD international conference on Management of data</em>. ACM, 2014.</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1157,7 +1102,7 @@ P[ Y \le \frac{1}{2^{i} }] &amp;\le P [Y \le \frac{1}{2^{i - j} } \mu] \\
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">185</span>
+          <span class="site-state-item-count">186</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
