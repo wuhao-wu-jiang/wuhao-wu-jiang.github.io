@@ -146,6 +146,208 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/24/Fast-Fourier-Transform-In-Finite-Field/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/24/Fast-Fourier-Transform-In-Finite-Field/" class="post-title-link" itemprop="url">Fast Fourier Transform In Finite Field</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-03-24 14:21:14 / Modified: 15:30:52" itemprop="dateCreated datePublished" datetime="2021-03-24T14:21:14+11:00">2021-03-24</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>We discuss the fast Fourier transform in a finite field <span class="math inline">\(\mathbb{F}\)</span> with size <span class="math inline">\(p\)</span>.</p>
+<blockquote>
+<p>For <span class="math inline">\(w \in \mathbb{F}\)</span>, and <span class="math inline">\(n \in \mathbb{F}_+\)</span>, define <span class="math display">\[
+M_{w, n} \doteq 
+\begin{bmatrix}
+1   &amp;w  &amp;w^2    &amp;...    &amp;w^{n - 1}  \\
+1   &amp;w^2    &amp;w^4    &amp;...    &amp;w^{2(n - 1)}   \\
+... \\
+1   &amp;w^{n}  &amp;w^{2n} &amp;...    &amp;w^{n(n - 1)}
+\end{bmatrix}.
+\]</span></p>
+<p>If the following two conditions hold:<br />
+1. <span class="math inline">\(n\)</span> is some power of <span class="math inline">\(2\)</span> and; 2. <span class="math inline">\(w^n = 1\)</span> in the finite field.</p>
+<p>Then <span class="math inline">\(\forall \vec x \doteq (x_1, x_2, ..., x_n) \in \mathbb{F}^n\)</span>, we can compute <span class="math display">\[
+M_{w, n} \vec x 
+= 
+\begin{bmatrix}
+1   &amp;w  &amp;w^2    &amp;...    &amp;w^{n - 1}  \\
+1   &amp;w^2    &amp;w^4    &amp;...    &amp;w^{2(n - 1)}   \\
+... \\
+1   &amp;w^{n}  &amp;w^{2n} &amp;...    &amp;w^{n(n - 1)}
+\end{bmatrix} 
+\begin{bmatrix}
+x_1 \\
+x_2 \\
+... \\
+x_n
+\end{bmatrix}
+\]</span> in <span class="math inline">\(O(n \log n)\)</span> time.</p>
+</blockquote>
+<p><strong>Proof.</strong> If <span class="math inline">\(n = 2\)</span>, then the claim holds trivially.</p>
+<p>Otherwise, let <span class="math inline">\(d = n / 2 = 2^{k - 1}\)</span> and <span class="math inline">\(v = w^2\)</span>. The odd columns of the first <span class="math inline">\(d\)</span> rows of the matrix <span class="math inline">\(M_{w, n}\)</span> constitutes <span class="math display">\[
+    \begin{bmatrix}
+            1   &amp;w^2  &amp;w^4    &amp;...    &amp;w^{n - 2}  \\
+            1   &amp;w^4    &amp;w^8    &amp;...    &amp;w^{2(n - 2)}   \\
+                &amp;       &amp;       &amp;... \\
+            1   &amp;w^{2d}  &amp;w^{4d} &amp;...    &amp;w^{d(n - 2)}
+    \end{bmatrix} 
+    =
+    \begin{bmatrix}
+            1   &amp;v  &amp;v^2    &amp;...    &amp;v^{d - 1}  \\
+            1   &amp;v^2    &amp;v^4    &amp;...    &amp;v^{2(d - 1)}   \\
+                &amp;       &amp;       &amp;... \\
+            1   &amp;v^{d}  &amp;v^{2d} &amp;...    &amp;v^{d(d - 1)}
+    \end{bmatrix} 
+    = 
+    M_{v, d}. 
+\]</span></p>
+<p>By assumption, for even numbers <span class="math inline">\(i = 2, 4, ..., (n - 2)\)</span>, we have <span class="math inline">\(i \cdot d = 1\)</span> in the finite field. Hence, the odd columns of the last <span class="math inline">\(d\)</span> rows of <span class="math inline">\(M_{w, n}\)</span> is <span class="math display">\[
+    \begin{bmatrix}
+            1   &amp;w^{2(d + 1)}   &amp;w^{4(d + 1)}    &amp;...    &amp;w^{(n - 2)(d + 1)}  \\
+            1   &amp;w^{2(d + 2)}   &amp;w^{4(d + 2)}    &amp;...    &amp;w^{(n - 2)(d + 2)}   \\
+                &amp;       &amp;       &amp;... \\
+            1   &amp;w^{2(d + d)}   &amp;w^{4(d + d)}   &amp;...    &amp;w^{(n - 2)(d + d)}
+    \end{bmatrix} 
+    =
+    \begin{bmatrix}
+            1   &amp;w^2  &amp;w^4    &amp;...    &amp;w^{n - 2}  \\
+            1   &amp;w^4    &amp;w^8    &amp;...    &amp;w^{2(n - 2)}   \\
+                &amp;       &amp;       &amp;... \\
+            1   &amp;w^{2d}  &amp;w^{4d} &amp;...    &amp;w^{d(n - 2)}
+    \end{bmatrix}  
+    = 
+    M_{v, d}. 
+\]</span></p>
+<p>Let <span class="math inline">\(\vec x_o, \vec x_e \in \mathbb{F}^d\)</span> be the vectors obtained by the odd and even dimensions of <span class="math inline">\(\vec x\)</span> respectively. By our construction,</p>
+<blockquote>
+<ol type="1">
+<li><span class="math inline">\(d\)</span> is some power of <span class="math inline">\(2\)</span> and;<br />
+</li>
+<li><span class="math inline">\(v^d = w^n = 1\)</span>.</li>
+</ol>
+</blockquote>
+<p>Hence, by induction hypothesis we can compute <span class="math inline">\(M_{v, d} \vec x_o\)</span> in <span class="math inline">\(O(d \log d) = O( n \log n)\)</span> time.</p>
+<p>Next, consider the even columns of the first <span class="math inline">\(d\)</span> rows of the matrix <span class="math inline">\(M_{w, n}\)</span> constitutes <span class="math display">\[
+\begin{aligned}
+    \begin{bmatrix}
+            w   &amp;w^3  &amp;w^5    &amp;...    &amp;w^{n - 1}  \\
+            w^2   &amp;w^6    &amp;w^{10}    &amp;...    &amp;w^{2(n - 1)}   \\
+                &amp;       &amp;       &amp;... \\
+            w^d   &amp;w^{3d}  &amp;w^{5d} &amp;...    &amp;w^{d(n - 1)}
+    \end{bmatrix} 
+    &amp;=
+    \begin{bmatrix}
+        w   &amp;...    &amp;               \\
+            &amp;w^2    &amp;...            \\
+            &amp;       &amp;   &amp;...        \\
+            &amp;       &amp;   &amp;   &amp; w^d   \\
+    \end{bmatrix}
+    \begin{bmatrix}
+            1   &amp;w^2  &amp;w^4    &amp;...    &amp;w^{n - 2}  \\
+            1   &amp;w^4    &amp;w^8    &amp;...    &amp;w^{2(n - 2)}   \\
+                &amp;       &amp;       &amp;... \\
+            1   &amp;w^{2d}  &amp;w^{4d} &amp;...    &amp;w^{d(n - 2)}
+    \end{bmatrix} 
+    \\
+    &amp;= 
+    \begin{bmatrix}
+        w   &amp;...    &amp;               \\
+            &amp;w^2    &amp;...            \\
+            &amp;       &amp;   &amp;...        \\
+            &amp;       &amp;   &amp;   &amp; w^d   \\
+    \end{bmatrix}
+    M_{v, d} 
+\end{aligned}
+\]</span></p>
+<p>Similarly, the even columns of the last <span class="math inline">\(d\)</span> rows of the matrix <span class="math inline">\(M_{w, n}\)</span> constitutes <span class="math display">\[
+\begin{aligned}
+    \begin{bmatrix}
+        w^{d + 1}   &amp;...    &amp;               \\
+            &amp;w^{d + 2}    &amp;...            \\
+            &amp;       &amp;   &amp;...        \\
+            &amp;       &amp;   &amp;   &amp; w^{d + d}   \\
+    \end{bmatrix}
+    M_{v, d} 
+    =
+    (-1)
+    \begin{bmatrix}
+        w   &amp;...    &amp;               \\
+            &amp;w^2    &amp;...            \\
+            &amp;       &amp;   &amp;...        \\
+            &amp;       &amp;   &amp;   &amp; w^d   \\
+    \end{bmatrix}
+    M_{v, d}.
+\end{aligned}
+\]</span></p>
+<p>The equality comes from that <span class="math inline">\(w^d = w^{n / 2} = -1\)</span>. By induction hypothesis, we can compute <span class="math inline">\(M_{v, d} \vec x_e\)</span> in <span class="math inline">\(O(n \log n)\)</span> time.</p>
+<p>Finally, the first <span class="math inline">\(d\)</span> dimensions of <span class="math inline">\(M_{w, n} \vec x\)</span> equals <span class="math display">\[
+    M_{v, d} \vec x_o +     \begin{bmatrix}
+        w   &amp;...    &amp;               \\
+            &amp;w^2    &amp;...            \\
+            &amp;       &amp;   &amp;...        \\
+            &amp;       &amp;   &amp;   &amp; w^d   \\
+    \end{bmatrix} M_{v, d} \vec x_e, 
+\]</span> which can be computed in <span class="math inline">\(O(n \log n) + O(n \log n) + O(n) = O(n \log n)\)</span> time.</p>
+<p>The last <span class="math inline">\(d\)</span> dimensions of <span class="math inline">\(M_{w, n} \vec x\)</span> equals <span class="math display">\[
+    M_{v, d} \vec x_o -     \begin{bmatrix}
+        w   &amp;...    &amp;               \\
+            &amp;w^2    &amp;...            \\
+            &amp;       &amp;   &amp;...        \\
+            &amp;       &amp;   &amp;   &amp; w^d   \\
+    \end{bmatrix} M_{v, d} \vec x_e, 
+\]</span> which can also be computed in <span class="math inline">\(O(n \log n) + O(n \log n) + O(n) = O(n \log n)\)</span> time.</p>
+<p><span class="math inline">\(\square\)</span></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/22/The-Poisson-Approximation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -412,100 +614,6 @@ $$ -->
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/11/Fingerprints/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/11/Fingerprints/" class="post-title-link" itemprop="url">Fingerprints</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2021-03-11 16:30:47 / Modified: 17:19:39" itemprop="dateCreated datePublished" datetime="2021-03-11T16:30:47+11:00">2021-03-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="problem">Problem</h1>
-<p>Let <span class="math inline">\(\vec v = (v_1, ..., v_d) \in \mathbb{R}^d\)</span> be a vector, such that <span class="math inline">\(\exists\)</span> some positive integer <span class="math inline">\(M\)</span>, <span class="math inline">\(\forall i \in [d], v_i \in [M]\)</span>. Assume that <span class="math inline">\(d\)</span> is very large and <span class="math inline">\(\vec v\)</span> is sparse, so it is represented by a set of pairs that record the non-zero positions and values of <span class="math inline">\(\vec v:\)</span> <span class="math display">\[
-    S(\vec v ) \doteq \{ (i, v_i ) : v_i \neq 0, \forall i \in [d] \}. 
-\]</span></p>
-<p>A fingerprint <span class="math inline">\(h( \vec v) \in \mathbb{R}\)</span> is a succinct summary of <span class="math inline">\(\vec v\)</span>.</p>
-<blockquote>
-<p><strong>Goal</strong>: For a given <span class="math inline">\(\delta \in (0, 1)\)</span>, find an <span class="math inline">\(h: \mathbb{R}^d \rightarrow \mathbb{R}\)</span>, such that, <span class="math inline">\(\forall \vec v, \vec u \in \mathbb{R}^d\)</span>, if <span class="math inline">\(\vec v \neq \vec u\)</span>, then <span class="math display">\[
-\Pr [ h( \vec v) = h ( \vec u) ] \le \delta. 
-\]</span></p>
-</blockquote>
-<h1 id="solution">Solution</h1>
-<blockquote>
-<p>Theorem. Let <span class="math inline">\(p \ge \max\{ d / \delta, M \}\)</span> be a prime number and let <span class="math inline">\(a\)</span> be an integer generated from <span class="math inline">\(1\)</span> to <span class="math inline">\(p - 1\)</span> uniformly at random. Then <span class="math display">\[
-h( \vec v ) \doteq \sum_{i \in [d] } v_i \cdot a^i
-\]</span> satisfies the goal.</p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math inline">\(\forall \vec v, \vec u \in \mathbb{R}^d\)</span>, if <span class="math inline">\(\vec v \neq \vec u\)</span>, if <span class="math inline">\(h( \vec v) = h ( \vec u)\)</span>, then <span class="math display">\[
-    \sum_{i \in [d] } (v_i - u_i) \cdot a^i = 0. 
-\]</span> However, the polynomial <span class="math inline">\(p(x) \doteq \sum_{i \in [d] } (v_i - u_i) \cdot x^i\)</span> has at most <span class="math inline">\(d\)</span> distinct roots. As <span class="math inline">\(p(0) = 0\)</span>, it has at most <span class="math inline">\(d - 1\)</span> distinct non-zero root. The probability that <span class="math inline">\(a \neq 0\)</span> being one of them is bounded by <span class="math display">\[
-    \Pr \left[ a \text{ is a root of } p(x) \right] = \frac{d - 1 }{ p - 1} \le \frac{ d } { p } =  \delta. 
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><span class="math inline">\(h (\vec v)\)</span> can be computed by the following pseudo-codes:</p>
-<blockquote>
-<ol type="1">
-<li><span class="math inline">\(h \leftarrow 0\)</span>.<br />
-</li>
-<li>For <span class="math inline">\((i, v_i) \in S( \vec v):\)</span><br />
-</li>
-<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(h \leftarrow h + v_i \cdot a^i\)</span>.<br />
-</li>
-<li>Return <span class="math inline">\(h\)</span>.</li>
-</ol>
-</blockquote>
-<h1 id="reference">Reference</h1>
-<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -575,7 +683,7 @@ h( \vec v ) \doteq \sum_{i \in [d] } v_i \cdot a^i
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">187</span>
+          <span class="site-state-item-count">188</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
