@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.2">
+<meta name="generator" content="Hexo 6.3.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -142,6 +142,421 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/21/Karger%20Algorithm%20I/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/21/Karger%20Algorithm%20I/" class="post-title-link" itemprop="url">Karger Algorithm I</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-21 12:53:14" itemprop="dateCreated datePublished" datetime="2018-07-21T12:53:14+10:00">2018-07-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-18 15:09:23" itemprop="dateModified" datetime="2022-02-18T15:09:23+11:00">2022-02-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="algorithm">Algorithm</h1>
+<p>Let <span class="math inline">\(G = (V, E)\)</span> be an undirected connected graph with <span class="math inline">\(n\)</span> vertices, <span class="math inline">\(m\)</span> edges, and min-cut size <span class="math inline">\(c^*\)</span>. David R. Karger [1] proposed a simple randomized algorithm for estimating the value of <span class="math inline">\(c^*\)</span>, as described thus.</p>
+<blockquote>
+<p><strong>Karger Algorithm</strong>. 1. <strong>repeat</strong> until two nodes are left in the graph:<br />
+2. <span class="math inline">\(\qquad\)</span> Select an edge <span class="math inline">\(e = (u,v)\)</span> from the graph uniformly at random.<br />
+3. <span class="math inline">\(\qquad\)</span> Merge its endpoints <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> into new vertex <span class="math inline">\(w\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> Remove self loops created by the merge.<br />
+4. <span class="math inline">\(\qquad\)</span> Connect the edges incident to <span class="math inline">\(u\)</span> or <span class="math inline">\(v\)</span> to new vertex <span class="math inline">\(w\)</span>.<br />
+5. Return the number of edges, denoted as <span class="math inline">\(c\)</span>, between the remaining two vertices.</p>
+</blockquote>
+<p>Each iteration in the algorithm is called a <strong><em>contraction</em></strong>.</p>
+<h1 id="analysis">Analysis</h1>
+<blockquote>
+<p><strong>Theorem.</strong> It holds that <span class="math display">\[
+\Pr[ c = c^* ] = \frac{2}{n(n - 1)}. 
+\]</span></p>
+</blockquote>
+<p>We can boost the successful probability via repetitions.</p>
+<blockquote>
+<p><strong>Corollary.</strong> If we repeat the algorithm <span class="math inline">\(0.5 \cdot n \cdot (n - 1) \cdot \ln n\)</span> times, the probability we don't find <span class="math inline">\(c^*\)</span> is at most <span class="math inline">\(1 / n\)</span>.</p>
+</blockquote>
+<p><strong>Proof of the Corollary.</strong> <span class="math display">\[
+  \left( 1 - \frac{2}{n (n - 1)} \right)^{0.5 \cdot n \cdot (n - 1) \cdot \ln n} \le e^{\ln n} = \frac{1}{n}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><strong>Proof of the Theorem.</strong></p>
+<p>Consider the first iteration of the algorithm. The key observation is that the degree of each vertex is at least <span class="math inline">\(c^*\)</span>. Therefore, <span class="math display">\[
+  m \ge c^* \cdot n / 2. 
+\]</span></p>
+<p>Fix a min-cut in <span class="math inline">\(G\)</span>, the probability that any of its edges is selected at most <span class="math display">\[
+  \frac{c^*}{m} \le \frac{2} { n }. 
+\]</span></p>
+<p>Therefore, with probability at least <span class="math inline">\(1 - 2 / n\)</span>, none of the edges in the chosen min-cut is contracted in the first iteration. Moreover, we have the following observation.</p>
+<blockquote>
+<p>After contracting an edge, each cut in the new graph corresponds to a cut in the original graph.</p>
+</blockquote>
+<p>Therefore, if none of the edges of the chosen min-cut is contracted, it remains to be the min-cut in the new graph. Conditioned on this, via similar argument, we can prove that in the second iteration, none of the edges of the chosen min-cut is contracted with probability at least <span class="math inline">\(1 - 2 / (n - 1)\)</span>.</p>
+<p>By induction, it holds that, none of the edges of the chosen min-cut is contracted over all iterations is given by <span class="math display">\[
+  \left(1 - \frac{2}{n} \right) \left(1 - \frac{2}{n - 1} \right) \ldots \left(1 - \frac{2}{3} \right) 
+  = \binom{n}{2}^{-1}. 
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="number-of-min-cuts">Number of Min Cuts</h1>
+<blockquote>
+<p><strong>Corollary.</strong> There are <span class="math inline">\(n (n - 1) / 2\)</span> min-cuts in the graph.</p>
+</blockquote>
+<p><strong>Proof.</strong><br />
+The events of outputting different min-cuts are disjoint.<br />
+<span class="math inline">\(\square\)</span></p>
+<p>By slightly modifying the algorithm, we can obtain another useful fact.</p>
+<blockquote>
+<p><strong>Theorem. (Approximate Min-Cut).</strong> Given <span class="math inline">\(t \in [1, n / 2]\)</span>, an <span class="math inline">\(t\)</span>-minimal cut is a cut with value <span class="math inline">\(\le t c^*\)</span>. It follows that the number of <span class="math inline">\(t\)</span>-minimal cut is bounded by <span class="math display">\[
+O \left( 2^{2t} \cdot \sqrt{ \frac{n}{(n - 2t) \cdot 2t} } \left( \frac{n}{n - 2t} \right)^{n - 2t} \left( \frac{n}{2t} \right)^{2t}\right)
+\]</span></p>
+</blockquote>
+<p><strong>Remark.</strong> The bound can be further upper bounded by <span class="math display">\[
+  \begin{aligned}
+    &amp;O \left( \sqrt{ \frac{n}{(n - 2t) \cdot 2t} } \cdot \exp \left( \frac{2t}{n - 2t} \cdot (n - 2t) \right) \cdot \left( \frac{n}{t} \right)^{2t} \right) 
+    \subseteq 
+    O \left( \left( \frac{e \cdot n}{t} \right)^{2t} \right).
+  \end{aligned}
+\]</span> <!-- 
+The bound is meaningful, when $(en / t)^{2t} \le 2^n$, i.e., 
+$t \le n / (2 \cdot \log n)$ for some constant $c$.  
+--></p>
+<p><strong>Proof.</strong> Suppose we run the contraction algorithm, until <span class="math inline">\(k = \lceil 2t \rceil\)</span> are left. Then we output one of the <span class="math inline">\(2^k\)</span> cuts uniformly at random. The probability <span class="math inline">\(p\)</span> that a particular <span class="math inline">\(t\)</span>-minimal cut is outputted is given by<br />
+<span class="math display">\[
+  \begin{aligned}
+    p 
+      &amp;\doteq \frac{1}{2^k} \cdot \left( 1 - \frac{2t}{n} \right) \cdot \left( 1 - \frac{2t}{n - 1} \right) \cdot \left( 1 - \frac{2t}{k + 1} \right) \\
+      &amp;= \frac{1}{2^k} \cdot\frac{ (n - 2t) \cdot (n - 1 - 2t) \cdot \ldots (k + 1 - 2t)}{ n \cdot (n - 1) \cdot \ldots \cdot (k + 1)}.
+  \end{aligned}
+\]</span></p>
+<p>Denote <span class="math inline">\(a = k - 2t \in [0, 1)\)</span>, <span class="math inline">\(b = n - 2t\)</span>, and <span class="math display">\[
+  f = \prod_{ i \in [n - 2k] } (a + i). 
+\]</span></p>
+<p>We rely on the following lemmas and facts.</p>
+<blockquote>
+<p><strong>Lemma.</strong> <span class="math display">\[
+f \in \Theta \left( \sqrt{n - 2t} \left( \frac{n - 2t}{e} \right)^{n - 2t} \right).
+\]</span></p>
+<p><strong>Fact (Stirling's Approximation).</strong> <span class="math display">\[
+n! \in \Theta \left( \sqrt{n} \left( \frac{n}{e} \right)^{n}\right), 
+\quad
+k! \in \Theta \left( \sqrt{k} \left( \frac{k}{e} \right)^{k}\right).  
+\]</span></p>
+</blockquote>
+<p>It follows that <span class="math display">\[
+  p 
+    = \frac{1}{2^k} \cdot \frac{f \cdot k!}{n!} 
+    \in \Theta \left( \frac{1}{2^k} \cdot \frac{ \sqrt{(n - 2t) \cdot k}}{n} \cdot \frac{\left( n - 2t \right)^{n - 2t} k^k }{ n^n } \right).
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>It remains to prove the lemma.</p>
+<p><strong>Proof of the Lemma.</strong> Note <span class="math display">\[
+  \begin{aligned}
+    \ln f &amp;= \sum_{ i \in [n - 2k] } \ln (a + i). 
+  \end{aligned}
+\]</span></p>
+<p>For each <span class="math inline">\(r \ge 1\)</span>, define <span class="math display">\[
+   U_r \doteq \int_{r}^{r + 1} \ln x \, dx 
+      = \left( x \ln x - x \right) \mid_r^{r + 1}
+      = \ln \frac{(r + 1)^{r + 1}}{r^r} - 1, 
+\]</span> and <span class="math display">\[
+  L_r \doteq \frac{1}{2} \big( \ln r + \ln (r + 1) \big)
+      = \ln \sqrt{ r (r + 1) }. 
+\]</span></p>
+<p>Denote the gap between them as <span class="math inline">\(\epsilon_r \doteq U_r - L_r\)</span>. Then <span class="math display">\[
+  \begin{aligned}
+    \ln f 
+      = \sum_{ i \in [n - 2k] } \ln (a + i) 
+      = \frac{1}{2} \left( \ln (a + 1) + \ln b \right) + \sum_{i \in [n - 2k - 1] } L_{a + i}. 
+  \end{aligned}
+\]</span></p>
+<p>Moreover, via that <span class="math inline">\(a + 1 \in [1, 2)\)</span>, <span class="math display">\[
+  \begin{aligned}
+    U &amp;\doteq \sum_{i \in [n - 2k - 1] } U_{a + i} = \int_{a + 1}^{b} \ln x \, dx \\
+    &amp;= \big( b \ln b - (a + 1) \ln (a + 1) - (b - a - 1) \big)
+    \in \Theta (b \ln b - b). 
+  \end{aligned}
+\]</span></p>
+<p>Therefore, <span class="math display">\[
+  \big( \ln f \big) - U 
+  \in 
+  \Theta \left( \frac{1}{2} \ln b + b \ln b - b - \sum_{i \in [n - 2k - 1] } \epsilon_{a + i} \right). 
+\]</span></p>
+<p>Finally,<br />
+<span class="math display">\[
+  \begin{aligned}
+    \epsilon_r &amp;\doteq U_r - L_r
+      = \ln \frac{(r + 1)^{r + 0.5}}{r^{r + 0.5}} - 1
+      = (r + 0.5) \ln \frac{r + 1}{r} - 1. 
+  \end{aligned}
+\]</span></p>
+<!-- 
+Since $1 / r \le 1$, via Tailor's expansion, 
+$$
+  \begin{aligned}
+    \ln \left(1 + \frac{1}{r} \right) 
+      &= \frac{1}{r} - \frac{1}{2 r^2} + \frac{1}{3 r^3} - \frac{1}{4 r^4} + \ldots
+  \\
+    r \cdot \ln \left(1 + \frac{1}{r} \right) 
+      &= 1 \, - \,\frac{1}{2 r} + \frac{1}{3 r^2} - \frac{1}{4 r^3} + \frac{1}{5 r^4} \ldots 
+  \\
+    \frac{1}{2} \cdot \ln \left(1 + \frac{1}{r} \right) 
+      &= \qquad \frac{1}{2r} - \frac{1}{4 r^2} + \frac{1}{6 r^3} - \frac{1}{8 r^4} + \ldots, 
+  \end{aligned}
+$$ 
+-->
+<p>We will prove that <span class="math inline">\(\epsilon_r \in \Theta(1 / r^2)\)</span>. Let <span class="math inline">\(1 / z \doteq 2 \cdot (r + 0.5) = 2r + 1\)</span>. Then <span class="math display">\[
+  \begin{aligned}
+    \epsilon_r 
+    &amp;= \frac{1}{2 z} \cdot \ln \frac{1 / z + 1}{1 / z - 1} - 1
+    = \frac{1}{2 z} \cdot \ln \frac{1 + z}{1 - z} - 1\\
+    &amp;= \frac{1}{2 z} \cdot \left( -\sum_{ i \in \mathbb{N}^+ } \frac{(-z)^i}{i} + \sum_{ i \in \mathbb{N}^+ } \frac{z^i}{i} \right) - 1 \\
+    &amp;= \frac{1}{z} \cdot \left( z + \frac{z^3}{3} + \frac{z^5}{5} + \ldots \right) - 1 \\
+    &amp;= \frac{z^2}{3} + \frac{z^4}{5} + \frac{z^6}{7} + \ldots.
+  \end{aligned}
+\]</span></p>
+<p>It follows that <span class="math display">\[
+  \begin{aligned}
+    \epsilon_r 
+      &amp;\in \Theta \left( \frac{z^2}{3} \left( 1 + z^2 + z^4 + \ldots \right) \right) \\
+      &amp;\subset \Theta \left( \frac{z^2}{3} \cdot \frac{1}{1 - z^2} \right) \\
+      &amp;\subset \Theta \left( \frac{1}{3} \cdot \frac{1}{ (2 r + 1)^2 - 1} \right)\\
+      &amp;\subset \Theta \left( \frac{1}{3} \frac{1}{(2r + 2) \cdot 2r} \right) \\
+      &amp;\subset \Theta \left( \frac{1}{12} \cdot \left( \frac{1}{r} - \frac{1}{r + 1}\right) \right), 
+  \end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+  \begin{aligned}
+      \sum_{i \in [n - 2k - 1] } \epsilon_{a + i}  
+      \in \Theta \left( \frac{1}{12} \cdot \sum_{i \in [n - 2k - 1] } \left( \frac{1}{a + i} - \frac{1}{a + i + 1}\right)  \right) 
+      \subset \Theta \left( 1 \right). 
+  \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- 
+Further, via Stirling's approximation, 
+$$
+  \begin{aligned}
+    n \cdot (n - 1) \cdot \ldots \cdot (k + 1) 
+      &= \frac{n!}{k!} 
+      &= \frac{ \sqrt{2 \pi n} (n / e)^n }{ \sqrt{2 \pi k} (k / e)^k }
+      &= \frac{ \sqrt{n} (n / e)^n }{ \sqrt{k} (k / e)^k }
+  \end{aligned}
+$$
+ -->
+<!-- 
+Therefore, 
+$$
+  \begin{aligned}
+    O \left( \frac{1}{2} \left( \ln a + \ln b \right) + \big( b \ln b - a \ln a - (b - a) \big) - \frac{1}{12 \cdot a}  - \frac{1}{2} \ln n - n \ln n + n + \frac{1}{2} \ln k + k \ln k - k \right) \\
+    = O \left( \frac{1}{2} \ln b + b \ln b - b - \frac{1}{2} \ln n - n \ln n + n + \frac{1}{2} \ln k + k \ln k - k \right) \\
+    = O \left( (n - 2t) \ln \frac{n - 2t}{n} - \frac{1}{2} \ln \frac{n}{n - 2t} - (2t) \ln n + \frac{1}{2} \ln k + k \ln k \right) \\
+  \end{aligned}
+$$
+ -->
+<!-- 
+> **Corollary**. A $\alpha$-min-cut is a cut with $\le \alpha c^*$ edges. 
+> For any $\alpha$ s.t. $2 \alpha$ is an integer, the number of $\alpha$-min-cuts is at most $n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2}$, which is less than $n^{2 \alpha}$.
+
+**Proof**: We perform the contraction as before but stop when there are $2\alpha$ vertexes left. Then we output one the $2^{2\alpha - 1}$ cuts uniformly at random. 
+
+The probability a $\alpha$-min-cut is outputted with probability at least
+$$
+  \begin{aligned}
+    & (1 - \frac{2 \alpha }{n})(1 - \frac{ 2 \alpha }{ n-1 })...(1 - \frac{2 \alpha }{ 2\alpha + 1 }) \cdot \frac{1}{2^{2 \alpha - 1}}  \\
+    &=2 \frac{ (n - 2 \alpha)! (2 \alpha)! }{ 2^{2\alpha} n!  } \\
+    &\ge \frac{ 2 } { 2^{2\alpha} } 
+    \sqrt{2 \pi (n - 2 \alpha)} \frac{(n - 2\alpha)^{(n - 2\alpha)} }{e ^{(n - 2\alpha)} }
+    \sqrt{2 \pi (2 \alpha)} \frac{(2\alpha)^{(2\alpha)} }{e ^{(2\alpha)} } 
+    \frac{1}{e \sqrt n} \frac{e ^{n} }{ n^{n} } \\
+    &= \frac{ 2 \cdot 2\pi } { e \cdot 2^{2\alpha} } 
+    \sqrt \frac{(n - 2\alpha) 2\alpha}{n} 
+    \frac{ (2\alpha)^{(2\alpha)} (n - 2\alpha)^{(n - 2\alpha)} }{ n^n }
+  \end{aligned}
+$$
+
+As $\frac{(n - 2\alpha) 2\alpha}{n}$ is minimized to $\frac{1}{2}$ for $n \ge 2, \ 1 \le 2 \alpha \le n - 1$, the above inequality becomes
+$$
+  \ge \frac{ \sqrt{2} \cdot 2\pi \cdot (2\alpha)^{(2\alpha)}} { e \cdot 2^{2\alpha} } 
+  \frac{ 1 }{ n^{(2\alpha)} }
+$$
+The number of $\alpha$-min-cuts is bounded by
+$$
+  n^{2 \alpha} \frac{2^{2\alpha}}{ (2\alpha)! } \frac{e}{2 \pi \sqrt 2} 
+$$
+**Remark**:
+For $k \in N$, we have
+$$
+\sqrt{2 \pi k} \cdot \frac{k^k}{e^k} \le k! \le e \sqrt k \cdot \frac{k^k}{e^k}
+$$ -->
+<!-- #### Corollary three -->
+<!-- 
+The number of $\alpha$-min-cuts is at most $e^{7/6} n^{2\alpha} \frac{2^{ 2 \alpha} }{( 2 \alpha + 1 )^ {2 \alpha} }$ for any $\alpha \ge 1$. 
+
+**Proof**: We perform the contraction as before but stop when there are $\lceil 2\alpha \rceil$ vertexes left. Then we output one the $2^{\lceil 2\alpha \rceil - 1}$ cuts uniformly at random. 
+
+The probability a $\alpha$-min-cut is outputted with probability at least
+$$
+  \begin{aligned}
+    & (1 - \frac{2 \alpha}{n }) (1 - \frac{2 \alpha}{n - 1 }) ... (1 - \frac{2 \alpha}{\lceil 2 \alpha \rceil + 1 }) 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &= \frac{(n - 2 \alpha) (n - 1 - 2 \alpha) ... (\lceil 2 \alpha \rceil + 1 - 2 \alpha)}{ n (n - 1) ...(\lceil 2 \alpha \rceil + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &= \frac{\Gamma(n - 2 \alpha + 1)}{ \Gamma(\lceil 2 \alpha \rceil + 1 - 2 \alpha) } \frac{\Gamma(\lceil 2 \alpha \rceil + 1)}{\Gamma(n + 1)} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &\ge \sqrt{2\pi} \frac{1}{\sqrt {n - 2 \alpha + 1} }(\frac{n - 2 \alpha + 1}{e})^ {n - 2 \alpha + 1} \\ 
+    &\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (\lceil 2 \alpha \rceil + 1 - 2 \alpha ) } } \sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha)} (\frac{e}{\lceil 2 \alpha \rceil + 1 - 2 \alpha})^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha} \\
+    &\ \ \cdot \sqrt{2\pi} \frac{1}{ \sqrt{\lceil 2 \alpha \rceil + 1} }(\frac{ \lceil 2 \alpha \rceil + 1 }{e})^ {\lceil 2 \alpha \rceil + 1} \\
+    &\ \ \cdot \frac{1}{\sqrt {2 \pi} e^{1 / 12 (n + 1) } } \sqrt{(n + 1)} (\frac{e}{n + 1})^ {n + 1} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &= \frac{1}{e^{2 / 12}} \frac{\sqrt{\lceil 2 \alpha \rceil + 1 - 2 \alpha} }{ \sqrt {n - 2 \alpha + 1} } \frac{\sqrt{(n + 1)} }{\sqrt{\lceil 2 \alpha \rceil + 1}} 
+    e^{(\lceil 2 \alpha \rceil + 1 - 2 \alpha ) - (n - 2 \alpha + 1) + (n + 1) - (\lceil 2 \alpha \rceil + 1)} \\
+    &\ \ \cdot (\frac{n - 2 \alpha + 1}{n + 1})^ {n - 2 \alpha + 1} (\frac{1}{n + 1})^{2\alpha} \cdot 
+    \frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &\ge  \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
+    \frac{( \lceil 2 \alpha \rceil + 1 )^ {\lceil 2 \alpha \rceil + 1 / 2} }{ (\lceil 2 \alpha \rceil + 1 - 2 \alpha)^ {\lceil 2 \alpha \rceil + 1 / 2 - 2 \alpha}} 2^{ - (\lceil 2 \alpha \rceil -1)} \\
+    &\ge \frac{1}{e^{1 / 6}} (\frac{1}{n + 1})^{2\alpha} \cdot 
+    \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+    &= \frac{1}{e^{1 / 6}} \frac{1}{n^{2\alpha}} \frac{1}{(1 + 1/n)^{2\alpha}}
+    \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+    &\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( \lceil 2 \alpha \rceil + 1 )^ {2 \alpha} }{2^{ 2 \alpha} } \\
+    &\ge \frac{1}{e^{7/6} } \frac{1}{n^{2\alpha}} \frac{( 2 \alpha + 1 )^ {2 \alpha} }{2^{ 2 \alpha} }
+  \end{aligned}
+$$
+
+To bound the inequality, we need the stirling formula for Gamma functions. 
+
+**Lemma**. $\forall x \ge 0$,
+$$
+  \Gamma(x + 1) = x \Gamma(x) \\
+  \sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x 
+  \le 
+  \Gamma(x)
+  \le
+  \sqrt{2\pi} \frac{1}{\sqrt x} (\frac{x}{e})^x e^{\frac{1}{12 x}}
+$$
+ -->
+<h1 id="reference">Reference</h1>
+<p>[1] Karger, David R. "Global Min-cuts in RNC, and Other Ramifications of a Simple Min-Cut Algorithm." Soda. Vol. 93. 1993.</p>
+<p>[2] D. R. Karger and C. Stein, “A new approach to the minimum cut problem,” J. ACM, 1996.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/20/Random-Points-on-Shpere/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/20/Random-Points-on-Shpere/" class="post-title-link" itemprop="url">Random Points on Shpere</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-07-20 10:45:18" itemprop="dateCreated datePublished" datetime="2018-07-20T10:45:18+10:00">2018-07-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2018-09-16 18:08:01" itemprop="dateModified" datetime="2018-09-16T18:08:01+10:00">2018-09-16</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>To generate a random unit vector in <span class="math inline">\(R^n\)</span>, the most trivial approach is to use spherical coordinates and generate the angles uniformly at random. Here we introduce another way : sample <span class="math inline">\(n\)</span> independent identical random variables from Gaussian distribution <span class="math inline">\(N(0, 1)\)</span>, denoted as <span class="math inline">\(x_1, x_2, ..., x_n\)</span>. Then a unit vector <span class="math inline">\(v\)</span> is obtained by</p>
+<p><span class="math display">\[
+v = \frac{1}{\sum_{i = 1}^n x_i^2 }(x_1, x_2, ..., x_n) 
+\]</span></p>
+<p>The key observation is that all points at a fixed distance from the origin is equally generated. To see this, the joints distribution of <span class="math inline">\(x_1, x_2, ..., x_n\)</span> is given by</p>
+<p><span class="math display">\[
+p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big)
+\]</span></p>
+<p><span class="math inline">\(p\)</span> is fixed when <span class="math inline">\(\sum_{i = 1}^n x_i^2\)</span> is fixed.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -285,254 +700,10 @@ Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/17/Sampling-Probability/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/17/Sampling-Probability/" class="post-title-link" itemprop="url">Sampling Probability</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-07-17 21:34:45" itemprop="dateCreated datePublished" datetime="2018-07-17T21:34:45+10:00">2018-07-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-02-08 12:06:14" itemprop="dateModified" datetime="2022-02-08T12:06:14+11:00">2022-02-08</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Suppose we have a set of number <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> and we would like to estimate its sum <span class="math inline">\(s = \sum_i x_i\)</span>. However, we can only access the set <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> by sampling an element <span class="math inline">\(x_i, 1 \le i \le n\)</span> randomly. Let <span class="math inline">\(p_i\)</span> be the probability that we get <span class="math inline">\(x_i\)</span>. If <span class="math inline">\(p_i\)</span> is known (either before sampling or the moment we get a sampled element, depending on application), then we can still construct an unbiased estimator of <span class="math inline">\(s\)</span>: define <span class="math display">\[
-    y_i = \frac{x_i} {p_i},
-\]</span> and let <span class="math inline">\(Y\)</span> be the random variable that takes value <span class="math inline">\(y_i\)</span> with probability <span class="math inline">\(p_i\)</span>. The expectation and variance of <span class="math inline">\(Y\)</span> is given by <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[Y] 
-            &amp;= \sum_i p_i y_i = \sum_i p_i \frac{x_i} {p_i} = \sum_i x_i = s, \\ 
-        \mathbb{Var}[Y] 
-            &amp;= \mathbb{E}[Y^2] - \mathbb{E}[Y]^2 \\
-            &amp;= \sum_i p_i \cdot \frac{x_i^2}{p_i^2} - s^2 
-            = \sum_i \frac{x_i^2}{p_i} - s^2.
-    \end{aligned}
-\]</span></p>
-<p>It can be seem that the variance of <span class="math inline">\(Y\)</span> is minimized when <span class="math inline">\(p_i = \frac{x_i} { s }\)</span> for all <span class="math inline">\(i\)</span>. In such case, <span class="math inline">\(y_i = { x_i } / \big( x_i / s \big) = s\)</span> is a constant and <span class="math inline">\(\mathbb{Var}[Y] = 0\)</span> (which is the smallest variance possible as its must be non-negative).</p>
-<blockquote>
-<p>Remark: we can also verify this by formulating this as an optimization problem then using Lagrangian method.</p>
-</blockquote>
-<p>In some applications, some elements in <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> may have same value. Suppose there are <span class="math inline">\(m\)</span> different value in <span class="math inline">\(\{x_1, x_2, ..., x_n \}\)</span> and define <span class="math inline">\(X_j ( 1 \le j \le m)\)</span> the set of elements with the <span class="math inline">\(j\)</span>-th largest value. Denote the sum of probability of elements in <span class="math inline">\(X_j\)</span> as <span class="math inline">\(\Pr_j = \sum_{x \in X_j} p_x\)</span>. Also, let <span class="math inline">\(f(x_i)\)</span> denote the group that element <span class="math inline">\(x_i\)</span> belongs to, i.e., <span class="math inline">\(x_i \in X_{ f( x_i ) }\)</span>. Consider<br />
-<span class="math display">\[
-    y&#39;_i = \frac{ x_i |X_{ f(x_i) }| } { \Pr_{ f(x_i) } },
-\]</span></p>
-<p>and <span class="math inline">\(Y&#39;\)</span> a random variable that takes value <span class="math inline">\(y&#39;_i\)</span> with probability <span class="math inline">\(p_i\)</span>. The mean of <span class="math inline">\(Y&#39;\)</span> is also an unbiased estimator of <span class="math inline">\(s\)</span>:</p>
-<p><span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[Y&#39;] 
-        &amp;= \sum_{i = 1}^n p_i y&#39;_i \\
-        &amp;= \sum_{i = 1}^n p_i \frac{ x_i |X_{ f(x_i) }| } { \Pr_{ f(x_i) } } \\
-        &amp;= \sum_{j = 1}^m \sum_{x \in X_j} p_x \frac{ x |X_{ f(x) }| } { \Pr_j } \\
-        &amp;= s.
-    \end{aligned}
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/04/Fabonacci-Number/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/07/04/Fabonacci-Number/" class="post-title-link" itemprop="url">Fabonacci Number</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2018-07-04 11:05:16" itemprop="dateCreated datePublished" datetime="2018-07-04T11:05:16+10:00">2018-07-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-11-01 23:29:59" itemprop="dateModified" datetime="2020-11-01T23:29:59+11:00">2020-11-01</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Consider the Fibonacci sequence <span class="math inline">\(\{ F_i \}_{i \ge 1}\)</span>: <span class="math display">\[
-1, 1, 2, 3, 5, 8, 13, 21, ....
-\]</span></p>
-<p>which is defined recursively as follows: <span class="math display">\[
-\begin{cases}
-    F_1 = 1 \\
-    F_2 = 1 \\
-    F_{n + 2} = F_{n + 1} + F_{n} \quad  n \ge 1
-\end{cases}
-\]</span></p>
-<p>We discuss some techniques for computing the (approximate) closed form formula for <span class="math inline">\(F_n\)</span> for <span class="math inline">\(n \ge 1\)</span>.</p>
-<h4 id="method-1"><strong><em>Method 1</em></strong></h4>
-<p>We guess that <span class="math inline">\(F_n\)</span> is of closed form as <span class="math inline">\(F_n = z^n\)</span> for some <span class="math inline">\(z \in \R\)</span>. As <span class="math inline">\(F_{n + 2} = F_{n + 1} + F_n\)</span>, <span class="math inline">\(z\)</span> needs to satisfies <span class="math display">\[
-z^2 = z + 1
-\]</span></p>
-<p>The quadratic equation has two roots, <span class="math inline">\(z_1 = \frac{1 + \sqrt 5}{2}\)</span> and <span class="math inline">\(z_1 = \frac{1 - \sqrt 5}{2}\)</span> respectively.</p>
-<p>Let <span class="math inline">\(a, b \in \R\)</span>. <span class="math inline">\(F_n = a z_1^n + b z_2^n\)</span> is also a possible solution that satisfies <span class="math inline">\(F_{n + 2} = F_{n + 1} + F_n\)</span>. We can compute the exact value of <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> by the constraints <span class="math inline">\(F_1 = F_2 = 1\)</span>: <span class="math display">\[
-a z_1 + b z_2 = 1 \\
-a z_1^2 + b z_2^2 = 1
-\]</span></p>
-<p>i.e., <span class="math display">\[
-a (1 + \sqrt 5) + b (1 - \sqrt 5) = 2 \\
-a (6 + 2\sqrt 5) + b (6 - 2 \sqrt 5) = 4
-\]</span></p>
-<p>Therefore <span class="math inline">\(a = 1 / \sqrt 5\)</span>, <span class="math inline">\(b = -1 / \sqrt 5\)</span>, and<br />
-<span class="math display">\[
- F_n = \frac{ (\frac{1 + \sqrt 5} {2})^n  - (\frac{1 - \sqrt 5} {2})^n }{\sqrt 5}
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h4 id="method-2"><strong><em>Method 2</em></strong></h4>
-<p>Consider the intervals derived from the sequences: <span class="math display">\[
-    1, 1, 2, 3, 5, 8, 13, 21, .... 
-\]</span></p>
-<p>$$ , , , , ...</p>
-<p>$$</p>
-<p>Define <span class="math inline">\(x_n = \frac{F_{n + 1} }{F_n}\)</span> and denote <span class="math inline">\(I_n\)</span> the <span class="math inline">\(n\)</span>-th interval. Then <span class="math display">\[
-I_n = [x_{2n - 1}, x_{2n } ]
-\]</span></p>
-<p>By observation of the first few <span class="math inline">\(I_n\)</span>'s, they seems to be nested closed intervals, with shrinking lengths. If the length of <span class="math inline">\(I_n\)</span> converges to <span class="math inline">\(0\)</span>, then the limit of <span class="math inline">\(x_n\)</span> exists. Suppose that <span class="math display">\[
-\lim_{n} x_n = \phi
-\]</span></p>
-<p>Then <span class="math display">\[
-\lim_n F_n = O(\phi^n )
-\]</span></p>
-<p>We will prove this in what follows.</p>
-<p>The key transformation we performed is <span class="math display">\[
-x_{n} = \frac{ F_{n + 1} }{F_{n} } = \frac{ F_{n } + F_{n - 1 } }{ F_{n} } = 1 + \frac{1}{ x_{ n - 1} }.
-\]</span></p>
-<h5 id="lemma-1">Lemma 1</h5>
-<p><span class="math display">\[
-        x_1 &lt; x_3 &lt; x_5 &lt; x_7 &lt;  ... \\
-        x_2 &gt; x_4 &gt; x_6 &gt; x_8 &gt;  ... \\
-\]</span></p>
-<p><em>Proof:</em> For <span class="math inline">\(n \ge 1\)</span>, <span class="math display">\[
-x_{2n + 2} - x_{2n} = \frac{1}{ x_{2n + 1} } - \frac{1}{ x_{2n - 1} } = \frac{ x_{2n - 1} - x_{2n + 1} }{ x_{2n + 1} x_{2n - 1} }.
-\]</span></p>
-<p>Similarly, <span class="math display">\[
-x_{2n + 1} - x_{2n - 1} = \frac{1}{ x_{2n} } - \frac{1}{ x_{2n - 2} } = \frac{ x_{2n - 2} - x_{2n} }{ x_{2n} x_{2n - 2} }.
-\]</span></p>
-<p>As <span class="math inline">\(x_3 - x_1 = 3 /2 - 1 &gt; 0\)</span>, and <span class="math inline">\(x_4 - x_2 = 5 / 3 - 2 &lt; 0\)</span>, the lemma follows from induction.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h5 id="lemma-2.-for-n-ge-1">Lemma 2. For <span class="math inline">\(n \ge 1\)</span>,</h5>
-<p><span class="math display">\[
-x_{2n} - x_{2n - 1} \ge 0
-\]</span></p>
-<p><em>Proof:</em> Clearly this holds for <span class="math inline">\(n = 1\)</span>. Consider <span class="math inline">\(n \ge 2\)</span>, <span class="math display">\[
-x_{2n} - x_{2n - 1} = \frac{1}{x_{2n - 1} } - \frac{1}{x_{2n - 2} }  = - \frac{ x_{2n - 1} - x_{2n - 2}   }{x_{2n - 1} \cdot x_{2n - 2}} =  \frac{ x_{2n - 2} - x_{2n - 3}   }{x_{2n - 1} \cdot x_{2n - 2} \cdot x_{2n - 2} \cdot x_{2n - 3} }
-\]</span></p>
-<p>The claim follows from induction.</p>
-<h5 id="corollary-2.-for-n-ge-2">Corollary 2. For <span class="math inline">\(n \ge 2\)</span>,</h5>
-<p><span class="math display">\[
-\begin{aligned}
-    I_n &amp;= x_{2n} - x_{2n - 1} \\
-        &amp;= \frac{ x_{2n - 2} - x_{2n - 3}   }{x_{2n - 1} \cdot x_{2n - 2} \cdot x_{2n - 2} \cdot x_{2n - 3} } \\
-        &amp;\le \frac{ x_{2n - 2} - x_{2n - 3}   }{ x_{2n - 1} } \\
-        &amp;\le \frac{ x_{2n - 2} - x_{2n - 3}   }{ x_3 } \\
-        &amp;= \frac{2}{3} (x_{2n - 2} - x_{2n - 3}) \\
-        &amp;= \frac{2}{3} I_{n - 1}
-\end{aligned}
-\]</span></p>
-<p>Hence <span class="math inline">\(\lim_n |I_n| = 0\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>Combining lemma 1 and 2, we conclude that <span class="math inline">\(\lim x_n = \phi\)</span> exists. As <span class="math display">\[
-\lim x_n = \phi = \lim (1 + \frac{1}{x_{n - 1} } ) = 1 + \frac{1}{\phi }
-\]</span></p>
-<p>We conclude that <span class="math inline">\(\phi = \frac{ 1 + \sqrt{5} }{2 }\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/57/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/57/">57</a><span class="page-number current">58</span><a class="page-number" href="/page/59/">59</a><span class="space">&hellip;</span><a class="page-number" href="/page/63/">63</a><a class="extend next" rel="next" href="/page/59/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/57/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/57/">57</a><span class="page-number current">58</span><a class="page-number" href="/page/59/">59</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/59/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -598,7 +769,7 @@ x_{2n} - x_{2n - 1} = \frac{1}{x_{2n - 1} } - \frac{1}{x_{2n - 2} }  = - \frac{ 
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">189</span>
+          <span class="site-state-item-count">191</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -630,7 +801,7 @@ x_{2n} - x_{2n - 1} = \frac{1}{x_{2n - 1} } - \frac{1}{x_{2n - 2} }  = - \frac{ 
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2022</span>
+  <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
