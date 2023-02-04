@@ -192,102 +192,176 @@
 
       
           <h1 id="problem">Problem</h1>
-<p>We study the problem of estimating the number of distinct elements in a stream <span class="math inline">\(S\)</span>. WLOG, we assume that elements in <span class="math inline">\(S\)</span> come from a domain <span class="math inline">\([d] = \{1, 2,..., d \}\)</span>, and that each element in <span class="math inline">\([d]\)</span> appears in the <span class="math inline">\(S\)</span> at least once. Hence, the problem is equivalent to the one of estimating <span class="math inline">\(d\)</span>.</p>
+<p>We study the problem of estimating the number of distinct elements in
+a stream <span class="math inline">\(S\)</span>. WLOG, we assume that
+elements in <span class="math inline">\(S\)</span> come from a domain
+<span class="math inline">\([d] = \{1, 2,..., d \}\)</span>, and that
+each element in <span class="math inline">\([d]\)</span> appears in the
+<span class="math inline">\(S\)</span> at least once. Hence, the problem
+is equivalent to the one of estimating <span
+class="math inline">\(d\)</span>.</p>
 <h1 id="k-minimum-values">k Minimum Values</h1>
-<p>The algorithm of <span class="math inline">\(k\)</span>-minimum values returns a <span class="math inline">\((1 \pm \epsilon)\)</span> estimate <span class="math inline">\(\hat d\)</span> of <span class="math inline">\(d\)</span>, with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
-<p>The algorithm picks a pairwise independent hash function <span class="math inline">\(g : [d] \rightarrow [m]\)</span> and uses a min heap <span class="math inline">\(h\)</span> that keeps the <span class="math inline">\(k\)</span> minimum hash values. When it stops, it outputs an estimate <span class="math display">\[
-    \hat d \doteq k \cdot m  / v, 
-\]</span> where <span class="math inline">\(v\)</span> is the maximum element in <span class="math inline">\(h\)</span>. Observe that <span class="math inline">\(v\)</span> is also the <span class="math inline">\(k\)</span>-th minimum hash value of the set <span class="math display">\[
+<p>The algorithm of <span class="math inline">\(k\)</span>-minimum
+values returns a <span class="math inline">\((1 \pm \epsilon)\)</span>
+estimate <span class="math inline">\(\hat d\)</span> of <span
+class="math inline">\(d\)</span>, with probability at least <span
+class="math inline">\(1 - \delta\)</span>.</p>
+<p>The algorithm picks a pairwise independent hash function <span
+class="math inline">\(g : [d] \rightarrow [m]\)</span> and uses a min
+heap <span class="math inline">\(h\)</span> that keeps the <span
+class="math inline">\(k\)</span> minimum hash values. When it stops, it
+outputs an estimate <span class="math display">\[
+    \hat d \doteq k \cdot m  / v,
+\]</span> where <span class="math inline">\(v\)</span> is the maximum
+element in <span class="math inline">\(h\)</span>. Observe that <span
+class="math inline">\(v\)</span> is also the <span
+class="math inline">\(k\)</span>-th minimum hash value of the set <span
+class="math display">\[
      \{ g(1), g(2), ..., g(d) \}.
 \]</span></p>
 <blockquote>
-<p>Algorithm: <span class="math inline">\(k\)</span>-minimum values.<br />
-1. Select a pair-wise independent hash function <span class="math inline">\(g: [d] \rightarrow [m]\)</span>, where <span class="math inline">\(m \ge d^2 / \delta\)</span>;<br />
-2. Initialize a set <span class="math inline">\(h \leftarrow \{ \}\)</span>;<br />
-3. <strong>For</strong> <span class="math inline">\(s \in S\)</span> <strong>do</strong>:<br />
-4. <span class="math inline">\(\qquad\)</span> <strong>If</strong> <span class="math inline">\(g(s) \in h\)</span> <strong>then</strong> continue; 5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(h \leftarrow h \cup \{ g(s) \}\)</span>;<br />
-6. <span class="math inline">\(\qquad\)</span> <strong>If</strong> <span class="math inline">\(|h| &gt; k\)</span> <strong>then</strong><br />
-7. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> remove the max element in <span class="math inline">\(h\)</span>;<br />
-8. Let <span class="math inline">\(v \leftarrow\)</span> max element in <span class="math inline">\(h\)</span>.<br />
-9. Return <span class="math inline">\(\hat d \doteq k \cdot m / v\)</span>.</p>
+<p>Algorithm: <span class="math inline">\(k\)</span>-minimum
+values.<br />
+1. Select a pair-wise independent hash function <span
+class="math inline">\(g: [d] \rightarrow [m]\)</span>, where <span
+class="math inline">\(m \ge d^2 / \delta\)</span>;<br />
+2. Initialize a set <span class="math inline">\(h \leftarrow \{
+\}\)</span>;<br />
+3. <strong>For</strong> <span class="math inline">\(s \in S\)</span>
+<strong>do</strong>:<br />
+4. <span class="math inline">\(\qquad\)</span> <strong>If</strong> <span
+class="math inline">\(g(s) \in h\)</span> <strong>then</strong>
+continue; 5. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(h \leftarrow h \cup \{ g(s) \}\)</span>;<br />
+6. <span class="math inline">\(\qquad\)</span> <strong>If</strong> <span
+class="math inline">\(|h| &gt; k\)</span> <strong>then</strong><br />
+7. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> remove the max element in <span
+class="math inline">\(h\)</span>;<br />
+8. Let <span class="math inline">\(v \leftarrow\)</span> max element in
+<span class="math inline">\(h\)</span>.<br />
+9. Return <span class="math inline">\(\hat d \doteq k \cdot m /
+v\)</span>.</p>
 </blockquote>
 <h2 id="theorem-1.">Theorem 1.</h2>
-<p>With probability at least <span class="math inline">\(1 - \delta\)</span>, there isn't hash collision.</p>
+<p>With probability at least <span class="math inline">\(1 -
+\delta\)</span>, there isn't hash collision.</p>
 <p><em>Proof:</em></p>
-<p>For <span class="math inline">\(i \neq j \in [d]\)</span>, as <span class="math inline">\(g\)</span> is pair-wise independent, <span class="math inline">\(\Pr[ g(i) = g(j) ] = \frac{1}{m}\)</span>. Therefore, <span class="math display">\[
-    \mathbb{E}  \left[ \sum_{i \neq j \in [d]}  \mathbf{1} \big[ g(i) = g(j) \big] \right]  =  \sum_{i \neq j \in [d] } \mathbb{E}  \left[   \mathbf{1} \big[ g(i) = g(j) \big]  \right] \le \frac{d^2}{m} = \delta,
-\]</span> where <span class="math inline">\(\mathbf{1} \big[ g(i) = g(j) \big]\)</span> is the indicator random variable of <span class="math inline">\(g(i) = g(j)\)</span>.</p>
+<p>For <span class="math inline">\(i \neq j \in [d]\)</span>, as <span
+class="math inline">\(g\)</span> is pair-wise independent, <span
+class="math inline">\(\Pr[ g(i) = g(j) ] = \frac{1}{m}\)</span>.
+Therefore, <span class="math display">\[
+    \mathbb{E}  \left[ \sum_{i \neq j \in [d]}  \mathbf{1} \big[ g(i) =
+g(j) \big] \right]  =  \sum_{i \neq j \in [d] }
+\mathbb{E}  \left[   \mathbf{1} \big[ g(i) = g(j) \big]  \right] \le
+\frac{d^2}{m} = \delta,
+\]</span> where <span class="math inline">\(\mathbf{1} \big[ g(i) = g(j)
+\big]\)</span> is the indicator random variable of <span
+class="math inline">\(g(i) = g(j)\)</span>.</p>
 <p>By Markov's inequality, <span class="math display">\[
-    \Pr \left[ \sum_{ i \neq j \in [d] } \mathbf{1} \big[ g(i) = g(j) \big] \ge 1 \right] \le \delta. 
+    \Pr \left[ \sum_{ i \neq j \in [d] } \mathbf{1} \big[ g(i) = g(j)
+\big] \ge 1 \right] \le \delta.
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h2 id="theorem-2.">Theorem 2.</h2>
-<p>With probability at least <span class="math inline">\(1 / (k\epsilon^2)\)</span>, <span class="math display">\[
+<p>With probability at least <span class="math inline">\(1 /
+(k\epsilon^2)\)</span>, <span class="math display">\[
     \hat d &lt; \frac{d}{1 - \epsilon}.
 \]</span></p>
-<p><em>Proof:</em> For <span class="math inline">\(i \in [d]\)</span>, define the indicator random variable of <span class="math inline">\(X_i = \mathbf{1}\big[ g(i) \le (1 - \epsilon) \cdot k / d \cdot m \big]\)</span>. Recall that <span class="math display">\[
-    v \doteq \text{The } k\text{-th smallest element of } \{ g(1), g(2), ..., g(d) \}.
+<p><em>Proof:</em> For <span class="math inline">\(i \in [d]\)</span>,
+define the indicator random variable of <span class="math inline">\(X_i
+= \mathbf{1}\big[ g(i) \le (1 - \epsilon) \cdot k / d \cdot m
+\big]\)</span>. Recall that <span class="math display">\[
+    v \doteq \text{The } k\text{-th smallest element of } \{ g(1), g(2),
+..., g(d) \}.
 \]</span> The event that <span class="math display">\[
-    \left\{ v \le  (1 - \epsilon) \cdot k / d \cdot m \right\} \equiv \left\{ \frac{d}{1 - \epsilon} \le \frac{ k \cdot m }{ v } \right\} 
-\]</span> happens if only <span class="math inline">\(\sum_{i \in [d] } X_i \ge k\)</span>.</p>
-<p>By definition of <span class="math inline">\(X_i\)</span>, <span class="math display">\[
-    p \doteq \Pr \left[ X_i \right] = (1 - \epsilon) \cdot \frac{ k }{d}.
+    \left\{ v \le  (1 - \epsilon) \cdot k / d \cdot m \right\} \equiv
+\left\{ \frac{d}{1 - \epsilon} \le \frac{ k \cdot m }{ v } \right\}
+\]</span> happens if only <span class="math inline">\(\sum_{i \in [d] }
+X_i \ge k\)</span>.</p>
+<p>By definition of <span class="math inline">\(X_i\)</span>, <span
+class="math display">\[
+    p \doteq \Pr \left[ X_i \right] = (1 - \epsilon) \cdot \frac{ k
+}{d}.
 \]</span></p>
 <p>By linearity of expectation, we have <span class="math display">\[
-    \mathbb{E}  \left[ \sum_{i \in [d] } X_i  \right] = d \cdot p = (1 - \epsilon) \cdot k.
+    \mathbb{E}  \left[ \sum_{i \in [d] } X_i  \right] = d \cdot p = (1 -
+\epsilon) \cdot k.
 \]</span></p>
-<p>As <span class="math inline">\(g\)</span> is pair-wise independent, so are the <span class="math inline">\(X_i\)</span>'s. It follows that <span class="math display">\[
+<p>As <span class="math inline">\(g\)</span> is pair-wise independent,
+so are the <span class="math inline">\(X_i\)</span>'s. It follows that
+<span class="math display">\[
     \begin{aligned}
-        \sigma^2 =\mathbb{Var}  \left[ \sum_{i \in [d] } X_i \right] &lt; d \cdot p = (1 - \epsilon) \cdot k.
+        \sigma^2 =\mathbb{Var}  \left[ \sum_{i \in [d] } X_i \right]
+&lt; d \cdot p = (1 - \epsilon) \cdot k.
     \end{aligned}
 \]</span></p>
-<p>By monotonicity of probability and by Chebyshev's inequality, <span class="math display">\[
+<p>By monotonicity of probability and by Chebyshev's inequality, <span
+class="math display">\[
 \begin{aligned}
-    \Pr\left[ \sum_{i \in [d] } X_i \ge k \right] 
-    &amp;\le 
-    \Pr\left[ \left| \sum_{i \in [d] } X_i - (1 - \epsilon) \cdot k \right| \ge \epsilon k \right] 
-    &lt; 
-    \frac{ (1- \epsilon) \cdot k  }{ \epsilon^2 k^2 } 
+    \Pr\left[ \sum_{i \in [d] } X_i \ge k \right]
+    &amp;\le
+    \Pr\left[ \left| \sum_{i \in [d] } X_i - (1 - \epsilon) \cdot k
+\right| \ge \epsilon k \right]
+    &lt;
+    \frac{ (1- \epsilon) \cdot k  }{ \epsilon^2 k^2 }
     &lt; \frac{1}{\epsilon^2 k}.
 \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h2 id="theorem-3.">Theorem 3.</h2>
-<p>With probability at least <span class="math inline">\((1 + \epsilon) / (k\epsilon^2)\)</span>, <span class="math display">\[
+<p>With probability at least <span class="math inline">\((1 + \epsilon)
+/ (k\epsilon^2)\)</span>, <span class="math display">\[
     \hat d \ge \frac{d}{1 + \epsilon}.
 \]</span></p>
-<p><em>Proof:</em> For <span class="math inline">\(i \in [d]\)</span>, define the indicator random variable of <span class="math inline">\(Y_i = \left[ g(i) \le (1 + \epsilon) \cdot k / d \cdot m \right]\)</span>. Recall that <span class="math display">\[
-    v \doteq \text{The } k\text{-th smallest element of } \{ g(1), g(2), ..., g(d) \}.
+<p><em>Proof:</em> For <span class="math inline">\(i \in [d]\)</span>,
+define the indicator random variable of <span class="math inline">\(Y_i
+= \left[ g(i) \le (1 + \epsilon) \cdot k / d \cdot m \right]\)</span>.
+Recall that <span class="math display">\[
+    v \doteq \text{The } k\text{-th smallest element of } \{ g(1), g(2),
+..., g(d) \}.
 \]</span> The event that <span class="math display">\[
-    \left\{ v \ &gt; \  (1 + \epsilon) \cdot k / d \cdot m \right\} \equiv \left\{ \frac{d}{1 + \epsilon} &gt; \frac{ k \cdot m }{ v } \right\} \equiv \left\{ \frac{d}{1 + \epsilon} &gt; \hat d \right\} 
-\]</span> happens if only <span class="math inline">\(\sum_{i \in [d] } Y_i &lt; k\)</span>.</p>
-<p>By definition of <span class="math inline">\(Y_i\)</span>, <span class="math display">\[
-    q \doteq \Pr \left[ Y_i \right] = (1 + \epsilon) \cdot \frac{ k }{d}.
+    \left\{ v \ &gt; \  (1 + \epsilon) \cdot k / d \cdot m \right\}
+\equiv \left\{ \frac{d}{1 + \epsilon} &gt; \frac{ k \cdot m }{ v }
+\right\} \equiv \left\{ \frac{d}{1 + \epsilon} &gt; \hat d \right\}
+\]</span> happens if only <span class="math inline">\(\sum_{i \in [d] }
+Y_i &lt; k\)</span>.</p>
+<p>By definition of <span class="math inline">\(Y_i\)</span>, <span
+class="math display">\[
+    q \doteq \Pr \left[ Y_i \right] = (1 + \epsilon) \cdot \frac{ k
+}{d}.
 \]</span></p>
 <p>By linearity of expectation, we have <span class="math display">\[
-    \mathbb{E}  \left[ \sum_{i \in [d] } Y_i  \right] = d \cdot q = (1 + \epsilon) \cdot k.
+    \mathbb{E}  \left[ \sum_{i \in [d] } Y_i  \right] = d \cdot q = (1 +
+\epsilon) \cdot k.
 \]</span></p>
-<p>As <span class="math inline">\(g\)</span> is pair-wise independent, so are the <span class="math inline">\(X_i\)</span>'s. It follows that <span class="math display">\[
+<p>As <span class="math inline">\(g\)</span> is pair-wise independent,
+so are the <span class="math inline">\(X_i\)</span>'s. It follows that
+<span class="math display">\[
     \begin{aligned}
-        \sigma^2 =\mathbb{Var}  \left[ \sum_{i \in [d] } Y_i \right] 
-            &amp;=  \sum_{i \in [d] } \mathbb{Var}  \left[ Y_i \right] \\
+        \sigma^2 =\mathbb{Var}  \left[ \sum_{i \in [d] } Y_i \right]
+            &amp;=  \sum_{i \in [d] } \mathbb{Var}  \left[ Y_i \right]
+\\
             &amp;= d \cdot q \cdot ( 1 - q) \\
             &amp;= (1 + \epsilon) \cdot k \cdot (1 - q).
     \end{aligned}
 \]</span></p>
-<p>By monotonicity of probability and by Chebyshev's inequality, <span class="math display">\[
+<p>By monotonicity of probability and by Chebyshev's inequality, <span
+class="math display">\[
 \begin{aligned}
-    \Pr\left[ \sum_{i \in [d] } Y_i &lt; k \right] 
-    &amp;\le 
-    \Pr\left[ \left| \sum_{i \in [d] } Y_i - (1 + \epsilon) \cdot k \right| \ge \epsilon k \cdot \sqrt{ 1 - q } \right] \\
-    &amp;\le 
+    \Pr\left[ \sum_{i \in [d] } Y_i &lt; k \right]
+    &amp;\le
+    \Pr\left[ \left| \sum_{i \in [d] } Y_i - (1 + \epsilon) \cdot k
+\right| \ge \epsilon k \cdot \sqrt{ 1 - q } \right] \\
+    &amp;\le
     \frac{ (1 + \epsilon) \cdot k  }{ \epsilon^2 k^2 } \\
     &amp;\le \frac{1}{\epsilon^2 k}.
 \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed.
+Cambridge University Press, 2020.</p>
 
       
     </div>
@@ -355,97 +429,159 @@
           <p>We consider the Count Sketch with single array.</p>
 <p><strong>Definitions</strong></p>
 <ol type="1">
-<li>Let <span class="math inline">\(S = (s_1, s_2, ..., s_n)\)</span> be a stream of <span class="math inline">\(n\)</span> elements from a domain <span class="math inline">\([d]\)</span>.<br />
+<li>Let <span class="math inline">\(S = (s_1, s_2, ..., s_n)\)</span> be
+a stream of <span class="math inline">\(n\)</span> elements from a
+domain <span class="math inline">\([d]\)</span>.<br />
 </li>
-<li><span class="math inline">\(A:\)</span> an array of size <span class="math inline">\(m\)</span>.<br />
+<li><span class="math inline">\(A:\)</span> an array of size <span
+class="math inline">\(m\)</span>.<br />
 </li>
-<li><span class="math inline">\(h: [d] \rightarrow [m]\)</span> a hash function that assigns each value in <span class="math inline">\([d]\)</span> an integer uniformly at random from <span class="math inline">\([m]\)</span>.<br />
+<li><span class="math inline">\(h: [d] \rightarrow [m]\)</span> a hash
+function that assigns each value in <span
+class="math inline">\([d]\)</span> an integer uniformly at random from
+<span class="math inline">\([m]\)</span>.<br />
 </li>
-<li><span class="math inline">\(g: [d] \rightarrow \{ - 1, 1 \}\)</span> a hash function that assigns each value in <span class="math inline">\([d]\)</span> a random sign.</li>
+<li><span class="math inline">\(g: [d] \rightarrow \{ - 1, 1 \}\)</span>
+a hash function that assigns each value in <span
+class="math inline">\([d]\)</span> a random sign.</li>
 </ol>
 <p><strong>Algorithm</strong></p>
-<p>For each element <span class="math inline">\(s \in S\)</span>, Count-Sketch updates <span class="math inline">\(A\)</span> as follows:</p>
+<p>For each element <span class="math inline">\(s \in S\)</span>,
+Count-Sketch updates <span class="math inline">\(A\)</span> as
+follows:</p>
 <blockquote>
 <p>Update (<span class="math inline">\(s\)</span>):<br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(A[ h(s) ] \leftarrow A[ h(s) ] + g[s]\)</span></p>
+<span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(A[ h(s) ] \leftarrow A[ h(s) ] + g[s]\)</span></p>
 </blockquote>
-<p>After processing elements in <span class="math inline">\(S\)</span>, Count-Sketch answer query for an element's frequency as follows:</p>
+<p>After processing elements in <span class="math inline">\(S\)</span>,
+Count-Sketch answer query for an element's frequency as follows:</p>
 <blockquote>
 <p>Query (<span class="math inline">\(v\)</span>):<br />
-<span class="math inline">\(\qquad\)</span> return <span class="math inline">\(\hat f[v] \doteq g[v] \cdot A[ h(v) ]\)</span></p>
+<span class="math inline">\(\qquad\)</span> return <span
+class="math inline">\(\hat f[v] \doteq g[v] \cdot A[ h(v) ]\)</span></p>
 </blockquote>
 <p><strong>Error Analysis</strong></p>
-<p>For a fixed <span class="math inline">\(v \in [d]\)</span>, let <span class="math inline">\(f[v]\)</span> be its true frequencies in <span class="math inline">\(S\)</span> (i.e., the number of times it appears in <span class="math inline">\(S\)</span>). Define indicator random variables <span class="math display">\[
-    X_1, X_2, ..., X_n, 
+<p>For a fixed <span class="math inline">\(v \in [d]\)</span>, let <span
+class="math inline">\(f[v]\)</span> be its true frequencies in <span
+class="math inline">\(S\)</span> (i.e., the number of times it appears
+in <span class="math inline">\(S\)</span>). Define indicator random
+variables <span class="math display">\[
+    X_1, X_2, ..., X_n,
 \]</span></p>
-<p>such that for <span class="math inline">\(i \in [n]\)</span>, define <span class="math display">\[
+<p>such that for <span class="math inline">\(i \in [n]\)</span>, define
+<span class="math display">\[
     X_i = \begin{cases}
-        &amp;1,     &amp;\text{ if } h(s_i) = h(v),     &amp;g(s_i) = g(v), \\
-        &amp;0,     &amp;\text{ if } h(s_i) \neq h(v),  &amp;               \\
-        &amp;-1,    &amp;\text{ if } h(s_i) = h(v),     &amp;g(s_i) \neq g(v), 
+        &amp;1,     &amp;\text{ if } h(s_i) = h(v),     &amp;g(s_i) =
+g(v), \\
+        &amp;0,     &amp;\text{ if } h(s_i) \neq
+h(v),  &amp;               \\
+        &amp;-1,    &amp;\text{ if } h(s_i) = h(v),     &amp;g(s_i) \neq
+g(v),
     \end{cases}
 \]</span></p>
-<p>The <span class="math inline">\(X_i\)</span>'s are not independent. For <span class="math inline">\(i \in [n]\)</span>, if <span class="math inline">\(s_i \neq v\)</span>, it holds that <span class="math display">\[
-    \mathbb{E} [ X_i ] = 0. 
+<p>The <span class="math inline">\(X_i\)</span>'s are not independent.
+For <span class="math inline">\(i \in [n]\)</span>, if <span
+class="math inline">\(s_i \neq v\)</span>, it holds that <span
+class="math display">\[
+    \mathbb{E} [ X_i ] = 0.
 \]</span></p>
-<p>For <span class="math inline">\(i, j \in [n], s_i \neq v, s_j \neq v\)</span>, we have <span class="math display">\[
-    \mathbb{ E } [X_i X_j ] = 
+<p>For <span class="math inline">\(i, j \in [n], s_i \neq v, s_j \neq
+v\)</span>, we have <span class="math display">\[
+    \mathbb{ E } [X_i X_j ] =
         \begin{cases}
             &amp;0,         &amp;\text{ if } s_i \neq s_j, \\
             &amp;\frac{1}{m}&amp;\text{ if } s_i = s_j.
         \end{cases}
 \]</span></p>
-<p>The estimation error of <span class="math inline">\(\hat f[v]\)</span> can be written as <span class="math display">\[
-    \left| \sum_{ i \in [n], s_i \neq v } X_i \right|. 
+<p>The estimation error of <span class="math inline">\(\hat
+f[v]\)</span> can be written as <span class="math display">\[
+    \left| \sum_{ i \in [n], s_i \neq v } X_i \right|.
 \]</span></p>
-<p>For given <span class="math inline">\(\epsilon &gt; 0\)</span>, we want to bound. <span class="math display">\[
+<p>For given <span class="math inline">\(\epsilon &gt; 0\)</span>, we
+want to bound. <span class="math display">\[
     \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
+        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge
+\epsilon \right]
     \end{aligned}
 \]</span></p>
-<p>To do this, we pick some parameter <span class="math inline">\(t &gt; 0\)</span> and define <span class="math inline">\(\mathcal{V}_{bad} \doteq \{ u \in [d], h(u) \ge t \}\)</span>, and consider <span class="math display">\[
+<p>To do this, we pick some parameter <span class="math inline">\(t &gt;
+0\)</span> and define <span class="math inline">\(\mathcal{V}_{bad}
+\doteq \{ u \in [d], h(u) \ge t \}\)</span>, and consider <span
+class="math display">\[
     \begin{aligned}
-        &amp;\Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] \\
-            &amp;\le  \Pr \left[  \exists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] 
-            + \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;\le \frac{n}{ t \cdot m} + \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right].
+        &amp;\Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i
+\right| \ge \epsilon \right] \\
+            &amp;\le  \Pr \left[  \exists u \in \mathcal{V}_{bad} : h(u)
+= h(v)  \right]
+            + \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i
+\right| \ge \epsilon \mid \nexists u \in \mathcal{V}_{bad} : h(u) =
+h(v)  \right] \\
+            &amp;\le \frac{n}{ t \cdot m} + \Pr \left[ \left| \sum_{ i
+\in [n], s_i \neq v } X_i \right| \ge \epsilon \mid \nexists u \in
+\mathcal{V}_{bad} : h(u) = h(v)  \right].
     \end{aligned}
 \]</span></p>
 <p>We consider the second probability. <span class="math display">\[
     \begin{aligned}
-        &amp;\mathbb{Var} \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-        &amp;= \sum_{ i \in [n], s_i \neq v} \mathbb{Var} \left[ X_i \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-        &amp;\quad + \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v } \mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] 
+        &amp;\mathbb{Var} \left[ \left| \sum_{ i \in [n], s_i \neq v }
+X_i \right| \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right]
+\\
+        &amp;= \sum_{ i \in [n], s_i \neq v} \mathbb{Var} \left[ X_i
+\mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
+        &amp;\quad + \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v,
+s_j \neq v } \mathbb{E} \left[ X_i X_j \mid \nexists u \in
+\mathcal{V}_{bad} : h(u) = h(v)  \right]
     \end{aligned}
 \]</span></p>
-<p>The first term equals to <span class="math inline">\(\frac{n}{m}\)</span>. For the second term, if <span class="math inline">\(s_i \neq s_j\)</span>, then by independence of <span class="math inline">\(X_i\)</span> and <span class="math inline">\(X_j\)</span>, it holds that <span class="math display">\[
+<p>The first term equals to <span
+class="math inline">\(\frac{n}{m}\)</span>. For the second term, if
+<span class="math inline">\(s_i \neq s_j\)</span>, then by independence
+of <span class="math inline">\(X_i\)</span> and <span
+class="math inline">\(X_j\)</span>, it holds that <span
+class="math display">\[
     \begin{aligned}
-        &amp;\mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-        &amp;= \mathbb{E} \left[ X_i \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \cdot \mathbb{E} \left[  X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right]=0.
+        &amp;\mathbb{E} \left[ X_i X_j \mid \nexists u \in
+\mathcal{V}_{bad} : h(u) = h(v)  \right] \\
+        &amp;= \mathbb{E} \left[ X_i \mid \nexists u \in
+\mathcal{V}_{bad} : h(u) = h(v)  \right] \cdot \mathbb{E} \left[  X_j
+\mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right]=0.
     \end{aligned}
 \]</span></p>
-<p>If <span class="math inline">\(s_i = s_j\)</span>, then <span class="math inline">\(X_i = X_j\)</span>. Hence, <span class="math display">\[
+<p>If <span class="math inline">\(s_i = s_j\)</span>, then <span
+class="math inline">\(X_i = X_j\)</span>. Hence, <span
+class="math display">\[
     \begin{aligned}
-        &amp;\sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v } \mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;= \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v, s_i = s_j } \mathbb{E} \left[ X_i^2 \mid \nexists u \in \mathcal{V}_{bad} : h(u) = h(v)  \right] \\
-            &amp;= \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq v, s_i = s_j, f[s_i] \le t } \frac{1}{m} \\
+        &amp;\sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v, s_j \neq
+v } \mathbb{E} \left[ X_i X_j \mid \nexists u \in \mathcal{V}_{bad} :
+h(u) = h(v)  \right] \\
+            &amp;= \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v,
+s_j \neq v, s_i = s_j } \mathbb{E} \left[ X_i^2 \mid \nexists u \in
+\mathcal{V}_{bad} : h(u) = h(v)  \right] \\
+            &amp;= \sum_{ i \in [n], j \in [n], i \neq j, s_i \neq v,
+s_j \neq v, s_i = s_j, f[s_i] \le t } \frac{1}{m} \\
             &amp;\le t^2 \cdot \frac{n}{t} \cdot \frac{1}{m} \\
             &amp;= \frac{ t \cdot n}{m}.
     \end{aligned}
 \]</span></p>
 <p>By Chebyshev's inequality, <span class="math display">\[
     \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-            &amp;\le \frac{n}{ t \cdot m} + \frac{t \cdot n}{m \cdot \epsilon^2}.
+        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge
+\epsilon \right]
+            &amp;\le \frac{n}{ t \cdot m} + \frac{t \cdot n}{m \cdot
+\epsilon^2}.
     \end{aligned}
 \]</span></p>
-<p>By setting <span class="math inline">\(t = \epsilon\)</span>, the probability is minimized to <span class="math display">\[
+<p>By setting <span class="math inline">\(t = \epsilon\)</span>, the
+probability is minimized to <span class="math display">\[
     \begin{aligned}
-        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge \epsilon \right] 
-            &amp;\le \frac{n}{m} \cdot \frac{2}{\epsilon}. 
+        \Pr \left[ \left| \sum_{ i \in [n], s_i \neq v } X_i \right| \ge
+\epsilon \right]
+            &amp;\le \frac{n}{m} \cdot \frac{2}{\epsilon}.
     \end{aligned}
 \]</span></p>
-<p>Note that this error bound is exactly the same as Count-Min sketch with a single array of size <span class="math inline">\(m\)</span>.</p>
+<p>Note that this error bound is exactly the same as Count-Min sketch
+with a single array of size <span class="math inline">\(m\)</span>.</p>
 
       
     </div>
@@ -511,70 +647,112 @@
 
       
           <h3 id="problem">Problem</h3>
-<p>Given a stream <span class="math inline">\(S\)</span> of <span class="math inline">\(n\)</span> elements, a server that observes the elements in <span class="math inline">\(S\)</span> one by one is required to estimate the cardinality <span class="math inline">\(n\)</span> with less than <span class="math inline">\(\log n\)</span> bits, with relative error <span class="math inline">\(\epsilon \in (0, 1)\)</span> and failure probability <span class="math inline">\(\delta\)</span>.</p>
-<p>Let <span class="math inline">\(w \in (1, 2)\)</span> be some parameter to be determined.</p>
+<p>Given a stream <span class="math inline">\(S\)</span> of <span
+class="math inline">\(n\)</span> elements, a server that observes the
+elements in <span class="math inline">\(S\)</span> one by one is
+required to estimate the cardinality <span
+class="math inline">\(n\)</span> with less than <span
+class="math inline">\(\log n\)</span> bits, with relative error <span
+class="math inline">\(\epsilon \in (0, 1)\)</span> and failure
+probability <span class="math inline">\(\delta\)</span>.</p>
+<p>Let <span class="math inline">\(w \in (1, 2)\)</span> be some
+parameter to be determined.</p>
 <blockquote>
 <p><strong>Algorithm</strong>. Morris Counter<br />
-1. <span class="math inline">\(k \leftarrow 0; \quad X_0 \leftarrow 0\)</span>; (introduced only for analysis)</p>
+1. <span class="math inline">\(k \leftarrow 0; \quad X_0 \leftarrow
+0\)</span>; (introduced only for analysis)</p>
 <ol start="2" type="1">
-<li><p>For <span class="math inline">\(t \leftarrow 1\)</span> to <span class="math inline">\(n\)</span>:</p></li>
-<li><p><span class="math inline">\(\qquad\)</span> <span class="math inline">\(X_t \leftarrow X_{t - 1}\)</span>; (introduced only for analysis)</p></li>
-<li><p><span class="math inline">\(\qquad\)</span> With probability <span class="math inline">\(p_t \doteq 1 / w^k\)</span> do:</p></li>
-<li><p><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(X_t \leftarrow X_t + w^k\)</span>;</p></li>
-<li><p><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(k \leftarrow k + 1\)</span>;</p></li>
-<li><p>Output <span class="math inline">\(\frac{w^k - 1}{w - 1}\)</span>.</p></li>
+<li><p>For <span class="math inline">\(t \leftarrow 1\)</span> to <span
+class="math inline">\(n\)</span>:</p></li>
+<li><p><span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(X_t \leftarrow X_{t - 1}\)</span>; (introduced
+only for analysis)</p></li>
+<li><p><span class="math inline">\(\qquad\)</span> With probability
+<span class="math inline">\(p_t \doteq 1 / w^k\)</span> do:</p></li>
+<li><p><span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(X_t
+\leftarrow X_t + w^k\)</span>;</p></li>
+<li><p><span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(k
+\leftarrow k + 1\)</span>;</p></li>
+<li><p>Output <span class="math inline">\(\frac{w^k - 1}{w -
+1}\)</span>.</p></li>
 </ol>
 </blockquote>
-<p>It can be verified that, when the algorithm stops, <span class="math inline">\(X_n = \frac{w^k - 1}{w - 1}\)</span>.</p>
+<p>It can be verified that, when the algorithm stops, <span
+class="math inline">\(X_n = \frac{w^k - 1}{w - 1}\)</span>.</p>
 <blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(\forall 0 \le t \le n\)</span>, <span class="math inline">\(\mathbb{E} [ X_t ] = t\)</span>.</p>
+<p><strong>Theorem.</strong> <span class="math inline">\(\forall 0 \le t
+\le n\)</span>, <span class="math inline">\(\mathbb{E} [ X_t ] =
+t\)</span>.</p>
 </blockquote>
-<p><em>Proof:</em> Clearly, <span class="math inline">\(\mathbb{E} [ X_0 ] = 0\)</span>. For <span class="math inline">\(t \ge 1\)</span>, <span class="math display">\[
-    \mathbb{E} [ X_t \mid X_{t - 1} ] = p_t \cdot \left( X_{t - 1} + \frac{1}{p_t} \right) + ( 1 - p_t ) \cdot X_{t - 1} = X_{t - 1} + 1. 
+<p><em>Proof:</em> Clearly, <span class="math inline">\(\mathbb{E} [ X_0
+] = 0\)</span>. For <span class="math inline">\(t \ge 1\)</span>, <span
+class="math display">\[
+    \mathbb{E} [ X_t \mid X_{t - 1} ] = p_t \cdot \left( X_{t - 1} +
+\frac{1}{p_t} \right) + ( 1 - p_t ) \cdot X_{t - 1} = X_{t - 1} + 1.
 \]</span></p>
-<p>Hence, by induction on <span class="math inline">\(t\)</span>, we have <span class="math display">\[
-    \mathbb{E} [ X_t ] = \mathbb{E} [ \mathbb{E} [ X_t \mid X_{t - 1} ] ] = \mathbb{E} [ X_{t - 1} ] + 1 = t. 
+<p>Hence, by induction on <span class="math inline">\(t\)</span>, we
+have <span class="math display">\[
+    \mathbb{E} [ X_t ] = \mathbb{E} [ \mathbb{E} [ X_t \mid X_{t - 1} ]
+] = \mathbb{E} [ X_{t - 1} ] + 1 = t.
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(\forall t \in [n]\)</span>, <span class="math inline">\(\mathbb{Var } [ X_t ] = (w - 1) \cdot \frac{ t^2 }{ 2 }\)</span>.</p>
+<p><strong>Theorem.</strong> <span class="math inline">\(\forall t \in
+[n]\)</span>, <span class="math inline">\(\mathbb{Var } [ X_t ] = (w -
+1) \cdot \frac{ t^2 }{ 2 }\)</span>.</p>
 </blockquote>
-<p><em>Proof:</em> For <span class="math inline">\(t \ge 1\)</span>, it holds that <span class="math inline">\(X_{t - 1} = \frac{ 1 / p_t - 1}{w - 1}\)</span>. Therefore,</p>
+<p><em>Proof:</em> For <span class="math inline">\(t \ge 1\)</span>, it
+holds that <span class="math inline">\(X_{t - 1} = \frac{ 1 / p_t - 1}{w
+- 1}\)</span>. Therefore,</p>
 <p><span class="math display">\[
 1 / p_t = (w - 1) \cdot X_{t - 1} + 1
 \]</span> and <span class="math display">\[
 \begin{aligned}
-     \mathbb{E} [ X_t^2 | X_{t - 1} ] 
-            &amp;= p_t \cdot  \left( X_{t - 1} + 1 / p_t \right)^2 + ( 1 - p_t ) \cdot (X_{t - 1})^2 \\
+     \mathbb{E} [ X_t^2 | X_{t - 1} ]
+            &amp;= p_t \cdot  \left( X_{t - 1} + 1 / p_t \right)^2 + ( 1
+- p_t ) \cdot (X_{t - 1})^2 \\
             &amp;= 1 / p_t + 2 \cdot X_{t - 1} + (X_{t - 1})^2 \\
-            &amp;= (w + 1) \cdot X_{t - 1}  + 1 + (X_{t - 1})^2 
+            &amp;= (w + 1) \cdot X_{t - 1}  + 1 + (X_{t - 1})^2
 \end{aligned}
 \]</span></p>
-<p>Therefore, since <span class="math inline">\(X_0 = 0\)</span>, <span class="math display">\[
+<p>Therefore, since <span class="math inline">\(X_0 = 0\)</span>, <span
+class="math display">\[
 \begin{aligned}
-     \mathbb{E} [ X_t^2 ] 
-                &amp;= \mathbb{E} [ \mathbb{E} [ X_t^2 | X_{t - 1}  ] ] \\
-                &amp;= (w + 1) \cdot \mathbb{E}  [ X_{t - 1} ] + 1 +  \mathbb{E}  [ X_{t - 1} ^2] \\
-                &amp;=  \mathbb{E}  [ X_{t - 1}^2 ] + (w + 1) \cdot (t - 1) + 1 \\
+     \mathbb{E} [ X_t^2 ]
+                &amp;= \mathbb{E} [ \mathbb{E} [ X_t^2 | X_{t - 1}  ] ]
+\\
+                &amp;= (w + 1) \cdot \mathbb{E}  [ X_{t - 1} ] + 1
++  \mathbb{E}  [ X_{t - 1} ^2] \\
+                &amp;=  \mathbb{E}  [ X_{t - 1}^2 ] + (w + 1) \cdot (t -
+1) + 1 \\
                 &amp;... \\
-                &amp;=  \mathbb{E}  [ X_0^2 ] + (w + 1) \cdot \sum_{i = 0}^{t - 1} i + t  \\
+                &amp;=  \mathbb{E}  [ X_0^2 ] + (w + 1) \cdot \sum_{i =
+0}^{t - 1} i + t  \\
                 &amp;= (w + 1) \cdot \frac{ t (t - 1) }{ 2 } + t \\
-                &amp;\le (w - 1) \cdot \frac{ t^2 }{ 2 } + t^2, 
+                &amp;\le (w - 1) \cdot \frac{ t^2 }{ 2 } + t^2,
 \end{aligned}
 \]</span></p>
 <p>and <span class="math display">\[
-    \mathbb{Var } [ X_t ] = \mathbb{E} [ X_t^2 ]  - (\mathbb{E} [ X_t ])^2 \le (w - 1) \cdot \frac{ t^2 }{ 2 } . 
+    \mathbb{Var } [ X_t ] = \mathbb{E} [ X_t^2 ]  - (\mathbb{E} [ X_t
+])^2 \le (w - 1) \cdot \frac{ t^2 }{ 2 } .
 \]</span></p>
 <blockquote>
-<p><strong>Corollary.</strong> By Chebyshev's inequality, <span class="math display">\[
-\Pr[ | X_t - t | \ge \epsilon \cdot t ] \le (w - 1) \cdot \frac{ t^2 }{ 2 \epsilon^2 \cdot t^2} = \frac{w - 1}{ 2 \epsilon^2 }.
+<p><strong>Corollary.</strong> By Chebyshev's inequality, <span
+class="math display">\[
+\Pr[ | X_t - t | \ge \epsilon \cdot t ] \le (w - 1) \cdot \frac{ t^2 }{
+2 \epsilon^2 \cdot t^2} = \frac{w - 1}{ 2 \epsilon^2 }.
 \]</span></p>
 </blockquote>
 <blockquote>
-<p><strong>Corollary.</strong> If we set <span class="math inline">\(w = 1 + 2 \epsilon^2 \delta\)</span>, then the failure probability is at most <span class="math inline">\(\delta\)</span>.</p>
+<p><strong>Corollary.</strong> If we set <span class="math inline">\(w =
+1 + 2 \epsilon^2 \delta\)</span>, then the failure probability is at
+most <span class="math inline">\(\delta\)</span>.</p>
 </blockquote>
 <h2 id="reference.">Reference.</h2>
-<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed.
+Cambridge University Press, 2020.</p>
 
       
     </div>

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Problem A stream \(S\) (viewed as a multi-set) of \(n\) elements each from a domain \(U &#x3D; [1, , 2, ..., u]\). Estimate the number of times each element appears in the \(S\). If we use a balanced bin">
+  <meta name="description" content="Problem A stream \(S\) (viewed as a multi-set) of \(n\) elements each from a domain \(U &#x3D; [1, , 2, ..., u]\). Estimate the number of times each element appears in the \(S\). If we use a balanced">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Frequency Estimators">
 <meta property="og:url" content="http://example.com/2019/11/02/Frequency-Estimators/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Problem A stream \(S\) (viewed as a multi-set) of \(n\) elements each from a domain \(U &#x3D; [1, , 2, ..., u]\). Estimate the number of times each element appears in the \(S\). If we use a balanced bin">
+<meta property="og:description" content="Problem A stream \(S\) (viewed as a multi-set) of \(n\) elements each from a domain \(U &#x3D; [1, , 2, ..., u]\). Estimate the number of times each element appears in the \(S\). If we use a balanced">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2019-11-02T09:47:52.000Z">
 <meta property="article:modified_time" content="2021-03-12T01:28:57.000Z">
@@ -196,70 +196,179 @@
 
       
         <h1 id="problem">Problem</h1>
-<p>A stream <span class="math inline">\(S\)</span> (viewed as a multi-set) of <span class="math inline">\(n\)</span> elements each from a domain <span class="math inline">\(U = [1, , 2, ..., u]\)</span>. Estimate the number of times each element appears in the <span class="math inline">\(S\)</span>.</p>
-<p>If we use a balanced binary search, this can be done in <span class="math inline">\(O(n \log \min\{n, u\})\)</span> time and <span class="math inline">\(\Theta(\min\{n, u\})\)</span> space. If we use a hash table, this can be done in <span class="math inline">\(\Theta(\min\{n, u\})\)</span> time and space.</p>
-<p><strong><em>Question to ponder</em></strong>: can we do it with sub-linear space?</p>
-<p>By allowing errors, this is possible. Let <span class="math inline">\(a = \left&lt; a_1, a_2, ..., a_{u} \right&gt;\)</span> be the frequency of elements in <span class="math inline">\(U\)</span> and <span class="math inline">\(b = \left&lt; b_1, ..., b_{u} \right&gt;\)</span> be our estimation. Our goal is to minimize the <span class="math inline">\(\ell_\infty\)</span> error: <span class="math display">\[
+<p>A stream <span class="math inline">\(S\)</span> (viewed as a
+multi-set) of <span class="math inline">\(n\)</span> elements each from
+a domain <span class="math inline">\(U = [1, , 2, ..., u]\)</span>.
+Estimate the number of times each element appears in the <span
+class="math inline">\(S\)</span>.</p>
+<p>If we use a balanced binary search, this can be done in <span
+class="math inline">\(O(n \log \min\{n, u\})\)</span> time and <span
+class="math inline">\(\Theta(\min\{n, u\})\)</span> space. If we use a
+hash table, this can be done in <span
+class="math inline">\(\Theta(\min\{n, u\})\)</span> time and space.</p>
+<p><strong><em>Question to ponder</em></strong>: can we do it with
+sub-linear space?</p>
+<p>By allowing errors, this is possible. Let <span
+class="math inline">\(a = \left&lt; a_1, a_2, ..., a_{u}
+\right&gt;\)</span> be the frequency of elements in <span
+class="math inline">\(U\)</span> and <span class="math inline">\(b =
+\left&lt; b_1, ..., b_{u} \right&gt;\)</span> be our estimation. Our
+goal is to minimize the <span class="math inline">\(\ell_\infty\)</span>
+error: <span class="math display">\[
     || a - b ||_\infty \doteq \max_i |b_i - a_i|.
 \]</span></p>
 <h1 id="count-min-sketch">Count-Min Sketch</h1>
-<p>We use array <span class="math inline">\(A\)</span> with size <span class="math inline">\(m &lt; \min\{n, u\}\)</span> such that each element in <span class="math inline">\(U\)</span> is allocated a bucket in <span class="math inline">\(A\)</span> to keep its frequency. Some elements must share the buckets. Now we apply the following strategy:</p>
+<p>We use array <span class="math inline">\(A\)</span> with size <span
+class="math inline">\(m &lt; \min\{n, u\}\)</span> such that each
+element in <span class="math inline">\(U\)</span> is allocated a bucket
+in <span class="math inline">\(A\)</span> to keep its frequency. Some
+elements must share the buckets. Now we apply the following
+strategy:</p>
 <blockquote>
 <ol type="1">
-<li>Pick a perfect hash function <span class="math inline">\(h : U \rightarrow [m]\)</span> (this condition can be weaken, but for convenience of discussion, we assume perfectness here), that maps the elements uniformly to every bucket in the array.<br />
+<li>Pick a perfect hash function <span class="math inline">\(h : U
+\rightarrow [m]\)</span> (this condition can be weaken, but for
+convenience of discussion, we assume perfectness here), that maps the
+elements uniformly to every bucket in the array.<br />
 </li>
 <li>For <span class="math inline">\(\forall s \in S\)</span>,<br />
-<span class="math inline">\(\qquad A[h(s)] \leftarrow A[h(s)] + 1\)</span> .</li>
-<li>Return <span class="math inline">\(b_i = A[h(i)]\)</span> as the estimation of <span class="math inline">\(a_i\)</span>.</li>
+<span class="math inline">\(\qquad A[h(s)] \leftarrow A[h(s)] +
+1\)</span> .</li>
+<li>Return <span class="math inline">\(b_i = A[h(i)]\)</span> as the
+estimation of <span class="math inline">\(a_i\)</span>.</li>
 </ol>
 </blockquote>
-<p>Intuitively, each slot obtains <span class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass <span class="math inline">\(\sum_i a_i = |a|\)</span> (where <span class="math inline">\(|\cdot |\)</span> denotes the <span class="math inline">\(\ell_1\)</span> norm). Conditioned on <span class="math inline">\(i\)</span>-th element is hashed to the <span class="math inline">\(h(i)\)</span> slots, <span class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass <span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is hashed to the <span class="math inline">\(h(i)\)</span>-th slot. Therefore, in expectation, <span class="math display">\[
+<p>Intuitively, each slot obtains <span
+class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass
+<span class="math inline">\(\sum_i a_i = |a|\)</span> (where <span
+class="math inline">\(|\cdot |\)</span> denotes the <span
+class="math inline">\(\ell_1\)</span> norm). Conditioned on <span
+class="math inline">\(i\)</span>-th element is hashed to the <span
+class="math inline">\(h(i)\)</span> slots, <span
+class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass
+<span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is
+hashed to the <span class="math inline">\(h(i)\)</span>-th slot.
+Therefore, in expectation, <span class="math display">\[
 0 \le \mathbb{E}[b_i - a_i] \le \frac{|a|}{m}
 \]</span></p>
-<p>An interesting property is that, if some <span class="math inline">\(a_j\)</span> (<span class="math inline">\(j \neq i\)</span>) (or a small subset of <span class="math inline">\(a_j\)</span>'s) constitutes, say <span class="math inline">\(0.99\)</span> percent of the mass <span class="math inline">\(|a|\)</span>, as long as it is not hashed to <span class="math inline">\(h(i)\)</span>, then the expected error is less than <span class="math inline">\(0.01 \frac{|a|}{m}\)</span>.</p>
-<p>Formally, define the binary random variables <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \neq i\)</span> such that <span class="math display">\[
+<p>An interesting property is that, if some <span
+class="math inline">\(a_j\)</span> (<span class="math inline">\(j \neq
+i\)</span>) (or a small subset of <span
+class="math inline">\(a_j\)</span>'s) constitutes, say <span
+class="math inline">\(0.99\)</span> percent of the mass <span
+class="math inline">\(|a|\)</span>, as long as it is not hashed to <span
+class="math inline">\(h(i)\)</span>, then the expected error is less
+than <span class="math inline">\(0.01 \frac{|a|}{m}\)</span>.</p>
+<p>Formally, define the binary random variables <span
+class="math inline">\(X_j\)</span> for <span class="math inline">\(j
+\neq i\)</span> such that <span class="math display">\[
 X_j = \begin{cases}
     a_j     &amp;\quad \text{if} \quad h(i) = h(j)\\
     0       &amp;\quad \text{otherwise}
 \end{cases}
-\]</span> Then by perfectness of <span class="math inline">\(h\)</span>, <span class="math inline">\(\Pr[X_j = a_j] = \frac{1}{m}\)</span> and <span class="math inline">\(\mathbb{E}[X_j] = \frac{a_j}{m}\)</span>. (Indeed, pairwise independence of <span class="math inline">\(h\)</span> suffices to guarantee this condition).</p>
+\]</span> Then by perfectness of <span class="math inline">\(h\)</span>,
+<span class="math inline">\(\Pr[X_j = a_j] = \frac{1}{m}\)</span> and
+<span class="math inline">\(\mathbb{E}[X_j] = \frac{a_j}{m}\)</span>.
+(Indeed, pairwise independence of <span class="math inline">\(h\)</span>
+suffices to guarantee this condition).</p>
 <p>Then <span class="math display">\[
-    \mathbb{E} [b_i - a_i] = \mathbb{E} \left[ \sum_{j \neq i} X_j \right] = \sum_{j \neq i} \mathbb{E}[X_j] \le \frac{|a|}{m}
+    \mathbb{E} [b_i - a_i] = \mathbb{E} \left[ \sum_{j \neq i} X_j
+\right] = \sum_{j \neq i} \mathbb{E}[X_j] \le \frac{|a|}{m}
 \]</span></p>
-<p>As <span class="math inline">\(b_i - a_i\)</span> is non-negative, by Markov inequality, <span class="math display">\[
-\Pr \left[ b_i - a_i \ge \epsilon |a| \right] \le \frac{\mathbb{E}[b_i - a_i]}{\epsilon |a|}  \le \frac{1}{\epsilon m}
-\]</span> If we would like to achieve failure probability <span class="math inline">\(\delta\)</span>, we can set <span class="math inline">\(m = \epsilon^{-1} \delta^{-1}\)</span>.</p>
+<p>As <span class="math inline">\(b_i - a_i\)</span> is non-negative, by
+Markov inequality, <span class="math display">\[
+\Pr \left[ b_i - a_i \ge \epsilon |a| \right] \le \frac{\mathbb{E}[b_i -
+a_i]}{\epsilon |a|}  \le \frac{1}{\epsilon m}
+\]</span> If we would like to achieve failure probability <span
+class="math inline">\(\delta\)</span>, we can set <span
+class="math inline">\(m = \epsilon^{-1} \delta^{-1}\)</span>.</p>
 <p>Question to ponder: can we improve this?</p>
-<p>Yes, by repetition. Instead of using just one array, we set <span class="math inline">\(d\)</span> arrays (to be set latter) and choose <span class="math inline">\(d\)</span> hash functions independently. Then the probability that all estimations deviate more than <span class="math inline">\(\epsilon |a|\)</span> is at most <span class="math display">\[
+<p>Yes, by repetition. Instead of using just one array, we set <span
+class="math inline">\(d\)</span> arrays (to be set latter) and choose
+<span class="math inline">\(d\)</span> hash functions independently.
+Then the probability that all estimations deviate more than <span
+class="math inline">\(\epsilon |a|\)</span> is at most <span
+class="math display">\[
 \left( \frac{1}{\epsilon m} \right)^d
 \]</span></p>
-<p>When <span class="math inline">\(d = \ln{\delta} / \ln \frac{1}{\epsilon m} = \ln{ \frac{1}{\delta} } / \ln \epsilon m\)</span>, the failure probability decreases to <span class="math inline">\(\delta\)</span>. To minimize the space usage, we solve the following optimization problem: <span class="math display">\[
+<p>When <span class="math inline">\(d = \ln{\delta} / \ln
+\frac{1}{\epsilon m} = \ln{ \frac{1}{\delta} } / \ln \epsilon
+m\)</span>, the failure probability decreases to <span
+class="math inline">\(\delta\)</span>. To minimize the space usage, we
+solve the following optimization problem: <span class="math display">\[
 \begin{aligned}
-    &amp;\min           &amp;\ln \frac{1} {\delta} \frac{m}{\ln m + \ln \epsilon} \\
+    &amp;\min           &amp;\ln \frac{1} {\delta} \frac{m}{\ln m + \ln
+\epsilon} \\
     &amp;\text{s.t. }   &amp;m \ge \frac{1}{\epsilon}
 \end{aligned}
 \]</span></p>
-<p>Solving the equation gives <span class="math inline">\(m = e \epsilon^{-1}\)</span>. The space consumption is <span class="math inline">\(\frac{e}{\epsilon} \ln \frac{1}{\delta}\)</span>.</p>
-<p>Note: suppose that <span class="math inline">\(|a| = 10000\)</span> and <span class="math inline">\(\epsilon = 0.1\)</span>, <span class="math inline">\(\delta = 0.01\)</span>, then with <span class="math inline">\(10 \cdot e \ln 100 \approx 125\)</span> words, we can estimate a particular <span class="math inline">\(a_i\)</span> with the absolute error less than <span class="math inline">\(1000\)</span>. If <span class="math inline">\(a_i = 9000\)</span>, the relative error is small. However, if <span class="math inline">\(a_i = 1\)</span>, basically our estimation if rather inaccurate.</p>
-<p>Question to ponder: what if we analyze this by Chernoff style inequality?</p>
-<p>If we make <span class="math inline">\(d\)</span> repetition, then the confidence interval of the mean estimation is given by (Hoeffding's inequality) <span class="math display">\[
+<p>Solving the equation gives <span class="math inline">\(m = e
+\epsilon^{-1}\)</span>. The space consumption is <span
+class="math inline">\(\frac{e}{\epsilon} \ln
+\frac{1}{\delta}\)</span>.</p>
+<p>Note: suppose that <span class="math inline">\(|a| = 10000\)</span>
+and <span class="math inline">\(\epsilon = 0.1\)</span>, <span
+class="math inline">\(\delta = 0.01\)</span>, then with <span
+class="math inline">\(10 \cdot e \ln 100 \approx 125\)</span> words, we
+can estimate a particular <span class="math inline">\(a_i\)</span> with
+the absolute error less than <span class="math inline">\(1000\)</span>.
+If <span class="math inline">\(a_i = 9000\)</span>, the relative error
+is small. However, if <span class="math inline">\(a_i = 1\)</span>,
+basically our estimation if rather inaccurate.</p>
+<p>Question to ponder: what if we analyze this by Chernoff style
+inequality?</p>
+<p>If we make <span class="math inline">\(d\)</span> repetition, then
+the confidence interval of the mean estimation is given by (Hoeffding's
+inequality) <span class="math display">\[
 |a|\sqrt{\frac{\log \frac{2}{\delta} }{2 d} }
-\]</span> If we want this interval to be smaller than <span class="math inline">\(\epsilon |a|\)</span>, then we need <span class="math inline">\(d = \frac{ \log \frac{2}{\delta} }{2 \epsilon^2}\)</span>, which is a <span class="math inline">\(\frac{1}{\epsilon }\)</span> worse than the above analysis. Intuitively, we require stronger condition for concentration of mean value than that for existence of near-min value.</p>
+\]</span> If we want this interval to be smaller than <span
+class="math inline">\(\epsilon |a|\)</span>, then we need <span
+class="math inline">\(d = \frac{ \log \frac{2}{\delta} }{2
+\epsilon^2}\)</span>, which is a <span
+class="math inline">\(\frac{1}{\epsilon }\)</span> worse than the above
+analysis. Intuitively, we require stronger condition for concentration
+of mean value than that for existence of near-min value.</p>
 <h1 id="count-sketch">Count-Sketch</h1>
-<p>One drawback of Count-Min Sketch is that the estimator constructed is one-sided and not unbiased. This can be fixed by introducing an additional function <span class="math inline">\(g : U \rightarrow \{ - 1, 1 \}\)</span> that gives each elements in <span class="math inline">\(U\)</span> a sign ("+" or "-") independently and uniformly at random. Now,</p>
+<p>One drawback of Count-Min Sketch is that the estimator constructed is
+one-sided and not unbiased. This can be fixed by introducing an
+additional function <span class="math inline">\(g : U \rightarrow \{ -
+1, 1 \}\)</span> that gives each elements in <span
+class="math inline">\(U\)</span> a sign ("+" or "-") independently and
+uniformly at random. Now,</p>
 <ol start="2" type="1">
-<li>For each element <span class="math inline">\(s \in S\)</span>, we increase the counter <span class="math inline">\(h(s)\)</span> in the array by 1 if <span class="math inline">\(g(s) &gt; 0\)</span> or <span class="math inline">\(-1\)</span> if <span class="math inline">\(g(s) &lt; 0\)</span>.</li>
-<li>Finally, we set <span class="math inline">\(b_i = A[h(i)] \cdot g(i)\)</span> as the estimation of <span class="math inline">\(a_i\)</span>.</li>
+<li>For each element <span class="math inline">\(s \in S\)</span>, we
+increase the counter <span class="math inline">\(h(s)\)</span> in the
+array by 1 if <span class="math inline">\(g(s) &gt; 0\)</span> or <span
+class="math inline">\(-1\)</span> if <span class="math inline">\(g(s)
+&lt; 0\)</span>.</li>
+<li>Finally, we set <span class="math inline">\(b_i = A[h(i)] \cdot
+g(i)\)</span> as the estimation of <span
+class="math inline">\(a_i\)</span>.</li>
 </ol>
-<p>In expectation, each slot obtains <span class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass <span class="math inline">\(\sum_i a_i = |a|\)</span>. But as each element "flips" it sign randomly, the expected value obtained is 0. Now, conditioned on <span class="math inline">\(i\)</span>-th element is hashed to the <span class="math inline">\(h(i)\)</span> slots, <span class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass <span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is hashed to the <span class="math inline">\(h(i)\)</span>-th slot. With their signs flipped randomly, they contribute 0 to the <span class="math inline">\(h(i)\)</span>-th slot. Hence, <span class="math display">\[
+<p>In expectation, each slot obtains <span
+class="math inline">\(\frac{1}{m}\)</span> fraction of the total mass
+<span class="math inline">\(\sum_i a_i = |a|\)</span>. But as each
+element "flips" it sign randomly, the expected value obtained is 0. Now,
+conditioned on <span class="math inline">\(i\)</span>-th element is
+hashed to the <span class="math inline">\(h(i)\)</span> slots, <span
+class="math inline">\(\frac{1}{m}\)</span> fraction of the rest mass
+<span class="math inline">\(\sum_{j \neq i} a_j = n - a_i\)</span> is
+hashed to the <span class="math inline">\(h(i)\)</span>-th slot. With
+their signs flipped randomly, they contribute 0 to the <span
+class="math inline">\(h(i)\)</span>-th slot. Hence, <span
+class="math display">\[
 \mathbb{E}[b_i - a_i] = 0
-\]</span> Formally, define the binary random variables <span class="math inline">\(X_j\)</span> for <span class="math inline">\(j \neq i\)</span> such that <span class="math display">\[
+\]</span> Formally, define the binary random variables <span
+class="math inline">\(X_j\)</span> for <span class="math inline">\(j
+\neq i\)</span> such that <span class="math display">\[
 X_j = \begin{cases}
     a_j     &amp;\text{if} \quad h(i) = h(j) \wedge g(j) = g(i) \\
     - a_j   &amp;\text{if} \quad h(i) = h(j) \wedge g(j) \neq g(i) \\
     0       &amp;\text{otherwise}
 \end{cases}
-\]</span> Then by perfectness and independence of <span class="math inline">\(h\)</span> and <span class="math inline">\(g\)</span>,</p>
+\]</span> Then by perfectness and independence of <span
+class="math inline">\(h\)</span> and <span
+class="math inline">\(g\)</span>,</p>
 <p><span class="math display">\[
     \Pr[X_j = a_j] = \frac{1}{2m} \\
     \Pr[X_j = -a_j] = \frac{1}{2m} \\
@@ -267,46 +376,78 @@ X_j = \begin{cases}
 \]</span></p>
 <p>and <span class="math display">\[
 \begin{aligned}
-    \mathbb{E}[X_j] 
+    \mathbb{E}[X_j]
     &amp;= 0 \\
-    \mathbb{E}[b_i - a_i] 
-    &amp;= \mathbb{E}[\sum_{j \neq i} X_j] 
-    = \sum_{j \neq i} \mathbb{E}[X_j] 
+    \mathbb{E}[b_i - a_i]
+    &amp;= \mathbb{E}[\sum_{j \neq i} X_j]
+    = \sum_{j \neq i} \mathbb{E}[X_j]
     = 0 \\
-    \mathbb{Var} \left[ X_j \right] 
-    &amp;= \mathbb{E} [X_j^2] - (\mathbb{E}[X_j])^2 
+    \mathbb{Var} \left[ X_j \right]
+    &amp;= \mathbb{E} [X_j^2] - (\mathbb{E}[X_j])^2
     = \frac{a_j^2}{m} \\
-    \mathbb{Var} \left[ \sum_{j \neq i} X_j \right] 
-    &amp;= \sum_{j \neq i} \mathbb{Var} [X_j] 
-    = \sum_{j \neq i} \frac{a_j^2}{m} 
+    \mathbb{Var} \left[ \sum_{j \neq i} X_j \right]
+    &amp;= \sum_{j \neq i} \mathbb{Var} [X_j]
+    = \sum_{j \neq i} \frac{a_j^2}{m}
     \le \frac{|a|_2^2}{m}
     \end{aligned}
 \]</span></p>
-<p>where <span class="math inline">\(|a|_2^2\)</span> is the <span class="math inline">\(l_2\)</span> norm of <span class="math inline">\(a\)</span>. Note that the above analysis requires only pair independence. The random variable <span class="math inline">\(X_j\)</span> is two sided, therefore we can not use Markov Inequality for analysis.</p>
-<p>Question to ponder: is it possible to analyze this directly by Chernoff style inequality?</p>
-<p>The tool we resort to is Chebyshev's inequality: <span class="math display">\[
-\Pr \left[ |\sum_{j \neq i} X_j - 0| \ge \epsilon |a|_2 \right] \le \frac{\mathbb{Var} [\sum_{j \neq i} X_j]}{\epsilon^2 |a|_2^2 } \le \frac{1}{m\epsilon^2 }
-\]</span> we take <span class="math inline">\(m = k\epsilon^{-2}\)</span> for some integer <span class="math inline">\(k&gt; 2\)</span>.</p>
-<p>How do we amplify the successful probability? We repeat the experiment <span class="math inline">\(d\)</span> times, and take the median. The only way that the median makes a mistake is when more than half of the estimations deviate more <span class="math inline">\(\epsilon |a|_2\)</span>. Denote <span class="math inline">\(Y\)</span> the number of estimation such that the error is more than <span class="math inline">\(\epsilon |a|_2\)</span>. By Chernoff, <span class="math display">\[
+<p>where <span class="math inline">\(|a|_2^2\)</span> is the <span
+class="math inline">\(l_2\)</span> norm of <span
+class="math inline">\(a\)</span>. Note that the above analysis requires
+only pair independence. The random variable <span
+class="math inline">\(X_j\)</span> is two sided, therefore we can not
+use Markov Inequality for analysis.</p>
+<p>Question to ponder: is it possible to analyze this directly by
+Chernoff style inequality?</p>
+<p>The tool we resort to is Chebyshev's inequality: <span
+class="math display">\[
+\Pr \left[ |\sum_{j \neq i} X_j - 0| \ge \epsilon |a|_2 \right] \le
+\frac{\mathbb{Var} [\sum_{j \neq i} X_j]}{\epsilon^2 |a|_2^2 } \le
+\frac{1}{m\epsilon^2 }
+\]</span> we take <span class="math inline">\(m =
+k\epsilon^{-2}\)</span> for some integer <span
+class="math inline">\(k&gt; 2\)</span>.</p>
+<p>How do we amplify the successful probability? We repeat the
+experiment <span class="math inline">\(d\)</span> times, and take the
+median. The only way that the median makes a mistake is when more than
+half of the estimations deviate more <span
+class="math inline">\(\epsilon |a|_2\)</span>. Denote <span
+class="math inline">\(Y\)</span> the number of estimation such that the
+error is more than <span class="math inline">\(\epsilon |a|_2\)</span>.
+By Chernoff, <span class="math display">\[
 \begin{aligned}
-    \Pr \left[ Y - \frac{d}{k}\ge \frac{d}{2} - \frac{d}{k} \right] 
-    &amp;= \Pr \left[ Y - \frac{d}{k}\ge (\frac{1}{2} - \frac{1}{k})\cdot k \cdot \frac{d}{k} \right] \\
+    \Pr \left[ Y - \frac{d}{k}\ge \frac{d}{2} - \frac{d}{k} \right]
+    &amp;= \Pr \left[ Y - \frac{d}{k}\ge (\frac{1}{2} -
+\frac{1}{k})\cdot k \cdot \frac{d}{k} \right] \\
     &amp;\le \exp \big( -\frac{d}{3 k} (\frac{k}{2} - 1)^2  \big) \\
-    &amp;= \delta 
+    &amp;= \delta
 \end{aligned}
 \]</span></p>
 <p>which solves to <span class="math display">\[
 d= \frac{3k}{(k/2  -1)^2} \log \frac{1}{\delta}
-\]</span> The overall space usage is therefore <span class="math display">\[
-md = \frac{3k^2}{\epsilon^2 (k/2  -1)^2} \log \frac{1}{\delta} 
+\]</span> The overall space usage is therefore <span
+class="math display">\[
+md = \frac{3k^2}{\epsilon^2 (k/2  -1)^2} \log \frac{1}{\delta}
 = \frac{3}{\epsilon^2 (1/2  - \frac{1}{k} )^2} \log \frac{1}{\delta}
-\]</span> Question to ponder: the expression is wired, which implies that <span class="math inline">\(k \rightarrow \infty\)</span>, the space usage converges to <span class="math inline">\(\frac{12}{\epsilon^2} \log \frac{1}{\delta}\)</span>, which is worse than count-min hash than a <span class="math inline">\(\frac{1}{\epsilon}\)</span> factor.</p>
-<h4 id="relation-between-a_1-and-a_2.">Relation between <span class="math inline">\(|a|_1\)</span> and <span class="math inline">\(|a|_2\)</span>.</h4>
-<p>Their relation is given as follows (by concavity of the <span class="math inline">\(\sqrt \cdot\)</span> function) <span class="math display">\[
+\]</span> Question to ponder: the expression is wired, which implies
+that <span class="math inline">\(k \rightarrow \infty\)</span>, the
+space usage converges to <span
+class="math inline">\(\frac{12}{\epsilon^2} \log
+\frac{1}{\delta}\)</span>, which is worse than count-min hash than a
+<span class="math inline">\(\frac{1}{\epsilon}\)</span> factor.</p>
+<h4 id="relation-between-a_1-and-a_2.">Relation between <span
+class="math inline">\(|a|_1\)</span> and <span
+class="math inline">\(|a|_2\)</span>.</h4>
+<p>Their relation is given as follows (by concavity of the <span
+class="math inline">\(\sqrt \cdot\)</span> function) <span
+class="math display">\[
 |a|_2 \le |a|_1 \le \sqrt{ |u| } |a|_2
-\]</span> In particular, when <span class="math inline">\(|u| = 2\)</span>, the inequality becomes <span class="math display">\[
+\]</span> In particular, when <span class="math inline">\(|u| =
+2\)</span>, the inequality becomes <span class="math display">\[
 |a_1 + a_2| \le \sqrt 2 \sqrt{a_1^2 + a_2^2 }
-\]</span> When the dimension is higher than <span class="math inline">\(2\)</span>, the factor in the RHS can not bounded to <span class="math inline">\(\sqrt 2\)</span>.</p>
+\]</span> When the dimension is higher than <span
+class="math inline">\(2\)</span>, the factor in the RHS can not bounded
+to <span class="math inline">\(\sqrt 2\)</span>.</p>
 
     </div>
 

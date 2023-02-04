@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Given an undirected graph \(G &#x3D; (V, E)\), the maximum cut problem asks for a subset \(S \subset V\) that maximizes the number of edges which cross \(S\), i.e., \[   S &#x3D; \arg \max_{S&#39; \subset S} \">
+  <meta name="description" content="Given an undirected graph \(G &#x3D; (V, E)\), the maximum cut problem asks for a subset \(S \subset V\) that maximizes the number of edges which cross \(S\), i.e., \[   S &#x3D; \arg \max_{S&#39; \subset S}">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Max Cut">
 <meta property="og:url" content="http://example.com/2018/09/16/Max-Cut/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Given an undirected graph \(G &#x3D; (V, E)\), the maximum cut problem asks for a subset \(S \subset V\) that maximizes the number of edges which cross \(S\), i.e., \[   S &#x3D; \arg \max_{S&#39; \subset S} \">
+<meta property="og:description" content="Given an undirected graph \(G &#x3D; (V, E)\), the maximum cut problem asks for a subset \(S \subset V\) that maximizes the number of edges which cross \(S\), i.e., \[   S &#x3D; \arg \max_{S&#39; \subset S}">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2018-09-16T07:10:22.000Z">
-<meta property="article:modified_time" content="2022-07-13T12:56:31.247Z">
+<meta property="article:modified_time" content="2022-07-13T12:56:31.000Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 
@@ -195,41 +195,97 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Given an undirected graph <span class="math inline">\(G = (V, E)\)</span>, the maximum cut problem asks for a subset <span class="math inline">\(S \subset V\)</span> that maximizes the number of edges which cross <span class="math inline">\(S\)</span>, i.e., <span class="math display">\[
+        <p>Given an undirected graph <span class="math inline">\(G = (V,
+E)\)</span>, the maximum cut problem asks for a subset <span
+class="math inline">\(S \subset V\)</span> that maximizes the number of
+edges which cross <span class="math inline">\(S\)</span>, i.e., <span
+class="math display">\[
   S = \arg \max_{S&#39; \subset S} \delta(S),
-\]</span> where <span class="math inline">\(\delta(S) = |\{ \ (i, j) \ \mid \ (i, j) \in E \wedge i \in S, j \notin S\}|\)</span>.</p>
+\]</span> where <span class="math inline">\(\delta(S) = |\{ \ (i, j) \
+\mid \ (i, j) \in E \wedge i \in S, j \notin S\}|\)</span>.</p>
 <h1 id="programming-formulation">Programming Formulation</h1>
-<p>To solve the problem, we assign each vertex <span class="math inline">\(i \in V\)</span> a binary indicator <span class="math inline">\(x_i \in \{-1, 1\}\)</span> for the event that <span class="math inline">\(i\)</span> belongs to <span class="math inline">\(S\)</span>. WLOG, we assume that <span class="math inline">\(i \in S\)</span> if <span class="math inline">\(x_i = 1\)</span>. The value of <span class="math inline">\(\delta(S)\)</span> can be written as <span class="math display">\[
+<p>To solve the problem, we assign each vertex <span
+class="math inline">\(i \in V\)</span> a binary indicator <span
+class="math inline">\(x_i \in \{-1, 1\}\)</span> for the event that
+<span class="math inline">\(i\)</span> belongs to <span
+class="math inline">\(S\)</span>. WLOG, we assume that <span
+class="math inline">\(i \in S\)</span> if <span
+class="math inline">\(x_i = 1\)</span>. The value of <span
+class="math inline">\(\delta(S)\)</span> can be written as <span
+class="math display">\[
   \delta(S) = \sum_{(i,j) \in E} \frac{1 - x_i x_j}{2}
 \]</span></p>
-<p>Its correctness can be verified as follows: 1. if <span class="math inline">\(i, j \in V\)</span> belongs to the same partition, i.e, <span class="math inline">\(i, j \in S\)</span> or <span class="math inline">\(i, j \in V - S\)</span>, then <span class="math inline">\(x_i x_j = 1\)</span> and <span class="math inline">\((1 - x_i x_j) / 2 = 0\)</span> 2. Otherwise, <span class="math inline">\(x_i x_j = -1\)</span> and <span class="math inline">\((1 - x_i x_j) / {2} = 1\)</span>.</p>
+<p>Its correctness can be verified as follows: 1. if <span
+class="math inline">\(i, j \in V\)</span> belongs to the same partition,
+i.e, <span class="math inline">\(i, j \in S\)</span> or <span
+class="math inline">\(i, j \in V - S\)</span>, then <span
+class="math inline">\(x_i x_j = 1\)</span> and <span
+class="math inline">\((1 - x_i x_j) / 2 = 0\)</span> 2. Otherwise, <span
+class="math inline">\(x_i x_j = -1\)</span> and <span
+class="math inline">\((1 - x_i x_j) / {2} = 1\)</span>.</p>
 <h1 id="convex-relaxation">Convex Relaxation</h1>
-<p>We consider a relaxation of the above programming: <span class="math display">\[
+<p>We consider a relaxation of the above programming: <span
+class="math display">\[
   \begin{array}{lrl}
     \max          &amp;\sum_{(i,j) \in E} \frac{1 - x_i^T x_j}{2} \\
     \text{s.t.},  &amp; x_i^T x_i = 1 &amp;\forall i \in V \\
                   &amp; x_i \in \mathbb{R}^n   &amp;\forall i \in V
   \end{array}
 \]</span></p>
-<p>Note that this can be transformed into a convex optimization: <span class="math display">\[
+<p>Note that this can be transformed into a convex optimization: <span
+class="math display">\[
   \begin{aligned}
-    &amp;&amp;\max  &amp;&amp;\sum_{(i,j) \in E} \frac{1 - y_{i,j}}{2} &amp;&amp;\\
-    &amp;&amp;s.t., &amp;&amp; y_{i,i} = 1        &amp;&amp;\forall i \in V \\
-    &amp;&amp;      &amp;&amp; y_{i,j} = y_{j,i}  &amp;&amp;\forall i, j \in V \\
+    &amp;&amp;\max  &amp;&amp;\sum_{(i,j) \in E} \frac{1 - y_{i,j}}{2}
+&amp;&amp;\\
+    &amp;&amp;s.t., &amp;&amp; y_{i,i} = 1        &amp;&amp;\forall i
+\in V \\
+    &amp;&amp;      &amp;&amp; y_{i,j} = y_{j,i}  &amp;&amp;\forall i, j
+\in V \\
     &amp;&amp;      &amp;&amp; Y = (y_{i,j}) \succcurlyeq 0
   \end{aligned}
 \]</span></p>
-<p>The above problem can be solved within <span class="math inline">\(\epsilon\)</span> additive error in polynomial time in terms of input size and <span class="math inline">\(\log 1/\epsilon\)</span>.</p>
+<p>The above problem can be solved within <span
+class="math inline">\(\epsilon\)</span> additive error in polynomial
+time in terms of input size and <span class="math inline">\(\log
+1/\epsilon\)</span>.</p>
 <h1 id="rounding">Rounding</h1>
-<p>To round the fractional solution to integral solution, we take a random unit vector <span class="math inline">\(v \in \mathbb{R}^n\)</span>. For each vertex <span class="math inline">\(i\)</span>, if <span class="math inline">\(v^T x_i \ge 0\)</span> we set <span class="math inline">\(x_i&#39; = 1\)</span> otherwise we set <span class="math inline">\(x_i&#39; = 0\)</span>. For any pair <span class="math inline">\(i, j \in V\)</span>, if <span class="math inline">\(x_i = x_j\)</span>, then we set <span class="math inline">\(\theta_{i,j} = 0\)</span>. Otherwise, consider the two dimensional subspace in <span class="math inline">\(\mathbb{R}^n\)</span> spanned by <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span>. Denote the angle between <span class="math inline">\(x_i\)</span> and <span class="math inline">\(x_j\)</span> as <span class="math inline">\(\theta_{i,j}\)</span>. We have <span class="math display">\[
+<p>To round the fractional solution to integral solution, we take a
+random unit vector <span class="math inline">\(v \in
+\mathbb{R}^n\)</span>. For each vertex <span
+class="math inline">\(i\)</span>, if <span class="math inline">\(v^T x_i
+\ge 0\)</span> we set <span class="math inline">\(x_i&#39; = 1\)</span>
+otherwise we set <span class="math inline">\(x_i&#39; = 0\)</span>. For
+any pair <span class="math inline">\(i, j \in V\)</span>, if <span
+class="math inline">\(x_i = x_j\)</span>, then we set <span
+class="math inline">\(\theta_{i,j} = 0\)</span>. Otherwise, consider the
+two dimensional subspace in <span
+class="math inline">\(\mathbb{R}^n\)</span> spanned by <span
+class="math inline">\(x_i\)</span> and <span
+class="math inline">\(x_j\)</span>. Denote the angle between <span
+class="math inline">\(x_i\)</span> and <span
+class="math inline">\(x_j\)</span> as <span
+class="math inline">\(\theta_{i,j}\)</span>. We have <span
+class="math display">\[
   \theta_{i, j} = \arccos x_i^T x_j.
 \]</span> Notice that <span class="math display">\[
-  \sum_{(i,j) \in E} \frac{1 - x_i x_j}{2} = \sum_{(i,j) \in E} \frac{1 - \cos \theta_{i,j}}{2}.
-\]</span> Furthermore, the probability that <span class="math inline">\(x_i&#39;\)</span> and <span class="math inline">\(x_j&#39;\)</span> are assigned different values is given by <span class="math inline">\(\theta_{i,j} / \pi\)</span>. By linearity of expectation, the expected cut value is <span class="math display">\[
-  \mathbb{E} \left[ \sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2} \right] 
+  \sum_{(i,j) \in E} \frac{1 - x_i x_j}{2} = \sum_{(i,j) \in E} \frac{1
+- \cos \theta_{i,j}}{2}.
+\]</span> Furthermore, the probability that <span
+class="math inline">\(x_i&#39;\)</span> and <span
+class="math inline">\(x_j&#39;\)</span> are assigned different values is
+given by <span class="math inline">\(\theta_{i,j} / \pi\)</span>. By
+linearity of expectation, the expected cut value is <span
+class="math display">\[
+  \mathbb{E} \left[ \sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2}
+\right]
   = \sum_{(i,j) \in E} \frac{\theta_{i,j}}{\pi}
 \]</span></p>
-<p>As <span class="math inline">\(\max_{0 \le \theta \le \pi} \frac{\pi}{\theta}\frac{1 - \cos \theta}{2} \approx 1.138\)</span>, <span class="math inline">\(\mathbb{E} \left[\sum_{(i,j) \in E} \frac{1 - x_i&#39; x_j&#39;}{2} \right]\)</span> is greater approximately <span class="math inline">\(1/1.138 = 0.878 \cdot \sum_{(i,j) \in E} \frac{1 - x_i x_j}{2}\)</span>.</p>
+<p>As <span class="math inline">\(\max_{0 \le \theta \le \pi}
+\frac{\pi}{\theta}\frac{1 - \cos \theta}{2} \approx 1.138\)</span>,
+<span class="math inline">\(\mathbb{E} \left[\sum_{(i,j) \in E} \frac{1
+- x_i&#39; x_j&#39;}{2} \right]\)</span> is greater approximately <span
+class="math inline">\(1/1.138 = 0.878 \cdot \sum_{(i,j) \in E} \frac{1 -
+x_i x_j}{2}\)</span>.</p>
 
     </div>
 

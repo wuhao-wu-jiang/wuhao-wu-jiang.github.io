@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Given a set of \(n\) elements \(S\) that belongs to some finite domain \(\mathcal{X}&#x3D; \{ x_1, x_2, ..., x_m \}\), we want to release the (normalized) histogram in a differentially private manner. Defi">
+  <meta name="description" content="Given a set of \(n\) elements \(S\) that belongs to some finite domain \(\mathcal{X}&#x3D; \{ x_1, x_2, ..., x_m \}\), we want to release the (normalized) histogram in a differentially private manner. D">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Releasing Histogram Privately">
 <meta property="og:url" content="http://example.com/2020/11/25/Releasing-Histogram-Privately/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Given a set of \(n\) elements \(S\) that belongs to some finite domain \(\mathcal{X}&#x3D; \{ x_1, x_2, ..., x_m \}\), we want to release the (normalized) histogram in a differentially private manner. Defi">
+<meta property="og:description" content="Given a set of \(n\) elements \(S\) that belongs to some finite domain \(\mathcal{X}&#x3D; \{ x_1, x_2, ..., x_m \}\), we want to release the (normalized) histogram in a differentially private manner. D">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-11-24T23:19:09.000Z">
 <meta property="article:modified_time" content="2020-11-25T11:11:21.000Z">
@@ -189,100 +189,213 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Given a set of <span class="math inline">\(n\)</span> elements <span class="math inline">\(S\)</span> that belongs to some finite domain <span class="math inline">\(\mathcal{X}= \{ x_1, x_2, ..., x_m \}\)</span>, we want to release the (normalized) histogram in a differentially private manner. Define <span class="math inline">\(\forall x_i \in \mathcal{X}\)</span>:</p>
+        <p>Given a set of <span class="math inline">\(n\)</span> elements <span
+class="math inline">\(S\)</span> that belongs to some finite domain
+<span class="math inline">\(\mathcal{X}= \{ x_1, x_2, ..., x_m
+\}\)</span>, we want to release the (normalized) histogram in a
+differentially private manner. Define <span
+class="math inline">\(\forall x_i \in \mathcal{X}\)</span>:</p>
 <ol type="1">
-<li><span class="math inline">\(F_S(x_i) \doteq\)</span> the number of times <span class="math inline">\(x_i\)</span> appears in <span class="math inline">\(S\)</span>;<br />
+<li><span class="math inline">\(F_S(x_i) \doteq\)</span> the number of
+times <span class="math inline">\(x_i\)</span> appears in <span
+class="math inline">\(S\)</span>;<br />
 </li>
-<li><span class="math inline">\(f_S(x_i) \doteq \frac{F_S(x_i) }{ |S| } = \frac{F_S(x_i) }{ n }\)</span>, the frequency of <span class="math inline">\(x_i\)</span> in <span class="math inline">\(S\)</span>.</li>
+<li><span class="math inline">\(f_S(x_i) \doteq \frac{F_S(x_i) }{ |S| }
+= \frac{F_S(x_i) }{ n }\)</span>, the frequency of <span
+class="math inline">\(x_i\)</span> in <span
+class="math inline">\(S\)</span>.</li>
 </ol>
-<p>The (normalized) histogram of <span class="math inline">\(h_S\)</span> is a frequency vector: <span class="math display">\[
-h_S \doteq \left&lt; f_S(x_1), f_S(x_2), ..., f_S(x_m) \right&gt; \in \mathbb{R}^m
+<p>The (normalized) histogram of <span
+class="math inline">\(h_S\)</span> is a frequency vector: <span
+class="math display">\[
+h_S \doteq \left&lt; f_S(x_1), f_S(x_2), ..., f_S(x_m) \right&gt; \in
+\mathbb{R}^m
 \]</span></p>
-<p>Consider another set <span class="math inline">\(S&#39;\)</span> obtained by replacing an element <span class="math inline">\(x_k\)</span> in <span class="math inline">\(S\)</span> to another element <span class="math inline">\(x_l\)</span>, such that</p>
+<p>Consider another set <span class="math inline">\(S&#39;\)</span>
+obtained by replacing an element <span
+class="math inline">\(x_k\)</span> in <span
+class="math inline">\(S\)</span> to another element <span
+class="math inline">\(x_l\)</span>, such that</p>
 <ol type="1">
-<li><span class="math inline">\(F_{S&#39;} (x_k) = F_{S} (x_k) - 1\)</span>;</li>
-<li><span class="math inline">\(F_{S&#39;} (x_l) = F_{S} (x_l) + 1\)</span>;</li>
-<li><span class="math inline">\(F_{S&#39;} (x_i) = F_{S} (x_i), \forall i \notin \{k, l\}\)</span>.</li>
+<li><span class="math inline">\(F_{S&#39;} (x_k) = F_{S} (x_k) -
+1\)</span>;</li>
+<li><span class="math inline">\(F_{S&#39;} (x_l) = F_{S} (x_l) +
+1\)</span>;</li>
+<li><span class="math inline">\(F_{S&#39;} (x_i) = F_{S} (x_i), \forall
+i \notin \{k, l\}\)</span>.</li>
 </ol>
-<p>Let <span class="math inline">\(h_{S&#39;}\)</span> be the histogram of <span class="math inline">\(S&#39;\)</span>. Our goal is to design some mechanism <span class="math inline">\(M\)</span> that adds noise to the normalized so that the output distribution of <span class="math inline">\(M(h_S)\)</span> and <span class="math inline">\(M(h_{S&#39;})\)</span> are indistinguishable.</p>
+<p>Let <span class="math inline">\(h_{S&#39;}\)</span> be the histogram
+of <span class="math inline">\(S&#39;\)</span>. Our goal is to design
+some mechanism <span class="math inline">\(M\)</span> that adds noise to
+the normalized so that the output distribution of <span
+class="math inline">\(M(h_S)\)</span> and <span
+class="math inline">\(M(h_{S&#39;})\)</span> are indistinguishable.</p>
 <h3 id="naive-laplacian">Naive Laplacian</h3>
-<p>One way is to add Laplacian noise directly to each dimension of the histogram. For any vector <span class="math inline">\(v \in \mathbb{R}^m\)</span>, <span class="math inline">\(M\)</span> outputs a new perturbed vector: <span class="math display">\[
+<p>One way is to add Laplacian noise directly to each dimension of the
+histogram. For any vector <span class="math inline">\(v \in
+\mathbb{R}^m\)</span>, <span class="math inline">\(M\)</span> outputs a
+new perturbed vector: <span class="math display">\[
 M(v) \doteq v + L
 \]</span></p>
-<p>where <span class="math inline">\(L \doteq \left&lt; l_1, l_2, ..., l_m\right&gt;\)</span> and each <span class="math inline">\(l_i\)</span> is sampled independently from <span class="math inline">\(Lap( \frac{2 }{ n \epsilon } )\)</span>.</p>
+<p>where <span class="math inline">\(L \doteq \left&lt; l_1, l_2, ...,
+l_m\right&gt;\)</span> and each <span class="math inline">\(l_i\)</span>
+is sampled independently from <span class="math inline">\(Lap( \frac{2
+}{ n \epsilon } )\)</span>.</p>
 <h4 id="privacy">Privacy</h4>
-<p>We claim this mechanism is <span class="math inline">\((\epsilon, 0)\)</span>-differentially private. For <span class="math inline">\(u \in \mathbb{R}^n\)</span>, we have <span class="math display">\[
+<p>We claim this mechanism is <span class="math inline">\((\epsilon,
+0)\)</span>-differentially private. For <span class="math inline">\(u
+\in \mathbb{R}^n\)</span>, we have <span class="math display">\[
 \begin{aligned}
-    \frac{ p(M(h_S) = u) }{ p(M(h_{S&#39;}) = u) } 
-        &amp;= \frac{ \prod_{i \in [m] } p( f_S (x_i) + l_i = u_i) }{ \prod_{i \in [m] } p( f_{S&#39;} (x_i) + l_i = u_i) } \\
-        &amp;= \frac{ \prod_{i \in \{k, l\} } p( f_S (x_i) + l_i = u_i) }{ \prod_{i \in \{k, l\} } p( f_{S&#39;} (x_i) + l_i = u_i) } \\
-        &amp;\le \exp( - (|u_k - f_S(x_k)| - |u_k - f_{S&#39;} (x_k) |) \frac{n\epsilon}{2} ) \\
-        &amp;\quad \cdot \exp( - (|u_l - f_S(x_l)| - |u_l - f_{S&#39;} (x_l) |) \frac{n\epsilon}{2} ) \\
-        &amp;\le \exp( |f_S(x_k) - f_{S&#39;} (x_k) | \frac{n\epsilon}{2} ) \cdot \exp( |f_S(x_l) - f_{S&#39;} (x_l) | \frac{n\epsilon}{2} ) \\
-        &amp;= \exp( \frac{1}{n} \frac{ n \epsilon}{2} ) \cdot \exp( \frac{1}{n} \frac{n\epsilon}{2} ) \\
+    \frac{ p(M(h_S) = u) }{ p(M(h_{S&#39;}) = u) }
+        &amp;= \frac{ \prod_{i \in [m] } p( f_S (x_i) + l_i = u_i) }{
+\prod_{i \in [m] } p( f_{S&#39;} (x_i) + l_i = u_i) } \\
+        &amp;= \frac{ \prod_{i \in \{k, l\} } p( f_S (x_i) + l_i = u_i)
+}{ \prod_{i \in \{k, l\} } p( f_{S&#39;} (x_i) + l_i = u_i) } \\
+        &amp;\le \exp( - (|u_k - f_S(x_k)| - |u_k - f_{S&#39;} (x_k) |)
+\frac{n\epsilon}{2} ) \\
+        &amp;\quad \cdot \exp( - (|u_l - f_S(x_l)| - |u_l - f_{S&#39;}
+(x_l) |) \frac{n\epsilon}{2} ) \\
+        &amp;\le \exp( |f_S(x_k) - f_{S&#39;} (x_k) |
+\frac{n\epsilon}{2} ) \cdot \exp( |f_S(x_l) - f_{S&#39;} (x_l) |
+\frac{n\epsilon}{2} ) \\
+        &amp;= \exp( \frac{1}{n} \frac{ n \epsilon}{2} ) \cdot \exp(
+\frac{1}{n} \frac{n\epsilon}{2} ) \\
         &amp;= \exp( \epsilon).
 \end{aligned}
 \]</span></p>
 <h4 id="accuracy">Accuracy</h4>
-<p>We prove that <span class="math inline">\(|M(h_S) - h_S |_\infty = O (\frac{1}{ n \epsilon } \log \frac{m}{\delta})\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
-<p>Let <span class="math inline">\(b = \frac{2 }{ n \epsilon }\)</span>. For a failure probability <span class="math inline">\(\delta\)</span>, <span class="math display">\[
-\Pr[ |f_S(x_i) + l_i - f_S(x_i) | \ge b \log \frac{m}{\delta} ] = \int_{ b \log \frac{m}{\delta} }^\infty \frac{1}{b} \exp( - x / b ) \ dx = \exp(- \log \frac{m}{\delta} ) = \frac{\delta}{m}
+<p>We prove that <span class="math inline">\(|M(h_S) - h_S |_\infty = O
+(\frac{1}{ n \epsilon } \log \frac{m}{\delta})\)</span> with probability
+at least <span class="math inline">\(1 - \delta\)</span>.</p>
+<p>Let <span class="math inline">\(b = \frac{2 }{ n \epsilon }\)</span>.
+For a failure probability <span class="math inline">\(\delta\)</span>,
+<span class="math display">\[
+\Pr[ |f_S(x_i) + l_i - f_S(x_i) | \ge b \log \frac{m}{\delta} ] = \int_{
+b \log \frac{m}{\delta} }^\infty \frac{1}{b} \exp( - x / b ) \ dx =
+\exp(- \log \frac{m}{\delta} ) = \frac{\delta}{m}
 \]</span></p>
 <p>By union bound, it holds that <span class="math display">\[
-\Pr[ |M(h_S) - h_S |_\infty \ge b \log \frac{m}{\delta} ] \le \delta. 
+\Pr[ |M(h_S) - h_S |_\infty \ge b \log \frac{m}{\delta} ] \le \delta.
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h3 id="rounding-small-values">Rounding Small Values</h3>
-<p>When <span class="math inline">\(|\mathcal{X}| = m \gg n\)</span>, we could improve the release mechanism. As shown in the previous section, we would like to achieve error <span class="math inline">\(O(\frac{1}{n})\)</span>. This inspire to round the small frequencies (roughly <span class="math inline">\(O(\frac{1}{n})\)</span>) to zero. Of course, we should carry out this in a differentially private manner.</p>
+<p>When <span class="math inline">\(|\mathcal{X}| = m \gg n\)</span>, we
+could improve the release mechanism. As shown in the previous section,
+we would like to achieve error <span
+class="math inline">\(O(\frac{1}{n})\)</span>. This inspire to round the
+small frequencies (roughly <span
+class="math inline">\(O(\frac{1}{n})\)</span>) to zero. Of course, we
+should carry out this in a differentially private manner.</p>
 <blockquote>
 <p>Mechanism <span class="math inline">\(M\)</span><br />
-<span class="math inline">\(===============================\)</span><br />
-INPUT: a set <span class="math inline">\(S\)</span> of <span class="math inline">\(n\)</span> elements.<br />
-OUTPUT: a histogram of <span class="math inline">\(S\)</span> in differentially private manner.<br />
+<span
+class="math inline">\(===============================\)</span><br />
+INPUT: a set <span class="math inline">\(S\)</span> of <span
+class="math inline">\(n\)</span> elements.<br />
+OUTPUT: a histogram of <span class="math inline">\(S\)</span> in
+differentially private manner.<br />
 <span class="math inline">\(------------------------\)</span><br />
 For <span class="math inline">\(i \in [m]\)</span> do<br />
-<span class="math inline">\(\qquad\)</span> If <span class="math inline">\(f_S(x_i) = 0\)</span>, then <span class="math inline">\(M(h_S)_i \leftarrow 0\)</span><br />
+<span class="math inline">\(\qquad\)</span> If <span
+class="math inline">\(f_S(x_i) = 0\)</span>, then <span
+class="math inline">\(M(h_S)_i \leftarrow 0\)</span><br />
 <span class="math inline">\(\qquad\)</span> Else<br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(M(h_S)_i \leftarrow f_S(x_i) + l_i\)</span>, where <span class="math inline">\(l_i \sim Lap(\frac{2}{n \epsilon} )\)</span>.<br />
-<span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> If <span class="math inline">\(M(h_S)_i &lt; \frac{1}{n} +\frac{2 \log 2 / \delta }{ \epsilon n}\)</span>, then <span class="math inline">\(M(h_S)_i \leftarrow 0\)</span>.<br />
-Release <span class="math inline">\(M(h_S) \doteq \left&lt; M(h_S)_1, M(h_S)_2, ... , M(h_S)_n \right&gt;\)</span><br />
+<span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span
+class="math inline">\(M(h_S)_i \leftarrow f_S(x_i) + l_i\)</span>, where
+<span class="math inline">\(l_i \sim Lap(\frac{2}{n \epsilon}
+)\)</span>.<br />
+<span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> If <span
+class="math inline">\(M(h_S)_i &lt; \frac{1}{n} +\frac{2 \log 2 / \delta
+}{ \epsilon n}\)</span>, then <span class="math inline">\(M(h_S)_i
+\leftarrow 0\)</span>.<br />
+Release <span class="math inline">\(M(h_S) \doteq \left&lt; M(h_S)_1,
+M(h_S)_2, ... , M(h_S)_n \right&gt;\)</span><br />
 <span class="math inline">\(------------------------\)</span></p>
 </blockquote>
 <h4 id="privacy-1">Privacy</h4>
-<p>We claim this mechanism is <span class="math inline">\((\epsilon, \delta)\)</span>-differentially private.</p>
+<p>We claim this mechanism is <span class="math inline">\((\epsilon,
+\delta)\)</span>-differentially private.</p>
 <ul>
-<li><p>Case 1. If <span class="math inline">\(S\)</span> and <span class="math inline">\(S&#39;\)</span> have the same set of supports, i.e., <span class="math inline">\(f_S(x_i) &gt; 0 \leftrightarrow f_{S&#39;}(x_i) &gt; 0\)</span>, then <span class="math inline">\(M\)</span> is <span class="math inline">\((\epsilon, 0)\)</span> differentially private.</p></li>
+<li><p>Case 1. If <span class="math inline">\(S\)</span> and <span
+class="math inline">\(S&#39;\)</span> have the same set of supports,
+i.e., <span class="math inline">\(f_S(x_i) &gt; 0 \leftrightarrow
+f_{S&#39;}(x_i) &gt; 0\)</span>, then <span
+class="math inline">\(M\)</span> is <span
+class="math inline">\((\epsilon, 0)\)</span> differentially
+private.</p></li>
 <li><p>Case 2.</p>
 <ol type="1">
-<li><span class="math inline">\(F_{S} (x_k) = 1\)</span>, then <span class="math inline">\(F_{S&#39;} (x_k) = F_{S} (x_k) - 1 = 0\)</span>. For <span class="math inline">\(S&#39;\)</span>, it is guaranteed that <span class="math inline">\(M(h_{S&#39;})_k = 0\)</span>. For <span class="math inline">\(S\)</span>, as <span class="math inline">\(f_S(x_k) = \frac{1}{n}\)</span>, <span class="math display">\[
-     \Pr[ M(h_S)_k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h_{S&#39;})_k ] = \frac{\delta}{2}
- \]</span></li>
-<li><span class="math inline">\(F_{S} (x_l) = 0\)</span>, then <span class="math inline">\(F_{S&#39;} (x_l) = F_{S} (x_l) + 1 = 1\)</span>. For <span class="math inline">\(S\)</span>, it is guaranteed that <span class="math inline">\(M(h_S)_k = 0\)</span>. For <span class="math inline">\(S&#39;\)</span>, by similar argument, we have <span class="math inline">\(\Pr[ M(h_{S&#39;})_k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h_{S&#39;})_k ] = \frac{\delta}{2}\)</span>.</li>
+<li><span class="math inline">\(F_{S} (x_k) = 1\)</span>, then <span
+class="math inline">\(F_{S&#39;} (x_k) = F_{S} (x_k) - 1 = 0\)</span>.
+For <span class="math inline">\(S&#39;\)</span>, it is guaranteed that
+<span class="math inline">\(M(h_{S&#39;})_k = 0\)</span>. For <span
+class="math inline">\(S\)</span>, as <span
+class="math inline">\(f_S(x_k) = \frac{1}{n}\)</span>, <span
+class="math display">\[
+     \Pr[ M(h_S)_k \neq 0 ] = \Pr[ M(h_S)_k \neq M(h_{S&#39;})_k ] =
+\frac{\delta}{2}
+\]</span></li>
+<li><span class="math inline">\(F_{S} (x_l) = 0\)</span>, then <span
+class="math inline">\(F_{S&#39;} (x_l) = F_{S} (x_l) + 1 = 1\)</span>.
+For <span class="math inline">\(S\)</span>, it is guaranteed that <span
+class="math inline">\(M(h_S)_k = 0\)</span>. For <span
+class="math inline">\(S&#39;\)</span>, by similar argument, we have
+<span class="math inline">\(\Pr[ M(h_{S&#39;})_k \neq 0 ] = \Pr[
+M(h_S)_k \neq M(h_{S&#39;})_k ] = \frac{\delta}{2}\)</span>.</li>
 </ol>
-<p>There are three combinations such that either <span class="math inline">\(F_S(x_k) = 1\)</span> or <span class="math inline">\(F_{S} (x_l) = 0\)</span> holds, namely</p>
+<p>There are three combinations such that either <span
+class="math inline">\(F_S(x_k) = 1\)</span> or <span
+class="math inline">\(F_{S} (x_l) = 0\)</span> holds, namely</p>
 <ol type="1">
-<li><span class="math inline">\(F_S(x_k) = 1, F_{S} (x_l) = 0\)</span>,</li>
-<li><span class="math inline">\(F_S(x_k) = 1, F_{S} (x_l) &gt; 0\)</span>,</li>
-<li><span class="math inline">\(F_S(x_k) &gt; 1, F_{S} (x_l) = 0\)</span>.</li>
+<li><span class="math inline">\(F_S(x_k) = 1, F_{S} (x_l) =
+0\)</span>,</li>
+<li><span class="math inline">\(F_S(x_k) = 1, F_{S} (x_l) &gt;
+0\)</span>,</li>
+<li><span class="math inline">\(F_S(x_k) &gt; 1, F_{S} (x_l) =
+0\)</span>.</li>
 </ol>
-<p>We give a proof for the first case. The proofs for the other two are similar. Now, for <span class="math inline">\(\forall\)</span> measurable <span class="math inline">\(E \subset \mathbb{R}^n\)</span>, <span class="math display">\[
+<p>We give a proof for the first case. The proofs for the other two are
+similar. Now, for <span class="math inline">\(\forall\)</span>
+measurable <span class="math inline">\(E \subset \mathbb{R}^n\)</span>,
+<span class="math display">\[
   \begin{aligned}
-      \Pr[ M(h_S) \in E] 
-          &amp;= \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] \\
-          &amp;\ + \Pr[ M(h_S) \in E \mid M(h_S)_k \neq 0 \vee M(h_{S&#39;})_l \neq 0] \\
-          &amp;\le \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] \\
-          &amp;\ + \Pr[M(h_S)_k \neq 0 ] + \Pr[ M(h_{S&#39;})_l \neq 0] \\
-          &amp;= \Pr[ M(h_{S&#39;}) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l = 0] + \delta \\
+      \Pr[ M(h_S) \in E]
+          &amp;= \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l =
+0] \\
+          &amp;\ + \Pr[ M(h_S) \in E \mid M(h_S)_k \neq 0 \vee
+M(h_{S&#39;})_l \neq 0] \\
+          &amp;\le \Pr[ M(h_S) \in E \mid M(h_S)_k = 0, M(h_{S&#39;})_l
+= 0] \\
+          &amp;\ + \Pr[M(h_S)_k \neq 0 ] + \Pr[ M(h_{S&#39;})_l \neq 0]
+\\
+          &amp;= \Pr[ M(h_{S&#39;}) \in E \mid M(h_S)_k = 0,
+M(h_{S&#39;})_l = 0] + \delta \\
           &amp;\le \Pr[ M(h_{S&#39;}) \in E] + \delta
   \end{aligned}
   \]</span></p></li>
 </ul>
 <h4 id="accuracy-1">Accuracy</h4>
-<p>We prove that <span class="math inline">\(|M(h_S) - h_S |_\infty = O (\frac{1}{ n \epsilon } \log \frac{1}{\delta})\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>, if <span class="math inline">\(\delta \le \frac{1}{n}\)</span>.</p>
+<p>We prove that <span class="math inline">\(|M(h_S) - h_S |_\infty = O
+(\frac{1}{ n \epsilon } \log \frac{1}{\delta})\)</span> with probability
+at least <span class="math inline">\(1 - \delta\)</span>, if <span
+class="math inline">\(\delta \le \frac{1}{n}\)</span>.</p>
 <ol type="1">
-<li>If <span class="math inline">\(f_S(x_i) = 0\)</span>, then there is no error.<br />
+<li>If <span class="math inline">\(f_S(x_i) = 0\)</span>, then there is
+no error.<br />
 </li>
-<li>Otherwise, if <span class="math inline">\(M(h_S)_i\)</span> is not truncated, with probability at most <span class="math inline">\(\frac{\delta}{n}\)</span>, it <span class="math inline">\(|M(h_S)_i - f_S(x_i)|\le \frac{2\log 1 / \delta}{n\epsilon}\)</span>. If it is truncated, this will introduce an additional error of at most <span class="math inline">\(\frac{1}{n} +\frac{2 \log 2 / \delta }{ \epsilon n}\)</span>. The overall error is at most <span class="math inline">\(\frac{1}{n} +\frac{4 \log 2 / \delta }{ \epsilon n}\)</span>, which is <span class="math inline">\(O( \frac{ \log 1 / \delta }{ \epsilon n})\)</span> if <span class="math inline">\(\epsilon \le \log n\)</span>.</li>
+<li>Otherwise, if <span class="math inline">\(M(h_S)_i\)</span> is not
+truncated, with probability at most <span
+class="math inline">\(\frac{\delta}{n}\)</span>, it <span
+class="math inline">\(|M(h_S)_i - f_S(x_i)|\le \frac{2\log 1 /
+\delta}{n\epsilon}\)</span>. If it is truncated, this will introduce an
+additional error of at most <span class="math inline">\(\frac{1}{n}
++\frac{2 \log 2 / \delta }{ \epsilon n}\)</span>. The overall error is
+at most <span class="math inline">\(\frac{1}{n} +\frac{4 \log 2 / \delta
+}{ \epsilon n}\)</span>, which is <span class="math inline">\(O( \frac{
+\log 1 / \delta }{ \epsilon n})\)</span> if <span
+class="math inline">\(\epsilon \le \log n\)</span>.</li>
 </ol>
 <!-- Let $b = \frac{2 }{ n \epsilon }$. For a failure probability $\delta$, 
 $$
@@ -295,7 +408,9 @@ $$
 $$ -->
 <p><span class="math inline">\(\square\)</span></p>
 <h3 id="reference">Reference</h3>
-<p>[1] S. Vadhan, “The Complexity of Differential Privacy,” in Tutorials on the Foundations of Cryptography, Y. Lindell, Ed. Cham: Springer International Publishing, 2017, pp. 347–450.</p>
+<p>[1] S. Vadhan, “The Complexity of Differential Privacy,” in Tutorials
+on the Foundations of Cryptography, Y. Lindell, Ed. Cham: Springer
+International Publishing, 2017, pp. 347–450.</p>
 <!-- Now, for $\forall$ measurable $E \subset \mathbb{R}^n$, define  
 $$
     E_1 \doteq \{ v \in E : v_k = 0, v_l = 0 \}

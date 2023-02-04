@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="ProblemLet $\mathcal{U} \subseteq \mathbb{R}^d$ be a set of $n$ points.We want to find a linear transformation $A \in \mathbb{R}^{k \times d}$ that embeds the points in $\mathcal{U}$ to $\mathbb{R}^k$">
+  <meta name="description" content="Problem Let \(\mathcal{U} \subseteq \mathbb{R}^d\) be a set of \(n\) points. We want to find a linear transformation \(A \in \mathbb{R}^{k \times d}\) that embeds the points in \(\mathcal{U}\) to">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Johnson-Lindenstrauss Lemma">
 <meta property="og:url" content="http://example.com/2017/02/02/Johnson-Lindenstrauss%20Lemma/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="ProblemLet $\mathcal{U} \subseteq \mathbb{R}^d$ be a set of $n$ points.We want to find a linear transformation $A \in \mathbb{R}^{k \times d}$ that embeds the points in $\mathcal{U}$ to $\mathbb{R}^k$">
+<meta property="og:description" content="Problem Let \(\mathcal{U} \subseteq \mathbb{R}^d\) be a set of \(n\) points. We want to find a linear transformation \(A \in \mathbb{R}^{k \times d}\) that embeds the points in \(\mathcal{U}\) to">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2017-02-02T09:38:54.000Z">
 <meta property="article:modified_time" content="2022-12-15T11:41:00.000Z">
@@ -197,102 +197,235 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><p>Let $\mathcal{U} \subseteq \mathbb{R}^d$ be a set of $n$ points.<br>We want to find a linear transformation $A \in \mathbb{R}^{k \times d}$ that embeds the points in $\mathcal{U}$ to $\mathbb{R}^k$ while preserving the pairwise Euclidean distances.</p>
-<p>If $k \ge d$, the problem is trivial.<br>There is an isomorphic mapping between $\mathbb{R}^d$ and a $d$-dimensional subspace in $\mathbb{R}^k$.<br>Let $u_1, \ldots, u_d$ be a subset of standard basis vectors in $\mathbb{R}^k$, and $e_1, \ldots, e_d$ be standard basis vectors in $\mathbb{R}^d$.<br>Then one possible isomorphic mapping is given by</p>
-<script type="math/tex; mode=display">
-    A = u_1 e_1^T + \ldots + u_d e_d^T.</script><p>If $k &lt; d$, then such an isomorphic embedding is impossible.<br>However, it is feasible, if we aim to preserve the pair-wise distance up to a multiplicative error $\epsilon \in (0, 1)$ with high probability, s.t.,  $\forall x, y \in \mathcal{U}$, </p>
-<script type="math/tex; mode=display">
-    \Vert A x - A y \Vert_2 \in (1 \pm \epsilon) \Vert  x - y \Vert_2,</script><p>where $\Vert \cdot \Vert_2$ is the $\ell_2$ distance.</p>
-<p>The smaller $k$ is, the less space we need to store the embedded vectors </p>
-<script type="math/tex; mode=display">
-    A \mathcal{U} 
-        \doteq \{ Ax : x \in \mathcal{U} \} \subseteq \mathbb{R}^{k \times n}.</script><p>It remains to study how small $k$ can be? </p>
+        <h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(\mathcal{U} \subseteq
+\mathbb{R}^d\)</span> be a set of <span class="math inline">\(n\)</span>
+points. We want to find a linear transformation <span
+class="math inline">\(A \in \mathbb{R}^{k \times d}\)</span> that embeds
+the points in <span class="math inline">\(\mathcal{U}\)</span> to <span
+class="math inline">\(\mathbb{R}^k\)</span> while preserving the
+pairwise Euclidean distances.</p>
+<p>If <span class="math inline">\(k \ge d\)</span>, the problem is
+trivial. There is an isomorphic mapping between <span
+class="math inline">\(\mathbb{R}^d\)</span> and a <span
+class="math inline">\(d\)</span>-dimensional subspace in <span
+class="math inline">\(\mathbb{R}^k\)</span>. Let <span
+class="math inline">\(u_1, \ldots, u_d\)</span> be a subset of standard
+basis vectors in <span class="math inline">\(\mathbb{R}^k\)</span>, and
+<span class="math inline">\(e_1, \ldots, e_d\)</span> be standard basis
+vectors in <span class="math inline">\(\mathbb{R}^d\)</span>. Then one
+possible isomorphic mapping is given by <span class="math display">\[
+    A = u_1 e_1^T + \ldots + u_d e_d^T.
+\]</span></p>
+<p>If <span class="math inline">\(k &lt; d\)</span>, then such an
+isomorphic embedding is impossible. However, it is feasible, if we aim
+to preserve the pair-wise distance up to a multiplicative error <span
+class="math inline">\(\epsilon \in (0, 1)\)</span> with high
+probability, s.t., <span class="math inline">\(\forall x, y \in
+\mathcal{U}\)</span>, <span class="math display">\[
+    \Vert A x - A y \Vert_2 \in (1 \pm \epsilon) \Vert  x - y \Vert_2,
+\]</span> where <span class="math inline">\(\Vert \cdot \Vert_2\)</span>
+is the <span class="math inline">\(\ell_2\)</span> distance.</p>
+<p>The smaller <span class="math inline">\(k\)</span> is, the less space
+we need to store the embedded vectors <span class="math display">\[
+    A \mathcal{U}
+        \doteq \{ Ax : x \in \mathcal{U} \} \subseteq \mathbb{R}^{k
+\times n}.
+\]</span> It remains to study how small <span
+class="math inline">\(k\)</span> can be?</p>
 <blockquote>
-<p><strong>Theorem.</strong> For each set $\mathcal{U} \subseteq \mathbb{R}^d$ of $n$ points, there is a matrix $A \in \mathbb{R}^{k \times d}$, such that $k = O\left( \frac{ \log n }{ \epsilon^2} \right)$ and </p>
-<script type="math/tex; mode=display">
-    \forall x, y \in \mathcal{U}, \quad \Vert A x - A y \Vert_2 \in (1 \pm \epsilon) \Vert  x - y \Vert_2,</script><p>Further, there is an algorithm which returns such a matrix $A$ with success probability at least $1 - \frac{1}{n}$</p>
+<p><strong>Theorem.</strong> For each set <span
+class="math inline">\(\mathcal{U} \subseteq \mathbb{R}^d\)</span> of
+<span class="math inline">\(n\)</span> points, there is a matrix <span
+class="math inline">\(A \in \mathbb{R}^{k \times d}\)</span>, such that
+<span class="math inline">\(k = O\left( \frac{ \log n }{ \epsilon^2}
+\right)\)</span> and <span class="math display">\[
+\forall x, y \in \mathcal{U}, \quad \Vert A x - A y \Vert_2 \in (1 \pm
+\epsilon) \Vert  x - y \Vert_2,
+\]</span> Further, there is an algorithm which returns such a matrix
+<span class="math inline">\(A\)</span> with success probability at least
+<span class="math inline">\(1 - \frac{1}{n}\)</span></p>
 </blockquote>
-<p>The value of $k$ depends only on $n$ but not $d$. </p>
-<h1 id="Column-Perspective"><a href="#Column-Perspective" class="headerlink" title="Column Perspective"></a>Column Perspective</h1><p>On the high level, we try to squeeze $d$ (in expectation) orthonormal vectors into a smaller space $\mathbb{R}^k$.<br>We do this by generating a set of $d$ random vectors $u_1, u_2, \ldots, u_d \in \mathbb{R}^k$, such that:  </p>
-<ol>
-<li>Each coordinate of $u_i$ is generated independently for $i \in [d]$;</li>
+<p>The value of <span class="math inline">\(k\)</span> depends only on
+<span class="math inline">\(n\)</span> but not <span
+class="math inline">\(d\)</span>.</p>
+<h1 id="column-perspective">Column Perspective</h1>
+<p>On the high level, we try to squeeze <span
+class="math inline">\(d\)</span> (in expectation) orthonormal vectors
+into a smaller space <span class="math inline">\(\mathbb{R}^k\)</span>.
+We do this by generating a set of <span class="math inline">\(d\)</span>
+random vectors <span class="math inline">\(u_1, u_2, \ldots, u_d \in
+\mathbb{R}^k\)</span>, such that:</p>
+<ol type="1">
+<li>Each coordinate of <span class="math inline">\(u_i\)</span> is
+generated independently for <span class="math inline">\(i \in
+[d]\)</span>;</li>
 </ol>
-<p>and in expectation, they are orthonormal:  </p>
-<ol>
-<li>$\mathbb{E} \left[ \Vert u_i \Vert_2^2 \right] = 1$ for $i \in [d]$;  </li>
-<li>$\mathbb{E} \left[ \langle u_i, u_j \rangle \right] = 0$ for $i, j \in [d], i \neq j$. </li>
+<p>and in expectation, they are orthonormal:</p>
+<ol start="2" type="1">
+<li><span class="math inline">\(\mathbb{E} \left[ \Vert u_i \Vert_2^2
+\right] = 1\)</span> for <span class="math inline">\(i \in
+[d]\)</span>;<br />
+</li>
+<li><span class="math inline">\(\mathbb{E} \left[ \langle u_i, u_j
+\rangle \right] = 0\)</span> for <span class="math inline">\(i, j \in
+[d], i \neq j\)</span>.</li>
 </ol>
-<p>Let $e_1, \ldots, e_d \in \mathbb{R}^d$ be unit vectors in $\mathbb{R}^d$ and $e_i$ ($i \in [d]$) has the $i$-th entry equal to 1. Define</p>
-<script type="math/tex; mode=display">
+<p>Let <span class="math inline">\(e_1, \ldots, e_d \in
+\mathbb{R}^d\)</span> be unit vectors in <span
+class="math inline">\(\mathbb{R}^d\)</span> and <span
+class="math inline">\(e_i\)</span> (<span class="math inline">\(i \in
+[d]\)</span>) has the <span class="math inline">\(i\)</span>-th entry
+equal to 1. Define <span class="math display">\[
     A = \begin{bmatrix}
         u_1, u_2, \ldots, u_d
-    \end{bmatrix} 
-    = u_1 e_1^T + \ldots + u_d e_d^T.</script><p>For a fixed pair $x, y \in \mathcal{U}$, define $z = x - y$. Then </p>
-<script type="math/tex; mode=display">
+    \end{bmatrix}
+    = u_1 e_1^T + \ldots + u_d e_d^T.
+\]</span></p>
+<p>For a fixed pair <span class="math inline">\(x, y \in
+\mathcal{U}\)</span>, define <span class="math inline">\(z = x -
+y\)</span>. Then <span class="math display">\[
     \begin{aligned}
-        \Vert  A x - A y \Vert_2^2 
-            &= \Vert  A z \Vert_2^2 \\
-            &= \left\Vert  \sum_{ i \in [d] } z[i] \cdot u_i \right\Vert_2^2 \\
-            &= \sum_{i \in [d] } (z[i])^2 \Vert u_i \Vert_2^2 
-            + \sum_{ i, j \in [d], i \neq j} (z[i] \cdot z[j]) \cdot \langle u_i, u_j \rangle.
-    \end{aligned}</script><p>Taking expectation of both side, and by assumption of $v_t, t \in [d]$, it holds that </p>
-<script type="math/tex; mode=display">
-    \mathbb{ E } \left[ \Vert z \Vert_2^2 \right] = \Vert z \Vert_2^2.</script><h1 id="Row-Perspective"><a href="#Row-Perspective" class="headerlink" title="Row Perspective"></a>Row Perspective</h1><p>We can also characterize $A$ by the properties of its rows.<br>Let $\tilde A$ be a scaled version of $A$, such that </p>
-<script type="math/tex; mode=display">
-    A = \frac{1}{ \sqrt k} \tilde{A}.</script><p>Denote $v_1, v_2, \ldots, v_k \in \mathbb{R}^d$ the row vectors of $\tilde A$.<br>They are generated randomly and independently.<br>Each vector $v_i$ ($i \in [k]$) satisfies </p>
-<ol>
-<li>Each entry of $v_i$ is generated independently; </li>
-<li>$\mathbb{E} \left[v_i [j] \right] = 0, \forall j \in [d]$, i.e., each entry has mean zero;  </li>
-<li>$\mathbb{Var} \left[ v_i [j] \right] = 1, \forall j \in [d]$, i.e., each entry has variance one. </li>
+        \Vert  A x - A y \Vert_2^2
+            &amp;= \Vert  A z \Vert_2^2 \\
+            &amp;= \left\Vert  \sum_{ i \in [d] } z[i] \cdot u_i
+\right\Vert_2^2 \\
+            &amp;= \sum_{i \in [d] } (z[i])^2 \Vert u_i \Vert_2^2
+            + \sum_{ i, j \in [d], i \neq j} (z[i] \cdot z[j]) \cdot
+\langle u_i, u_j \rangle.
+    \end{aligned}
+\]</span></p>
+<p>Taking expectation of both side, and by assumption of <span
+class="math inline">\(v_t, t \in [d]\)</span>, it holds that <span
+class="math display">\[
+    \mathbb{ E } \left[ \Vert z \Vert_2^2 \right] = \Vert z \Vert_2^2.
+\]</span></p>
+<h1 id="row-perspective">Row Perspective</h1>
+<p>We can also characterize <span class="math inline">\(A\)</span> by
+the properties of its rows. Let <span class="math inline">\(\tilde
+A\)</span> be a scaled version of <span
+class="math inline">\(A\)</span>, such that <span
+class="math display">\[
+    A = \frac{1}{ \sqrt k} \tilde{A}.
+\]</span></p>
+<p>Denote <span class="math inline">\(v_1, v_2, \ldots, v_k \in
+\mathbb{R}^d\)</span> the row vectors of <span
+class="math inline">\(\tilde A\)</span>. They are generated randomly and
+independently. Each vector <span class="math inline">\(v_i\)</span>
+(<span class="math inline">\(i \in [k]\)</span>) satisfies</p>
+<ol type="1">
+<li>Each entry of <span class="math inline">\(v_i\)</span> is generated
+independently;</li>
+<li><span class="math inline">\(\mathbb{E} \left[v_i [j] \right] = 0,
+\forall j \in [d]\)</span>, i.e., each entry has mean zero;<br />
+</li>
+<li><span class="math inline">\(\mathbb{Var} \left[ v_i [j] \right] = 1,
+\forall j \in [d]\)</span>, i.e., each entry has variance one.</li>
 </ol>
-<p>For a fixed pair $x, y \in \mathcal{U}$, define $z = x - y$. Consider</p>
-<script type="math/tex; mode=display">
-    \Vert A z \Vert_2^2 
-    = \frac{1}{k} \Vert \tilde{A } z \Vert_2^2 
-    = \frac{1}{k} \sum_{i \in [k] } \langle v_i, z \rangle^2.</script><p>Our assumption on $v_i, i \in [k]$ implies that the $\langle v_i, z \rangle^2, i \in [k]$ are independent random variables.<br>We will verify that each of them has variance $\Vert z \Vert_2^2$.<br>For each $i \in [k]$, </p>
-<script type="math/tex; mode=display">
-    \langle v_i, z \rangle = \sum_{j \in [d] } v_i [j] \cdot z[j]</script><p>can be view as the sum of $d$ independent random variables.<br>Hence, by our assumption on $v_i$, we have</p>
-<script type="math/tex; mode=display">
-    \mathbb{Var} \left[ \langle v_i, z \rangle \right] 
-        = \sum_{j \in [d] } \mathbb{Var}\left[ v_i [j] \cdot z[j] \right] 
-        = \sum_{j \in [d] } (z[j])^2 \cdot \mathbb{Var} \left[ v_i [j] \right] = \Vert z \Vert_2^2.</script><p>By linearity of expectation, </p>
-<script type="math/tex; mode=display">
-    \mathbb{E} \left[ \langle v_i, z \rangle \right] = \sum_{j \in [d] } \mathbb{E}\left[ v_i [j] \cdot z[j] \right] = \sum_{j \in [d] } z[j] \cdot \mathbb{E} \left[ v_i [j] \right] = 0.</script><p>It concludes that </p>
-<script type="math/tex; mode=display">
-    \mathbb{E} \left[ \langle v_i, z \rangle^2 \right] = \mathbb{Var} \left[ \langle v_i, z \rangle \right] - \big(  \mathbb{E} \left[ \langle v_i, z \rangle \right] \big)^2 = \Vert z \Vert_2^2.</script><p><strong>Therefore, $\Vert A z \Vert_2^2$ can be viewed as the average of $k$ independent, mean $\Vert z \Vert_2^2$ random variables.</strong><br>By the law of large numbers, the average should concentrate around $\Vert z \Vert_2^2$.<br>The analysis of the concentration phenomenon depends on the detailed implementation of $\tilde A$.  </p>
-<h1 id="Gaussian"><a href="#Gaussian" class="headerlink" title="Gaussian"></a>Gaussian</h1><p>In this section, we discuss a possible implementation of $A$. </p>
-<p>Let $\tilde A \in \mathbb{R}^{k \times d}$ be a random matrix, each entry of which is generated independently from standard normal distribution.<br>Let $\tilde u_1, \ldots, \tilde u_d$ be the column vectors, and $\tilde v_1, \ldots, \tilde v_k$ be the row vectors of $\tilde A$.<br>Define $A \doteq \frac{1}{\sqrt k} \tilde{A}$.<br>Hence, for the column and row vectors of $A$, it holds that $u_i = \frac{1}{\sqrt k} \tilde u_i, i \in [d]$ and $v_i = \frac{1}{\sqrt k}  \tilde v_i, i \in [k]$. </p>
-<p>It is easy to see that $A$ satisfies previous discussed column and row properties.</p>
-<p>Define $\sigma^2 = \Vert z \Vert_2^2$, and </p>
-<script type="math/tex; mode=display">
-    X_i 
-        \doteq \langle \tilde{v_i}, z \rangle 
-        = \sum_{j \in [d]} \tilde{v_i} [j] \cdot z[j], 
-    \qquad \forall i \in [k].</script><p>Since each $\tilde{v_i} [j] \sim N(0, 1)$, it follows that $X_i \sim N(0, \sigma^2)$.<br>Then </p>
-<script type="math/tex; mode=display">
-    \mathbb{E} \left[ X_i^2 \right] = \sigma^2.</script><!-- 
+<p>For a fixed pair <span class="math inline">\(x, y \in
+\mathcal{U}\)</span>, define <span class="math inline">\(z = x -
+y\)</span>. Consider <span class="math display">\[
+    \Vert A z \Vert_2^2
+    = \frac{1}{k} \Vert \tilde{A } z \Vert_2^2
+    = \frac{1}{k} \sum_{i \in [k] } \langle v_i, z \rangle^2.
+\]</span></p>
+<p>Our assumption on <span class="math inline">\(v_i, i \in [k]\)</span>
+implies that the <span class="math inline">\(\langle v_i, z \rangle^2, i
+\in [k]\)</span> are independent random variables. We will verify that
+each of them has variance <span class="math inline">\(\Vert z
+\Vert_2^2\)</span>. For each <span class="math inline">\(i \in
+[k]\)</span>, <span class="math display">\[
+    \langle v_i, z \rangle = \sum_{j \in [d] } v_i [j] \cdot z[j]
+\]</span> can be view as the sum of <span
+class="math inline">\(d\)</span> independent random variables. Hence, by
+our assumption on <span class="math inline">\(v_i\)</span>, we have
+<span class="math display">\[
+    \mathbb{Var} \left[ \langle v_i, z \rangle \right]
+        = \sum_{j \in [d] } \mathbb{Var}\left[ v_i [j] \cdot z[j]
+\right]
+        = \sum_{j \in [d] } (z[j])^2 \cdot \mathbb{Var} \left[ v_i [j]
+\right] = \Vert z \Vert_2^2.
+\]</span></p>
+<p>By linearity of expectation, <span class="math display">\[
+    \mathbb{E} \left[ \langle v_i, z \rangle \right] = \sum_{j \in [d] }
+\mathbb{E}\left[ v_i [j] \cdot z[j] \right] = \sum_{j \in [d] } z[j]
+\cdot \mathbb{E} \left[ v_i [j] \right] = 0.
+\]</span></p>
+<p>It concludes that <span class="math display">\[
+    \mathbb{E} \left[ \langle v_i, z \rangle^2 \right] = \mathbb{Var}
+\left[ \langle v_i, z \rangle \right] - \big(  \mathbb{E} \left[ \langle
+v_i, z \rangle \right] \big)^2 = \Vert z \Vert_2^2.
+\]</span></p>
+<p><strong>Therefore, <span class="math inline">\(\Vert A z
+\Vert_2^2\)</span> can be viewed as the average of <span
+class="math inline">\(k\)</span> independent, mean <span
+class="math inline">\(\Vert z \Vert_2^2\)</span> random
+variables.</strong> By the law of large numbers, the average should
+concentrate around <span class="math inline">\(\Vert z
+\Vert_2^2\)</span>. The analysis of the concentration phenomenon depends
+on the detailed implementation of <span class="math inline">\(\tilde
+A\)</span>.</p>
+<h1 id="gaussian">Gaussian</h1>
+<p>In this section, we discuss a possible implementation of <span
+class="math inline">\(A\)</span>.</p>
+<p>Let <span class="math inline">\(\tilde A \in \mathbb{R}^{k \times
+d}\)</span> be a random matrix, each entry of which is generated
+independently from standard normal distribution. Let <span
+class="math inline">\(\tilde u_1, \ldots, \tilde u_d\)</span> be the
+column vectors, and <span class="math inline">\(\tilde v_1, \ldots,
+\tilde v_k\)</span> be the row vectors of <span
+class="math inline">\(\tilde A\)</span>. Define <span
+class="math inline">\(A \doteq \frac{1}{\sqrt k} \tilde{A}\)</span>.
+Hence, for the column and row vectors of <span
+class="math inline">\(A\)</span>, it holds that <span
+class="math inline">\(u_i = \frac{1}{\sqrt k} \tilde u_i, i \in
+[d]\)</span> and <span class="math inline">\(v_i = \frac{1}{\sqrt k}
+\tilde v_i, i \in [k]\)</span>.</p>
+<p>It is easy to see that <span class="math inline">\(A\)</span>
+satisfies previous discussed column and row properties.</p>
+<p>Define <span class="math inline">\(\sigma^2 = \Vert z
+\Vert_2^2\)</span>, and <span class="math display">\[
+    X_i
+        \doteq \langle \tilde{v_i}, z \rangle
+        = \sum_{j \in [d]} \tilde{v_i} [j] \cdot z[j],
+    \qquad \forall i \in [k].
+\]</span> Since each <span class="math inline">\(\tilde{v_i} [j] \sim
+N(0, 1)\)</span>, it follows that <span class="math inline">\(X_i \sim
+N(0, \sigma^2)\)</span>. Then <span class="math display">\[
+    \mathbb{E} \left[ X_i^2 \right] = \sigma^2.
+\]</span> <!-- 
 Column properties: 
 
 1. $\mathbb{E} \left[  \left\Vert u_i \right\Vert_2^2 \right] = \frac{1}{k} \mathbb{E} \left[  \left\Vert \tilde u_i \right\Vert_2^2 \right] = 1, \forall i \in [d]$;  
-
+   
 2. $\mathbb{E} \left[  \left\langle u_i, u_j \right\rangle \right] = \frac{1}{k} \sum_{t \in [k] } \mathbb{E} \left[ \tilde u_i [t] \right] \cdot \mathbb{E} \left[ \tilde u_j[t] \right] = 0, \forall i, j \in [d], i \neq j$.
 
 Clearly, by definition, we have $v_i[t] \sim N(0, 1), \forall i \in [k], t \in [d]$.
--->
-<p>And</p>
-<script type="math/tex; mode=display">
+--></p>
+<p>And <span class="math display">\[
     \mathbb{E} \left[ \Vert A z \Vert_2^2 \right]
-        = \frac{1}{k} \mathbb{E} \left[ \Vert \tilde{A } z \Vert_2^2 \right]
-        = \frac{1}{k} \sum_{i \in [k] } \mathbb{E} \left[ \langle \tilde{v_i}, z \rangle^2 \right] 
-        = \sigma^2.</script><blockquote>
-<p><strong>Theorem</strong>. (Chernoff bound for the $\chi^2$ distribution). Let $X_i \sim N(0, \sigma^2), i \in [k]$ be independent random variables. Then </p>
-<script type="math/tex; mode=display">
-    \begin{aligned}
-        \Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \ge (1 + \epsilon) \cdot  \sigma^2 \right] 
-            &\le \exp \left( - \frac{k}{2} ( \epsilon^2 / 2 - \epsilon^3 / 3) \right), \\
-        \Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \le (1 - \epsilon) \cdot  \sigma^2 \right] 
-            &\le \exp \left( - \frac{k}{4} \epsilon^2 \right). 
-    \end{aligned}</script></blockquote>
+        = \frac{1}{k} \mathbb{E} \left[ \Vert \tilde{A } z \Vert_2^2
+\right]
+        = \frac{1}{k} \sum_{i \in [k] } \mathbb{E} \left[ \langle
+\tilde{v_i}, z \rangle^2 \right]
+        = \sigma^2.
+\]</span></p>
+<blockquote>
+<p><strong>Theorem</strong>. (Chernoff bound for the <span
+class="math inline">\(\chi^2\)</span> distribution). Let <span
+class="math inline">\(X_i \sim N(0, \sigma^2), i \in [k]\)</span> be
+independent random variables. Then <span class="math display">\[
+\begin{aligned}
+\Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \ge (1 + \epsilon)
+\cdot  \sigma^2 \right]
+&amp;\le \exp \left( - \frac{k}{2} ( \epsilon^2 / 2 - \epsilon^3 / 3)
+\right), \\
+\Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \le (1 - \epsilon)
+\cdot  \sigma^2 \right]
+&amp;\le \exp \left( - \frac{k}{4} \epsilon^2 \right).
+\end{aligned}
+\]</span></p>
+</blockquote>
 <!-- 
 #### Lemma One
 Let $t \in R^d$ be a random vector s.t. $t_i \overset{i.i.d}{\thicksim} N(0,1)$ and $x \in R^d$ be any fixed vector. Then 
@@ -300,86 +433,165 @@ Let $t \in R^d$ be a random vector s.t. $t_i \overset{i.i.d}{\thicksim} N(0,1)$ 
  1.  $t^T x \thicksim N(0, \Vert x\Vert)$, where $\Vert x\Vert = \sum_{i = 1}^d x_i^2$.
  2.  $\mathbb{E}[(t^Tx)^2] = \mathbb{E}[(\sum_{i = 1}^d t_i x_i)^2]$ = $\sum_{1 \le i, j\le d} x_i x_j \mathbb{E}[t_i t_j]$ =$\sum_{i = 1}^d x_i^2 = \Vert x\Vert$ 
 -->
-<p>The proof of the theorem is based on the following lemma. </p>
+<p>The proof of the theorem is based on the following lemma.</p>
 <blockquote>
-<p><strong>Lemma.</strong> It holds that </p>
-<script type="math/tex; mode=display">
+<p><strong>Lemma.</strong> It holds that <span class="math display">\[
+\begin{aligned}
+\Pr \left( \Vert A z \Vert_2^2 \ge (1 + \epsilon) \Vert z \Vert_2^2
+\right)
+&amp;\le \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) )
+}{2} \right), \\
+\Pr \left( \Vert A z \Vert_2^2 \le (1 - \epsilon) \Vert z \Vert_2^2
+\right)
+&amp;\le \exp\left( \frac{k \cdot (\epsilon + \ln (1 - \epsilon) ) }{2}
+\right).
+\end{aligned}
+\]</span></p>
+</blockquote>
+<p><strong>Proof of the Theorem.</strong> As <span
+class="math inline">\(\forall \epsilon \in [0, 1)\)</span>, <span
+class="math display">\[
     \begin{aligned}
-        \Pr \left( \Vert A z \Vert_2^2 \ge (1 + \epsilon) \Vert z \Vert_2^2 \right) 
-            &\le \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right), \\
-        \Pr \left( \Vert A z \Vert_2^2 \le (1 - \epsilon) \Vert z \Vert_2^2 \right) 
-            &\le \exp\left( \frac{k \cdot (\epsilon + \ln (1 - \epsilon) ) }{2} \right).
-    \end{aligned}</script></blockquote>
-<p><strong>Proof of the Theorem.</strong><br>As $\forall \epsilon \in [0, 1)$, </p>
-<script type="math/tex; mode=display">
-    \begin{aligned}
-        \ln(1 + \epsilon) 
-            &= \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3} - \left( \frac{\epsilon^4}{4} - \frac{\epsilon^5}{5} \right) - \left( \frac{\epsilon^6}{6} + \frac{\epsilon^7}{7} \right) - \ldots 
-            \le \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3}, \\
-        \ln(1 - \epsilon) 
-            &= -\epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} - \frac{\epsilon^4}{4} - \ldots\le - \epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3}, 
-    \end{aligned}</script><p>we get </p>
-<script type="math/tex; mode=display">
-    \Pr \left( \Vert A z \Vert_2^2 \ge (1 + \epsilon) \Vert z \Vert_2^2 \right) 
-        \le \exp \left( - \frac{k}{2} 
-            \cdot \left( \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} \right)
-        \right) .</script><p>and</p>
-<script type="math/tex; mode=display">
-    \Pr \left( \Vert A z \Vert_2^2 \le (1 - \epsilon) \Vert z \Vert_2^2 \right) \le \exp\left( \frac{k \cdot (\epsilon - \epsilon - \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} ) }{2} \right) \le \exp \left( - \frac{k }{4} \epsilon^2 \right).</script><p>$\square$</p>
-<p>To prove the lemma, we have the following fact. </p>
+        \ln(1 + \epsilon)
+            &amp;= \epsilon - \frac{\epsilon^2}{2} +
+\frac{\epsilon^3}{3} - \left( \frac{\epsilon^4}{4} -
+\frac{\epsilon^5}{5} \right) - \left( \frac{\epsilon^6}{6} +
+\frac{\epsilon^7}{7} \right) - \ldots
+            \le \epsilon - \frac{\epsilon^2}{2} + \frac{\epsilon^3}{3},
+\\
+        \ln(1 - \epsilon)
+            &amp;= -\epsilon - \frac{\epsilon^2}{2} -
+\frac{\epsilon^3}{3} - \frac{\epsilon^4}{4} - \ldots\le - \epsilon -
+\frac{\epsilon^2}{2} - \frac{\epsilon^3}{3},
+    \end{aligned}
+\]</span></p>
+<p>we get <span class="math display">\[
+    \Pr \left( \Vert A z \Vert_2^2 \ge (1 + \epsilon) \Vert z \Vert_2^2
+\right)
+        \le \exp \left( - \frac{k}{2}
+            \cdot \left( \frac{\epsilon^2}{2} - \frac{\epsilon^3}{3}
+\right)
+        \right) .
+\]</span></p>
+<p>and <span class="math display">\[
+    \Pr \left( \Vert A z \Vert_2^2 \le (1 - \epsilon) \Vert z \Vert_2^2
+\right) \le \exp\left( \frac{k \cdot (\epsilon - \epsilon -
+\frac{\epsilon^2}{2} - \frac{\epsilon^3}{3} ) }{2} \right) \le \exp
+\left( - \frac{k }{4} \epsilon^2 \right).
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>To prove the lemma, we have the following fact.</p>
 <blockquote>
-<p><strong>Fact</strong>. (Moment Generating Function of Normal Distribution). Let $X \thicksim N(0,\sigma^2)$, then for $\lambda &lt; \frac{1}{2 \sigma^2}$, we have </p>
-<script type="math/tex; mode=display">
-    \mathbb{E} \left[ e^{ \lambda X^2 } \right] = \frac{1}{ \sqrt{ 1 - 2 \sigma^2 \lambda} }.</script></blockquote>
-<p><strong>Proof of the Fact.</strong></p>
-<script type="math/tex; mode=display">
+<p><strong>Fact</strong>. (Moment Generating Function of Normal
+Distribution). Let <span class="math inline">\(X \thicksim
+N(0,\sigma^2)\)</span>, then for <span class="math inline">\(\lambda
+&lt; \frac{1}{2 \sigma^2}\)</span>, we have <span
+class="math display">\[
+\mathbb{E} \left[ e^{ \lambda X^2 } \right] = \frac{1}{ \sqrt{ 1 - 2
+\sigma^2 \lambda} }.
+\]</span></p>
+</blockquote>
+<p><strong>Proof of the Fact.</strong> <span class="math display">\[
     \begin{aligned}
-        \mathbb{E} \left[ e^{ \lambda X^2 } \right] 
-            &= \frac{1}{ \sqrt{2 \pi \sigma } } \int e^{ \lambda x^2 } e^{ -x^2 / \big( 2 \sigma^2 \big) } \ dx \\
-            &=  \frac{1}{ \sqrt{2 \pi \sigma } } \int \exp \left(- \frac{ (1 - 2 \sigma^2 \lambda ) x^2}{2 \sigma^2 } \right) \ dx  \\
-            &= \frac{1}{ \sqrt{1 - 2 \sigma^2 \lambda } }.
-    \end{aligned}</script><p>$\square$</p>
-<p><strong>Proof of Lemma.</strong><br>Let $\sigma^2 \doteq \Vert z \Vert_2^2$, and $X_i = \langle v_i, z \rangle, \forall i \in [k]$.<br>Then $X_i, \forall i \in [k]$ are independent normal random variables with variance $\sigma^2$.<br>By the previous fact, for each $\lambda &lt; \frac{1}{2 \sigma^2}$, it holds that </p>
-<script type="math/tex; mode=display">
+        \mathbb{E} \left[ e^{ \lambda X^2 } \right]
+            &amp;= \frac{1}{ \sqrt{2 \pi \sigma } } \int e^{ \lambda x^2
+} e^{ -x^2 / \big( 2 \sigma^2 \big) } \ dx \\
+            &amp;=  \frac{1}{ \sqrt{2 \pi \sigma } } \int \exp \left(-
+\frac{ (1 - 2 \sigma^2 \lambda ) x^2}{2 \sigma^2 } \right) \ dx  \\
+            &amp;= \frac{1}{ \sqrt{1 - 2 \sigma^2 \lambda } }.
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p><strong>Proof of Lemma.</strong> Let <span
+class="math inline">\(\sigma^2 \doteq \Vert z \Vert_2^2\)</span>, and
+<span class="math inline">\(X_i = \langle v_i, z \rangle, \forall i \in
+[k]\)</span>. Then <span class="math inline">\(X_i, \forall i \in
+[k]\)</span> are independent normal random variables with variance <span
+class="math inline">\(\sigma^2\)</span>. By the previous fact, for each
+<span class="math inline">\(\lambda &lt; \frac{1}{2 \sigma^2}\)</span>,
+it holds that <span class="math display">\[
 \begin{aligned}
-    \Pr \left( \Vert A z \Vert_2^2 \ge (1 + \epsilon) \Vert z \Vert_2^2 \right)  
-        & = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \langle v_i, z \rangle^2 \ge (1 + \epsilon) \cdot \sigma^2 \right) \\
-        & = \Pr \left( \sum_{i \in [k] } X_i^2 \ge k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \\
-        & = \Pr \left( \exp \left( \lambda \sum_{i \in [k] } X_i^2 \right)\ge \exp \left( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 \right) \right) \\
-        &\le \frac{\mathbb{E} [ \exp(\lambda X^2 ) ]^k}{ \exp( \lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 ) } \\
-        &= \left( \frac{1}{ \exp( \lambda \cdot (1 + \epsilon) \cdot \sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \lambda} } \right)^k.
-\end{aligned}</script><p>We want to find a $\lambda$ that minimizes the RHS. Let </p>
-<script type="math/tex; mode=display">
-    f = \lambda \cdot (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \ln (1 - 2 \cdot \sigma^2 \cdot  \lambda).</script><p>Taking the derivative with respect to $\lambda$, </p>
-<script type="math/tex; mode=display">
+    \Pr \left( \Vert A z \Vert_2^2 \ge (1 + \epsilon) \Vert z \Vert_2^2
+\right)  
+        &amp; = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \langle v_i, z
+\rangle^2 \ge (1 + \epsilon) \cdot \sigma^2 \right) \\
+        &amp; = \Pr \left( \sum_{i \in [k] } X_i^2 \ge k \cdot (1 +
+\epsilon) \cdot \sigma^2 \right) \\
+        &amp; = \Pr \left( \exp \left( \lambda \sum_{i \in [k] } X_i^2
+\right)\ge \exp \left( \lambda \cdot k \cdot (1 + \epsilon) \cdot
+\sigma^2 \right) \right) \\
+        &amp;\le \frac{\mathbb{E} [ \exp(\lambda X^2 ) ]^k}{ \exp(
+\lambda \cdot k \cdot (1 + \epsilon) \cdot \sigma^2 ) } \\
+        &amp;= \left( \frac{1}{ \exp( \lambda \cdot (1 + \epsilon) \cdot
+\sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \lambda} } \right)^k.
+\end{aligned}
+\]</span></p>
+<p>We want to find a <span class="math inline">\(\lambda\)</span> that
+minimizes the RHS. Let <span class="math display">\[
+    f = \lambda \cdot (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \ln (1
+- 2 \cdot \sigma^2 \cdot  \lambda).
+\]</span></p>
+<p>Taking the derivative with respect to <span
+class="math inline">\(\lambda\)</span>, <span class="math display">\[
 \begin{aligned}
-    \frac{ \partial f }{ \partial \lambda} 
-        &= (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \cdot \frac{1}{1 - 2  \cdot \sigma^2 \cdot \lambda} \cdot (-2  \cdot \sigma^2 ) \\
-        &= \sigma^2 \cdot \left( (1 + \epsilon) - \frac{1}{ 1 - 2 \cdot \sigma^2 \cdot \lambda } \right). 
-\end{aligned}</script><p>Hence $f$ increases when $\lambda &lt; \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) }$ and decreases afterwards. It follows that </p>
-<script type="math/tex; mode=display">
+    \frac{ \partial f }{ \partial \lambda}
+        &amp;= (1 + \epsilon) \cdot \sigma^2 + \frac{1}{2} \cdot
+\frac{1}{1 - 2  \cdot \sigma^2 \cdot \lambda} \cdot (-2  \cdot \sigma^2
+) \\
+        &amp;= \sigma^2 \cdot \left( (1 + \epsilon) - \frac{1}{ 1 - 2
+\cdot \sigma^2 \cdot \lambda } \right).
+\end{aligned}
+\]</span></p>
+<p>Hence <span class="math inline">\(f\)</span> increases when <span
+class="math inline">\(\lambda &lt; \frac{ \epsilon }{ 2 \cdot \sigma^2
+\cdot (1 + \epsilon) }\)</span> and decreases afterwards. It follows
+that <span class="math display">\[
 \begin{aligned}
-    \Pr \left( \Vert A z \Vert_2^2 \ge (1 + \epsilon) \Vert z \Vert_2^2 \right) 
-        &\le \left( \frac{1}{ \exp( \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } \cdot (1 + \epsilon) \cdot \sigma^2 ) \cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 + \epsilon) } } } \right)^k \\
-        &= \left( \frac{ \sqrt{1 + \epsilon} }{ \exp( \epsilon / 2) } \right)^k \\
-        &= \exp \left( - \frac{k \cdot (\epsilon - \ln (1 + \epsilon) ) }{2} \right).
-\end{aligned}</script><p>Similarly, we have </p>
-<script type="math/tex; mode=display">
+    \Pr \left( \Vert A z \Vert_2^2 \ge (1 + \epsilon) \Vert z \Vert_2^2
+\right)
+        &amp;\le \left( \frac{1}{ \exp( \frac{ \epsilon }{ 2 \cdot
+\sigma^2 \cdot (1 + \epsilon) } \cdot (1 + \epsilon) \cdot \sigma^2 )
+\cdot \sqrt{1 - 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot
+\sigma^2 \cdot (1 + \epsilon) } } } \right)^k \\
+        &amp;= \left( \frac{ \sqrt{1 + \epsilon} }{ \exp( \epsilon / 2)
+} \right)^k \\
+        &amp;= \exp \left( - \frac{k \cdot (\epsilon - \ln (1 +
+\epsilon) ) }{2} \right).
+\end{aligned}
+\]</span></p>
+<p>Similarly, we have <span class="math display">\[
 \begin{aligned}
-    \Pr \left( \Vert A z \Vert_2^2 \le (1 - \epsilon) \Vert z \Vert_2^2 \right) 
-        & = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \langle v_i, z \rangle^2 \le (1 - \epsilon) \cdot \sigma^2 \right) \\
-        & = \Pr \left( \sum_{i \in [k] } X_i^2 \le k \cdot (1 - \epsilon) \cdot \sigma^2 \right) \\
-        & = \Pr \left( \exp \left( - \lambda \sum_{i \in [k] } X_i^2 \right) \ge \exp \left( - \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 \right) \right) \\
-        &\le \frac{\mathbb{E} [ \exp( -\lambda X^2 ) ]^k}{ \exp( - \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 ) } \\
-        &= \left( \frac{1}{ \exp( -\lambda \cdot (1 - \epsilon) \cdot \sigma^2 ) \cdot \sqrt{ 1 + 2 \cdot \sigma^2 \cdot \lambda} } \right)^k. 
-\end{aligned}</script><p>Taking $\lambda = \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) }$, we get </p>
-<script type="math/tex; mode=display">
+    \Pr \left( \Vert A z \Vert_2^2 \le (1 - \epsilon) \Vert z \Vert_2^2
+\right)
+        &amp; = \Pr \left( \frac{1}{k} \sum_{i \in [k] } \langle v_i, z
+\rangle^2 \le (1 - \epsilon) \cdot \sigma^2 \right) \\
+        &amp; = \Pr \left( \sum_{i \in [k] } X_i^2 \le k \cdot (1 -
+\epsilon) \cdot \sigma^2 \right) \\
+        &amp; = \Pr \left( \exp \left( - \lambda \sum_{i \in [k] } X_i^2
+\right) \ge \exp \left( - \lambda \cdot k \cdot (1 - \epsilon) \cdot
+\sigma^2 \right) \right) \\
+        &amp;\le \frac{\mathbb{E} [ \exp( -\lambda X^2 ) ]^k}{ \exp( -
+\lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 ) } \\
+        &amp;= \left( \frac{1}{ \exp( -\lambda \cdot (1 - \epsilon)
+\cdot \sigma^2 ) \cdot \sqrt{ 1 + 2 \cdot \sigma^2 \cdot \lambda} }
+\right)^k.
+\end{aligned}
+\]</span></p>
+<p>Taking <span class="math inline">\(\lambda = \frac{ \epsilon }{ 2
+\cdot \sigma^2 \cdot (1 - \epsilon) }\)</span>, we get <span
+class="math display">\[
 \begin{aligned}
-    \Pr \left( \Vert A z \Vert_2^2 \le (1 - \epsilon) \sigma^2 \right) 
-        &\le \left( \frac{1}{ \exp( - \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) } \cdot (1 - \epsilon) \cdot \sigma^2 ) \cdot \sqrt{ 1 + 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot \sigma^2 \cdot (1 - \epsilon) } } } \right)^k \\
-        &= \left( \sqrt{1 - \epsilon} \exp( \epsilon / 2) \right)^k \\
-        &= \exp\left( \frac{k \cdot (\epsilon + \ln (1 - \epsilon) ) }{2} \right).
-\end{aligned}</script><p>$\square$</p>
+    \Pr \left( \Vert A z \Vert_2^2 \le (1 - \epsilon) \sigma^2 \right)
+        &amp;\le \left( \frac{1}{ \exp( - \frac{ \epsilon }{ 2 \cdot
+\sigma^2 \cdot (1 - \epsilon) } \cdot (1 - \epsilon) \cdot \sigma^2 )
+\cdot \sqrt{ 1 + 2 \cdot \sigma^2 \cdot \frac{ \epsilon }{ 2 \cdot
+\sigma^2 \cdot (1 - \epsilon) } } } \right)^k \\
+        &amp;= \left( \sqrt{1 - \epsilon} \exp( \epsilon / 2) \right)^k
+\\
+        &amp;= \exp\left( \frac{k \cdot (\epsilon + \ln (1 - \epsilon) )
+}{2} \right).
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
 <!-- Thus, 
 $$
 \begin{aligned}
@@ -397,84 +609,156 @@ $$
 $$
 
 Given lemma three, by union bound $\Vert f(x_i) - f(x_j)\Vert \notin (1 \pm \epsilon) \Vert x_i - x_j\Vert$ occurs with less than $\frac{2}{n^2} * \frac{n (n -1)}{2} = 1 - \frac{1}{n}$ probability. Repeating generating $A$ will boost the success probability to a desired level.  -->
-<h1 id="Rademacher"><a href="#Rademacher" class="headerlink" title="Rademacher"></a>Rademacher</h1><p>In this implementation, $\tilde A \in \mathbb{R}^{k \times d}$ is a random matrix, each entry of which is independent Rademacher random variables, which equals $1$ and $-1$ with the equal probability.</p>
-<p>Let $\tilde u_1, \ldots, \tilde u_d$ be the column vectors, and $\tilde v_1, \ldots, \tilde v_k$ be the row vectors of $\tilde A$.<br>Define $A \doteq \frac{1}{\sqrt k} \tilde{A}$.<br>Hence, for the column and row vectors of $A$, it holds that $u_i = \frac{1}{\sqrt k} \tilde u_i, i \in [d]$ and $v_i = \frac{1}{\sqrt k}  \tilde v_i, i \in [k]$. </p>
-<p>It is easy to see that $A$ satisfies previous discussed column and row properties.</p>
-<p>As before, let $\sigma^2 = \Vert z \Vert_2^2$, and </p>
-<script type="math/tex; mode=display">
-    X_i 
-        \doteq \langle \tilde{v_i}, z \rangle 
-        = \sum_{j \in [d]} \tilde{v_i} [j] \cdot z[j], 
-    \qquad \forall i \in [k].</script><p>Since $\mathbb{E} \left[ \tilde{v_i} [j]^2 \right] = 1$, and $\mathbb{E} \left[ \tilde{v_i} [j] \right] = 0$, we have</p>
-<script type="math/tex; mode=display">
+<h1 id="rademacher">Rademacher</h1>
+<p>In this implementation, <span class="math inline">\(\tilde A \in
+\mathbb{R}^{k \times d}\)</span> is a random matrix, each entry of which
+is independent Rademacher random variables, which equals <span
+class="math inline">\(1\)</span> and <span
+class="math inline">\(-1\)</span> with the equal probability.</p>
+<p>Let <span class="math inline">\(\tilde u_1, \ldots, \tilde
+u_d\)</span> be the column vectors, and <span
+class="math inline">\(\tilde v_1, \ldots, \tilde v_k\)</span> be the row
+vectors of <span class="math inline">\(\tilde A\)</span>. Define <span
+class="math inline">\(A \doteq \frac{1}{\sqrt k} \tilde{A}\)</span>.
+Hence, for the column and row vectors of <span
+class="math inline">\(A\)</span>, it holds that <span
+class="math inline">\(u_i = \frac{1}{\sqrt k} \tilde u_i, i \in
+[d]\)</span> and <span class="math inline">\(v_i = \frac{1}{\sqrt k}
+\tilde v_i, i \in [k]\)</span>.</p>
+<p>It is easy to see that <span class="math inline">\(A\)</span>
+satisfies previous discussed column and row properties.</p>
+<p>As before, let <span class="math inline">\(\sigma^2 = \Vert z
+\Vert_2^2\)</span>, and <span class="math display">\[
+    X_i
+        \doteq \langle \tilde{v_i}, z \rangle
+        = \sum_{j \in [d]} \tilde{v_i} [j] \cdot z[j],
+    \qquad \forall i \in [k].
+\]</span></p>
+<p>Since <span class="math inline">\(\mathbb{E} \left[ \tilde{v_i} [j]^2
+\right] = 1\)</span>, and <span class="math inline">\(\mathbb{E} \left[
+\tilde{v_i} [j] \right] = 0\)</span>, we have <span
+class="math display">\[
     \begin{aligned}
-        \mathbb{E} \left[ X_i^2 \right] 
-        &= \sum_{j, j' \in [d]} z[j] \cdot z[j'] \cdot \mathbb{E} \left[ \tilde{v_i} [j] \cdot \tilde{v_i} [j'] \right] \\
-        &= \sum_{j \in [d]} z[j]^2 \cdot \mathbb{E} \left[ \tilde{v_i} [j]^2 \right]  
-        + \sum_{j, j' \in [d], j \neq j'} z[j] \cdot z[j'] \cdot \mathbb{E} \left[ \tilde{v_i} [j] \right] \cdot \mathbb{E} \left[  \tilde{v_i} [j'] \right]  \\
-        &= \sigma^2. 
-    \end{aligned}</script><p>And</p>
-<script type="math/tex; mode=display">
+        \mathbb{E} \left[ X_i^2 \right]
+        &amp;= \sum_{j, j&#39; \in [d]} z[j] \cdot z[j&#39;] \cdot
+\mathbb{E} \left[ \tilde{v_i} [j] \cdot \tilde{v_i} [j&#39;] \right] \\
+        &amp;= \sum_{j \in [d]} z[j]^2 \cdot \mathbb{E} \left[
+\tilde{v_i} [j]^2 \right]  
+        + \sum_{j, j&#39; \in [d], j \neq j&#39;} z[j] \cdot z[j&#39;]
+\cdot \mathbb{E} \left[ \tilde{v_i} [j] \right] \cdot \mathbb{E}
+\left[  \tilde{v_i} [j&#39;] \right]  \\
+        &amp;= \sigma^2.
+    \end{aligned}
+\]</span></p>
+<p>And <span class="math display">\[
     \mathbb{E} \left[ \Vert A z \Vert_2^2 \right]
-        = \frac{1}{k} \mathbb{E} \left[ \Vert \tilde{A } z \Vert_2^2 \right]
-        = \frac{1}{k} \sum_{i \in [k] } \mathbb{E} \left[ \langle \tilde{v_i}, z \rangle^2 \right] 
-        = \sigma^2.</script><blockquote>
-<p><strong>Theorem</strong>. (Chernoff bound for the $\chi^2$ distribution). Let $X_i \sim N(0, \sigma^2), i \in [k]$ be independent random variables. Then </p>
-<script type="math/tex; mode=display">
-    \begin{aligned}
-        \Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \ge (1 + \epsilon) \cdot  \sigma^2 \right] 
-            &\le \exp \left( - \frac{k}{2} ( \epsilon^2 / 2 - \epsilon^3 / 3) \right), \\
-        \Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \le (1 - \epsilon) \cdot  \sigma^2 \right] 
-            &\le \exp \left( - \frac{k}{4} \epsilon^2 \right). 
-    \end{aligned}</script></blockquote>
-<h2 id="Upper-Bound"><a href="#Upper-Bound" class="headerlink" title="Upper Bound"></a>Upper Bound</h2><p>To prove the upper bound, it suffices to establish the following theorem.<br>The rest of the proof is the same as the one in the previous section.</p>
+        = \frac{1}{k} \mathbb{E} \left[ \Vert \tilde{A } z \Vert_2^2
+\right]
+        = \frac{1}{k} \sum_{i \in [k] } \mathbb{E} \left[ \langle
+\tilde{v_i}, z \rangle^2 \right]
+        = \sigma^2.
+\]</span></p>
 <blockquote>
-<p><strong>Lemma</strong>. (Moment Generating Function). Let $X =\sum_{j \in [d]} \tilde{v} [j] \cdot z[j]$, where $\tilde{v} [j], j \in [d]$ are independent Rademacher random variables.<br>Then for $0 \le \lambda &lt; \frac{1}{2 \sigma^2}$, we have </p>
-<script type="math/tex; mode=display">
-    \mathbb{E} \left[ e^{ \lambda X^2 } \right] \le \frac{1}{ \sqrt{ 1 - 2 \sigma^2 \lambda} }.</script></blockquote>
-<p><strong>Proof.</strong><br>Let $Y =\sum_{j \in [d]} w [j] \cdot z[j]$, where $w [j], j \in [d]$ are independent standard gaussian random variables.<br>Then $Y \sim N(0, \sigma^2)$, and </p>
-<script type="math/tex; mode=display">
-    \mathbb{E} \left[ e^{ \lambda Y^2 } \right] = \frac{1}{ \sqrt{ 1 - 2 \sigma^2 \lambda} }.</script><p>Our goal is to prove that $\mathbb{E} \left[ e^{ \lambda X^2 } \right] \le \mathbb{E} \left[ e^{ \lambda Y^2 } \right]$. </p>
-<p>Since $X^{2m} \ge 0, \lambda \ge 0$, via monotone convergence theorem, </p>
-<script type="math/tex; mode=display">
+<p><strong>Theorem</strong>. (Chernoff bound for the <span
+class="math inline">\(\chi^2\)</span> distribution). Let <span
+class="math inline">\(X_i \sim N(0, \sigma^2), i \in [k]\)</span> be
+independent random variables. Then <span class="math display">\[
+\begin{aligned}
+\Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \ge (1 + \epsilon)
+\cdot  \sigma^2 \right]
+&amp;\le \exp \left( - \frac{k}{2} ( \epsilon^2 / 2 - \epsilon^3 / 3)
+\right), \\
+\Pr \left[ \frac{1}{k} \sum_{ i \in [k] } X_i^2 \le (1 - \epsilon)
+\cdot  \sigma^2 \right]
+&amp;\le \exp \left( - \frac{k}{4} \epsilon^2 \right).
+\end{aligned}
+\]</span></p>
+</blockquote>
+<h2 id="upper-bound">Upper Bound</h2>
+<p>To prove the upper bound, it suffices to establish the following
+theorem. The rest of the proof is the same as the one in the previous
+section.</p>
+<blockquote>
+<p><strong>Lemma</strong>. (Moment Generating Function). Let <span
+class="math inline">\(X =\sum_{j \in [d]} \tilde{v} [j] \cdot
+z[j]\)</span>, where <span class="math inline">\(\tilde{v} [j], j \in
+[d]\)</span> are independent Rademacher random variables. Then for <span
+class="math inline">\(0 \le \lambda &lt; \frac{1}{2 \sigma^2}\)</span>,
+we have <span class="math display">\[
+\mathbb{E} \left[ e^{ \lambda X^2 } \right] \le \frac{1}{ \sqrt{ 1 - 2
+\sigma^2 \lambda} }.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(Y =\sum_{j
+\in [d]} w [j] \cdot z[j]\)</span>, where <span class="math inline">\(w
+[j], j \in [d]\)</span> are independent standard gaussian random
+variables. Then <span class="math inline">\(Y \sim N(0,
+\sigma^2)\)</span>, and <span class="math display">\[
+    \mathbb{E} \left[ e^{ \lambda Y^2 } \right] = \frac{1}{ \sqrt{ 1 - 2
+\sigma^2 \lambda} }.
+\]</span></p>
+<p>Our goal is to prove that <span class="math inline">\(\mathbb{E}
+\left[ e^{ \lambda X^2 } \right] \le \mathbb{E} \left[ e^{ \lambda Y^2 }
+\right]\)</span>.</p>
+<p>Since <span class="math inline">\(X^{2m} \ge 0, \lambda \ge
+0\)</span>, via monotone convergence theorem, <span
+class="math display">\[
     \begin{aligned}
         \mathbb{E} \left[ \exp \left( \lambda X^2 \right) \right]
-            &= \mathbb{E} \left[ \lim_{t \rightarrow \infty} \sum_{m = 0}^t \frac{\lambda^m X^{2m}}{m!} \right] \\
-            &= \lim_{t \rightarrow \infty} \sum_{m = 0}^t \mathbb{E} \left[ \frac{\lambda^m X^{2m}}{m!} \right] 
-            = \sum_{m = 0}^\infty \frac{\lambda^m \mathbb{E} \left[ X^{2m} \right] }{m!} . 
-    \end{aligned}</script><p>Following similar vein, we have</p>
-<script type="math/tex; mode=display">
+            &amp;= \mathbb{E} \left[ \lim_{t \rightarrow \infty} \sum_{m
+= 0}^t \frac{\lambda^m X^{2m}}{m!} \right] \\
+            &amp;= \lim_{t \rightarrow \infty} \sum_{m = 0}^t \mathbb{E}
+\left[ \frac{\lambda^m X^{2m}}{m!} \right]
+            = \sum_{m = 0}^\infty \frac{\lambda^m \mathbb{E} \left[
+X^{2m} \right] }{m!} .
+    \end{aligned}
+\]</span></p>
+<p>Following similar vein, we have <span class="math display">\[
     \begin{aligned}
         \mathbb{E} \left[ \exp \left( \lambda Y^2 \right) \right]
-            = \sum_{m = 0}^\infty \frac{\lambda^m \mathbb{E} \left[ Y^{2m} \right] }{m!} . 
-    \end{aligned}</script><p>It suffices to prove that $\mathbb{E} \left[ X^{2m} \right] \le \mathbb{E} \left[ Y^{2m} \right]$ for each $m \in \mathbb{N}$. </p>
-<p>Note, </p>
-<script type="math/tex; mode=display">
+            = \sum_{m = 0}^\infty \frac{\lambda^m \mathbb{E} \left[
+Y^{2m} \right] }{m!} .
+    \end{aligned}
+\]</span></p>
+<p>It suffices to prove that <span class="math inline">\(\mathbb{E}
+\left[ X^{2m} \right] \le \mathbb{E} \left[ Y^{2m} \right]\)</span> for
+each <span class="math inline">\(m \in \mathbb{N}\)</span>.</p>
+<p>Note, <span class="math display">\[
     \begin{aligned}
         \mathbb{E} \left[ X^{2m} \right]
-            &= \sum_{ 
+            &amp;= \sum_{
                 \begin{array}{c}
                     m_1, \ldots, m_d \\ m_1 + \ldots + m_d = 2m
                 \end{array}
-            } \binom{2m}{m_1, \ldots, m_d}  \prod_{j \in [d]} \Big( z[j] \Big)^{m_j} \mathbb{E} \left[ \Big( \tilde{v} [j] \Big)^{m_j} \right],
-    \end{aligned} 
+            } \binom{2m}{m_1, \ldots, m_d}  \prod_{j \in [d]} \Big( z[j]
+\Big)^{m_j} \mathbb{E} \left[ \Big( \tilde{v} [j] \Big)^{m_j} \right],
+    \end{aligned}
     \\
     \begin{aligned}
         \mathbb{E} \left[ Y^{2m} \right]
-            &= \sum_{ 
+            &amp;= \sum_{
                 \begin{array}{c}
                     m_1, \ldots, m_d \\ m_1 + \ldots + m_d = 2m
                 \end{array}
-            } \binom{2m}{m_1, \ldots, m_d}  \prod_{j \in [d]} \Big( z[j] \Big)^{m_j} \mathbb{E} \left[ \Big( w [j] \Big)^{m_j} \right].
-    \end{aligned}</script><p>We compare these expansions:</p>
+            } \binom{2m}{m_1, \ldots, m_d}  \prod_{j \in [d]} \Big( z[j]
+\Big)^{m_j} \mathbb{E} \left[ \Big( w [j] \Big)^{m_j} \right].
+    \end{aligned}
+\]</span></p>
+<p>We compare these expansions:</p>
 <ul>
-<li><p>If $m_j$ is odd, then $\mathbb{E} \left[ \Big( \tilde{v} [j] \Big)^{m_j} \right] = \mathbb{E} \left[ \Big( w [j] \Big)^{m_j} \right] = 0$.</p>
-</li>
-<li><p>If $m_j$ is even, then $\Big( z[j] \Big)^{m_j} \ge 0$, and $1 = \mathbb{E} \left[ \Big( \tilde{v} [j] \Big)^{m_j} \right] \le \mathbb{E} \left[ \Big( w [j] \Big)^{m_j} \right] = (m_j - 1)!!$. </p>
-</li>
+<li><p>If <span class="math inline">\(m_j\)</span> is odd, then <span
+class="math inline">\(\mathbb{E} \left[ \Big( \tilde{v} [j] \Big)^{m_j}
+\right] = \mathbb{E} \left[ \Big( w [j] \Big)^{m_j} \right] =
+0\)</span>.</p></li>
+<li><p>If <span class="math inline">\(m_j\)</span> is even, then <span
+class="math inline">\(\Big( z[j] \Big)^{m_j} \ge 0\)</span>, and <span
+class="math inline">\(1 = \mathbb{E} \left[ \Big( \tilde{v} [j]
+\Big)^{m_j} \right] \le \mathbb{E} \left[ \Big( w [j] \Big)^{m_j}
+\right] = (m_j - 1)!!\)</span>.</p></li>
 </ul>
-<p>This proves that $\mathbb{E} \left[ X^{2m} \right] \le \mathbb{E} \left[ Y^{2m} \right]$.</p>
-<p>$\square$</p>
+<p>This proves that <span class="math inline">\(\mathbb{E} \left[ X^{2m}
+\right] \le \mathbb{E} \left[ Y^{2m} \right]\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
 <!-- 
 > Lemma 1. (Moment Generating Function of Rademacher random variable). Let $X$ be a random variable such that 
 > $$
@@ -506,34 +790,58 @@ $$
     \end{aligned}
 $$ 
 -->
-<h2 id="Lower-Bound"><a href="#Lower-Bound" class="headerlink" title="Lower Bound"></a>Lower Bound</h2><p>We need the following facts. </p>
+<h2 id="lower-bound">Lower Bound</h2>
+<p>We need the following facts.</p>
 <blockquote>
-<p><strong>Fact.</strong> For $t \ge 0$, </p>
-<script type="math/tex; mode=display">
-    e^{-t} \le 1 - t + \frac{t^2}{2}.</script></blockquote>
-<p>Further, in the previous section, we prove that </p>
+<p><strong>Fact.</strong> For <span class="math inline">\(t \ge
+0\)</span>, <span class="math display">\[
+e^{-t} \le 1 - t + \frac{t^2}{2}.
+\]</span></p>
+</blockquote>
+<p>Further, in the previous section, we prove that</p>
 <blockquote>
-<p><strong>Fact.</strong> Let $X \doteq \sum<em>{j \in [d]} \tilde{v} [j] \cdot z[j]$, where $\tilde{v} [j], j \in [d]$ are independent Rademacher random variables, and $Y \doteq \sum</em>{j \in [d]} w [j] \cdot z[j]$, where $w [j], j \in [d]$ are independent standard gaussian random variables.<br>Then </p>
-<script type="math/tex; mode=display">
-    \mathbb{E}[X^4] \le \mathbb{E} [Y^4].</script></blockquote>
-<p>Noting that $Y \sim N(0, \sigma^2)$, we can show $\mathbb{E}[Y^4] = \sigma^2 (4 - 1)!! = 3 \sigma^2$.</p>
-<p><strong>Proof.</strong> For each $\lambda &gt; 0$, </p>
-<script type="math/tex; mode=display">
+<p><strong>Fact.</strong> Let <span class="math inline">\(X \doteq
+\sum_{j \in [d]} \tilde{v} [j] \cdot z[j]\)</span>, where <span
+class="math inline">\(\tilde{v} [j], j \in [d]\)</span> are independent
+Rademacher random variables, and <span class="math inline">\(Y \doteq
+\sum_{j \in [d]} w [j] \cdot z[j]\)</span>, where <span
+class="math inline">\(w [j], j \in [d]\)</span> are independent standard
+gaussian random variables. Then <span class="math display">\[
+\mathbb{E}[X^4] \le \mathbb{E} [Y^4].
+\]</span></p>
+</blockquote>
+<p>Noting that <span class="math inline">\(Y \sim N(0,
+\sigma^2)\)</span>, we can show <span
+class="math inline">\(\mathbb{E}[Y^4] = \sigma^2 (4 - 1)!! = 3
+\sigma^2\)</span>.</p>
+<p><strong>Proof.</strong> For each <span class="math inline">\(\lambda
+&gt; 0\)</span>, <span class="math display">\[
 \begin{aligned}
-    \Pr \left[ \Vert A z \Vert_2^2 \le (1 - \epsilon) \Vert z \Vert_2^2 \right] 
-        & = \Pr \left[ \sum_{i \in [k] } X_i^2 \le k \cdot (1 - \epsilon) \cdot \sigma^2 \right] \\
-        & = \Pr \left[ \exp \left( - \lambda \sum_{i \in [k] } X_i^2 \right) \ge \exp \left( - \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 \right) \right] \\
-        &\le \frac{ \mathbb{E} [ \exp( -\lambda X^2 ) ]^k}{ \exp( - \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 ) } \\
-        &\stackrel{\lambda X^2 \ge 0}{\le} \left( \mathbb{E} \left[ 1 - \lambda X^2  + \frac{\lambda^2 X^4}{2} \right] \right)^k 
-        \exp \left( \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 \right)  \\
-        &\le \left( 1 - \lambda \sigma^2  + \frac{\lambda^2 \mathbb{E} \left[ X^4 \right] }{2}  \right)^k 
-        \exp \left( \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 \right)  \\
-        &\le \left( 1 - \lambda \sigma^2  + \frac{3 \lambda^2 \sigma^4 }{2}  \right)^k 
-        \exp \left( \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 \right).  
-\end{aligned}</script><!-- 
+    \Pr \left[ \Vert A z \Vert_2^2 \le (1 - \epsilon) \Vert z \Vert_2^2
+\right]
+        &amp; = \Pr \left[ \sum_{i \in [k] } X_i^2 \le k \cdot (1 -
+\epsilon) \cdot \sigma^2 \right] \\
+        &amp; = \Pr \left[ \exp \left( - \lambda \sum_{i \in [k] } X_i^2
+\right) \ge \exp \left( - \lambda \cdot k \cdot (1 - \epsilon) \cdot
+\sigma^2 \right) \right] \\
+        &amp;\le \frac{ \mathbb{E} [ \exp( -\lambda X^2 ) ]^k}{ \exp( -
+\lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2 ) } \\
+        &amp;\stackrel{\lambda X^2 \ge 0}{\le} \left( \mathbb{E} \left[
+1 - \lambda X^2  + \frac{\lambda^2 X^4}{2} \right] \right)^k
+        \exp \left( \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2
+\right)  \\
+        &amp;\le \left( 1 - \lambda \sigma^2  + \frac{\lambda^2
+\mathbb{E} \left[ X^4 \right] }{2}  \right)^k
+        \exp \left( \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2
+\right)  \\
+        &amp;\le \left( 1 - \lambda \sigma^2  + \frac{3 \lambda^2
+\sigma^4 }{2}  \right)^k
+        \exp \left( \lambda \cdot k \cdot (1 - \epsilon) \cdot \sigma^2
+\right).  
+\end{aligned}
+\]</span> <!-- 
 Choosing $\lambda = \frac{\epsilon}{2 \sigma^2 (1 + \epsilon)}$, we have 
--->
-<!--  
+--> <!--  
 $$
     \left( 1 - \frac{\epsilon}{2 (1 + \epsilon)}  + \frac{3 \epsilon^2 }{8 (1 + \epsilon)^2}  \right)^k 
         \exp \left( \frac{\epsilon \cdot k \cdot (1 - \epsilon) }{2 (1 + \epsilon)} \right)  \\
@@ -551,8 +859,7 @@ $$
         \right) 
     \right)  
 $$
--->
-<!-- 
+--> <!-- 
 $$
     \begin{aligned}
         &\left( 1 - \frac{\epsilon}{2 (1 + \epsilon)}  + \frac{3 \epsilon^2 }{8 (1 + \epsilon)^2}  \right)^k 
@@ -570,27 +877,36 @@ $$
         \right)
     \end{aligned}
 $$ 
--->
-<p>Choosing $\lambda = \frac{\epsilon}{2 \sigma^2}$, we have</p>
-<script type="math/tex; mode=display">
+--></p>
+<p>Choosing <span class="math inline">\(\lambda = \frac{\epsilon}{2
+\sigma^2}\)</span>, we have <span class="math display">\[
     \begin{aligned}
-        \left( 1 - \frac{\epsilon}{2}  + \frac{3 \epsilon^2 }{8 }  \right)^k 
-        \exp \left( \frac{\epsilon \cdot k \cdot (1 - \epsilon) }{2 } \right)  
-        &\le \exp \left( 
+        \left( 1 - \frac{\epsilon}{2}  + \frac{3 \epsilon^2 }{8
+}  \right)^k
+        \exp \left( \frac{\epsilon \cdot k \cdot (1 - \epsilon) }{2 }
+\right)  
+        &amp;\le \exp \left(
             - \frac{k \epsilon}{2}  + \frac{3 k \epsilon^2 }{8}
-            + \frac{\epsilon \cdot k \cdot (1 - \epsilon) }{2} 
+            + \frac{\epsilon \cdot k \cdot (1 - \epsilon) }{2}
         \right)  \\
-        &= \exp \left( 
+        &amp;= \exp \left(
             \frac{3 k \epsilon^2 }{8}
-            - \frac{k \epsilon^2 }{2} 
+            - \frac{k \epsilon^2 }{2}
         \right)  \\
-        &= \exp \left( 
-            - \frac{k \epsilon^2}{4} 
+        &amp;= \exp \left(
+            - \frac{k \epsilon^2}{4}
         \right).  
-    \end{aligned}</script><p>$\square$</p>
-<p><strong>Remark.</strong> For the proof of the lower bound, we only require the $\tilde{v} [j], j \in [d]$ to be 4-wise independent.</p>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] <em>J. Nelson, “Sketching and Streaming High-Dimensional Vectors,” p. 145.</em></p>
-<p>[2]. <em>D. Achlioptas, “Database-friendly random projections,” in PODS ’01.</em></p>
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark.</strong> For the proof of the lower bound, we only
+require the <span class="math inline">\(\tilde{v} [j], j \in
+[d]\)</span> to be 4-wise independent.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>J. Nelson, “Sketching and Streaming High-Dimensional
+Vectors,” p. 145.</em></p>
+<p>[2]. <em>D. Achlioptas, “Database-friendly random projections,” in
+PODS ’01.</em></p>
 
     </div>
 
@@ -675,7 +991,7 @@ $$
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Column-Perspective"><span class="nav-number">2.</span> <span class="nav-text">Column Perspective</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Row-Perspective"><span class="nav-number">3.</span> <span class="nav-text">Row Perspective</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gaussian"><span class="nav-number">4.</span> <span class="nav-text">Gaussian</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rademacher"><span class="nav-number">5.</span> <span class="nav-text">Rademacher</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Upper-Bound"><span class="nav-number">5.1.</span> <span class="nav-text">Upper Bound</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lower-Bound"><span class="nav-number">5.2.</span> <span class="nav-text">Lower Bound</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#column-perspective"><span class="nav-number">2.</span> <span class="nav-text">Column Perspective</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#row-perspective"><span class="nav-number">3.</span> <span class="nav-text">Row Perspective</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gaussian"><span class="nav-number">4.</span> <span class="nav-text">Gaussian</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#rademacher"><span class="nav-number">5.</span> <span class="nav-text">Rademacher</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#upper-bound"><span class="nav-number">5.1.</span> <span class="nav-text">Upper Bound</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lower-bound"><span class="nav-number">5.2.</span> <span class="nav-text">Lower Bound</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

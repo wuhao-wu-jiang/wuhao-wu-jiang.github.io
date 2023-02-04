@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Given a graph \(G &#x3D; \left&lt; V, E \right&gt;\), and a subset \(S \subset V\), the sub-graph \(G(S)\) induced by \(S\) is defined as \[ G(S) &#x3D; \left&lt; S, E_S \right&gt; \] where \(E_S &#x3D; \{ e : e">
+  <meta name="description" content="Given a graph \(G &#x3D; \left&lt; V, E \right&gt;\), and a subset \(S \subset V\), the sub-graph \(G(S)\) induced by \(S\) is defined as \[ G(S) &#x3D; \left&lt; S, E_S \right&gt; \] where \(E_S &#x3D; \{ e :">
 <meta property="og:type" content="article">
 <meta property="og:title" content="k-Core Decomposition">
 <meta property="og:url" content="http://example.com/2020/04/11/k-Core-Decomposition/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Given a graph \(G &#x3D; \left&lt; V, E \right&gt;\), and a subset \(S \subset V\), the sub-graph \(G(S)\) induced by \(S\) is defined as \[ G(S) &#x3D; \left&lt; S, E_S \right&gt; \] where \(E_S &#x3D; \{ e : e">
+<meta property="og:description" content="Given a graph \(G &#x3D; \left&lt; V, E \right&gt;\), and a subset \(S \subset V\), the sub-graph \(G(S)\) induced by \(S\) is defined as \[ G(S) &#x3D; \left&lt; S, E_S \right&gt; \] where \(E_S &#x3D; \{ e :">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-04-11T06:07:17.000Z">
 <meta property="article:modified_time" content="2020-04-11T06:46:51.000Z">
@@ -189,33 +189,77 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Given a graph <span class="math inline">\(G = \left&lt; V, E \right&gt;\)</span>, and a subset <span class="math inline">\(S \subset V\)</span>, the sub-graph <span class="math inline">\(G(S)\)</span> induced by <span class="math inline">\(S\)</span> is defined as <span class="math display">\[
+        <p>Given a graph <span class="math inline">\(G = \left&lt; V, E
+\right&gt;\)</span>, and a subset <span class="math inline">\(S \subset
+V\)</span>, the sub-graph <span class="math inline">\(G(S)\)</span>
+induced by <span class="math inline">\(S\)</span> is defined as <span
+class="math display">\[
 G(S) = \left&lt; S, E_S \right&gt;
 \]</span></p>
-<p>where <span class="math inline">\(E_S = \{ e : e = (u, v) \in E \wedge (u, v) \in S \times S\}\)</span>.</p>
-<p><span class="math inline">\(G(S)\)</span> is called a <span class="math inline">\(k\)</span>-core if it is the maximal sub-graph wuch that every vertex in <span class="math inline">\(S\)</span> has degree at least <span class="math inline">\(k\)</span> inside this sub-graph. Given the definition of <span class="math inline">\(k\)</span>-core, the core number of a vertex <span class="math inline">\(v \in V\)</span> is the maximum <span class="math inline">\(k\)</span> such tha t <span class="math inline">\(\exists S \subset V\)</span>, <span class="math inline">\(G(S)\)</span> is a <span class="math inline">\(k\)</span>-core and <span class="math inline">\(v \in S\)</span>.</p>
-<p>The key observation is that, given a <span class="math inline">\(k\)</span>-core <span class="math inline">\(G(S)\)</span>, if we remove every vertex <span class="math inline">\(v \in V\)</span> (as long as edges incident to <span class="math inline">\(v\)</span>) such that <span class="math inline">\(d(v) &lt; k\)</span>, then <span class="math inline">\(G(S)\)</span> remains a <span class="math inline">\(k\)</span>-core. Since</p>
+<p>where <span class="math inline">\(E_S = \{ e : e = (u, v) \in E
+\wedge (u, v) \in S \times S\}\)</span>.</p>
+<p><span class="math inline">\(G(S)\)</span> is called a <span
+class="math inline">\(k\)</span>-core if it is the maximal sub-graph
+wuch that every vertex in <span class="math inline">\(S\)</span> has
+degree at least <span class="math inline">\(k\)</span> inside this
+sub-graph. Given the definition of <span
+class="math inline">\(k\)</span>-core, the core number of a vertex <span
+class="math inline">\(v \in V\)</span> is the maximum <span
+class="math inline">\(k\)</span> such tha t <span
+class="math inline">\(\exists S \subset V\)</span>, <span
+class="math inline">\(G(S)\)</span> is a <span
+class="math inline">\(k\)</span>-core and <span class="math inline">\(v
+\in S\)</span>.</p>
+<p>The key observation is that, given a <span
+class="math inline">\(k\)</span>-core <span
+class="math inline">\(G(S)\)</span>, if we remove every vertex <span
+class="math inline">\(v \in V\)</span> (as long as edges incident to
+<span class="math inline">\(v\)</span>) such that <span
+class="math inline">\(d(v) &lt; k\)</span>, then <span
+class="math inline">\(G(S)\)</span> remains a <span
+class="math inline">\(k\)</span>-core. Since</p>
 <ol type="1">
-<li>If <span class="math inline">\(d(v) &lt; k\)</span>, then <span class="math inline">\(v \notin S\)</span>.</li>
-<li>Removing edges incident to <span class="math inline">\(v\)</span> will not affect edges inside <span class="math inline">\(G(S)\)</span>. Then, the vertices' degree inside <span class="math inline">\(G(S)\)</span> remains unchanged.</li>
+<li>If <span class="math inline">\(d(v) &lt; k\)</span>, then <span
+class="math inline">\(v \notin S\)</span>.</li>
+<li>Removing edges incident to <span class="math inline">\(v\)</span>
+will not affect edges inside <span class="math inline">\(G(S)\)</span>.
+Then, the vertices' degree inside <span
+class="math inline">\(G(S)\)</span> remains unchanged.</li>
 </ol>
-<p>This gives an algorithm for computing the core number of each vertex.</p>
+<p>This gives an algorithm for computing the core number of each
+vertex.</p>
 <blockquote>
 <ol type="1">
 <li>for <span class="math inline">\(v \in V\)</span>:</li>
-<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(check[v] \leftarrow\)</span> false</li>
-<li>while not <span class="math inline">\(check[v] =\)</span> true <span class="math inline">\(\forall v \in V\)</span>:</li>
-<li><span class="math inline">\(\quad\)</span> Get an <span class="math inline">\(v\)</span> with smallest <span class="math inline">\(d(v)\)</span> and <span class="math inline">\(check[v] =\)</span> false</li>
-<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(check[v] \leftarrow\)</span> true</li>
-<li><span class="math inline">\(\quad\)</span> <span class="math inline">\(core[v] \leftarrow d(v)\)</span></li>
-<li><span class="math inline">\(\quad\)</span> for <span class="math inline">\(u \in N(v)\)</span> such that <span class="math inline">\(d(u) &gt; k\)</span>:</li>
-<li><span class="math inline">\(\qquad\)</span> Delete <span class="math inline">\((v, u)\)</span></li>
-<li><span class="math inline">\(\qquad\)</span> <span class="math inline">\(d(u) \leftarrow d(u) - 1\)</span></li>
+<li><span class="math inline">\(\quad\)</span> <span
+class="math inline">\(check[v] \leftarrow\)</span> false</li>
+<li>while not <span class="math inline">\(check[v] =\)</span> true <span
+class="math inline">\(\forall v \in V\)</span>:</li>
+<li><span class="math inline">\(\quad\)</span> Get an <span
+class="math inline">\(v\)</span> with smallest <span
+class="math inline">\(d(v)\)</span> and <span
+class="math inline">\(check[v] =\)</span> false</li>
+<li><span class="math inline">\(\quad\)</span> <span
+class="math inline">\(check[v] \leftarrow\)</span> true</li>
+<li><span class="math inline">\(\quad\)</span> <span
+class="math inline">\(core[v] \leftarrow d(v)\)</span></li>
+<li><span class="math inline">\(\quad\)</span> for <span
+class="math inline">\(u \in N(v)\)</span> such that <span
+class="math inline">\(d(u) &gt; k\)</span>:</li>
+<li><span class="math inline">\(\qquad\)</span> Delete <span
+class="math inline">\((v, u)\)</span></li>
+<li><span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(d(u) \leftarrow d(u) - 1\)</span></li>
 </ol>
 </blockquote>
-<p>We can use an array <span class="math inline">\(D\)</span> such that <span class="math inline">\(D[i]\)</span> is a linked list and contains all vertices with degree <span class="math inline">\(i\)</span>. Therefore, line 4 can be executed in <span class="math inline">\(O(1)\)</span> time.</p>
+<p>We can use an array <span class="math inline">\(D\)</span> such that
+<span class="math inline">\(D[i]\)</span> is a linked list and contains
+all vertices with degree <span class="math inline">\(i\)</span>.
+Therefore, line 4 can be executed in <span
+class="math inline">\(O(1)\)</span> time.</p>
 <h3 id="reference">Reference</h3>
-<p>[1] Batagelj, V. and Zaversnik, M., 2003. An O (m) algorithm for cores decomposition of networks. arXiv preprint cs/0310049.</p>
+<p>[1] Batagelj, V. and Zaversnik, M., 2003. An O (m) algorithm for
+cores decomposition of networks. arXiv preprint cs/0310049.</p>
 
     </div>
 

@@ -192,136 +192,208 @@
 
       
           <h1 id="algorithm">Algorithm</h1>
-<p>Let <span class="math inline">\(G = (V, E)\)</span> be an undirected connected graph with <span class="math inline">\(n\)</span> vertices, <span class="math inline">\(m\)</span> edges, and min-cut size <span class="math inline">\(c^*\)</span>. David R. Karger [1] proposed a simple randomized algorithm for estimating the value of <span class="math inline">\(c^*\)</span>, as described thus.</p>
+<p>Let <span class="math inline">\(G = (V, E)\)</span> be an undirected
+connected graph with <span class="math inline">\(n\)</span> vertices,
+<span class="math inline">\(m\)</span> edges, and min-cut size <span
+class="math inline">\(c^*\)</span>. David R. Karger [1] proposed a
+simple randomized algorithm for estimating the value of <span
+class="math inline">\(c^*\)</span>, as described thus.</p>
 <blockquote>
-<p><strong>Karger Algorithm</strong>. 1. <strong>repeat</strong> until two nodes are left in the graph:<br />
-2. <span class="math inline">\(\qquad\)</span> Select an edge <span class="math inline">\(e = (u,v)\)</span> from the graph uniformly at random.<br />
-3. <span class="math inline">\(\qquad\)</span> Merge its endpoints <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> into new vertex <span class="math inline">\(w\)</span>.<br />
-4. <span class="math inline">\(\qquad\)</span> Remove self loops created by the merge.<br />
-4. <span class="math inline">\(\qquad\)</span> Connect the edges incident to <span class="math inline">\(u\)</span> or <span class="math inline">\(v\)</span> to new vertex <span class="math inline">\(w\)</span>.<br />
-5. Return the number of edges, denoted as <span class="math inline">\(c\)</span>, between the remaining two vertices.</p>
+<p><strong>Karger Algorithm</strong>. 1. <strong>repeat</strong> until
+two nodes are left in the graph:<br />
+2. <span class="math inline">\(\qquad\)</span> Select an edge <span
+class="math inline">\(e = (u,v)\)</span> from the graph uniformly at
+random.<br />
+3. <span class="math inline">\(\qquad\)</span> Merge its endpoints <span
+class="math inline">\(u\)</span> and <span
+class="math inline">\(v\)</span> into new vertex <span
+class="math inline">\(w\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> Remove self loops created
+by the merge.<br />
+4. <span class="math inline">\(\qquad\)</span> Connect the edges
+incident to <span class="math inline">\(u\)</span> or <span
+class="math inline">\(v\)</span> to new vertex <span
+class="math inline">\(w\)</span>.<br />
+5. Return the number of edges, denoted as <span
+class="math inline">\(c\)</span>, between the remaining two
+vertices.</p>
 </blockquote>
-<p>Each iteration in the algorithm is called a <strong><em>contraction</em></strong>.</p>
+<p>Each iteration in the algorithm is called a
+<strong><em>contraction</em></strong>.</p>
 <h1 id="analysis">Analysis</h1>
 <blockquote>
 <p><strong>Theorem.</strong> It holds that <span class="math display">\[
-\Pr[ c = c^* ] = \frac{2}{n(n - 1)}. 
+\Pr[ c = c^* ] = \frac{2}{n(n - 1)}.
 \]</span></p>
 </blockquote>
 <p>We can boost the successful probability via repetitions.</p>
 <blockquote>
-<p><strong>Corollary.</strong> If we repeat the algorithm <span class="math inline">\(0.5 \cdot n \cdot (n - 1) \cdot \ln n\)</span> times, the probability we don't find <span class="math inline">\(c^*\)</span> is at most <span class="math inline">\(1 / n\)</span>.</p>
+<p><strong>Corollary.</strong> If we repeat the algorithm <span
+class="math inline">\(0.5 \cdot n \cdot (n - 1) \cdot \ln n\)</span>
+times, the probability we don't find <span
+class="math inline">\(c^*\)</span> is at most <span
+class="math inline">\(1 / n\)</span>.</p>
 </blockquote>
-<p><strong>Proof of the Corollary.</strong> <span class="math display">\[
-  \left( 1 - \frac{2}{n (n - 1)} \right)^{0.5 \cdot n \cdot (n - 1) \cdot \ln n} \le e^{\ln n} = \frac{1}{n}
+<p><strong>Proof of the Corollary.</strong> <span
+class="math display">\[
+  \left( 1 - \frac{2}{n (n - 1)} \right)^{0.5 \cdot n \cdot (n - 1)
+\cdot \ln n} \le e^{\ln n} = \frac{1}{n}
 \]</span> <span class="math inline">\(\square\)</span></p>
 <p><strong>Proof of the Theorem.</strong></p>
-<p>Consider the first iteration of the algorithm. The key observation is that the degree of each vertex is at least <span class="math inline">\(c^*\)</span>. Therefore, <span class="math display">\[
-  m \ge c^* \cdot n / 2. 
+<p>Consider the first iteration of the algorithm. The key observation is
+that the degree of each vertex is at least <span
+class="math inline">\(c^*\)</span>. Therefore, <span
+class="math display">\[
+  m \ge c^* \cdot n / 2.
 \]</span></p>
-<p>Fix a min-cut in <span class="math inline">\(G\)</span>, the probability that any of its edges is selected at most <span class="math display">\[
-  \frac{c^*}{m} \le \frac{2} { n }. 
+<p>Fix a min-cut in <span class="math inline">\(G\)</span>, the
+probability that any of its edges is selected at most <span
+class="math display">\[
+  \frac{c^*}{m} \le \frac{2} { n }.
 \]</span></p>
-<p>Therefore, with probability at least <span class="math inline">\(1 - 2 / n\)</span>, none of the edges in the chosen min-cut is contracted in the first iteration. Moreover, we have the following observation.</p>
+<p>Therefore, with probability at least <span class="math inline">\(1 -
+2 / n\)</span>, none of the edges in the chosen min-cut is contracted in
+the first iteration. Moreover, we have the following observation.</p>
 <blockquote>
-<p>After contracting an edge, each cut in the new graph corresponds to a cut in the original graph.</p>
+<p>After contracting an edge, each cut in the new graph corresponds to a
+cut in the original graph.</p>
 </blockquote>
-<p>Therefore, if none of the edges of the chosen min-cut is contracted, it remains to be the min-cut in the new graph. Conditioned on this, via similar argument, we can prove that in the second iteration, none of the edges of the chosen min-cut is contracted with probability at least <span class="math inline">\(1 - 2 / (n - 1)\)</span>.</p>
-<p>By induction, it holds that, none of the edges of the chosen min-cut is contracted over all iterations is given by <span class="math display">\[
-  \left(1 - \frac{2}{n} \right) \left(1 - \frac{2}{n - 1} \right) \ldots \left(1 - \frac{2}{3} \right) 
-  = \binom{n}{2}^{-1}. 
+<p>Therefore, if none of the edges of the chosen min-cut is contracted,
+it remains to be the min-cut in the new graph. Conditioned on this, via
+similar argument, we can prove that in the second iteration, none of the
+edges of the chosen min-cut is contracted with probability at least
+<span class="math inline">\(1 - 2 / (n - 1)\)</span>.</p>
+<p>By induction, it holds that, none of the edges of the chosen min-cut
+is contracted over all iterations is given by <span
+class="math display">\[
+  \left(1 - \frac{2}{n} \right) \left(1 - \frac{2}{n - 1} \right) \ldots
+\left(1 - \frac{2}{3} \right)
+  = \binom{n}{2}^{-1}.
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="number-of-min-cuts">Number of Min Cuts</h1>
 <blockquote>
-<p><strong>Corollary.</strong> There are <span class="math inline">\(n (n - 1) / 2\)</span> min-cuts in the graph.</p>
+<p><strong>Corollary.</strong> There are <span class="math inline">\(n
+(n - 1) / 2\)</span> min-cuts in the graph.</p>
 </blockquote>
 <p><strong>Proof.</strong><br />
 The events of outputting different min-cuts are disjoint.<br />
 <span class="math inline">\(\square\)</span></p>
-<p>By slightly modifying the algorithm, we can obtain another useful fact.</p>
+<p>By slightly modifying the algorithm, we can obtain another useful
+fact.</p>
 <blockquote>
-<p><strong>Theorem. (Approximate Min-Cut).</strong> Given <span class="math inline">\(t \in [1, n / 2]\)</span>, an <span class="math inline">\(t\)</span>-minimal cut is a cut with value <span class="math inline">\(\le t c^*\)</span>. It follows that the number of <span class="math inline">\(t\)</span>-minimal cut is bounded by <span class="math display">\[
-O \left( 2^{2t} \cdot \sqrt{ \frac{n}{(n - 2t) \cdot 2t} } \left( \frac{n}{n - 2t} \right)^{n - 2t} \left( \frac{n}{2t} \right)^{2t}\right)
+<p><strong>Theorem. (Approximate Min-Cut).</strong> Given <span
+class="math inline">\(t \in [1, n / 2]\)</span>, an <span
+class="math inline">\(t\)</span>-minimal cut is a cut with value <span
+class="math inline">\(\le t c^*\)</span>. It follows that the number of
+<span class="math inline">\(t\)</span>-minimal cut is bounded by <span
+class="math display">\[
+O \left( 2^{2t} \cdot \sqrt{ \frac{n}{(n - 2t) \cdot 2t} } \left(
+\frac{n}{n - 2t} \right)^{n - 2t} \left( \frac{n}{2t}
+\right)^{2t}\right)
 \]</span></p>
 </blockquote>
-<p><strong>Remark.</strong> The bound can be further upper bounded by <span class="math display">\[
+<p><strong>Remark.</strong> The bound can be further upper bounded by
+<span class="math display">\[
   \begin{aligned}
-    &amp;O \left( \sqrt{ \frac{n}{(n - 2t) \cdot 2t} } \cdot \exp \left( \frac{2t}{n - 2t} \cdot (n - 2t) \right) \cdot \left( \frac{n}{t} \right)^{2t} \right) 
-    \subseteq 
+    &amp;O \left( \sqrt{ \frac{n}{(n - 2t) \cdot 2t} } \cdot \exp \left(
+\frac{2t}{n - 2t} \cdot (n - 2t) \right) \cdot \left( \frac{n}{t}
+\right)^{2t} \right)
+    \subseteq
     O \left( \left( \frac{e \cdot n}{t} \right)^{2t} \right).
   \end{aligned}
 \]</span> <!-- 
 The bound is meaningful, when $(en / t)^{2t} \le 2^n$, i.e., 
 $t \le n / (2 \cdot \log n)$ for some constant $c$.  
 --></p>
-<p><strong>Proof.</strong> Suppose we run the contraction algorithm, until <span class="math inline">\(k = \lceil 2t \rceil\)</span> are left. Then we output one of the <span class="math inline">\(2^k\)</span> cuts uniformly at random. The probability <span class="math inline">\(p\)</span> that a particular <span class="math inline">\(t\)</span>-minimal cut is outputted is given by<br />
+<p><strong>Proof.</strong> Suppose we run the contraction algorithm,
+until <span class="math inline">\(k = \lceil 2t \rceil\)</span> are
+left. Then we output one of the <span class="math inline">\(2^k\)</span>
+cuts uniformly at random. The probability <span
+class="math inline">\(p\)</span> that a particular <span
+class="math inline">\(t\)</span>-minimal cut is outputted is given
+by<br />
 <span class="math display">\[
   \begin{aligned}
-    p 
-      &amp;\doteq \frac{1}{2^k} \cdot \left( 1 - \frac{2t}{n} \right) \cdot \left( 1 - \frac{2t}{n - 1} \right) \cdot \left( 1 - \frac{2t}{k + 1} \right) \\
-      &amp;= \frac{1}{2^k} \cdot\frac{ (n - 2t) \cdot (n - 1 - 2t) \cdot \ldots (k + 1 - 2t)}{ n \cdot (n - 1) \cdot \ldots \cdot (k + 1)}.
+    p
+      &amp;\doteq \frac{1}{2^k} \cdot \left( 1 - \frac{2t}{n} \right)
+\cdot \left( 1 - \frac{2t}{n - 1} \right) \cdot \left( 1 - \frac{2t}{k +
+1} \right) \\
+      &amp;= \frac{1}{2^k} \cdot\frac{ (n - 2t) \cdot (n - 1 - 2t) \cdot
+\ldots (k + 1 - 2t)}{ n \cdot (n - 1) \cdot \ldots \cdot (k + 1)}.
   \end{aligned}
 \]</span></p>
-<p>Denote <span class="math inline">\(a = k - 2t \in [0, 1)\)</span>, <span class="math inline">\(b = n - 2t\)</span>, and <span class="math display">\[
-  f = \prod_{ i \in [n - 2k] } (a + i). 
+<p>Denote <span class="math inline">\(a = k - 2t \in [0, 1)\)</span>,
+<span class="math inline">\(b = n - 2t\)</span>, and <span
+class="math display">\[
+  f = \prod_{ i \in [n - 2k] } (a + i).
 \]</span></p>
 <p>We rely on the following lemmas and facts.</p>
 <blockquote>
 <p><strong>Lemma.</strong> <span class="math display">\[
-f \in \Theta \left( \sqrt{n - 2t} \left( \frac{n - 2t}{e} \right)^{n - 2t} \right).
+f \in \Theta \left( \sqrt{n - 2t} \left( \frac{n - 2t}{e} \right)^{n -
+2t} \right).
 \]</span></p>
-<p><strong>Fact (Stirling's Approximation).</strong> <span class="math display">\[
-n! \in \Theta \left( \sqrt{n} \left( \frac{n}{e} \right)^{n}\right), 
+<p><strong>Fact (Stirling's Approximation).</strong> <span
+class="math display">\[
+n! \in \Theta \left( \sqrt{n} \left( \frac{n}{e} \right)^{n}\right),
 \quad
 k! \in \Theta \left( \sqrt{k} \left( \frac{k}{e} \right)^{k}\right).  
 \]</span></p>
 </blockquote>
 <p>It follows that <span class="math display">\[
-  p 
-    = \frac{1}{2^k} \cdot \frac{f \cdot k!}{n!} 
-    \in \Theta \left( \frac{1}{2^k} \cdot \frac{ \sqrt{(n - 2t) \cdot k}}{n} \cdot \frac{\left( n - 2t \right)^{n - 2t} k^k }{ n^n } \right).
+  p
+    = \frac{1}{2^k} \cdot \frac{f \cdot k!}{n!}
+    \in \Theta \left( \frac{1}{2^k} \cdot \frac{ \sqrt{(n - 2t) \cdot
+k}}{n} \cdot \frac{\left( n - 2t \right)^{n - 2t} k^k }{ n^n } \right).
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <p>It remains to prove the lemma.</p>
-<p><strong>Proof of the Lemma.</strong> Note <span class="math display">\[
+<p><strong>Proof of the Lemma.</strong> Note <span
+class="math display">\[
   \begin{aligned}
-    \ln f &amp;= \sum_{ i \in [n - 2k] } \ln (a + i). 
+    \ln f &amp;= \sum_{ i \in [n - 2k] } \ln (a + i).
   \end{aligned}
 \]</span></p>
-<p>For each <span class="math inline">\(r \ge 1\)</span>, define <span class="math display">\[
-   U_r \doteq \int_{r}^{r + 1} \ln x \, dx 
+<p>For each <span class="math inline">\(r \ge 1\)</span>, define <span
+class="math display">\[
+   U_r \doteq \int_{r}^{r + 1} \ln x \, dx
       = \left( x \ln x - x \right) \mid_r^{r + 1}
-      = \ln \frac{(r + 1)^{r + 1}}{r^r} - 1, 
+      = \ln \frac{(r + 1)^{r + 1}}{r^r} - 1,
 \]</span> and <span class="math display">\[
   L_r \doteq \frac{1}{2} \big( \ln r + \ln (r + 1) \big)
-      = \ln \sqrt{ r (r + 1) }. 
+      = \ln \sqrt{ r (r + 1) }.
 \]</span></p>
-<p>Denote the gap between them as <span class="math inline">\(\epsilon_r \doteq U_r - L_r\)</span>. Then <span class="math display">\[
+<p>Denote the gap between them as <span class="math inline">\(\epsilon_r
+\doteq U_r - L_r\)</span>. Then <span class="math display">\[
   \begin{aligned}
-    \ln f 
-      = \sum_{ i \in [n - 2k] } \ln (a + i) 
-      = \frac{1}{2} \left( \ln (a + 1) + \ln b \right) + \sum_{i \in [n - 2k - 1] } L_{a + i}. 
+    \ln f
+      = \sum_{ i \in [n - 2k] } \ln (a + i)
+      = \frac{1}{2} \left( \ln (a + 1) + \ln b \right) + \sum_{i \in [n
+- 2k - 1] } L_{a + i}.
   \end{aligned}
 \]</span></p>
-<p>Moreover, via that <span class="math inline">\(a + 1 \in [1, 2)\)</span>, <span class="math display">\[
+<p>Moreover, via that <span class="math inline">\(a + 1 \in [1,
+2)\)</span>, <span class="math display">\[
   \begin{aligned}
-    U &amp;\doteq \sum_{i \in [n - 2k - 1] } U_{a + i} = \int_{a + 1}^{b} \ln x \, dx \\
+    U &amp;\doteq \sum_{i \in [n - 2k - 1] } U_{a + i} = \int_{a +
+1}^{b} \ln x \, dx \\
     &amp;= \big( b \ln b - (a + 1) \ln (a + 1) - (b - a - 1) \big)
-    \in \Theta (b \ln b - b). 
+    \in \Theta (b \ln b - b).
   \end{aligned}
 \]</span></p>
 <p>Therefore, <span class="math display">\[
-  \big( \ln f \big) - U 
-  \in 
-  \Theta \left( \frac{1}{2} \ln b + b \ln b - b - \sum_{i \in [n - 2k - 1] } \epsilon_{a + i} \right). 
+  \big( \ln f \big) - U
+  \in
+  \Theta \left( \frac{1}{2} \ln b + b \ln b - b - \sum_{i \in [n - 2k -
+1] } \epsilon_{a + i} \right).
 \]</span></p>
 <p>Finally,<br />
 <span class="math display">\[
   \begin{aligned}
     \epsilon_r &amp;\doteq U_r - L_r
       = \ln \frac{(r + 1)^{r + 0.5}}{r^{r + 0.5}} - 1
-      = (r + 0.5) \ln \frac{r + 1}{r} - 1. 
+      = (r + 0.5) \ln \frac{r + 1}{r} - 1.
   \end{aligned}
 \]</span></p>
 <!-- 
@@ -339,31 +411,42 @@ $$
   \end{aligned}
 $$ 
 -->
-<p>We will prove that <span class="math inline">\(\epsilon_r \in \Theta(1 / r^2)\)</span>. Let <span class="math inline">\(1 / z \doteq 2 \cdot (r + 0.5) = 2r + 1\)</span>. Then <span class="math display">\[
+<p>We will prove that <span class="math inline">\(\epsilon_r \in
+\Theta(1 / r^2)\)</span>. Let <span class="math inline">\(1 / z \doteq 2
+\cdot (r + 0.5) = 2r + 1\)</span>. Then <span class="math display">\[
   \begin{aligned}
-    \epsilon_r 
+    \epsilon_r
     &amp;= \frac{1}{2 z} \cdot \ln \frac{1 / z + 1}{1 / z - 1} - 1
     = \frac{1}{2 z} \cdot \ln \frac{1 + z}{1 - z} - 1\\
-    &amp;= \frac{1}{2 z} \cdot \left( -\sum_{ i \in \mathbb{N}^+ } \frac{(-z)^i}{i} + \sum_{ i \in \mathbb{N}^+ } \frac{z^i}{i} \right) - 1 \\
-    &amp;= \frac{1}{z} \cdot \left( z + \frac{z^3}{3} + \frac{z^5}{5} + \ldots \right) - 1 \\
+    &amp;= \frac{1}{2 z} \cdot \left( -\sum_{ i \in \mathbb{N}^+ }
+\frac{(-z)^i}{i} + \sum_{ i \in \mathbb{N}^+ } \frac{z^i}{i} \right) - 1
+\\
+    &amp;= \frac{1}{z} \cdot \left( z + \frac{z^3}{3} + \frac{z^5}{5} +
+\ldots \right) - 1 \\
     &amp;= \frac{z^2}{3} + \frac{z^4}{5} + \frac{z^6}{7} + \ldots.
   \end{aligned}
 \]</span></p>
 <p>It follows that <span class="math display">\[
   \begin{aligned}
-    \epsilon_r 
-      &amp;\in \Theta \left( \frac{z^2}{3} \left( 1 + z^2 + z^4 + \ldots \right) \right) \\
-      &amp;\subset \Theta \left( \frac{z^2}{3} \cdot \frac{1}{1 - z^2} \right) \\
-      &amp;\subset \Theta \left( \frac{1}{3} \cdot \frac{1}{ (2 r + 1)^2 - 1} \right)\\
-      &amp;\subset \Theta \left( \frac{1}{3} \frac{1}{(2r + 2) \cdot 2r} \right) \\
-      &amp;\subset \Theta \left( \frac{1}{12} \cdot \left( \frac{1}{r} - \frac{1}{r + 1}\right) \right), 
+    \epsilon_r
+      &amp;\in \Theta \left( \frac{z^2}{3} \left( 1 + z^2 + z^4 + \ldots
+\right) \right) \\
+      &amp;\subset \Theta \left( \frac{z^2}{3} \cdot \frac{1}{1 - z^2}
+\right) \\
+      &amp;\subset \Theta \left( \frac{1}{3} \cdot \frac{1}{ (2 r + 1)^2
+- 1} \right)\\
+      &amp;\subset \Theta \left( \frac{1}{3} \frac{1}{(2r + 2) \cdot 2r}
+\right) \\
+      &amp;\subset \Theta \left( \frac{1}{12} \cdot \left( \frac{1}{r} -
+\frac{1}{r + 1}\right) \right),
   \end{aligned}
 \]</span></p>
 <p>and <span class="math display">\[
   \begin{aligned}
       \sum_{i \in [n - 2k - 1] } \epsilon_{a + i}  
-      \in \Theta \left( \frac{1}{12} \cdot \sum_{i \in [n - 2k - 1] } \left( \frac{1}{a + i} - \frac{1}{a + i + 1}\right)  \right) 
-      \subset \Theta \left( 1 \right). 
+      \in \Theta \left( \frac{1}{12} \cdot \sum_{i \in [n - 2k - 1] }
+\left( \frac{1}{a + i} - \frac{1}{a + i + 1}\right)  \right)
+      \subset \Theta \left( 1 \right).
   \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
@@ -467,8 +550,10 @@ $$
 $$
  -->
 <h1 id="reference">Reference</h1>
-<p>[1] Karger, David R. "Global Min-cuts in RNC, and Other Ramifications of a Simple Min-Cut Algorithm." Soda. Vol. 93. 1993.</p>
-<p>[2] D. R. Karger and C. Stein, “A new approach to the minimum cut problem,” J. ACM, 1996.</p>
+<p>[1] Karger, David R. "Global Min-cuts in RNC, and Other Ramifications
+of a Simple Min-Cut Algorithm." Soda. Vol. 93. 1993.</p>
+<p>[2] D. R. Karger and C. Stein, “A new approach to the minimum cut
+problem,” J. ACM, 1996.</p>
 
       
     </div>
@@ -533,15 +618,26 @@ $$
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>To generate a random unit vector in <span class="math inline">\(R^n\)</span>, the most trivial approach is to use spherical coordinates and generate the angles uniformly at random. Here we introduce another way : sample <span class="math inline">\(n\)</span> independent identical random variables from Gaussian distribution <span class="math inline">\(N(0, 1)\)</span>, denoted as <span class="math inline">\(x_1, x_2, ..., x_n\)</span>. Then a unit vector <span class="math inline">\(v\)</span> is obtained by</p>
+          <p>To generate a random unit vector in <span
+class="math inline">\(R^n\)</span>, the most trivial approach is to use
+spherical coordinates and generate the angles uniformly at random. Here
+we introduce another way : sample <span class="math inline">\(n\)</span>
+independent identical random variables from Gaussian distribution <span
+class="math inline">\(N(0, 1)\)</span>, denoted as <span
+class="math inline">\(x_1, x_2, ..., x_n\)</span>. Then a unit vector
+<span class="math inline">\(v\)</span> is obtained by</p>
 <p><span class="math display">\[
-v = \frac{1}{\sum_{i = 1}^n x_i^2 }(x_1, x_2, ..., x_n) 
+v = \frac{1}{\sum_{i = 1}^n x_i^2 }(x_1, x_2, ..., x_n)
 \]</span></p>
-<p>The key observation is that all points at a fixed distance from the origin is equally generated. To see this, the joints distribution of <span class="math inline">\(x_1, x_2, ..., x_n\)</span> is given by</p>
+<p>The key observation is that all points at a fixed distance from the
+origin is equally generated. To see this, the joints distribution of
+<span class="math inline">\(x_1, x_2, ..., x_n\)</span> is given by</p>
 <p><span class="math display">\[
-p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big)
+p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{
+2 } \big)
 \]</span></p>
-<p><span class="math inline">\(p\)</span> is fixed when <span class="math inline">\(\sum_{i = 1}^n x_i^2\)</span> is fixed.</p>
+<p><span class="math inline">\(p\)</span> is fixed when <span
+class="math inline">\(\sum_{i = 1}^n x_i^2\)</span> is fixed.</p>
 
       
     </div>
@@ -606,22 +702,64 @@ p = \frac{1}{(2 \pi)^{n / 2} } \exp \big( - \frac{\sum_{i=1}^n x_i^2 }{ 2 } \big
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Let <span class="math inline">\(S = \{ x_1, x_2, ..., x_m \}\)</span> be a set of distinct element from domain <span class="math inline">\(U\)</span>. A function <span class="math inline">\(h: U \rightarrow [n]\)</span> that takes element from <span class="math inline">\(U\)</span> to a smaller domain <span class="math inline">\([n]\)</span> is called a hash function, where <span class="math inline">\([n] = \{ 0, 1, ..., n - 1\}\)</span> and <span class="math inline">\(n \le |U|\)</span>. In the case where <span class="math inline">\(n &lt; |U|\)</span>, there must be some <span class="math inline">\(i \in [n]\)</span>, s.t., <span class="math inline">\(|h^{-1}(i)| &gt; 1\)</span>. We are interested in the number of total duplicate value in <span class="math inline">\(h(S) = \{ h(x_1), h(x_2), ..., h(x_m) \}\)</span>.</p>
-<p>If both <span class="math inline">\(S\)</span> and <span class="math inline">\(h\)</span> are fixed, there is nothing uncertain. There are two ways to add some randomness to our analysis</p>
+          <p>Let <span class="math inline">\(S = \{ x_1, x_2, ..., x_m \}\)</span>
+be a set of distinct element from domain <span
+class="math inline">\(U\)</span>. A function <span
+class="math inline">\(h: U \rightarrow [n]\)</span> that takes element
+from <span class="math inline">\(U\)</span> to a smaller domain <span
+class="math inline">\([n]\)</span> is called a hash function, where
+<span class="math inline">\([n] = \{ 0, 1, ..., n - 1\}\)</span> and
+<span class="math inline">\(n \le |U|\)</span>. In the case where <span
+class="math inline">\(n &lt; |U|\)</span>, there must be some <span
+class="math inline">\(i \in [n]\)</span>, s.t., <span
+class="math inline">\(|h^{-1}(i)| &gt; 1\)</span>. We are interested in
+the number of total duplicate value in <span class="math inline">\(h(S)
+= \{ h(x_1), h(x_2), ..., h(x_m) \}\)</span>.</p>
+<p>If both <span class="math inline">\(S\)</span> and <span
+class="math inline">\(h\)</span> are fixed, there is nothing uncertain.
+There are two ways to add some randomness to our analysis</p>
 <ol type="1">
-<li><p><span class="math inline">\(h\)</span> is fixed, and <span class="math inline">\(S\)</span> follows some distribution on <span class="math inline">\(U\)</span>. As an example, let <span class="math inline">\(U = [0, 2^{20} - 1]\)</span> and <span class="math inline">\(h(x) = x \ \&amp; \ 1023\)</span> that returns the last <span class="math inline">\(10\)</span> bits of <span class="math inline">\(x\)</span> (in binary form). If <span class="math inline">\(S\)</span> is sampled uniformly at random from <span class="math inline">\(U\)</span>, then on average for each <span class="math inline">\(x_i \in S\)</span>, there are <span class="math inline">\(\frac{m - 1}{1024}\)</span> elements that have the same value as <span class="math inline">\(x_i\)</span> under <span class="math inline">\(h\)</span>.</p></li>
-<li><p>The assumption that <span class="math inline">\(S\)</span> follows some distribution is too strong. Instead we assume that given <span class="math inline">\(S\)</span>, we select a function <span class="math inline">\(h\)</span> uniformly, from a set of functions <span class="math inline">\(\mathcal{H}\)</span>. Now we are going to analyze the probability <span class="math inline">\(P[ h(x_i) = h(x_j) ]\)</span> for <span class="math inline">\(i \neq j\)</span>.</p></li>
+<li><p><span class="math inline">\(h\)</span> is fixed, and <span
+class="math inline">\(S\)</span> follows some distribution on <span
+class="math inline">\(U\)</span>. As an example, let <span
+class="math inline">\(U = [0, 2^{20} - 1]\)</span> and <span
+class="math inline">\(h(x) = x \ \&amp; \ 1023\)</span> that returns the
+last <span class="math inline">\(10\)</span> bits of <span
+class="math inline">\(x\)</span> (in binary form). If <span
+class="math inline">\(S\)</span> is sampled uniformly at random from
+<span class="math inline">\(U\)</span>, then on average for each <span
+class="math inline">\(x_i \in S\)</span>, there are <span
+class="math inline">\(\frac{m - 1}{1024}\)</span> elements that have the
+same value as <span class="math inline">\(x_i\)</span> under <span
+class="math inline">\(h\)</span>.</p></li>
+<li><p>The assumption that <span class="math inline">\(S\)</span>
+follows some distribution is too strong. Instead we assume that given
+<span class="math inline">\(S\)</span>, we select a function <span
+class="math inline">\(h\)</span> uniformly, from a set of functions
+<span class="math inline">\(\mathcal{H}\)</span>. Now we are going to
+analyze the probability <span class="math inline">\(P[ h(x_i) = h(x_j)
+]\)</span> for <span class="math inline">\(i \neq j\)</span>.</p></li>
 </ol>
-<p>Let <span class="math inline">\(p &gt; |U|\)</span> be a prime number and <span class="math display">\[
-\mathcal{H} \doteq \{ h(x) = ax + b \mod p \mod n | 1 \le a &lt; p, 0 \le b &lt; p \}
+<p>Let <span class="math inline">\(p &gt; |U|\)</span> be a prime number
+and <span class="math display">\[
+\mathcal{H} \doteq \{ h(x) = ax + b \mod p \mod n | 1 \le a &lt; p, 0
+\le b &lt; p \}
 \]</span></p>
-<p>It follows that if <span class="math inline">\(h\)</span> is sampled uniformly at random, <span class="math inline">\(P[h(x_i) = h(x_j)] \le 1 / n\)</span> for <span class="math inline">\(i \neq j\)</span>.</p>
+<p>It follows that if <span class="math inline">\(h\)</span> is sampled
+uniformly at random, <span class="math inline">\(P[h(x_i) = h(x_j)] \le
+1 / n\)</span> for <span class="math inline">\(i \neq j\)</span>.</p>
 <h5 id="lemma-1.">Lemma 1.</h5>
-<p>For <span class="math inline">\(x_i \neq x_j\)</span>, and <span class="math inline">\(s, t \in [p], s \neq t\)</span>, there is a unique pair <span class="math inline">\((a,b) \in [p]^+ \times [p]\)</span> <span class="math display">\[
+<p>For <span class="math inline">\(x_i \neq x_j\)</span>, and <span
+class="math inline">\(s, t \in [p], s \neq t\)</span>, there is a unique
+pair <span class="math inline">\((a,b) \in [p]^+ \times [p]\)</span>
+<span class="math display">\[
     a x_i + b \mod p = s \\
     a x_j + b \mod p = t
-\]</span> where <span class="math inline">\([p]^+ \doteq \{1, 2, ..., p-1 \}\)</span>.</p>
-<p><strong>Proof</strong>: Since <span class="math inline">\([p]\)</span> is a finite filed and <span class="math inline">\(x_i \neq x_j\)</span>, the matrix</p>
+\]</span> where <span class="math inline">\([p]^+ \doteq \{1, 2, ...,
+p-1 \}\)</span>.</p>
+<p><strong>Proof</strong>: Since <span
+class="math inline">\([p]\)</span> is a finite filed and <span
+class="math inline">\(x_i \neq x_j\)</span>, the matrix</p>
 <p><span class="math display">\[
 \begin{bmatrix}
 x_i \mod p, 1 \\
@@ -631,59 +769,83 @@ x_j \mod p, 1
 <p>is invertible. Therefore,</p>
 <p><span class="math display">\[
 \begin{bmatrix}
-a \\ 
+a \\
 b
-\end{bmatrix} 
-= 
+\end{bmatrix}
+=
 \begin{bmatrix}
 x_i \mod p, 1 \\
 x_j \mod p, 1
 \end{bmatrix}^{-1}
 \begin{bmatrix}
-s \\ 
+s \\
 t
 \end{bmatrix}
-\]</span> is unique. Moreover, <span class="math inline">\(a \neq 0\)</span>. Otherwise <span class="math inline">\(b = s\)</span> and <span class="math inline">\(b = t\)</span>, a contradiction to <span class="math inline">\(s \neq t\)</span>.</p>
+\]</span> is unique. Moreover, <span class="math inline">\(a \neq
+0\)</span>. Otherwise <span class="math inline">\(b = s\)</span> and
+<span class="math inline">\(b = t\)</span>, a contradiction to <span
+class="math inline">\(s \neq t\)</span>.</p>
 <h5 id="lemma-2.">Lemma 2.</h5>
-<p>For <span class="math inline">\(x_i \neq x_j\)</span>, <span class="math display">\[
+<p>For <span class="math inline">\(x_i \neq x_j\)</span>, <span
+class="math display">\[
 \begin{aligned}
-P[h(x_i = x_j)] 
-&amp;= \sum_{s, t \in [p], s \neq t, s \mod n = t \mod n} P[ h(x_i) = s \wedge h(x_j) = t] \\
+P[h(x_i = x_j)]
+&amp;= \sum_{s, t \in [p], s \neq t, s \mod n = t \mod n} P[ h(x_i) = s
+\wedge h(x_j) = t] \\
 &amp;= \sum_{s, t \in [p], s \neq t, s = t \mod n} \frac{1}{ (p-1)p } \\
-&amp;= \sum_{s \in [p]} \sum_{t \in [p], t \neq s, t = s \mod n} \frac{1}{ (p-1)p } \\
+&amp;= \sum_{s \in [p]} \sum_{t \in [p], t \neq s, t = s \mod n}
+\frac{1}{ (p-1)p } \\
 &amp;\le \sum_{s \in [p]} \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
 &amp;= p \frac{p - 1}{ n } \frac{1}{ (p-1)p } \\
 &amp;= \frac{1}{ n }
 \end{aligned}
 \]</span></p>
 <h5 id="lemma-3.">Lemma 3.</h5>
-<p>The expected number of pair <span class="math inline">\(x_i, x_j\)</span>, s.t., <span class="math inline">\(x_i \neq x_j \wedge h(x_i) = h(x_j)\)</span> is given by</p>
+<p>The expected number of pair <span class="math inline">\(x_i,
+x_j\)</span>, s.t., <span class="math inline">\(x_i \neq x_j \wedge
+h(x_i) = h(x_j)\)</span> is given by</p>
 <p><span class="math display">\[
-E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] = \sum_{x_i \neq x_j} P[h(x_i = x_j)] = \binom{m}{2} \frac{1}{n} = \frac{m (m - 1)}{ 2n }
+E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] = \sum_{x_i \neq x_j} P[h(x_i
+= x_j)] = \binom{m}{2} \frac{1}{n} = \frac{m (m - 1)}{ 2n }
 \]</span></p>
-<p>When <span class="math inline">\(m^2 \le n\)</span>, then <span class="math inline">\(E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] \le \frac{1}{2}\)</span>. By Markov inequality,</p>
+<p>When <span class="math inline">\(m^2 \le n\)</span>, then <span
+class="math inline">\(E[\sum_{x_i \neq x_j} 1_{h(x_i) = h(x_j)}] \le
+\frac{1}{2}\)</span>. By Markov inequality,</p>
 <p><span class="math display">\[
 P[\exists \quad \text{collision}] \le \frac{1}{ 2 }
 \]</span></p>
 <p>Lemma 4.</p>
-<p>With probability at most <span class="math inline">\(1/2\)</span>, some bin contains more than <span class="math inline">\(\frac{m}{n} + \sqrt{2m}\)</span> balls.</p>
-<p>For a fixed bin, let <span class="math inline">\(Y\)</span> denote the number of ball in this bin. Further, define <span class="math display">\[
+<p>With probability at most <span class="math inline">\(1/2\)</span>,
+some bin contains more than <span class="math inline">\(\frac{m}{n} +
+\sqrt{2m}\)</span> balls.</p>
+<p>For a fixed bin, let <span class="math inline">\(Y\)</span> denote
+the number of ball in this bin. Further, define <span
+class="math display">\[
 Y_i = \begin{cases}
 1, \qquad \text{if the } i \text{-th ball falls into the bin} \\
 0, \qquad \text{otherwise}
 \end{cases}
-\]</span> Then <span class="math inline">\(Y = \sum_i Y_i\)</span>, and <span class="math display">\[
+\]</span> Then <span class="math inline">\(Y = \sum_i Y_i\)</span>, and
+<span class="math display">\[
 E[Y] = \frac{m}{n} \\
-\]</span> By pair-wise independence, we have <span class="math display">\[
+\]</span> By pair-wise independence, we have <span
+class="math display">\[
 Var[Y] = \sum_i Var[Y_i] = m \frac{1}{n} \left(1 - \frac{1}{n} \right)
-\]</span> Therefore, by Chebyshev inequality, we have <span class="math display">\[
-\Pr \left[ |Y - E[Y]| \ge \sqrt{2n} \sqrt{ m \frac{1}{n} \left(1 - \frac{1}{n} \right)} \right] = \Pr[|Y - E[Y]| \ge \sqrt{2n} \cdot \sigma] \le \frac{Var[Y]}{2n\sigma^2} = \frac{1}{2n}
-\]</span> Finally, applying union bound over <span class="math inline">\(n\)</span> bins, we get <span class="math display">\[
-\Pr[\text{some bin gets more than } \sqrt{2m} \text{ balls} ] \le \frac{1}{2}
+\]</span> Therefore, by Chebyshev inequality, we have <span
+class="math display">\[
+\Pr \left[ |Y - E[Y]| \ge \sqrt{2n} \sqrt{ m \frac{1}{n} \left(1 -
+\frac{1}{n} \right)} \right] = \Pr[|Y - E[Y]| \ge \sqrt{2n} \cdot
+\sigma] \le \frac{Var[Y]}{2n\sigma^2} = \frac{1}{2n}
+\]</span> Finally, applying union bound over <span
+class="math inline">\(n\)</span> bins, we get <span
+class="math display">\[
+\Pr[\text{some bin gets more than } \sqrt{2m} \text{ balls} ] \le
+\frac{1}{2}
 \]</span></p>
 <h5 id="reference">Reference:</h5>
 <ol type="1">
-<li>Sanjeev Arora, Cos 521: Advanced Algorithm Design, Lecture 1: Course Intro and Hashing</li>
+<li>Sanjeev Arora, Cos 521: Advanced Algorithm Design, Lecture 1: Course
+Intro and Hashing</li>
 </ol>
 
       

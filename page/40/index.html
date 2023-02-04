@@ -191,11 +191,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Suppose there are a set of <span class="math inline">\(n\)</span> items with nonnegative weights <span class="math inline">\(w_1, w_2, ..., w_n\)</span>. We want to maintain a subset of samples <span class="math inline">\(S \subset [n]\)</span> in order to answer queries like given arbitrary <span class="math inline">\(I \subset [n]\)</span> , what is <span class="math inline">\(\sum_{i \in I} w_i\)</span>?</p>
-<p>A trivial solution is to set <span class="math inline">\(S = [n]\)</span> and we can answer the query exactly. This is an overkill if our goal is to only answer the query approximately.</p>
-<p>Alternatively, we can sample each item <span class="math inline">\(i \in [n]\)</span> independently with probability <span class="math inline">\(p_i\)</span> (to be determined), and maintain a random variable <span class="math display">\[
+          <p>Suppose there are a set of <span class="math inline">\(n\)</span>
+items with nonnegative weights <span class="math inline">\(w_1, w_2,
+..., w_n\)</span>. We want to maintain a subset of samples <span
+class="math inline">\(S \subset [n]\)</span> in order to answer queries
+like given arbitrary <span class="math inline">\(I \subset [n]\)</span>
+, what is <span class="math inline">\(\sum_{i \in I} w_i\)</span>?</p>
+<p>A trivial solution is to set <span class="math inline">\(S =
+[n]\)</span> and we can answer the query exactly. This is an overkill if
+our goal is to only answer the query approximately.</p>
+<p>Alternatively, we can sample each item <span class="math inline">\(i
+\in [n]\)</span> independently with probability <span
+class="math inline">\(p_i\)</span> (to be determined), and maintain a
+random variable <span class="math display">\[
 \begin{aligned}
-X_i = 
+X_i =
     \begin{cases}
         \frac{w_i}{p_i} &amp; i \text{ is chosen} \\
         0               &amp;   \text{ else }
@@ -206,74 +216,141 @@ X_i =
 \mathbb{E} \left[ X_i \right] = w_i
 \]</span></p>
 <p>And therefore, <span class="math display">\[
-\mathbb{E} \left[\sum_{i \in I} X_i \right] = \sum_{i \in I} \mathbb{E}[X_i] = \sum_{i \in I} w_i
+\mathbb{E} \left[\sum_{i \in I} X_i \right] = \sum_{i \in I}
+\mathbb{E}[X_i] = \sum_{i \in I} w_i
 \]</span></p>
 <h1 id="threshold-sampling">Threshold Sampling</h1>
-<p>One possible implementation of this sampling scheme is called <em>threshold sampling</em>.</p>
-<p>First, a threshold <span class="math inline">\(T\)</span> is chosen. Then, for each item <span class="math inline">\(i \in [n]\)</span>, if <span class="math inline">\(w_i \ge T\)</span>, then the algorithm record a value <span class="math inline">\(X_i = w_i\)</span> deterministically. Otherwise, the algorithm record a value <span class="math inline">\(X_i = T\)</span> with probability <span class="math inline">\(\frac{w_i}{T}\)</span>. If <span class="math inline">\(X_i\)</span> is not recorded, it has default value <span class="math inline">\(0\)</span>. In both cases, <span class="math inline">\(\mathbb{E} [ X_i ] = w_i\)</span>.</p>
+<p>One possible implementation of this sampling scheme is called
+<em>threshold sampling</em>.</p>
+<p>First, a threshold <span class="math inline">\(T\)</span> is chosen.
+Then, for each item <span class="math inline">\(i \in [n]\)</span>, if
+<span class="math inline">\(w_i \ge T\)</span>, then the algorithm
+record a value <span class="math inline">\(X_i = w_i\)</span>
+deterministically. Otherwise, the algorithm record a value <span
+class="math inline">\(X_i = T\)</span> with probability <span
+class="math inline">\(\frac{w_i}{T}\)</span>. If <span
+class="math inline">\(X_i\)</span> is not recorded, it has default value
+<span class="math inline">\(0\)</span>. In both cases, <span
+class="math inline">\(\mathbb{E} [ X_i ] = w_i\)</span>.</p>
 <!-- $\forall i \in [n]$, $w_i$ is kept with probability with $p_i = \min \{ 1 , \frac{w_i}{T} \}$. In particular, for each $i \in [n]$, we sample a uniform random variable $u_i \in [0, 1]$, and set  -->
-<p>Mathematically, the two cases can be combined into one. Let <span class="math inline">\(u_i\)</span> be a random number generated between <span class="math inline">\((0, 1)\)</span>. Then</p>
+<p>Mathematically, the two cases can be combined into one. Let <span
+class="math inline">\(u_i\)</span> be a random number generated between
+<span class="math inline">\((0, 1)\)</span>. Then</p>
 <p><span class="math display">\[
 \begin{aligned}
-X_i = 
+X_i =
     \begin{cases}
         \max \{ w_i, T \} &amp; u_i &lt; \frac{w_i}{T} \\
         0               &amp;   \text{ else }
     \end{cases}
 \end{aligned}
 \]</span></p>
-<p>Observe that if <span class="math inline">\(w_i \ge T\)</span>, then <span class="math inline">\(w_i / T \ge 1\)</span> and <span class="math inline">\(X_i \equiv \max \{ w_i, T \} = w_i\)</span>. The expectation of <span class="math inline">\(X_i\)</span> is given algebraically by <span class="math display">\[
+<p>Observe that if <span class="math inline">\(w_i \ge T\)</span>, then
+<span class="math inline">\(w_i / T \ge 1\)</span> and <span
+class="math inline">\(X_i \equiv \max \{ w_i, T \} = w_i\)</span>. The
+expectation of <span class="math inline">\(X_i\)</span> is given
+algebraically by <span class="math display">\[
 \begin{aligned}
-    \mathbb{E} [ X_i ] = \max \{ w_i, T \} \cdot \Pr \left[ u_i \le \frac{w_i}{T} \right] = \max \{ w_i, T \} \cdot \min \{ 1, w_i / T \} = w_i.
+    \mathbb{E} [ X_i ] = \max \{ w_i, T \} \cdot \Pr \left[ u_i \le
+\frac{w_i}{T} \right] = \max \{ w_i, T \} \cdot \min \{ 1, w_i / T \} =
+w_i.
 \end{aligned}
 \]</span></p>
-<p>It follows by linearity of expectation that <span class="math display">\[
+<p>It follows by linearity of expectation that <span
+class="math display">\[
     \mathbb{E} \left[ \sum_{i \in I} X_i \right] = \sum_{i \in I} w_i.
 \]</span></p>
 <h2 id="space-usage">Space Usage</h2>
-<p>Denote <span class="math inline">\(S\)</span> the set of items with <span class="math inline">\(X_i \neq 0\)</span> and let <span class="math inline">\(p_i\)</span> be the probability of <span class="math inline">\(i\)</span> being sampled. Then the expected size of <span class="math inline">\(S\)</span> is given by <span class="math display">\[
-\sum_{i = 1}^n p_i = \sum_{i = 1}^n \min \left\{ 1 , \frac{w_i}{T} \right\}
+<p>Denote <span class="math inline">\(S\)</span> the set of items with
+<span class="math inline">\(X_i \neq 0\)</span> and let <span
+class="math inline">\(p_i\)</span> be the probability of <span
+class="math inline">\(i\)</span> being sampled. Then the expected size
+of <span class="math inline">\(S\)</span> is given by <span
+class="math display">\[
+\sum_{i = 1}^n p_i = \sum_{i = 1}^n \min \left\{ 1 , \frac{w_i}{T}
+\right\}
 \]</span></p>
-<p>The problem with threshold sampling is that it is hard to control the memory usage of the sample set <span class="math inline">\(S\)</span>. If the <span class="math inline">\(n\)</span> items are known offline, and we would like <span class="math inline">\(|S| \approx k\)</span> for some integer <span class="math inline">\(k \le n\)</span>, then we can search for some <span class="math inline">\(T\)</span> such that <span class="math display">\[
+<p>The problem with threshold sampling is that it is hard to control the
+memory usage of the sample set <span class="math inline">\(S\)</span>.
+If the <span class="math inline">\(n\)</span> items are known offline,
+and we would like <span class="math inline">\(|S| \approx k\)</span> for
+some integer <span class="math inline">\(k \le n\)</span>, then we can
+search for some <span class="math inline">\(T\)</span> such that <span
+class="math display">\[
 \sum_{i = 1}^n p_i = k
 \]</span></p>
 <p>Then <span class="math inline">\(|S| = k\)</span> in expectation.</p>
-<p>The question is, is it possible to force <span class="math inline">\(|S|= k\)</span> exactly? Further, what if the items come online (one by one)?</p>
+<p>The question is, is it possible to force <span
+class="math inline">\(|S|= k\)</span> exactly? Further, what if the
+items come online (one by one)?</p>
 <h1 id="priority-sampling">Priority Sampling</h1>
-<p><em>Priority sampling</em> achieves this. First recall that in <em>threshold sampling</em> we decide whether to keep <span class="math inline">\(i\)</span> by checking whether a uniform sampled real number <span class="math inline">\(u_i\)</span> is less than <span class="math inline">\(\frac{w_i}{T}\)</span>: <span class="math display">\[
+<p><em>Priority sampling</em> achieves this. First recall that in
+<em>threshold sampling</em> we decide whether to keep <span
+class="math inline">\(i\)</span> by checking whether a uniform sampled
+real number <span class="math inline">\(u_i\)</span> is less than <span
+class="math inline">\(\frac{w_i}{T}\)</span>: <span
+class="math display">\[
 u_i &lt; \frac{w_i}{T}
 \]</span></p>
 <p>This is equivalent to <span class="math display">\[
 T &lt; \frac{w_i}{u_i}
 \]</span></p>
-<p>Define the <em>priority</em> of an item <span class="math inline">\(i \in [n]\)</span> as <span class="math inline">\(q_i = \frac{w_i}{u_i}\)</span>. Note that <span class="math inline">\(q_i\)</span> is a random variable. In <em>threshold sampling</em>, item <span class="math inline">\(i\)</span> is kept with weight <span class="math inline">\(\max \{ w_i, T \}\)</span> if <span class="math display">\[
+<p>Define the <em>priority</em> of an item <span class="math inline">\(i
+\in [n]\)</span> as <span class="math inline">\(q_i =
+\frac{w_i}{u_i}\)</span>. Note that <span
+class="math inline">\(q_i\)</span> is a random variable. In
+<em>threshold sampling</em>, item <span class="math inline">\(i\)</span>
+is kept with weight <span class="math inline">\(\max \{ w_i, T
+\}\)</span> if <span class="math display">\[
 T &lt; q_i
 \]</span></p>
-<p>Now, instead of using a fixed value of <span class="math inline">\(T\)</span>, the <em>Priority sampling</em> sets <span class="math display">\[
+<p>Now, instead of using a fixed value of <span
+class="math inline">\(T\)</span>, the <em>Priority sampling</em> sets
+<span class="math display">\[
 T = (k + 1) \text{-th largest } \{ q_i \}
 \]</span></p>
-<p>By the definition of <span class="math inline">\(T\)</span>, only the <span class="math inline">\(k\)</span> items with largest priorities <span class="math inline">\(q_i\)</span>'s are kept in the sample set <span class="math inline">\(S\)</span>: <span class="math display">\[
+<p>By the definition of <span class="math inline">\(T\)</span>, only the
+<span class="math inline">\(k\)</span> items with largest priorities
+<span class="math inline">\(q_i\)</span>'s are kept in the sample set
+<span class="math inline">\(S\)</span>: <span class="math display">\[
 S = \{ k \text{ items with largest } q_i \text{ &#39;s } \}
 \]</span></p>
-<p>It can be seen that <span class="math inline">\(S\)</span> and <span class="math inline">\(T\)</span> can be easily maintained by a binary heap when the items come in stream fashion.</p>
-<p>The challenge is not to analyze the behaviors of the r.v.'s: <span class="math display">\[
+<p>It can be seen that <span class="math inline">\(S\)</span> and <span
+class="math inline">\(T\)</span> can be easily maintained by a binary
+heap when the items come in stream fashion.</p>
+<p>The challenge is not to analyze the behaviors of the r.v.'s: <span
+class="math display">\[
 \begin{aligned}
-X_i = 
+X_i =
     \begin{cases}
-        \max \{ w_i, T \} &amp; T &lt; \frac{w_i}{u_i} \equiv u_i &lt; \frac{w_i}{T} \\
+        \max \{ w_i, T \} &amp; T &lt; \frac{w_i}{u_i} \equiv u_i &lt;
+\frac{w_i}{T} \\
         0               &amp;   \text{ else }
     \end{cases}
 \end{aligned}
 \]</span></p>
-<p>since now <span class="math inline">\(T\)</span> is itself a random variable.</p>
+<p>since now <span class="math inline">\(T\)</span> is itself a random
+variable.</p>
 <h2 id="theorem">Theorem</h2>
 <p><span class="math display">\[
     \mathbb{E}[X_i] = w_i.
 \]</span></p>
-<p><em>Proof.</em> There is an elegant proof based on conditional expectation. For <span class="math inline">\(i \in [n]\)</span>, define the random variable <span class="math inline">\(T_i\)</span> as the <span class="math inline">\(k\)</span>-th largest priority of elements other than <span class="math inline">\(i\)</span>. If <span class="math inline">\(i\)</span>-th is sampled, then <span class="math inline">\(q_i \ge T_i\)</span> and <span class="math inline">\(T_i\)</span> becomes the <span class="math inline">\(k+1\)</span>-th largest priority. Therefore, <span class="math display">\[
-    \mathbb{E}_{X_i} [ X_i \mid T_i ] = \max \{ X_i, T_i \} \cdot \min \{1, w_i / T_i \} = w_i. 
+<p><em>Proof.</em> There is an elegant proof based on conditional
+expectation. For <span class="math inline">\(i \in [n]\)</span>, define
+the random variable <span class="math inline">\(T_i\)</span> as the
+<span class="math inline">\(k\)</span>-th largest priority of elements
+other than <span class="math inline">\(i\)</span>. If <span
+class="math inline">\(i\)</span>-th is sampled, then <span
+class="math inline">\(q_i \ge T_i\)</span> and <span
+class="math inline">\(T_i\)</span> becomes the <span
+class="math inline">\(k+1\)</span>-th largest priority. Therefore, <span
+class="math display">\[
+    \mathbb{E}_{X_i} [ X_i \mid T_i ] = \max \{ X_i, T_i \} \cdot \min
+\{1, w_i / T_i \} = w_i.
 \]</span></p>
-<p>Finally, <span class="math inline">\(\mathbb{E}_{X_i} [X_i ] = \mathbb{E}_{T_i} [ \mathbb{E}_{X_i} [ X_i \mid T_i] ] = w_i\)</span>.</p>
+<p>Finally, <span class="math inline">\(\mathbb{E}_{X_i} [X_i ] =
+\mathbb{E}_{T_i} [ \mathbb{E}_{X_i} [ X_i \mid T_i] ] =
+w_i\)</span>.</p>
 <!-- The trick is to condition $X_i$ on the $k$-th and $k+1$-th largest priority of the rest items. Define the random variables 
 $$
 L = (k + 1) \text{-th largest } \{ q_j \}_{j \neq i} \\
@@ -306,20 +383,37 @@ $$
 \mathbb{E}[X_i] = \mathbb{E}[\mathbb{E}[X_i | U]]  = w_i
 $$ -->
 <h2 id="theorem-1">Theorem</h2>
-<p>For <span class="math inline">\(I \subset [n]\)</span>, <span class="math display">\[
+<p>For <span class="math inline">\(I \subset [n]\)</span>, <span
+class="math display">\[
 \begin{aligned}
     \mathbb{E}\left[ \prod_{i \in I} X_i \right] =
     \begin{cases}
          \prod_{i \in I} w_i     &amp; \text{ if } |I| \le k \\
-         0                      &amp; else 
+         0                      &amp; else
     \end{cases}
 \end{aligned}
 \]</span></p>
-<p><em>Proof:</em> Clearly, when <span class="math inline">\(|I| &gt; k\)</span>, then <span class="math inline">\(\exists i \in I\)</span>, such that <span class="math inline">\(q_i\)</span> is not one of the <span class="math inline">\(k\)</span> largest priorities. Hence <span class="math inline">\(\prod_{i \in I} X_i = 0\)</span> for sure.</p>
-<p>If <span class="math inline">\(|I| \le k\)</span>, define <span class="math inline">\(T_I\)</span> to be the <span class="math inline">\(k - |I| + 1\)</span>-th largest priority of elements in <span class="math inline">\([n] \setminus I\)</span>. Observe that <span class="math inline">\(\prod_{i \in I} X_i \neq 0\)</span>, if only the priorities of all <span class="math inline">\(i \in I\)</span> are among the <span class="math inline">\(k\)</span> largest ones. In such case, <span class="math inline">\(T_I\)</span> becomes the <span class="math inline">\(k+1\)</span>-th largest priority. Therefore, <span class="math display">\[
-    \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] = \prod_{i \in I} \mathbb{E} [ X_i \mid T_I ] = \prod_{i \in I} w_i, 
+<p><em>Proof:</em> Clearly, when <span class="math inline">\(|I| &gt;
+k\)</span>, then <span class="math inline">\(\exists i \in I\)</span>,
+such that <span class="math inline">\(q_i\)</span> is not one of the
+<span class="math inline">\(k\)</span> largest priorities. Hence <span
+class="math inline">\(\prod_{i \in I} X_i = 0\)</span> for sure.</p>
+<p>If <span class="math inline">\(|I| \le k\)</span>, define <span
+class="math inline">\(T_I\)</span> to be the <span
+class="math inline">\(k - |I| + 1\)</span>-th largest priority of
+elements in <span class="math inline">\([n] \setminus I\)</span>.
+Observe that <span class="math inline">\(\prod_{i \in I} X_i \neq
+0\)</span>, if only the priorities of all <span class="math inline">\(i
+\in I\)</span> are among the <span class="math inline">\(k\)</span>
+largest ones. In such case, <span class="math inline">\(T_I\)</span>
+becomes the <span class="math inline">\(k+1\)</span>-th largest
+priority. Therefore, <span class="math display">\[
+    \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] = \prod_{i
+\in I} \mathbb{E} [ X_i \mid T_I ] = \prod_{i \in I} w_i,
 \]</span></p>
-<p>and <span class="math inline">\(\mathbb{E}[ \prod_{i \in I} X_i ] = \mathbb{E} [ \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] ] = \prod_{i \in I} w_i\)</span>.</p>
+<p>and <span class="math inline">\(\mathbb{E}[ \prod_{i \in I} X_i ] =
+\mathbb{E} [ \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] ] =
+\prod_{i \in I} w_i\)</span>.</p>
 <!-- If $|I| \le k$, we show the claims holds by induction. The base case of $|I| = 1$ reduces to *Theorem 1*. Suppose that the claim hold for $|I| \le t < k$, we show it holds for $|I| = t + 1$. 
 
 Similarly to *Theorem 1*, define $U$ to be the $k + 1 - |I|$-th largest priority in $[n] \setminus I$. Conditioning on $U = b$, then we can divide $I$ into two sets: $I_1 = \{ i \in I :   w_i > b\}$ and $I_2 = I \setminus I_1$.  For $i \in I_1$, we have $X_i = w_i$ by definition. Now consider $I_2$. Let $j = \arg \min_{i \in I_2} q_i$. 
@@ -334,7 +428,8 @@ $$
 $$ -->
 <h3 id="reference">Reference</h3>
 <ol type="1">
-<li>Nick Duffield, Carsten Lund, and Mikkel Thorup. Priority sampling for estimation fo arbitrary subset sums. Journal of ACM, 2007</li>
+<li>Nick Duffield, Carsten Lund, and Mikkel Thorup. Priority sampling
+for estimation fo arbitrary subset sums. Journal of ACM, 2007</li>
 <li>Chandra Chekuri, Lecture note, CS 598: Algorithms for Big Data</li>
 </ol>
 
@@ -395,34 +490,85 @@ $$ -->
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Newton's method is an algorithm for finding root of a function <span class="math inline">\(f(x)\)</span> numerically. If <span class="math inline">\(f\)</span> is differentially at a point <span class="math inline">\(x\)</span>, then we can use this local information at <span class="math inline">\(x\)</span> to approximate <span class="math inline">\(f\)</span>: <span class="math display">\[
+          <p>Newton's method is an algorithm for finding root of a function <span
+class="math inline">\(f(x)\)</span> numerically. If <span
+class="math inline">\(f\)</span> is differentially at a point <span
+class="math inline">\(x\)</span>, then we can use this local information
+at <span class="math inline">\(x\)</span> to approximate <span
+class="math inline">\(f\)</span>: <span class="math display">\[
 \bar f(y) = f(x) + f&#39;(x) (y - x)
 \]</span></p>
-<p>This is the tangent line at <span class="math inline">\(x\)</span>. We use its intersection with the <span class="math inline">\(x\)</span>-axis as the guess of root: <span class="math display">\[
+<p>This is the tangent line at <span class="math inline">\(x\)</span>.
+We use its intersection with the <span
+class="math inline">\(x\)</span>-axis as the guess of root: <span
+class="math display">\[
 \bar f(y) = 0 = f(x) + f&#39;(x) (y - x)
 \]</span></p>
-<p>If <span class="math inline">\(f&#39;(x) \neq 0\)</span>, then <span class="math inline">\(y = x - \frac{f(x)}{f&#39;(x)}\)</span>. Intuitively, <span class="math inline">\(f(x)\)</span> is the height and <span class="math inline">\(f&#39;(x)\)</span> is the slope, hence <span class="math inline">\(\frac{f(x)}{f&#39;(x)} = x - y\)</span> gives the distance between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>. Note that if <span class="math inline">\(f&#39;(x) = 0\)</span>, the tangent line does not intersect with <span class="math inline">\(x\)</span>-axis.</p>
-<p>With a starting point <span class="math inline">\(x_1\)</span>, the Newton's Method updates its value iteratively: <span class="math display">\[
+<p>If <span class="math inline">\(f&#39;(x) \neq 0\)</span>, then <span
+class="math inline">\(y = x - \frac{f(x)}{f&#39;(x)}\)</span>.
+Intuitively, <span class="math inline">\(f(x)\)</span> is the height and
+<span class="math inline">\(f&#39;(x)\)</span> is the slope, hence <span
+class="math inline">\(\frac{f(x)}{f&#39;(x)} = x - y\)</span> gives the
+distance between <span class="math inline">\(x\)</span> and <span
+class="math inline">\(y\)</span>. Note that if <span
+class="math inline">\(f&#39;(x) = 0\)</span>, the tangent line does not
+intersect with <span class="math inline">\(x\)</span>-axis.</p>
+<p>With a starting point <span class="math inline">\(x_1\)</span>, the
+Newton's Method updates its value iteratively: <span
+class="math display">\[
 x_{n + 1} = x_n - \frac{f(x_n)  }{ f&#39;(x_n) }
 \]</span></p>
-<p>Let <span class="math inline">\(z\)</span> be the root of <span class="math inline">\(f\)</span> (<span class="math inline">\(f(z) = 0\)</span>). Then under proper condition, <span class="math inline">\(x_n\)</span> converges to <span class="math inline">\(z\)</span> quadratically, that is, <span class="math inline">\(|x_n - z| \le O(2^{-n})\)</span>.</p>
+<p>Let <span class="math inline">\(z\)</span> be the root of <span
+class="math inline">\(f\)</span> (<span class="math inline">\(f(z) =
+0\)</span>). Then under proper condition, <span
+class="math inline">\(x_n\)</span> converges to <span
+class="math inline">\(z\)</span> quadratically, that is, <span
+class="math inline">\(|x_n - z| \le O(2^{-n})\)</span>.</p>
 <h3 id="theorem.">Theorem.</h3>
-<p>Let <span class="math inline">\(f \in C^2\)</span> in some interval <span class="math inline">\([z \pm c]\)</span> and <span class="math inline">\(f&#39;(x) \neq 0\)</span>, <span class="math inline">\(f&#39;&#39;(x)\)</span> is bounded for <span class="math inline">\(x \in [z \pm c]\)</span>. If <span class="math inline">\(x_0 \in [z \pm c]\)</span>, then Newton's Method achieves quadratic convergence.</p>
-<p><em>Proof:</em> By Taylor expansion, <span class="math inline">\(\forall x \in [z \pm c]\)</span>, <span class="math inline">\(\exists y\)</span> that lies between <span class="math inline">\(x\)</span> and <span class="math inline">\(z\)</span>, such that <span class="math display">\[
-0 = f(z) = f(x) + f&#39;(x) (x - z) + \frac{f&#39;&#39;(y)}{2} (z - x)^2 
+<p>Let <span class="math inline">\(f \in C^2\)</span> in some interval
+<span class="math inline">\([z \pm c]\)</span> and <span
+class="math inline">\(f&#39;(x) \neq 0\)</span>, <span
+class="math inline">\(f&#39;&#39;(x)\)</span> is bounded for <span
+class="math inline">\(x \in [z \pm c]\)</span>. If <span
+class="math inline">\(x_0 \in [z \pm c]\)</span>, then Newton's Method
+achieves quadratic convergence.</p>
+<p><em>Proof:</em> By Taylor expansion, <span
+class="math inline">\(\forall x \in [z \pm c]\)</span>, <span
+class="math inline">\(\exists y\)</span> that lies between <span
+class="math inline">\(x\)</span> and <span
+class="math inline">\(z\)</span>, such that <span
+class="math display">\[
+0 = f(z) = f(x) + f&#39;(x) (x - z) + \frac{f&#39;&#39;(y)}{2} (z - x)^2
 \]</span></p>
 <p>Hence <span class="math display">\[
-x - \frac{f(x)}{f&#39;(x)} - z = \frac{f&#39;&#39;(y)}{2 f&#39;(x)} (z - x)^2 
+x - \frac{f(x)}{f&#39;(x)} - z = \frac{f&#39;&#39;(y)}{2 f&#39;(x)} (z -
+x)^2
 \]</span></p>
-<p>Define <span class="math inline">\(\epsilon_n = (z - x_n)\)</span>, and replacing <span class="math inline">\(x\)</span> with <span class="math inline">\(x_n\)</span>, we have <span class="math display">\[
-|\epsilon_{n + 1}| = |x_{n + 1} - z| = |x_n - \frac{f(x_n)}{f&#39;(x_n)} - z| = |\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}| (z - x_n)^2 = |\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}| \epsilon_n^2 
+<p>Define <span class="math inline">\(\epsilon_n = (z - x_n)\)</span>,
+and replacing <span class="math inline">\(x\)</span> with <span
+class="math inline">\(x_n\)</span>, we have <span
+class="math display">\[
+|\epsilon_{n + 1}| = |x_{n + 1} - z| = |x_n - \frac{f(x_n)}{f&#39;(x_n)}
+- z| = |\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}| (z - x_n)^2 =
+|\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}| \epsilon_n^2
 \]</span></p>
-<p>Since <span class="math inline">\(f\)</span>'s second derivative is continuous, <span class="math inline">\(f&#39;&#39;(y)\)</span> is bounded on the closed interval <span class="math inline">\([z \pm c]\)</span>. Further, as <span class="math inline">\(f&#39;(x) \neq 0\)</span>, then <span class="math inline">\(\min_{x [z \pm c]} f&#39;(x) &gt; 0\)</span> as <span class="math inline">\(f&#39;(x)\)</span> is continuous on the closed interval <span class="math inline">\([z \pm c]\)</span>. Therefore, <span class="math display">\[
+<p>Since <span class="math inline">\(f\)</span>'s second derivative is
+continuous, <span class="math inline">\(f&#39;&#39;(y)\)</span> is
+bounded on the closed interval <span class="math inline">\([z \pm
+c]\)</span>. Further, as <span class="math inline">\(f&#39;(x) \neq
+0\)</span>, then <span class="math inline">\(\min_{x [z \pm c]}
+f&#39;(x) &gt; 0\)</span> as <span
+class="math inline">\(f&#39;(x)\)</span> is continuous on the closed
+interval <span class="math inline">\([z \pm c]\)</span>. Therefore,
+<span class="math display">\[
 C \doteq \max |\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}|
 \]</span> is bounded. Now <span class="math display">\[
 |\epsilon_{n + 1}| \le |C| \epsilon_n^2
 \]</span></p>
-<p>If for some <span class="math inline">\(n\)</span> such that <span class="math inline">\(\epsilon_n &lt; 1\)</span>, then the number of precise digits doubles for <span class="math inline">\(\epsilon_{n + 1}\)</span>.</p>
+<p>If for some <span class="math inline">\(n\)</span> such that <span
+class="math inline">\(\epsilon_n &lt; 1\)</span>, then the number of
+precise digits doubles for <span class="math inline">\(\epsilon_{n +
+1}\)</span>.</p>
 
       
     </div>
@@ -488,187 +634,373 @@ C \doteq \max |\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}|
 
       
           <h1 id="background">Background</h1>
-<p>Given a matrix <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span>, the goal of low rank matrix approximation is to find a matrix <span class="math inline">\(B \in \mathbb{R}^{k \times n}\)</span> with rank at most <span class="math inline">\(k\)</span> that approximates <span class="math inline">\(A\)</span> as well as possible. This can be measured by <span class="math inline">\(2\)</span>-norm, i.e., <span class="math display">\[
-     \Vert A - B \Vert_2  = \max_{x \in \mathbb{R}^n,  \Vert x \Vert_2  = 1} \Vert (A - B) x \Vert_2 
+<p>Given a matrix <span class="math inline">\(A \in \mathbb{R}^{m \times
+n}\)</span>, the goal of low rank matrix approximation is to find a
+matrix <span class="math inline">\(B \in \mathbb{R}^{k \times
+n}\)</span> with rank at most <span class="math inline">\(k\)</span>
+that approximates <span class="math inline">\(A\)</span> as well as
+possible. This can be measured by <span
+class="math inline">\(2\)</span>-norm, i.e., <span
+class="math display">\[
+     \Vert A - B \Vert_2  = \max_{x \in \mathbb{R}^n,  \Vert x
+\Vert_2  = 1} \Vert (A - B) x \Vert_2
 \]</span></p>
-<p>If we know the entire matrix <span class="math inline">\(A\)</span>, its best approximation is given by the singular vector decomposition, <span class="math display">\[
+<p>If we know the entire matrix <span class="math inline">\(A\)</span>,
+its best approximation is given by the singular vector decomposition,
+<span class="math display">\[
     B \doteq \sum_{i = 1}^k \sigma_i u_i v_i^T
-\]</span> where <span class="math inline">\(\sigma_i \in \mathbb{R}\)</span>, <span class="math inline">\(u_i \in \mathbb{R}^m\)</span> and <span class="math inline">\(v_i \in \mathbb{R}^n\)</span> are the <span class="math inline">\(i\)</span>-th largest singular value, left singular vector and right singular vector of <span class="math inline">\(A\)</span>, respectively.</p>
-<p>When some elements of <span class="math inline">\(A\)</span> are missing, finding such a matrix <span class="math inline">\(B\)</span> to approximate <span class="math inline">\(A\)</span> as well as to predict the missing entries of <span class="math inline">\(A\)</span> is known as collaborative filtering, which is used in recommendation system.</p>
+\]</span> where <span class="math inline">\(\sigma_i \in
+\mathbb{R}\)</span>, <span class="math inline">\(u_i \in
+\mathbb{R}^m\)</span> and <span class="math inline">\(v_i \in
+\mathbb{R}^n\)</span> are the <span class="math inline">\(i\)</span>-th
+largest singular value, left singular vector and right singular vector
+of <span class="math inline">\(A\)</span>, respectively.</p>
+<p>When some elements of <span class="math inline">\(A\)</span> are
+missing, finding such a matrix <span class="math inline">\(B\)</span> to
+approximate <span class="math inline">\(A\)</span> as well as to predict
+the missing entries of <span class="math inline">\(A\)</span> is known
+as collaborative filtering, which is used in recommendation system.</p>
 <h1 id="problem">Problem</h1>
-<p>One scenario is to approximate <span class="math inline">\(A\)</span> in an online fashion, i.e., the rows of <span class="math inline">\(A\)</span> comes on by one (no missing values). Denote the <span class="math inline">\(i\)</span>-th row of <span class="math inline">\(A\)</span> as <span class="math inline">\(a_i\)</span>. We need to maintain a smaller matrix <span class="math inline">\(B \in \mathbb{R}^{k \times n}\)</span>, termed the matrix sketch of <span class="math inline">\(A\)</span>, that approximate <span class="math inline">\(A\)</span> well, in the sense that <span class="math display">\[
- \Vert  A - B  \Vert_2  \le \frac{2  \Vert A \Vert _F^2}{ k },
+<p>One scenario is to approximate <span class="math inline">\(A\)</span>
+in an online fashion, i.e., the rows of <span
+class="math inline">\(A\)</span> comes on by one (no missing values).
+Denote the <span class="math inline">\(i\)</span>-th row of <span
+class="math inline">\(A\)</span> as <span
+class="math inline">\(a_i\)</span>. We need to maintain a smaller matrix
+<span class="math inline">\(B \in \mathbb{R}^{k \times n}\)</span>,
+termed the matrix sketch of <span class="math inline">\(A\)</span>, that
+approximate <span class="math inline">\(A\)</span> well, in the sense
+that <span class="math display">\[
+\Vert  A - B  \Vert_2  \le \frac{2  \Vert A \Vert _F^2}{ k },
 \]</span></p>
-<p>where <span class="math inline">\(\Vert A \Vert _F \doteq \sqrt{ \sum_{ i, j \in [n] } A_{i,j}^2 }\)</span> is the Frobenius norm of <span class="math inline">\(A\)</span>.</p>
+<p>where <span class="math inline">\(\Vert A \Vert _F \doteq \sqrt{
+\sum_{ i, j \in [n] } A_{i,j}^2 }\)</span> is the Frobenius norm of
+<span class="math inline">\(A\)</span>.</p>
 <h1 id="algorithm">Algorithm</h1>
 <blockquote>
 <p><strong>Algorithm</strong> [1]<br />
-1. <span class="math inline">\(B_0 \leftarrow\)</span> <span class="math inline">\({k \times n}\)</span> all zero matrix.<br />
+1. <span class="math inline">\(B_0 \leftarrow\)</span> <span
+class="math inline">\({k \times n}\)</span> all zero matrix.<br />
 2. For <span class="math inline">\(i \in [m]\)</span>:<br />
-3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(C_i \leftarrow\)</span> matrix obtained by inserting <span class="math inline">\(a_i\)</span> into a zero row of <span class="math inline">\(B_{i - 1}\)</span>.<br />
-4. <span class="math inline">\(\qquad\)</span> If <span class="math inline">\(C_i\)</span> has no zero row after insertion:<br />
-5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(U_i, \Sigma_{C_i}, V_i \leftarrow \text{SVD} (C_i)\)</span>, such that <span class="math inline">\(C_i = U_i \Sigma_{C_i} V_i^T\)</span>.<br />
-6. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\Sigma_{B_i} \leftarrow \sqrt{ \max \{ \Sigma_{C_i}^2 - \sigma_{i, k / 2}^2 I, 0 \} }\)</span><br />
-7. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(B_i \leftarrow \Sigma_{B_i} V_i^T\)</span>.<br />
+3. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(C_i \leftarrow\)</span> matrix obtained by
+inserting <span class="math inline">\(a_i\)</span> into a zero row of
+<span class="math inline">\(B_{i - 1}\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> If <span
+class="math inline">\(C_i\)</span> has no zero row after
+insertion:<br />
+5. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(U_i,
+\Sigma_{C_i}, V_i \leftarrow \text{SVD} (C_i)\)</span>, such that <span
+class="math inline">\(C_i = U_i \Sigma_{C_i} V_i^T\)</span>.<br />
+6. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\Sigma_{B_i} \leftarrow \sqrt{ \max \{
+\Sigma_{C_i}^2 - \sigma_{i, k / 2}^2 I, 0 \} }\)</span><br />
+7. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(B_i
+\leftarrow \Sigma_{B_i} V_i^T\)</span>.<br />
 8. <span class="math inline">\(\qquad\)</span> Else<br />
-9. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> Set <span class="math inline">\(\sigma_{i, k / 2} \leftarrow 0\)</span> // <em>needed only for the proof</em><br />
-9. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(B_i \leftarrow C_i\)</span>.</p>
+9. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> Set <span
+class="math inline">\(\sigma_{i, k / 2} \leftarrow 0\)</span> //
+<em>needed only for the proof</em><br />
+9. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(B_i
+\leftarrow C_i\)</span>.</p>
 </blockquote>
-<p>Here <span class="math inline">\(\sigma_{i, k / 2}\)</span> is the <span class="math inline">\(k / 2\)</span>-th largest singular value of <span class="math inline">\(\Sigma_{C_i}\)</span>. The line 6 throws away all singular values that are less than <span class="math inline">\(\sigma_{i, k / 2}\)</span>, and then subtract the squares of all singular values that are greater by <span class="math inline">\(\sigma_{i, k / 2}^2\)</span>.</p>
+<p>Here <span class="math inline">\(\sigma_{i, k / 2}\)</span> is the
+<span class="math inline">\(k / 2\)</span>-th largest singular value of
+<span class="math inline">\(\Sigma_{C_i}\)</span>. The line 6 throws
+away all singular values that are less than <span
+class="math inline">\(\sigma_{i, k / 2}\)</span>, and then subtract the
+squares of all singular values that are greater by <span
+class="math inline">\(\sigma_{i, k / 2}^2\)</span>.</p>
 <h2 id="theorem-1.">Theorem 1.</h2>
 <blockquote>
-<p><span class="math inline">\(B_k^T B_k \preccurlyeq A^T A\)</span> for <span class="math inline">\(k \in [m]\)</span>.</p>
+<p><span class="math inline">\(B_k^T B_k \preccurlyeq A^T A\)</span> for
+<span class="math inline">\(k \in [m]\)</span>.</p>
 </blockquote>
-<p><strong>Proof:</strong> To show <span class="math inline">\(A^T A - B_k^T B_k\)</span> is semi-positive definitive, we need to show that <span class="math inline">\(\forall x \in \mathbb{R}^n\)</span>, we have <span class="math display">\[
+<p><strong>Proof:</strong> To show <span class="math inline">\(A^T A -
+B_k^T B_k\)</span> is semi-positive definitive, we need to show that
+<span class="math inline">\(\forall x \in \mathbb{R}^n\)</span>, we have
+<span class="math display">\[
     x^T A^T A x - x^T B_k^T B_k  x \ge 0
-    \Longleftrightarrow  \Vert Ax \Vert_2^2 \ge  \Vert B_k x \Vert_2^2. 
+    \Longleftrightarrow  \Vert Ax \Vert_2^2 \ge  \Vert B_k x \Vert_2^2.
 \]</span></p>
-<p>To prove this, we are going to show that <span class="math display">\[
-    \Vert Ax \Vert_2^2 = \sum_{i \in [m] } \left&lt;a_i, x \right&gt;^2 \ge \sum_{i \in [k] } \left&lt;a_i, x \right&gt;^2 \ge \Vert B_k x \Vert_2^2.
+<p>To prove this, we are going to show that <span
+class="math display">\[
+    \Vert Ax \Vert_2^2 = \sum_{i \in [m] } \left&lt;a_i, x \right&gt;^2
+\ge \sum_{i \in [k] } \left&lt;a_i, x \right&gt;^2 \ge \Vert B_k x
+\Vert_2^2.
 \]</span></p>
-<p>To prove the last inequality, we will prove that for <span class="math inline">\(i \in [m]\)</span>, <span class="math display">\[
-     \Vert C_i \Vert_2^2 = \Vert B_{i - 1} x \Vert_2^2 + \left&lt;a_i, x \right&gt;^2 \ge  \Vert B_i x \Vert_2^2.
+<p>To prove the last inequality, we will prove that for <span
+class="math inline">\(i \in [m]\)</span>, <span class="math display">\[
+     \Vert C_i \Vert_2^2 = \Vert B_{i - 1} x \Vert_2^2 + \left&lt;a_i, x
+\right&gt;^2 \ge  \Vert B_i x \Vert_2^2.
 \]</span></p>
 <p>There are two possible cases.</p>
 <ol type="1">
-<li><p>If <span class="math inline">\(C_i\)</span> contains empty row, then the inequality holds with equality as <span class="math inline">\(B_i \leftarrow C_i\)</span>.</p></li>
-<li><p>Otherwise, as <span class="math inline">\(B_i = \Sigma_{B_i} V_i^T\)</span>, <span class="math display">\[
+<li><p>If <span class="math inline">\(C_i\)</span> contains empty row,
+then the inequality holds with equality as <span
+class="math inline">\(B_i \leftarrow C_i\)</span>.</p></li>
+<li><p>Otherwise, as <span class="math inline">\(B_i = \Sigma_{B_i}
+V_i^T\)</span>, <span class="math display">\[
 \Vert B_i x \Vert_2^2  =  \Vert \Sigma_{B_i} V_i^T x \Vert_2^2.
 \]</span></p>
 <p>On the other hand, <span class="math display">\[
     \begin{aligned}
-        \Vert C_i x \Vert_2^2 
+        \Vert C_i x \Vert_2^2
             &amp;= \Vert U_i \Sigma_{C_i} V_i^T x \Vert_2^2 \\
-            &amp;= x^T V_i \Sigma_{C_i}^T U_i^T U_i \Sigma_{C_i} V_i^T x \\
+            &amp;= x^T V_i \Sigma_{C_i}^T U_i^T U_i \Sigma_{C_i} V_i^T x
+\\
             &amp;= x^T V_i \Sigma_{C_i}^T \Sigma_{C_i} V_i^T x \\
-            &amp;= \Vert \Sigma_{C_i} V_i^T x \Vert_2^2 . 
+            &amp;= \Vert \Sigma_{C_i} V_i^T x \Vert_2^2 .
     \end{aligned}
-\]</span> Since <span class="math inline">\(U_i\)</span> is an orthogonal matrix and corresponds to a left rotation, it should not change the <span class="math inline">\(\ell_2\)</span>-norm of <span class="math inline">\(\Sigma_{C_i} V_i^T x\)</span>.</p>
-<p>By the transformation performed by the algorithm, we have <span class="math inline">\(\Sigma_{C_i}^T \Sigma_{C_i} \preccurlyeq \Sigma_{B_i}^T \Sigma_{B_i}\)</span>, therefore, <span class="math display">\[
+\]</span> Since <span class="math inline">\(U_i\)</span> is an
+orthogonal matrix and corresponds to a left rotation, it should not
+change the <span class="math inline">\(\ell_2\)</span>-norm of <span
+class="math inline">\(\Sigma_{C_i} V_i^T x\)</span>.</p>
+<p>By the transformation performed by the algorithm, we have <span
+class="math inline">\(\Sigma_{C_i}^T \Sigma_{C_i} \preccurlyeq
+\Sigma_{B_i}^T \Sigma_{B_i}\)</span>, therefore, <span
+class="math display">\[
     \Vert C_i x \Vert_2^2 \ge \Vert B_i x \Vert_2^2.
 \]</span></p></li>
 </ol>
 <h2 id="theorem-2.">Theorem 2.</h2>
 <blockquote>
 <p><span class="math display">\[
-\Vert A^T A - B_m^T B_m \Vert_2  \le 2 \frac{ \Vert A \Vert _F^2 }{ k }. 
+\Vert A^T A - B_m^T B_m \Vert_2  \le 2 \frac{ \Vert A \Vert _F^2 }{ k }.
 \]</span></p>
 </blockquote>
-<p><strong>Proof:</strong> First, we show that for a positive semi-definite matrix <span class="math inline">\(S\)</span>, we have <span class="math display">\[
-     \Vert S \Vert_2  = \max_{ x \in \mathbb{R}^n,  \Vert x \Vert  = 1}  \Vert S x \Vert_2  = \lambda_1 = v_1^T S v_1,
+<p><strong>Proof:</strong> First, we show that for a positive
+semi-definite matrix <span class="math inline">\(S\)</span>, we have
+<span class="math display">\[
+     \Vert S \Vert_2  = \max_{ x \in \mathbb{R}^n,  \Vert x \Vert  =
+1}  \Vert S x \Vert_2  = \lambda_1 = v_1^T S v_1,
 \]</span></p>
-<p>where <span class="math inline">\(\lambda_1\)</span> is the largest eigenvalue of <span class="math inline">\(S\)</span> and <span class="math inline">\(v_1\)</span> is the corresponding eigenvector. To see this, let <span class="math inline">\(S = V_S \Sigma_S V_S^T\)</span> be the singular value decomposition of <span class="math inline">\(S\)</span>. Then <span class="math display">\[
-    \Vert S x \Vert_2^2 = (V_S^T x)^T \Sigma_S (V_S^T x) = \sum \lambda_i \big( (V_S^T x)_i \big)^2 \le \lambda_1 \big( (V_S^T x)_1 \big)^2.
+<p>where <span class="math inline">\(\lambda_1\)</span> is the largest
+eigenvalue of <span class="math inline">\(S\)</span> and <span
+class="math inline">\(v_1\)</span> is the corresponding eigenvector. To
+see this, let <span class="math inline">\(S = V_S \Sigma_S
+V_S^T\)</span> be the singular value decomposition of <span
+class="math inline">\(S\)</span>. Then <span class="math display">\[
+    \Vert S x \Vert_2^2 = (V_S^T x)^T \Sigma_S (V_S^T x) = \sum
+\lambda_i \big( (V_S^T x)_i \big)^2 \le \lambda_1 \big( (V_S^T x)_1
+\big)^2.
 \]</span></p>
-<p>For <span class="math inline">\(x \in \mathbb{R}^n, \Vert x \Vert_2 = 1\)</span>, this is maximized when <span class="math inline">\(x = v_1\)</span>.</p>
-<p>In the previous section, we have proven that <span class="math inline">\(B_m^T B_m \preccurlyeq A^T A\)</span>. Hence, <span class="math inline">\(S \doteq A^T A - B_m^T B_m\)</span> is a positive semi-definite matrix. Let <span class="math inline">\(v_1\)</span> be its unit eigenvector associated with the largest eigenvalue. Then <span class="math display">\[
+<p>For <span class="math inline">\(x \in \mathbb{R}^n, \Vert x \Vert_2 =
+1\)</span>, this is maximized when <span class="math inline">\(x =
+v_1\)</span>.</p>
+<p>In the previous section, we have proven that <span
+class="math inline">\(B_m^T B_m \preccurlyeq A^T A\)</span>. Hence,
+<span class="math inline">\(S \doteq A^T A - B_m^T B_m\)</span> is a
+positive semi-definite matrix. Let <span
+class="math inline">\(v_1\)</span> be its unit eigenvector associated
+with the largest eigenvalue. Then <span class="math display">\[
 \begin{aligned}
- \Vert A^T A - B_m^T B_m \Vert_2
+\Vert A^T A - B_m^T B_m \Vert_2
     &amp;=  v_1 ^TA^T A  v_1 -  v_1 ^T B_m^T B_m v_1  \\
     &amp;=  \Vert A v_1  \Vert_2^2 -  \Vert B_m v_1  \Vert_2^2 \\
-    &amp;= \sum_{i = 1}^m \left( \left&lt;a_i, x \right&gt;^2  +  \Vert B_{i - 1}  v_1  \Vert_2^2 -  \Vert B_{i}  v_1  \Vert_2^2 \right) \\
-    &amp;= \sum_{i = 1}^m \left( \Vert \Sigma_{C_i} V_i^T  v_1  \Vert_2^2 -  \Vert \Sigma_{B_i} V_i^T  v_1  \Vert_2^2 \right) \\
-    &amp;= \sum_{i = 1}^m \left( v_1^T V_i \Sigma_{C_i}^T \Sigma_{C_i} V_i^T v_1 - v_1^T V_i \Sigma_{B_i}^T \Sigma_{B_i} V_i^T v_1 \right) \\
-    &amp;= \sum_{i = 1}^m (V_i^T v_1)^T \left( \Sigma_{C_i}^T \Sigma_{C_i} - \Sigma_{B_i}^T \Sigma_{B_i} \right) (V_i^T v_1) \\
-    &amp;\le \sum_{i = 1}^m  \left\Vert \Sigma_{C_i}^T \Sigma_{C_i}  - \Sigma_{B_i}^T \Sigma_{B_i}  \right\Vert_2  \\
+    &amp;= \sum_{i = 1}^m \left( \left&lt;a_i, x \right&gt;^2  +  \Vert
+B_{i - 1}  v_1  \Vert_2^2 -  \Vert B_{i}  v_1  \Vert_2^2 \right) \\
+    &amp;= \sum_{i = 1}^m \left( \Vert \Sigma_{C_i}
+V_i^T  v_1  \Vert_2^2 -  \Vert \Sigma_{B_i} V_i^T  v_1  \Vert_2^2
+\right) \\
+    &amp;= \sum_{i = 1}^m \left( v_1^T V_i \Sigma_{C_i}^T \Sigma_{C_i}
+V_i^T v_1 - v_1^T V_i \Sigma_{B_i}^T \Sigma_{B_i} V_i^T v_1 \right) \\
+    &amp;= \sum_{i = 1}^m (V_i^T v_1)^T \left( \Sigma_{C_i}^T
+\Sigma_{C_i} - \Sigma_{B_i}^T \Sigma_{B_i} \right) (V_i^T v_1) \\
+    &amp;\le \sum_{i = 1}^m  \left\Vert \Sigma_{C_i}^T \Sigma_{C_i}  -
+\Sigma_{B_i}^T \Sigma_{B_i}  \right\Vert_2  \\
     &amp;= \sum_{i = 1}^m \sigma_{i, k /2 }^2.
 \end{aligned}
 \]</span></p>
-<p>It is left to bound the size of <span class="math inline">\(\sum_{i = 1}^m \sigma_{i, k /2 }^2\)</span>: <span class="math display">\[
+<p>It is left to bound the size of <span class="math inline">\(\sum_{i =
+1}^m \sigma_{i, k /2 }^2\)</span>: <span class="math display">\[
 \begin{aligned}
- \Vert A \Vert^2_F -  \Vert B_m \Vert^2_F
-    &amp;= \sum_{i = 1}^m  \left( \Vert a_i \Vert_2^2  +  \Vert B_{i - 1} \Vert^2_F -  \Vert B_{i} \Vert^2_F \right) \\
-    &amp;= \sum_{i = 1}^m  \left( \Vert U_i \Sigma_{C_i} V_i^T \Vert^2_F -  \Vert \Sigma_{B_i} V_i^T \Vert^2_F \right) \\
-    &amp;= \sum_{i = 1}^m  \left( \Vert \Sigma_{C_i} V_i^T \Vert^2_F -  \Vert \Sigma_{B_i} V_i^T \Vert^2_F \right) \\
-    &amp;= \sum_{i = 1}^m \left( \Vert \Sigma_{C_i} \Vert^2_F -  \Vert \Sigma_{B_i} \Vert^2 _F \right) \\
+\Vert A \Vert^2_F -  \Vert B_m \Vert^2_F
+    &amp;= \sum_{i = 1}^m  \left( \Vert a_i \Vert_2^2  +  \Vert B_{i -
+1} \Vert^2_F -  \Vert B_{i} \Vert^2_F \right) \\
+    &amp;= \sum_{i = 1}^m  \left( \Vert U_i \Sigma_{C_i} V_i^T \Vert^2_F
+-  \Vert \Sigma_{B_i} V_i^T \Vert^2_F \right) \\
+    &amp;= \sum_{i = 1}^m  \left( \Vert \Sigma_{C_i} V_i^T \Vert^2_F
+-  \Vert \Sigma_{B_i} V_i^T \Vert^2_F \right) \\
+    &amp;= \sum_{i = 1}^m \left( \Vert \Sigma_{C_i} \Vert^2_F -  \Vert
+\Sigma_{B_i} \Vert^2 _F \right) \\
     &amp;\ge (k / 2) \sum_{i = 1}^m \sigma_{i, k /2 }^2.
 \end{aligned}
 \]</span></p>
-<p>The last inequality holds by the definition of <span class="math inline">\(\Sigma_{C_i}\)</span> and <span class="math inline">\(\Sigma_{B_i}\)</span>.</p>
-<p><strong>Remark:</strong> <em>The underlying idea for the proof is that the squared Frobenius norm of a matrix <span class="math inline">\(C_i\)</span> equals the sum of the squares of its singular values, since</em><br />
+<p>The last inequality holds by the definition of <span
+class="math inline">\(\Sigma_{C_i}\)</span> and <span
+class="math inline">\(\Sigma_{B_i}\)</span>.</p>
+<p><strong>Remark:</strong> <em>The underlying idea for the proof is
+that the squared Frobenius norm of a matrix <span
+class="math inline">\(C_i\)</span> equals the sum of the squares of its
+singular values, since</em><br />
 <span class="math display">\[
     \begin{aligned}
-        \Vert C_i \Vert_F^2 
+        \Vert C_i \Vert_F^2
         &amp;= \text{tr} (C_i^T C_i) \\
-        &amp;= \text{tr} ( V_i \Sigma_{C_i}^T U_i^T U_i \Sigma_{C_i} V_i^T ) \\
+        &amp;= \text{tr} ( V_i \Sigma_{C_i}^T U_i^T U_i \Sigma_{C_i}
+V_i^T ) \\
         &amp;= \text{tr} ( V_i \Sigma_{C_i}^T \Sigma_{C_i} V_i^T ) \\
         &amp;= \text{tr} ( \Sigma_{C_i}^T \Sigma_{C_i} V_i^T V_i ) \\
-        &amp;= \text{tr} ( \Sigma_{C_i}^T \Sigma_{C_i} ). 
+        &amp;= \text{tr} ( \Sigma_{C_i}^T \Sigma_{C_i} ).
     \end{aligned}
 \]</span></p>
 <p>In conclusion, <span class="math display">\[
 \begin{aligned}
-    \frac{ \Vert A^T A - B_m^T B_m \Vert_2 }{ \Vert A \Vert^2_F} \le \frac{ \Vert A^T A - B_m^T B_m \Vert_2 }{ \Vert A \Vert^2_F -  \Vert B_m \Vert^2_F} \le \frac{2}{k}.
+    \frac{ \Vert A^T A - B_m^T B_m \Vert_2 }{ \Vert A \Vert^2_F} \le
+\frac{ \Vert A^T A - B_m^T B_m \Vert_2 }{ \Vert A \Vert^2_F -  \Vert B_m
+\Vert^2_F} \le \frac{2}{k}.
 \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
-<h1 id="a-counterpart-for-heavy-hitters">A Counterpart For Heavy Hitters</h1>
-<p>We apply similar idea for the heavy hitter problem in streaming model.</p>
+<h1 id="a-counterpart-for-heavy-hitters">A Counterpart For Heavy
+Hitters</h1>
+<p>We apply similar idea for the heavy hitter problem in streaming
+model.</p>
 <h2 id="problem-1">Problem</h2>
-<p>There is a streaming <span class="math inline">\(S = \{ a_1, ..., a_m \}\)</span> of <span class="math inline">\(m\)</span> elements each from a finite domain <span class="math inline">\([d]\)</span>. Given a parameter <span class="math inline">\(k\)</span>, we want to find the elements in <span class="math inline">\([d]\)</span> whose frequencies, i.e., the number of times they appear in <span class="math inline">\(S\)</span>, are at least <span class="math inline">\(k\)</span>.</p>
+<p>There is a streaming <span class="math inline">\(S = \{ a_1, ..., a_m
+\}\)</span> of <span class="math inline">\(m\)</span> elements each from
+a finite domain <span class="math inline">\([d]\)</span>. Given a
+parameter <span class="math inline">\(k\)</span>, we want to find the
+elements in <span class="math inline">\([d]\)</span> whose frequencies,
+i.e., the number of times they appear in <span
+class="math inline">\(S\)</span>, are at least <span
+class="math inline">\(k\)</span>.</p>
 <h2 id="algorithm-1">Algorithm</h2>
-<p>The following algorithm will provide under-estimates of elements' frequencies, with space usage <span class="math inline">\(2k\)</span> and error <span class="math inline">\(m / k\)</span>.</p>
+<p>The following algorithm will provide under-estimates of elements'
+frequencies, with space usage <span class="math inline">\(2k\)</span>
+and error <span class="math inline">\(m / k\)</span>.</p>
 <blockquote>
 <p><strong>Processing Stream</strong><br />
-1. <span class="math inline">\(B_0 \leftarrow\)</span> an empty (element, frequency) list of capacity <span class="math inline">\(2k\)</span>.<br />
+1. <span class="math inline">\(B_0 \leftarrow\)</span> an empty
+(element, frequency) list of capacity <span
+class="math inline">\(2k\)</span>.<br />
 2. For <span class="math inline">\(t \in [m]\)</span>:<br />
-3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(C_t \leftarrow\)</span> list obtained by inserting <span class="math inline">\(\{ a_t, 1 \}\)</span> into <span class="math inline">\(B_{t - 1}\)</span>.<br />
-4. <span class="math inline">\(\qquad\)</span> If <span class="math inline">\(C_t\)</span> has size <span class="math inline">\(2k\)</span>:<br />
-5. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(B_t \leftarrow\)</span> list obtained from <span class="math inline">\(C_t\)</span> by merging frequencies.<br />
-6. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> // each element in <span class="math inline">\([d]\)</span> now appears in <span class="math inline">\(B_t\)</span> at most once.<br />
-6. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\sigma_t \leftarrow\)</span> the <span class="math inline">\(k\)</span>-th largest frequency in <span class="math inline">\(B_t\)</span>.<br />
-7. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> Subtract the frequency of each element in <span class="math inline">\(B_t\)</span> by <span class="math inline">\(\sigma_t\)</span>.<br />
-8. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> Remove elements with non-positive frequencies.<br />
+3. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(C_t \leftarrow\)</span> list obtained by inserting
+<span class="math inline">\(\{ a_t, 1 \}\)</span> into <span
+class="math inline">\(B_{t - 1}\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> If <span
+class="math inline">\(C_t\)</span> has size <span
+class="math inline">\(2k\)</span>:<br />
+5. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(B_t
+\leftarrow\)</span> list obtained from <span
+class="math inline">\(C_t\)</span> by merging frequencies.<br />
+6. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> // each element in <span
+class="math inline">\([d]\)</span> now appears in <span
+class="math inline">\(B_t\)</span> at most once.<br />
+6. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\sigma_t \leftarrow\)</span> the <span
+class="math inline">\(k\)</span>-th largest frequency in <span
+class="math inline">\(B_t\)</span>.<br />
+7. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> Subtract the frequency of each
+element in <span class="math inline">\(B_t\)</span> by <span
+class="math inline">\(\sigma_t\)</span>.<br />
+8. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> Remove elements with non-positive
+frequencies.<br />
 8. <span class="math inline">\(\qquad\)</span> Else<br />
-9. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(\sigma_t \leftarrow 0;\)</span><br />
-9. <span class="math inline">\(\qquad\)</span><span class="math inline">\(\qquad\)</span> <span class="math inline">\(B_t \leftarrow C_t\)</span>.</p>
+9. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\sigma_t \leftarrow 0;\)</span><br />
+9. <span class="math inline">\(\qquad\)</span><span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(B_t
+\leftarrow C_t\)</span>.</p>
 </blockquote>
 <blockquote>
 <p><strong>QUERY</strong><br />
-<strong>Input: <span class="math inline">\(B_t\)</span> for some <span class="math inline">\(t \in [m]\)</span>, <span class="math inline">\(v \in [d].\)</span></strong><br />
-<strong>Output: frequency estimation of <span class="math inline">\(v\)</span> in <span class="math inline">\(\{a_1, ...., a_t \}\)</span></strong><br />
-1. <span class="math inline">\(\hat f_{B_t}[v] \leftarrow 0;\)</span><br />
+<strong>Input: <span class="math inline">\(B_t\)</span> for some <span
+class="math inline">\(t \in [m]\)</span>, <span class="math inline">\(v
+\in [d].\)</span></strong><br />
+<strong>Output: frequency estimation of <span
+class="math inline">\(v\)</span> in <span class="math inline">\(\{a_1,
+...., a_t \}\)</span></strong><br />
+1. <span class="math inline">\(\hat f_{B_t}[v] \leftarrow
+0;\)</span><br />
 2. for <span class="math inline">\((v_i, f_i) \in B_t\)</span> do<br />
-3. <span class="math inline">\(\qquad\)</span> if <span class="math inline">\(v_i = v\)</span> then<br />
-4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat f_{B_t} [ v ] \leftarrow \hat f_{B_t} [v] + f_i;\)</span><br />
-5. <strong>Return</strong> <span class="math inline">\(\hat f_{B_t} [v]\)</span>.</p>
+3. <span class="math inline">\(\qquad\)</span> if <span
+class="math inline">\(v_i = v\)</span> then<br />
+4. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(\hat
+f_{B_t} [ v ] \leftarrow \hat f_{B_t} [v] + f_i;\)</span><br />
+5. <strong>Return</strong> <span class="math inline">\(\hat f_{B_t}
+[v]\)</span>.</p>
 </blockquote>
-<p>Observe that for <span class="math inline">\(v \in [d]\)</span>, if <span class="math inline">\(v\)</span> does not appears in <span class="math inline">\(B_t\)</span>, then the algorithm returns 0.</p>
+<p>Observe that for <span class="math inline">\(v \in [d]\)</span>, if
+<span class="math inline">\(v\)</span> does not appears in <span
+class="math inline">\(B_t\)</span>, then the algorithm returns 0.</p>
 <h2 id="time">Time</h2>
 <blockquote>
-<p>The amortized time for each update is <span class="math inline">\(O(1)\)</span>.</p>
+<p>The amortized time for each update is <span
+class="math inline">\(O(1)\)</span>.</p>
 </blockquote>
 <ol type="1">
-<li>Inserting <span class="math inline">\(\{a_i, 1\}\)</span> into <span class="math inline">\(B_{i - 1}\)</span> takes <span class="math inline">\(O(1)\)</span> time.<br />
+<li>Inserting <span class="math inline">\(\{a_i, 1\}\)</span> into <span
+class="math inline">\(B_{i - 1}\)</span> takes <span
+class="math inline">\(O(1)\)</span> time.<br />
 </li>
-<li>Merging <span class="math inline">\(C_i\)</span>, subtracting elements' frequencies by <span class="math inline">\(\sigma_i\)</span> and removing non-positive elements take <span class="math inline">\(O(k)\)</span> time. But this happens only every <span class="math inline">\(k / 2\)</span> updates. Hence the amortized time is <span class="math inline">\(O(1)\)</span>.</li>
+<li>Merging <span class="math inline">\(C_i\)</span>, subtracting
+elements' frequencies by <span class="math inline">\(\sigma_i\)</span>
+and removing non-positive elements take <span
+class="math inline">\(O(k)\)</span> time. But this happens only every
+<span class="math inline">\(k / 2\)</span> updates. Hence the amortized
+time is <span class="math inline">\(O(1)\)</span>.</li>
 </ol>
 <h2 id="error">Error</h2>
 <blockquote>
-<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall t \in [m], v \in [d]\)</span>, <span class="math inline">\(\hat f_{B_t} [v]\)</span> is an underestimate of <span class="math inline">\(v\)</span>'s frequency in <span class="math inline">\(\{a_1, ... a_t \}\)</span>.</p>
+<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall t \in
+[m], v \in [d]\)</span>, <span class="math inline">\(\hat f_{B_t}
+[v]\)</span> is an underestimate of <span
+class="math inline">\(v\)</span>'s frequency in <span
+class="math inline">\(\{a_1, ... a_t \}\)</span>.</p>
 </blockquote>
-<p><strong>Proof.</strong> Obviously true by how the algorithm works.</p>
+<p><strong>Proof.</strong> Obviously true by how the algorithm
+works.</p>
 <blockquote>
-<p><strong>Theorem 2.</strong> <span class="math inline">\(\forall v \in [d], t \in [m]\)</span>, let <span class="math inline">\(f_t [v]\)</span> be the number of times <span class="math inline">\(v\)</span> appears in <span class="math inline">\(\{a_1, ..., a_t \}\)</span>. We have that <span class="math display">\[
-f_t[v] - \hat f_{B_t} [v] &lt; \frac{t}{k}. 
+<p><strong>Theorem 2.</strong> <span class="math inline">\(\forall v \in
+[d], t \in [m]\)</span>, let <span class="math inline">\(f_t
+[v]\)</span> be the number of times <span
+class="math inline">\(v\)</span> appears in <span
+class="math inline">\(\{a_1, ..., a_t \}\)</span>. We have that <span
+class="math display">\[
+f_t[v] - \hat f_{B_t} [v] &lt; \frac{t}{k}.
 \]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> For each <span class="math inline">\(i \in \{0, 1, ..., m \}\)</span>, define <span class="math inline">\(\Vert B_i \Vert_1 = \left( \sum_{ (v_j, f_j) \in B_i } f_j \right)\)</span> and for each <span class="math inline">\(i \in [m]\)</span>, let <span class="math inline">\(\Vert C_i \Vert_1 = \left( \sum_{ (v_j, f_j) \in C_i } f_j \right)\)</span>. Observe that <span class="math display">\[
+<p><strong>Proof.</strong> For each <span class="math inline">\(i \in
+\{0, 1, ..., m \}\)</span>, define <span class="math inline">\(\Vert B_i
+\Vert_1 = \left( \sum_{ (v_j, f_j) \in B_i } f_j \right)\)</span> and
+for each <span class="math inline">\(i \in [m]\)</span>, let <span
+class="math inline">\(\Vert C_i \Vert_1 = \left( \sum_{ (v_j, f_j) \in
+C_i } f_j \right)\)</span>. Observe that <span class="math display">\[
 \begin{aligned}
     f_t[v]- \hat f_{B_t} [v] \le \sum_{i \in [t] } \sigma_i.
 \end{aligned}
 \]</span></p>
 <p>On the other hand, <span class="math display">\[
 \begin{aligned}
- t -  \Vert B_m \Vert_1
-    &amp;= \sum_{i \in [t] }  \left( 1  +  \Vert B_{i - 1} \Vert_1 -  \Vert B_i \Vert_1 \right) \\
-    &amp;= \sum_{i \in [t] }  \left( \Vert C_i \Vert_1  -  \Vert B_i \Vert_1 \right) \\
+t -  \Vert B_m \Vert_1
+    &amp;= \sum_{i \in [t] }  \left( 1  +  \Vert B_{i - 1} \Vert_1
+-  \Vert B_i \Vert_1 \right) \\
+    &amp;= \sum_{i \in [t] }  \left( \Vert C_i \Vert_1  -  \Vert B_i
+\Vert_1 \right) \\
     &amp;\ge k \cdot \sum_{i \in [t] } \sigma_i.
 \end{aligned}
 \]</span></p>
-<p>Combined, we get <span class="math inline">\(f_t[v]- \hat f_{B_t} [v] \le \frac{t - \Vert B_t \Vert_1}{k}\)</span>.</p>
+<p>Combined, we get <span class="math inline">\(f_t[v]- \hat f_{B_t} [v]
+\le \frac{t - \Vert B_t \Vert_1}{k}\)</span>.</p>
 <h1 id="reference">Reference</h1>
-<p>[1]. Edo, Liberty. "Simple and deterministic matrix sketching." In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining, pp. 581-588. ACM, 2013.</p>
+<p>[1]. Edo, Liberty. "Simple and deterministic matrix sketching." In
+Proceedings of the 19th ACM SIGKDD international conference on Knowledge
+discovery and data mining, pp. 581-588. ACM, 2013.</p>
 
       
     </div>

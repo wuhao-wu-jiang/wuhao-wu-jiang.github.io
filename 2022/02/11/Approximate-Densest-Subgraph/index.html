@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Let \(G &#x3D; (V, E)\) be an undirected graph with \(|V| &#x3D; n\) vertices and \(|E| &#x3D; m\) edges. For each \(S \subset V\), denote \(E(S)\) the set of edges in the subgraph induced by \(S\), i.e., \[     E">
+  <meta name="description" content="Let \(G &#x3D; (V, E)\) be an undirected graph with \(|V| &#x3D; n\) vertices and \(|E| &#x3D; m\) edges. For each \(S \subset V\), denote \(E(S)\) the set of edges in the subgraph induced by \(S\), i.e., \[">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Approximate Densest Subgraph">
 <meta property="og:url" content="http://example.com/2022/02/11/Approximate-Densest-Subgraph/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="Let \(G &#x3D; (V, E)\) be an undirected graph with \(|V| &#x3D; n\) vertices and \(|E| &#x3D; m\) edges. For each \(S \subset V\), denote \(E(S)\) the set of edges in the subgraph induced by \(S\), i.e., \[     E">
+<meta property="og:description" content="Let \(G &#x3D; (V, E)\) be an undirected graph with \(|V| &#x3D; n\) vertices and \(|E| &#x3D; m\) edges. For each \(S \subset V\), denote \(E(S)\) the set of edges in the subgraph induced by \(S\), i.e., \[">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-02-11T11:49:24.000Z">
-<meta property="article:modified_time" content="2022-02-12T06:32:34.153Z">
+<meta property="article:modified_time" content="2022-02-12T06:32:34.000Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 
@@ -195,84 +195,167 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Let <span class="math inline">\(G = (V, E)\)</span> be an undirected graph with <span class="math inline">\(|V| = n\)</span> vertices and <span class="math inline">\(|E| = m\)</span> edges.<br />
-For each <span class="math inline">\(S \subset V\)</span>, denote <span class="math inline">\(E(S)\)</span> the set of edges in the subgraph induced by <span class="math inline">\(S\)</span>, i.e., <span class="math display">\[
-    E(S) \doteq \{ (u, v) \in E : u, v \in S \}. 
-\]</span> The density of the subgraph induced by <span class="math inline">\(S\)</span> is <span class="math display">\[
-    d_G(S) \doteq \frac{|E(S)|}{|S|}. 
+        <p>Let <span class="math inline">\(G = (V, E)\)</span> be an undirected
+graph with <span class="math inline">\(|V| = n\)</span> vertices and
+<span class="math inline">\(|E| = m\)</span> edges.<br />
+For each <span class="math inline">\(S \subset V\)</span>, denote <span
+class="math inline">\(E(S)\)</span> the set of edges in the subgraph
+induced by <span class="math inline">\(S\)</span>, i.e., <span
+class="math display">\[
+    E(S) \doteq \{ (u, v) \in E : u, v \in S \}.
+\]</span> The density of the subgraph induced by <span
+class="math inline">\(S\)</span> is <span class="math display">\[
+    d_G(S) \doteq \frac{|E(S)|}{|S|}.
 \]</span></p>
 <blockquote>
-<p><strong>Problem.</strong> Find <span class="math inline">\(S^* \subset V\)</span>, s.t. <span class="math inline">\(d_G(S^*)\)</span> is maximized.</p>
+<p><strong>Problem.</strong> Find <span class="math inline">\(S^*
+\subset V\)</span>, s.t. <span class="math inline">\(d_G(S^*)\)</span>
+is maximized.</p>
 </blockquote>
 <h1 id="greedy-algorithm">Greedy Algorithm</h1>
 <blockquote>
-<p><strong>Definition.</strong> Given <span class="math inline">\(S \subset V\)</span>, for each <span class="math inline">\(u \in S\)</span>, define the set of edges incident to <span class="math inline">\(u\)</span> in <span class="math inline">\(S\)</span> as <span class="math display">\[
+<p><strong>Definition.</strong> Given <span class="math inline">\(S
+\subset V\)</span>, for each <span class="math inline">\(u \in
+S\)</span>, define the set of edges incident to <span
+class="math inline">\(u\)</span> in <span
+class="math inline">\(S\)</span> as <span class="math display">\[
 E(u, S) \doteq \{ (u, v) \in E(S) \}.
 \]</span></p>
-<p><strong>Definition.</strong> A function <span class="math inline">\(w: E \rightarrow V\)</span> is called an edge assignment, if it maps each edge <span class="math inline">\((u, v) \in E\)</span> to one of its endpoints <span class="math inline">\(\{u, v \}\)</span>.</p>
+<p><strong>Definition.</strong> A function <span
+class="math inline">\(w: E \rightarrow V\)</span> is called an edge
+assignment, if it maps each edge <span class="math inline">\((u, v) \in
+E\)</span> to one of its endpoints <span class="math inline">\(\{u, v
+\}\)</span>.</p>
 </blockquote>
-<p>There is a linear time, 2-approximation greedy algorithm [1] which works as follows.</p>
+<p>There is a linear time, 2-approximation greedy algorithm [1] which
+works as follows.</p>
 <blockquote>
-<p><strong>Greedy Algorithm.</strong> 1. <span class="math inline">\(S_1 \leftarrow V\)</span>;<br />
+<p><strong>Greedy Algorithm.</strong> 1. <span class="math inline">\(S_1
+\leftarrow V\)</span>;<br />
 2. for <span class="math inline">\(i \in [n]\)</span> do<br />
-3. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(u_i \leftarrow \arg\min_{u \in S_i} |E(u, S_i)|\)</span>;<br />
-4. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(S_{i + 1} \leftarrow S_i \setminus \{ u_i \}\)</span>;<br />
-5. <span class="math inline">\(\qquad\)</span> for <span class="math inline">\(e = (u_i, v) \in E(u_i, S_i)\)</span> do<br />
-6. <span class="math inline">\(\qquad\)</span> <span class="math inline">\(\qquad\)</span> <span class="math inline">\(w(e) \leftarrow u_i\)</span>;<br />
-7. <span class="math inline">\(k \leftarrow \arg\max_{i \in n]} |E(u_i, S_i)|\)</span>;<br />
+3. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(u_i \leftarrow \arg\min_{u \in S_i} |E(u,
+S_i)|\)</span>;<br />
+4. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(S_{i + 1} \leftarrow S_i \setminus \{ u_i
+\}\)</span>;<br />
+5. <span class="math inline">\(\qquad\)</span> for <span
+class="math inline">\(e = (u_i, v) \in E(u_i, S_i)\)</span> do<br />
+6. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(w(e)
+\leftarrow u_i\)</span>;<br />
+7. <span class="math inline">\(k \leftarrow \arg\max_{i \in n]} |E(u_i,
+S_i)|\)</span>;<br />
 8. return <span class="math inline">\(S_k\)</span>;</p>
 </blockquote>
 <h1 id="approximation-guarantee">Approximation Guarantee</h1>
 <blockquote>
-<p><strong>Definition.</strong> Given an edge assignment <span class="math inline">\(w\)</span>, for each <span class="math inline">\(u \in V\)</span>, denote the set of edges assigned to <span class="math inline">\(u\)</span> as <span class="math display">\[
-A_w(u) \doteq \{ e = (u, v) \in E : w(e) = u \}. 
+<p><strong>Definition.</strong> Given an edge assignment <span
+class="math inline">\(w\)</span>, for each <span class="math inline">\(u
+\in V\)</span>, denote the set of edges assigned to <span
+class="math inline">\(u\)</span> as <span class="math display">\[
+A_w(u) \doteq \{ e = (u, v) \in E : w(e) = u \}.
 \]</span></p>
 </blockquote>
 <p>The approximation guarantee relies on the following lemma.</p>
 <blockquote>
-<p><strong>Lemma.</strong> For edge assignment <span class="math inline">\(w\)</span> and each <span class="math inline">\(S \subset V\)</span>, it holds that <span class="math display">\[
+<p><strong>Lemma.</strong> For edge assignment <span
+class="math inline">\(w\)</span> and each <span class="math inline">\(S
+\subset V\)</span>, it holds that <span class="math display">\[
 \max_{u \in V} |A_w(u)| \ge d_G(S).
 \]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> Observe that all edges in <span class="math inline">\(E(S)\)</span> are assigned to vertices in <span class="math inline">\(S\)</span>. It follows that <span class="math display">\[
-    \max_{u \in V} |A_w(u)| 
-        \ge \max_{u \in S} |A_w(u)| 
+<p><strong>Proof.</strong> Observe that all edges in <span
+class="math inline">\(E(S)\)</span> are assigned to vertices in <span
+class="math inline">\(S\)</span>. It follows that <span
+class="math display">\[
+    \max_{u \in V} |A_w(u)|
+        \ge \max_{u \in S} |A_w(u)|
         \ge \frac{|E(S)|}{|S|} = d_G(S).
 \]</span> <span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><strong>Theorem.</strong> The solution <span class="math inline">\(S_k\)</span> satisfies <span class="math display">\[
-d_G(S_k) \ge \frac{1}{2} \cdot d_G (S^*). 
+<p><strong>Theorem.</strong> The solution <span
+class="math inline">\(S_k\)</span> satisfies <span
+class="math display">\[
+d_G(S_k) \ge \frac{1}{2} \cdot d_G (S^*).
 \]</span></p>
 </blockquote>
 <p><strong>Proof.</strong><br />
-Let <span class="math inline">\(w\)</span> be the assignment constructed by the greedy algorithm, and denote <span class="math display">\[
-    d_{\max} \doteq \max_{u \in V} |A_w(u)| = \max_{i \in [n]} |E(u_i, S_i)| = |E(u_k, S_k)|.
-\]</span> Via the previous lemma, it holds that <span class="math display">\[
-    d_G(S^*) \le d_{\max} = |E(u_k, S_k)|. 
+Let <span class="math inline">\(w\)</span> be the assignment constructed
+by the greedy algorithm, and denote <span class="math display">\[
+    d_{\max} \doteq \max_{u \in V} |A_w(u)| = \max_{i \in [n]} |E(u_i,
+S_i)| = |E(u_k, S_k)|.
+\]</span> Via the previous lemma, it holds that <span
+class="math display">\[
+    d_G(S^*) \le d_{\max} = |E(u_k, S_k)|.
 \]</span></p>
-<p>Further, as <span class="math inline">\(u_k\)</span> is the vertices with minimum degree in the subgraph induced by <span class="math inline">\(S_k\)</span>, <span class="math inline">\(|E(u_k, S_k)|\)</span> should be upper bounded by the average degree in <span class="math inline">\(S_k\)</span>: <span class="math display">\[
-    d_G(S^*) \le |E(u_k, S_k)| \le 2 \cdot  \frac{|E(S_k)|}{ |S_k| } = 2 \cdot d_G(S_k). 
+<p>Further, as <span class="math inline">\(u_k\)</span> is the vertices
+with minimum degree in the subgraph induced by <span
+class="math inline">\(S_k\)</span>, <span class="math inline">\(|E(u_k,
+S_k)|\)</span> should be upper bounded by the average degree in <span
+class="math inline">\(S_k\)</span>: <span class="math display">\[
+    d_G(S^*) \le |E(u_k, S_k)| \le 2 \cdot  \frac{|E(S_k)|}{ |S_k| } = 2
+\cdot d_G(S_k).
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="running-time">Running Time</h1>
 <blockquote>
-<p><strong>Theorem.</strong> The algorithm can be implemented in <span class="math inline">\(O(m + n)\)</span> time.</p>
+<p><strong>Theorem.</strong> The algorithm can be implemented in <span
+class="math inline">\(O(m + n)\)</span> time.</p>
 </blockquote>
 <p><strong>Proof.</strong></p>
-<p>We can maintain the degrees of the vertices in <span class="math inline">\(S_i, i \in [n]\)</span> dynamically.</p>
+<p>We can maintain the degrees of the vertices in <span
+class="math inline">\(S_i, i \in [n]\)</span> dynamically.</p>
 <ol type="1">
-<li><p>At the beginning of the algorithm, set <span class="math inline">\(d(u) = |E(u, V)| = |E(u, S_i)|\)</span> for each <span class="math inline">\(u \in V\)</span>. We maintain the invariant that <span class="math inline">\(d(u) = |E(u, S_i)|\)</span> at the beginning of each iteration <span class="math inline">\(i \in [n]\)</span>.</p></li>
-<li><p>At the <span class="math inline">\(i^{(th)}\)</span> iteration, when <span class="math inline">\(u_i\)</span> is removed from <span class="math inline">\(S_i\)</span> to construct <span class="math inline">\(S_{i + 1}\)</span>, we decrease <span class="math inline">\(d(v)\)</span> by <span class="math inline">\(1\)</span>, if <span class="math inline">\((u_i, v) \in E(S_i)\)</span>.</p></li>
+<li><p>At the beginning of the algorithm, set <span
+class="math inline">\(d(u) = |E(u, V)| = |E(u, S_i)|\)</span> for each
+<span class="math inline">\(u \in V\)</span>. We maintain the invariant
+that <span class="math inline">\(d(u) = |E(u, S_i)|\)</span> at the
+beginning of each iteration <span class="math inline">\(i \in
+[n]\)</span>.</p></li>
+<li><p>At the <span class="math inline">\(i^{(th)}\)</span> iteration,
+when <span class="math inline">\(u_i\)</span> is removed from <span
+class="math inline">\(S_i\)</span> to construct <span
+class="math inline">\(S_{i + 1}\)</span>, we decrease <span
+class="math inline">\(d(v)\)</span> by <span
+class="math inline">\(1\)</span>, if <span class="math inline">\((u_i,
+v) \in E(S_i)\)</span>.</p></li>
 </ol>
-<p>It is easy to see that the invariant is maintained, and the total update time is <span class="math inline">\(O(m)\)</span>.</p>
-<p>Next, we design a data structure that supports the extraction of <span class="math inline">\(u_i\)</span>, the vertex with minimum degree in <span class="math inline">\(S_i\)</span>, in <span class="math inline">\(O(1)\)</span> time. We keep an array with size <span class="math inline">\(n\)</span>.</p>
+<p>It is easy to see that the invariant is maintained, and the total
+update time is <span class="math inline">\(O(m)\)</span>.</p>
+<p>Next, we design a data structure that supports the extraction of
+<span class="math inline">\(u_i\)</span>, the vertex with minimum degree
+in <span class="math inline">\(S_i\)</span>, in <span
+class="math inline">\(O(1)\)</span> time. We keep an array with size
+<span class="math inline">\(n\)</span>.</p>
 <ul>
-<li><p>Each vertex <span class="math inline">\(u\)</span> is kept in the <span class="math inline">\(d(u)\)</span>-th bucket of the array. When <span class="math inline">\(d(u)\)</span> is updated, we update the bucket of <span class="math inline">\(u\)</span> correspondingly. The total update cost is <span class="math inline">\(O(m)\)</span>.</p></li>
-<li><p>At the beginning of the algorithm, we search bucket <span class="math inline">\(0, 1, \ldots\)</span> , until we find the first non-empty bucket <span class="math inline">\(j \in [n]\)</span>. Then we extract a vertex <span class="math inline">\(u\)</span> from the bucket <span class="math inline">\(j\)</span>, and updates the <span class="math inline">\(d(v)\)</span> for which <span class="math inline">\(v\)</span> is neighbor of <span class="math inline">\(u\)</span> in the induced subgraph. The update decreases <span class="math inline">\(d(v)\)</span> by <span class="math inline">\(1\)</span>. Therefore, the bucket <span class="math inline">\(\max \{ 0, j - 1 \}\)</span> can become non-empty at the next iteration, from which we should try to find the next vertex with minimum degree. There are <span class="math inline">\(n\)</span> iteration, and we can move backward at the array by at most <span class="math inline">\(n\)</span> steps. It follows that the total searching cost in the array is <span class="math inline">\(O(n)\)</span>.</p></li>
+<li><p>Each vertex <span class="math inline">\(u\)</span> is kept in the
+<span class="math inline">\(d(u)\)</span>-th bucket of the array. When
+<span class="math inline">\(d(u)\)</span> is updated, we update the
+bucket of <span class="math inline">\(u\)</span> correspondingly. The
+total update cost is <span class="math inline">\(O(m)\)</span>.</p></li>
+<li><p>At the beginning of the algorithm, we search bucket <span
+class="math inline">\(0, 1, \ldots\)</span> , until we find the first
+non-empty bucket <span class="math inline">\(j \in [n]\)</span>. Then we
+extract a vertex <span class="math inline">\(u\)</span> from the bucket
+<span class="math inline">\(j\)</span>, and updates the <span
+class="math inline">\(d(v)\)</span> for which <span
+class="math inline">\(v\)</span> is neighbor of <span
+class="math inline">\(u\)</span> in the induced subgraph. The update
+decreases <span class="math inline">\(d(v)\)</span> by <span
+class="math inline">\(1\)</span>. Therefore, the bucket <span
+class="math inline">\(\max \{ 0, j - 1 \}\)</span> can become non-empty
+at the next iteration, from which we should try to find the next vertex
+with minimum degree. There are <span class="math inline">\(n\)</span>
+iteration, and we can move backward at the array by at most <span
+class="math inline">\(n\)</span> steps. It follows that the total
+searching cost in the array is <span
+class="math inline">\(O(n)\)</span>.</p></li>
 </ul>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1] <em>M. Charikar, “Greedy Approximation Algorithms for Finding Dense Components in a Graph,” 2000</em>.</p>
+<p>[1] <em>M. Charikar, “Greedy Approximation Algorithms for Finding
+Dense Components in a Graph,” 2000</em>.</p>
 
     </div>
 

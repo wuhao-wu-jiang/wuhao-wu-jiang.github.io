@@ -192,146 +192,339 @@
 
       
           <h1 id="problem">Problem</h1>
-<p>Let <span class="math inline">\(x \in \mathbb{R}^n\)</span> be a vector initialized with all zeros. There is a stream <span class="math inline">\(S\)</span> of updates, each of which is a pair <span class="math inline">\((t, \Delta) \in [n] \times \mathbb{R}\)</span>, causing <span class="math inline">\(x_t \leftarrow x_t + \Delta\)</span>.</p>
-<p>Define the support <span class="math inline">\(\mathbb{Supp}(x)\)</span> to be the set of all non-zero indexes of <span class="math inline">\(x\)</span>: <span class="math display">\[
-    \mathbb{Supp}(x) \doteq \{ i \in [n] : x_i \neq 0 \}. 
+<p>Let <span class="math inline">\(x \in \mathbb{R}^n\)</span> be a
+vector initialized with all zeros. There is a stream <span
+class="math inline">\(S\)</span> of updates, each of which is a pair
+<span class="math inline">\((t, \Delta) \in [n] \times
+\mathbb{R}\)</span>, causing <span class="math inline">\(x_t \leftarrow
+x_t + \Delta\)</span>.</p>
+<p>Define the support <span
+class="math inline">\(\mathbb{Supp}(x)\)</span> to be the set of all
+non-zero indexes of <span class="math inline">\(x\)</span>: <span
+class="math display">\[
+    \mathbb{Supp}(x) \doteq \{ i \in [n] : x_i \neq 0 \}.
 \]</span></p>
 <blockquote>
-<p><strong><span class="math inline">\(\ell_0\)</span> sampling</strong>: output an index uniformly at random from the support <span class="math inline">\(\mathbb{Supp}(x)\)</span>.</p>
+<p><strong><span class="math inline">\(\ell_0\)</span>
+sampling</strong>: output an index uniformly at random from the support
+<span class="math inline">\(\mathbb{Supp}(x)\)</span>.</p>
 </blockquote>
-<p>We assume that at any time, <span class="math inline">\(\forall t \in [n], x_t \le M\)</span> for some <span class="math inline">\(M \in \mathbb{R}\)</span>.</p>
+<p>We assume that at any time, <span class="math inline">\(\forall t \in
+[n], x_t \le M\)</span> for some <span class="math inline">\(M \in
+\mathbb{R}\)</span>.</p>
 <h2 id="naive-solutions">Naive Solutions</h2>
-<p>We can uses an array to keep <span class="math inline">\(x\)</span> explicitly. But this has size <span class="math inline">\(O( n \cdot \log M)\)</span> bits.</p>
+<p>We can uses an array to keep <span class="math inline">\(x\)</span>
+explicitly. But this has size <span class="math inline">\(O( n \cdot
+\log M)\)</span> bits.</p>
 <blockquote>
-<p>Goal: design an algorithm for <span class="math inline">\(\ell_0\)</span> sampling with space less than <span class="math inline">\(O( n \cdot \log M)\)</span> bits.</p>
+<p>Goal: design an algorithm for <span
+class="math inline">\(\ell_0\)</span> sampling with space less than
+<span class="math inline">\(O( n \cdot \log M)\)</span> bits.</p>
 </blockquote>
-<p>If there are only insertion updates, i.e., <span class="math inline">\(\forall (t, \Delta) \in S\)</span>, it holds that <span class="math inline">\(\Delta &gt; 0\)</span>, then we can use a hash set to keep the non-zero elements and their frequencies, which has size <span class="math inline">\(O( |\mathbb{Supp}(x) | \cdot \log M)\)</span>. If <span class="math inline">\(x\)</span> is dense, i.e., <span class="math inline">\(|\mathbb{Supp}(x)|\)</span> is large, this is still infeasible.</p>
+<p>If there are only insertion updates, i.e., <span
+class="math inline">\(\forall (t, \Delta) \in S\)</span>, it holds that
+<span class="math inline">\(\Delta &gt; 0\)</span>, then we can use a
+hash set to keep the non-zero elements and their frequencies, which has
+size <span class="math inline">\(O( |\mathbb{Supp}(x) | \cdot \log
+M)\)</span>. If <span class="math inline">\(x\)</span> is dense, i.e.,
+<span class="math inline">\(|\mathbb{Supp}(x)|\)</span> is large, this
+is still infeasible.</p>
 <h2 id="sampling-game">Sampling Game</h2>
-<p>We discuss one sampling game that illustrates the key ideas used in <span class="math inline">\(\ell_0\)</span>-sampling.</p>
-<p>In this game, we want to sample one integer uniformly at random from <span class="math inline">\([k]\)</span>. Instead of sampling it directly, we choose some <span class="math inline">\(p \in (0, 1]\)</span> and perform the following two steps:</p>
+<p>We discuss one sampling game that illustrates the key ideas used in
+<span class="math inline">\(\ell_0\)</span>-sampling.</p>
+<p>In this game, we want to sample one integer uniformly at random from
+<span class="math inline">\([k]\)</span>. Instead of sampling it
+directly, we choose some <span class="math inline">\(p \in (0,
+1]\)</span> and perform the following two steps:</p>
 <ol type="1">
-<li>First, we sample each <span class="math inline">\(i \in [k]\)</span> uniformly and independent at random with probability <span class="math inline">\(p\)</span>. Denote <span class="math inline">\(B\)</span> the set of sampled elements.<br />
+<li>First, we sample each <span class="math inline">\(i \in [k]\)</span>
+uniformly and independent at random with probability <span
+class="math inline">\(p\)</span>. Denote <span
+class="math inline">\(B\)</span> the set of sampled elements.<br />
 </li>
-<li>If <span class="math inline">\(B \neq \emptyset\)</span>, then output one element from <span class="math inline">\(B\)</span> uniformly at random.</li>
+<li>If <span class="math inline">\(B \neq \emptyset\)</span>, then
+output one element from <span class="math inline">\(B\)</span> uniformly
+at random.</li>
 </ol>
 <blockquote>
-<p><strong>Property.</strong> <span class="math inline">\(\mathbb{E} [ |B| ] = kp\)</span>.</p>
+<p><strong>Property.</strong> <span class="math inline">\(\mathbb{E} [
+|B| ] = kp\)</span>.</p>
 </blockquote>
 <blockquote>
-<p><strong>Property.</strong> <span class="math inline">\(\Pr[ |B| &gt; 0 ] = (1 - p)^k \le \exp(-kp)\)</span>.</p>
+<p><strong>Property.</strong> <span class="math inline">\(\Pr[ |B| &gt;
+0 ] = (1 - p)^k \le \exp(-kp)\)</span>.</p>
 </blockquote>
 <blockquote>
-<p><strong>Property.</strong> By Bernstein's Inequality, <span class="math inline">\(\forall \delta \in (0, 1)\)</span>, with probability at least <span class="math inline">\(1 - \delta\)</span>, we have <span class="math display">\[
-|B| - \mathbb{E} [ |B| ] \le \sqrt{2 \cdot k \cdot p \cdot (1 - p) \cdot \ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta} }{3}.
+<p><strong>Property.</strong> By Bernstein's Inequality, <span
+class="math inline">\(\forall \delta \in (0, 1)\)</span>, with
+probability at least <span class="math inline">\(1 - \delta\)</span>, we
+have <span class="math display">\[
+|B| - \mathbb{E} [ |B| ] \le \sqrt{2 \cdot k \cdot p \cdot (1 - p) \cdot
+\ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta} }{3}.
 \]</span></p>
 </blockquote>
 <blockquote>
-<p><strong>Theorem.</strong> Each element in <span class="math inline">\([k]\)</span> is outputted with equal probability <span class="math display">\[
-\frac{1 - \left(1 - p \right)^k }{ k }. 
+<p><strong>Theorem.</strong> Each element in <span
+class="math inline">\([k]\)</span> is outputted with equal probability
+<span class="math display">\[
+\frac{1 - \left(1 - p \right)^k }{ k }.
 \]</span></p>
 </blockquote>
-<p><strong>Remark: when <span class="math inline">\(p = 1\)</span>, this reduces to sampling an element uniformly at random from <span class="math inline">\([k]\)</span>.</strong></p>
-<p><strong>Proof.</strong> The probability that <span class="math inline">\(B = \emptyset\)</span> is given by <span class="math inline">\((1 - p)^k\)</span>. Conditioned on that <span class="math inline">\(B \neq \emptyset\)</span>, by symmetry, each element is sampled with equal probability.</p>
+<p><strong>Remark: when <span class="math inline">\(p = 1\)</span>, this
+reduces to sampling an element uniformly at random from <span
+class="math inline">\([k]\)</span>.</strong></p>
+<p><strong>Proof.</strong> The probability that <span
+class="math inline">\(B = \emptyset\)</span> is given by <span
+class="math inline">\((1 - p)^k\)</span>. Conditioned on that <span
+class="math inline">\(B \neq \emptyset\)</span>, by symmetry, each
+element is sampled with equal probability.</p>
 <p><span class="math inline">\(\square\)</span></p>
-<p><strong>Remark:</strong> We can also have a proof by algebra. For evert <span class="math inline">\(i \in [k]\)</span>, the probability that it is sampled is given by <span class="math display">\[
+<p><strong>Remark:</strong> We can also have a proof by algebra. For
+evert <span class="math inline">\(i \in [k]\)</span>, the probability
+that it is sampled is given by <span class="math display">\[
 \begin{aligned}
-    \sum_{t = 1}^k \frac{1}{t} \cdot \Pr [ i \in B \mid |B| = t] \cdot \Pr[ |B| = t]
-         &amp;= \sum_{t = 1}^k  \frac{1}{t} \frac{ \binom{k - 1}{t - 1} }{ \binom{k}{t} } \binom{k}{t} p^t (1 - p)^{k - t} \\
-         &amp;= \sum_{t = 1}^k  \frac{1}{t} \binom{k - 1}{t - 1} p^t (1 - p)^{k - t} \\
-         &amp;= \frac{1}{k} \sum_{t = 1}^k  \binom{k}{t} p^t (1 - p)^{k - t} \\
-         &amp;= \frac{1}{k} \left( 1 - \binom{k}{0} p^0 (1 - p)^{k - 0} \right) \\
-         &amp;= \frac{1 - \left(1 - p \right)^k }{ k }. 
+    \sum_{t = 1}^k \frac{1}{t} \cdot \Pr [ i \in B \mid |B| = t] \cdot
+\Pr[ |B| = t]
+         &amp;= \sum_{t = 1}^k  \frac{1}{t} \frac{ \binom{k - 1}{t - 1}
+}{ \binom{k}{t} } \binom{k}{t} p^t (1 - p)^{k - t} \\
+         &amp;= \sum_{t = 1}^k  \frac{1}{t} \binom{k - 1}{t - 1} p^t (1
+- p)^{k - t} \\
+         &amp;= \frac{1}{k} \sum_{t = 1}^k  \binom{k}{t} p^t (1 - p)^{k
+- t} \\
+         &amp;= \frac{1}{k} \left( 1 - \binom{k}{0} p^0 (1 - p)^{k - 0}
+\right) \\
+         &amp;= \frac{1 - \left(1 - p \right)^k }{ k }.
 \end{aligned}
 \]</span></p>
-<h1 id="sampling-with-known-support-size">Sampling With Known Support Size</h1>
-<p>We use the technique developed in the <em>Sampling Game</em> section, to avoid using <span class="math inline">\(O( | \mathbb{Supp}(x) | \log M)\)</span> bits. We have seen that <span class="math inline">\(p\)</span> controls the tradeoff between the size of <span class="math inline">\(B\)</span>, and the successful probability of sampling an element (<span class="math inline">\(B \neq \emptyset\)</span>).</p>
-<p>We begin with the assumption that the size of <span class="math inline">\(\mathbb{Supp}(x)\)</span> is known.</p>
+<h1 id="sampling-with-known-support-size">Sampling With Known Support
+Size</h1>
+<p>We use the technique developed in the <em>Sampling Game</em> section,
+to avoid using <span class="math inline">\(O( | \mathbb{Supp}(x) | \log
+M)\)</span> bits. We have seen that <span
+class="math inline">\(p\)</span> controls the tradeoff between the size
+of <span class="math inline">\(B\)</span>, and the successful
+probability of sampling an element (<span class="math inline">\(B \neq
+\emptyset\)</span>).</p>
+<p>We begin with the assumption that the size of <span
+class="math inline">\(\mathbb{Supp}(x)\)</span> is known.</p>
 <h2 id="insertion-only">Insertion Only</h2>
 <p>As before, we consider insertion only model first.</p>
 <blockquote>
-<p><strong>Claim.</strong> There is an algorithm such that 1. with probability <span class="math inline">\(1 - \delta\)</span>, it returns an element from <span class="math inline">\(\mathbb{Supp}(x)\)</span> uniformly at random;<br />
-2. with probability <span class="math inline">\(\delta\)</span>, it returns nothing.</p>
-<p>Further, the space usage is <span class="math inline">\(O \left( \ln \frac{1}{\delta} \right)\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>.</p>
+<p><strong>Claim.</strong> There is an algorithm such that 1. with
+probability <span class="math inline">\(1 - \delta\)</span>, it returns
+an element from <span class="math inline">\(\mathbb{Supp}(x)\)</span>
+uniformly at random;<br />
+2. with probability <span class="math inline">\(\delta\)</span>, it
+returns nothing.</p>
+<p>Further, the space usage is <span class="math inline">\(O \left( \ln
+\frac{1}{\delta} \right)\)</span> with probability at least <span
+class="math inline">\(1 - \delta\)</span>.</p>
 </blockquote>
-<p>For simplicity, we assume a perfect hash function <span class="math inline">\(h\)</span> that maps elements in <span class="math inline">\([n]\)</span> to <span class="math inline">\(\{0, 1\}\)</span> independently with probability <span class="math inline">\(p\)</span> (to be determined). For each update <span class="math inline">\((t, \Delta)\)</span> in the stream, we process it only if <span class="math inline">\(h(t) = 1\)</span>. As we are dealing with insertion only model, we can use a hashset to maintain the elements with hash value 1.</p>
-<p>Let <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. As analysed before, with probability <span class="math inline">\((1 - p)^k\)</span>, the algorithm fails. To make the failure probability as small as <span class="math inline">\(\delta\)</span>, we have that <span class="math inline">\((1 - p)^k = \delta\)</span>, i.e., <span class="math display">\[
-    p = 1 - \delta^{ \frac{1}{k} } \le -\ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}. 
+<p>For simplicity, we assume a perfect hash function <span
+class="math inline">\(h\)</span> that maps elements in <span
+class="math inline">\([n]\)</span> to <span class="math inline">\(\{0,
+1\}\)</span> independently with probability <span
+class="math inline">\(p\)</span> (to be determined). For each update
+<span class="math inline">\((t, \Delta)\)</span> in the stream, we
+process it only if <span class="math inline">\(h(t) = 1\)</span>. As we
+are dealing with insertion only model, we can use a hashset to maintain
+the elements with hash value 1.</p>
+<p>Let <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. As
+analysed before, with probability <span class="math inline">\((1 -
+p)^k\)</span>, the algorithm fails. To make the failure probability as
+small as <span class="math inline">\(\delta\)</span>, we have that <span
+class="math inline">\((1 - p)^k = \delta\)</span>, i.e., <span
+class="math display">\[
+    p = 1 - \delta^{ \frac{1}{k} } \le -\ln \delta^{ \frac{1}{k} } =
+\frac{1}{k} \ln \frac{1}{\delta}.
 \]</span></p>
-<p>The last inequality holds since the function <span class="math inline">\(y = - \ln x\)</span> is convex, and <span class="math inline">\(y = 1 - x\)</span> is the tangent line of <span class="math inline">\(y = - \ln x\)</span> at the point <span class="math inline">\((1, 0)\)</span>. By previous analysis, with probability at least <span class="math inline">\(1 - \delta\)</span>, the size of <span class="math inline">\(B\)</span> is bounded by <span class="math display">\[
-    \left( kp + \sqrt{2 k p (1 - p) \ln \frac{1}{\delta} } + \frac{2}{3} \ln \frac{1}{\delta} \right) \in O \left( \ln \frac{1}{\delta} \right). 
+<p>The last inequality holds since the function <span
+class="math inline">\(y = - \ln x\)</span> is convex, and <span
+class="math inline">\(y = 1 - x\)</span> is the tangent line of <span
+class="math inline">\(y = - \ln x\)</span> at the point <span
+class="math inline">\((1, 0)\)</span>. By previous analysis, with
+probability at least <span class="math inline">\(1 - \delta\)</span>,
+the size of <span class="math inline">\(B\)</span> is bounded by <span
+class="math display">\[
+    \left( kp + \sqrt{2 k p (1 - p) \ln \frac{1}{\delta} } + \frac{2}{3}
+\ln \frac{1}{\delta} \right) \in O \left( \ln \frac{1}{\delta} \right).
 \]</span></p>
 <h2 id="handling-deletion">Handling Deletion</h2>
-<p>When deletions are possible, we can't use a hashset to keep the sampled updates. E.g., suppose we have a sequence <span class="math inline">\((1, 6), (1, -6), (2, 5), (3, 7), (4, 9)\)</span>, and that <span class="math inline">\(h(1) = h(2) = 1, h(3) = h(4) = 0\)</span>. We need a hashset of size 2 to keep both the frequencies of element 1 and element 2. Even through the frequency of element <span class="math inline">\(1\)</span> is 0 finally, we don't this before we see the entire string.</p>
-<p>In general, <span class="math inline">\(h\)</span> maps <span class="math inline">\(np\)</span> elements in <span class="math inline">\([n]\)</span> to <span class="math inline">\(1\)</span>. If we use a hashset, its size can grow to <span class="math inline">\(O(n p)\)</span>.</p>
-<p>However, there is data structure that can handle deletions while using less than <span class="math inline">\(O(np)\)</span> space.</p>
+<p>When deletions are possible, we can't use a hashset to keep the
+sampled updates. E.g., suppose we have a sequence <span
+class="math inline">\((1, 6), (1, -6), (2, 5), (3, 7), (4, 9)\)</span>,
+and that <span class="math inline">\(h(1) = h(2) = 1, h(3) = h(4) =
+0\)</span>. We need a hashset of size 2 to keep both the frequencies of
+element 1 and element 2. Even through the frequency of element <span
+class="math inline">\(1\)</span> is 0 finally, we don't this before we
+see the entire string.</p>
+<p>In general, <span class="math inline">\(h\)</span> maps <span
+class="math inline">\(np\)</span> elements in <span
+class="math inline">\([n]\)</span> to <span
+class="math inline">\(1\)</span>. If we use a hashset, its size can grow
+to <span class="math inline">\(O(n p)\)</span>.</p>
+<p>However, there is data structure that can handle deletions while
+using less than <span class="math inline">\(O(np)\)</span> space.</p>
 <blockquote>
-<p><strong>Sparse Recovery.</strong> Given an integer <span class="math inline">\(d\)</span> at the beginning of the stream, if <span class="math inline">\(\mathbb{Supp}(x) \le d\)</span> when the stream stops, there is a data structure that returns</p>
+<p><strong>Sparse Recovery.</strong> Given an integer <span
+class="math inline">\(d\)</span> at the beginning of the stream, if
+<span class="math inline">\(\mathbb{Supp}(x) \le d\)</span> when the
+stream stops, there is a data structure that returns</p>
 <ol type="1">
-<li>indices in <span class="math inline">\(\mathbb{Supp}(x)\)</span>;</li>
+<li>indices in <span
+class="math inline">\(\mathbb{Supp}(x)\)</span>;</li>
 <li>and their values,</li>
 </ol>
-<p>using <span class="math inline">\(O(d (\log n + \log M) ) \subset O( d \log (nM) )\)</span> bits. It processes each update <span class="math inline">\((t, \Delta)\)</span> in the stream in <span class="math inline">\(O(d)\)</span> time and recovers <span class="math inline">\(x\)</span> in <span class="math inline">\(O(d^2 polylog(nM))\)</span> time. Its recovery can be wrong if <span class="math inline">\(\mathbb{Supp}(x) &gt; d\)</span>.</p>
+<p>using <span class="math inline">\(O(d (\log n + \log M) ) \subset O(
+d \log (nM) )\)</span> bits. It processes each update <span
+class="math inline">\((t, \Delta)\)</span> in the stream in <span
+class="math inline">\(O(d)\)</span> time and recovers <span
+class="math inline">\(x\)</span> in <span class="math inline">\(O(d^2
+polylog(nM))\)</span> time. Its recovery can be wrong if <span
+class="math inline">\(\mathbb{Supp}(x) &gt; d\)</span>.</p>
 </blockquote>
-<p>It suffices to use such a data structure for the sampled set <span class="math inline">\(B\)</span> with <span class="math inline">\(d \in O( \ln \frac{1}{\delta} )\)</span>. We have seen that if we sampled each element in <span class="math inline">\(\mathbb{Supp}(x)\)</span> with probability <span class="math inline">\(p = 1 - \delta^{1 / k}\)</span>, then with probability at least <span class="math inline">\(1 - \delta\)</span>, we obtain a sampled set <span class="math inline">\(B\)</span> with size at most <span class="math inline">\(d\)</span>. Then we return one element from <span class="math inline">\(B\)</span> uniformly at random.</p>
-<p>Analyzing the probability of sampling an element is more subtle than the previous section. In previous section, each element is under-sampled with probability <span class="math inline">\(\frac{1 - \left(1 - p \right)^k }{ k }\)</span>. Here, conditioned on <span class="math inline">\(|B|\le d\)</span>, each element is sampled equally likely. However, <span class="math inline">\(|B| &gt; d\)</span>, the recovery of sampled elements fails, some element can be returned more frequently and some can be returned less frequently (the recovery behavior is un-defined). As the failure probability is bounded by <span class="math inline">\(\delta\)</span>, each element is returned with probability <span class="math display">\[
-    \left[ \frac{1 - \left(1 - p \right)^k }{ k } \pm \delta \right] \subseteq \left[ 1 - \left( 1 + \frac{ 1 }{ k } \right) \cdot \delta, 1 + \left( 1 - \frac{ 1 }{ k } \right) \cdot \delta \right]. 
+<p>It suffices to use such a data structure for the sampled set <span
+class="math inline">\(B\)</span> with <span class="math inline">\(d \in
+O( \ln \frac{1}{\delta} )\)</span>. We have seen that if we sampled each
+element in <span class="math inline">\(\mathbb{Supp}(x)\)</span> with
+probability <span class="math inline">\(p = 1 - \delta^{1 / k}\)</span>,
+then with probability at least <span class="math inline">\(1 -
+\delta\)</span>, we obtain a sampled set <span
+class="math inline">\(B\)</span> with size at most <span
+class="math inline">\(d\)</span>. Then we return one element from <span
+class="math inline">\(B\)</span> uniformly at random.</p>
+<p>Analyzing the probability of sampling an element is more subtle than
+the previous section. In previous section, each element is under-sampled
+with probability <span class="math inline">\(\frac{1 - \left(1 - p
+\right)^k }{ k }\)</span>. Here, conditioned on <span
+class="math inline">\(|B|\le d\)</span>, each element is sampled equally
+likely. However, <span class="math inline">\(|B| &gt; d\)</span>, the
+recovery of sampled elements fails, some element can be returned more
+frequently and some can be returned less frequently (the recovery
+behavior is un-defined). As the failure probability is bounded by <span
+class="math inline">\(\delta\)</span>, each element is returned with
+probability <span class="math display">\[
+    \left[ \frac{1 - \left(1 - p \right)^k }{ k } \pm \delta \right]
+\subseteq \left[ 1 - \left( 1 + \frac{ 1 }{ k } \right) \cdot \delta, 1
++ \left( 1 - \frac{ 1 }{ k } \right) \cdot \delta \right].
 \]</span></p>
-<h1 id="sampling-with-unknown-support-size">Sampling With UnKnown Support Size</h1>
-<p>Previously, we want to sample each element in <span class="math inline">\([n]\)</span> with probability <span class="math inline">\(1 - \delta^{ \frac{1}{k} } \le \ln \delta^{ \frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}\)</span>, where <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. When this information is unavailable, we can guess by trying the values <span class="math display">\[
+<h1 id="sampling-with-unknown-support-size">Sampling With UnKnown
+Support Size</h1>
+<p>Previously, we want to sample each element in <span
+class="math inline">\([n]\)</span> with probability <span
+class="math inline">\(1 - \delta^{ \frac{1}{k} } \le \ln \delta^{
+\frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}\)</span>, where <span
+class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. When this
+information is unavailable, we can guess by trying the values <span
+class="math display">\[
     1 / 2, \quad 1 / 4, \quad 1 / 8, \quad 1 / 16,  ...
 \]</span></p>
-<p>We don't need to guess the value of <span class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta}\)</span> exactly. In order that the sparse recovery data structure works, any guess within a constant factor suffices.</p>
-<p>For simplicity, assume that <span class="math inline">\(n\)</span> is some power of <span class="math inline">\(2\)</span>. Now, instead of using one sampling set <span class="math inline">\(B\)</span>, we use <span class="math inline">\(\log n + 2\)</span> of them <span class="math inline">\(B_1, B_2, B_3, ...\)</span>, each associated with a sparse recovery structure with parameter <span class="math inline">\(d \in \Theta( \ln \frac{1}{\delta} )\)</span>. Assume that we have a perfect hash function <span class="math inline">\(h: [n] \rightarrow [\log n + 2]\)</span> such that it holds independently for every <span class="math inline">\(t \in [n]\)</span>, <span class="math display">\[
+<p>We don't need to guess the value of <span
+class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta}\)</span> exactly.
+In order that the sparse recovery data structure works, any guess within
+a constant factor suffices.</p>
+<p>For simplicity, assume that <span class="math inline">\(n\)</span> is
+some power of <span class="math inline">\(2\)</span>. Now, instead of
+using one sampling set <span class="math inline">\(B\)</span>, we use
+<span class="math inline">\(\log n + 2\)</span> of them <span
+class="math inline">\(B_1, B_2, B_3, ...\)</span>, each associated with
+a sparse recovery structure with parameter <span class="math inline">\(d
+\in \Theta( \ln \frac{1}{\delta} )\)</span>. Assume that we have a
+perfect hash function <span class="math inline">\(h: [n] \rightarrow
+[\log n + 2]\)</span> such that it holds independently for every <span
+class="math inline">\(t \in [n]\)</span>, <span class="math display">\[
 \begin{aligned}
-    &amp;\Pr[ h(t) = i ]         = \frac{1}{2^i}, \forall i \in [\log n + 1], \\
+    &amp;\Pr[ h(t) = i ]         = \frac{1}{2^i}, \forall i \in [\log n
++ 1], \\
     &amp;\Pr[ h(t) = \log n + 2] = \frac{1}{ 2^{\log n + 1} }.   
 \end{aligned}
 \]</span></p>
-<p>The distribution is well defined, as <span class="math inline">\(\sum_{i \in [\log n + 1] } 1 / 2^i + 1 / 2^{ \log n + 1} = 1 - 1 / 2^{ \log n + 1} + 1 / 2^{ \log n + 1} = 1\)</span>.</p>
-<p>If <span class="math inline">\(k = 1\)</span>, some <span class="math inline">\(B_i\)</span> must recovers <span class="math inline">\(x\)</span> successfully.</p>
-<p>Otherwise, <span class="math inline">\(\exists i \in [\log n]\)</span>, such that <span class="math inline">\(\frac{1}{2^i} \ge \frac{1}{k} \ln \frac{1}{\delta} &gt; \frac{1}{2^{i + 1} }\)</span>. We study the following good events:</p>
+<p>The distribution is well defined, as <span
+class="math inline">\(\sum_{i \in [\log n + 1] } 1 / 2^i + 1 / 2^{ \log
+n + 1} = 1 - 1 / 2^{ \log n + 1} + 1 / 2^{ \log n + 1} = 1\)</span>.</p>
+<p>If <span class="math inline">\(k = 1\)</span>, some <span
+class="math inline">\(B_i\)</span> must recovers <span
+class="math inline">\(x\)</span> successfully.</p>
+<p>Otherwise, <span class="math inline">\(\exists i \in [\log
+n]\)</span>, such that <span class="math inline">\(\frac{1}{2^i} \ge
+\frac{1}{k} \ln \frac{1}{\delta} &gt; \frac{1}{2^{i + 1} }\)</span>. We
+study the following good events:</p>
 <blockquote>
-<p><strong>Event</strong> <span class="math inline">\(E_1:\)</span> for all <span class="math inline">\(j \ge i\)</span>, it holds that <span class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) = j \}| \le d\)</span>.</p>
+<p><strong>Event</strong> <span class="math inline">\(E_1:\)</span> for
+all <span class="math inline">\(j \ge i\)</span>, it holds that <span
+class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) = j \}| \le
+d\)</span>.</p>
 </blockquote>
-<p>Under <span class="math inline">\(E_1\)</span>, the sparse recovery structure associated with <span class="math inline">\(B_j\)</span> recovers <span class="math inline">\(B_j\)</span> successfully for all <span class="math inline">\(j \ge i\)</span>.</p>
+<p>Under <span class="math inline">\(E_1\)</span>, the sparse recovery
+structure associated with <span class="math inline">\(B_j\)</span>
+recovers <span class="math inline">\(B_j\)</span> successfully for all
+<span class="math inline">\(j \ge i\)</span>.</p>
 <blockquote>
-<p><strong>Event</strong> <span class="math inline">\(E_2:\)</span> <span class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) \ge i \}| &gt; 0\)</span>.</p>
+<p><strong>Event</strong> <span class="math inline">\(E_2:\)</span>
+<span class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) \ge i \}|
+&gt; 0\)</span>.</p>
 </blockquote>
-<p>Under <span class="math inline">\(E_2\)</span>, there exists at least one element that is mapped to <span class="math inline">\(B_j\)</span> for some <span class="math inline">\(j \ge i\)</span>.</p>
+<p>Under <span class="math inline">\(E_2\)</span>, there exists at least
+one element that is mapped to <span class="math inline">\(B_j\)</span>
+for some <span class="math inline">\(j \ge i\)</span>.</p>
 <p>Under these two good events, we sample one element as follows:</p>
 <blockquote>
-<p>For <span class="math inline">\(j \leftarrow \log n + 2\)</span> downto <span class="math inline">\(1\)</span> do<br />
-<span class="math inline">\(\qquad\)</span> recover <span class="math inline">\(B_j\)</span>;<br />
-<span class="math inline">\(\qquad\)</span> if <span class="math inline">\(B_j \neq \emptyset\)</span> then<br />
-<span class="math inline">\(\qquad\qquad\)</span> return one element from <span class="math inline">\(B_j\)</span> uniformly at random.</p>
+<p>For <span class="math inline">\(j \leftarrow \log n + 2\)</span>
+downto <span class="math inline">\(1\)</span> do<br />
+<span class="math inline">\(\qquad\)</span> recover <span
+class="math inline">\(B_j\)</span>;<br />
+<span class="math inline">\(\qquad\)</span> if <span
+class="math inline">\(B_j \neq \emptyset\)</span> then<br />
+<span class="math inline">\(\qquad\qquad\)</span> return one element
+from <span class="math inline">\(B_j\)</span> uniformly at random.</p>
 </blockquote>
-<p><strong>Analysis the probability of <span class="math inline">\(E_1\)</span>:</strong></p>
-<p>For <span class="math inline">\(j \ge i\)</span>, it holds that <span class="math inline">\(\mathbb{E} [ |B_j| ] = k / 2^j\)</span>. Suppose that <span class="math inline">\(d = 2 \cdot C_d \cdot \ln \frac{1}{\delta}\)</span> for some constant <span class="math inline">\(C_d\)</span> (to be determined). Since <span class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta} \ge 1 / 2^{i + 1}\)</span>, we have that <span class="math display">\[
-    \frac{d}{\mathbb{E} [ |B_j| ]} \ge \frac{ 2^j }{ k } \cdot 2 \cdot C_d \cdot \ln \frac{1}{\delta} \ge C_d \cdot 2^{j - i}. 
+<p><strong>Analysis the probability of <span
+class="math inline">\(E_1\)</span>:</strong></p>
+<p>For <span class="math inline">\(j \ge i\)</span>, it holds that <span
+class="math inline">\(\mathbb{E} [ |B_j| ] = k / 2^j\)</span>. Suppose
+that <span class="math inline">\(d = 2 \cdot C_d \cdot \ln
+\frac{1}{\delta}\)</span> for some constant <span
+class="math inline">\(C_d\)</span> (to be determined). Since <span
+class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta} \ge 1 / 2^{i +
+1}\)</span>, we have that <span class="math display">\[
+    \frac{d}{\mathbb{E} [ |B_j| ]} \ge \frac{ 2^j }{ k } \cdot 2 \cdot
+C_d \cdot \ln \frac{1}{\delta} \ge C_d \cdot 2^{j - i}.
 \]</span></p>
 <p>By Chernoff bound, <span class="math display">\[
     \begin{aligned}
-        \Pr \left[ |B_j| \ge d \right] 
-            &amp;\le \left( \frac{e^{ \left( {d} / { \mathbb{E}  [ |B_j| ] } \right) - 1 } }{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right)^{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right) }  } \right)^{ \mathbb{E}  [ |B_j| ]} \\
-            &amp;\le \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d \left( \frac{1}{e} \right)^{ \mathbb{E}  [ |B_j| ]}.
+        \Pr \left[ |B_j| \ge d \right]
+            &amp;\le \left( \frac{e^{ \left( {d} / { \mathbb{E}  [ |B_j|
+] } \right) - 1 } }{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right)^{
+\left( {d} / { \mathbb{E} [ |B_j| ] } \right) }  } \right)^{
+\mathbb{E}  [ |B_j| ]} \\
+            &amp;\le \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d
+\left( \frac{1}{e} \right)^{ \mathbb{E}  [ |B_j| ]}.
     \end{aligned}
 \]</span></p>
-<p>By union bound, when <span class="math inline">\(C_d \ge e^2\)</span>, it holds that <span class="math display">\[
+<p>By union bound, when <span class="math inline">\(C_d \ge
+e^2\)</span>, it holds that <span class="math display">\[
     \begin{aligned}
-        \Pr \left[ \exists j \ge i : |B_j| \ge d \right] 
-            &amp;\le \sum_{j \ge i} \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d \\
-            &amp;\le \left( \frac{e}{C_d } \right)^d \sum_{j = 0}^\infty \left( \frac{1}{2^{d} } \right)^j \\
-            &amp;\le \left( \frac{e}{C_d } \right)^d \frac{1}{1 - \frac{1}{2^{d} } } \\
-            &amp;\le 2 \cdot \delta^{2 e^2}. 
+        \Pr \left[ \exists j \ge i : |B_j| \ge d \right]
+            &amp;\le \sum_{j \ge i} \left( \frac{e}{C_d \cdot 2^{j - i}
+} \right)^d \\
+            &amp;\le \left( \frac{e}{C_d } \right)^d \sum_{j = 0}^\infty
+\left( \frac{1}{2^{d} } \right)^j \\
+            &amp;\le \left( \frac{e}{C_d } \right)^d \frac{1}{1 -
+\frac{1}{2^{d} } } \\
+            &amp;\le 2 \cdot \delta^{2 e^2}.
     \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
-<p><strong>Analysis the probability of <span class="math inline">\(E_2\)</span>:</strong></p>
-<p>For each <span class="math inline">\(t \in \mathbb{Supp}(x)\)</span>, we have <span class="math display">\[
+<p><strong>Analysis the probability of <span
+class="math inline">\(E_2\)</span>:</strong></p>
+<p>For each <span class="math inline">\(t \in \mathbb{Supp}(x)\)</span>,
+we have <span class="math display">\[
     \Pr[ h(t) &lt; i ] = \left( 1 - \frac{1}{2^i} \right).
 \]</span></p>
 <p>Therefore, <span class="math display">\[
-    \Pr[ h(t) &lt; i : \forall t \in \mathbb{Supp}(x)  ] = \left( 1 - \frac{1}{2^i} \right)^k \le \left( 1 - \frac{1}{k} \ln \frac{1}{\delta} \right)^k \le \delta.
+    \Pr[ h(t) &lt; i : \forall t \in \mathbb{Supp}(x)  ] = \left( 1 -
+\frac{1}{2^i} \right)^k \le \left( 1 - \frac{1}{k} \ln \frac{1}{\delta}
+\right)^k \le \delta.
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <!-- 
@@ -424,111 +617,205 @@ $$ -->
 
       
           <h1 id="problem">Problem</h1>
-<p>There is a stream <span class="math inline">\(S\)</span> of elements, each consists of a pair <span class="math inline">\((t, \Delta) \in [n] \times \mathbb{R}\)</span>. Let <span class="math inline">\(f \in \mathbb{R}^n\)</span> be the frequency vector of <span class="math inline">\(S\)</span>, s.t., <span class="math inline">\(\forall i \in [n]\)</span>, <span class="math display">\[
-    f_i = \sum_{ (t, \Delta) \in S \wedge t = i} \Delta. 
+<p>There is a stream <span class="math inline">\(S\)</span> of elements,
+each consists of a pair <span class="math inline">\((t, \Delta) \in [n]
+\times \mathbb{R}\)</span>. Let <span class="math inline">\(f \in
+\mathbb{R}^n\)</span> be the frequency vector of <span
+class="math inline">\(S\)</span>, s.t., <span
+class="math inline">\(\forall i \in [n]\)</span>, <span
+class="math display">\[
+    f_i = \sum_{ (t, \Delta) \in S \wedge t = i} \Delta.
 \]</span></p>
-<p>Given <span class="math inline">\(\epsilon \in (0, 1)\)</span>, design a data structure that outputs an <span class="math inline">\((1 \pm \epsilon)\)</span> estimate <span class="math inline">\(\Vert f \Vert_2^2\)</span> with probability at least <span class="math inline">\(1 - \delta\)</span>, and uses space of <span class="math inline">\(O( \frac{1}{\epsilon^2 } \ln \frac{1}{\delta} )\)</span>.</p>
+<p>Given <span class="math inline">\(\epsilon \in (0, 1)\)</span>,
+design a data structure that outputs an <span class="math inline">\((1
+\pm \epsilon)\)</span> estimate <span class="math inline">\(\Vert f
+\Vert_2^2\)</span> with probability at least <span
+class="math inline">\(1 - \delta\)</span>, and uses space of <span
+class="math inline">\(O( \frac{1}{\epsilon^2 } \ln \frac{1}{\delta}
+)\)</span>.</p>
 <h1 id="solution">Solution</h1>
 <p>Based on Count-Sketch.</p>
 <h2 id="algorithm">Algorithm</h2>
 <blockquote>
 <hr />
 <p><strong>Count-Sketch</strong><br />
-1. <span class="math inline">\(k \leftarrow O \left( \ln \frac{1}{ \delta} \right); m \leftarrow \frac{3}{\epsilon^2}\)</span>.<br />
-2. <span class="math inline">\(h_1, h_2, ..., h_k: [n] \rightarrow [m]\)</span>, pairwise independent hash functions.<br />
-3. <span class="math inline">\(g_1, g_2, ..., g_k: [n] \rightarrow \{-1, 1\}\)</span>, four-wise independent hash functions.<br />
-4. <span class="math inline">\(M \leftarrow \{ 0 \}^{k \times m}\)</span> be a <span class="math inline">\(k \times m\)</span> matrix initialized with zeros.<br />
+1. <span class="math inline">\(k \leftarrow O \left( \ln \frac{1}{
+\delta} \right); m \leftarrow \frac{3}{\epsilon^2}\)</span>.<br />
+2. <span class="math inline">\(h_1, h_2, ..., h_k: [n] \rightarrow
+[m]\)</span>, pairwise independent hash functions.<br />
+3. <span class="math inline">\(g_1, g_2, ..., g_k: [n] \rightarrow \{-1,
+1\}\)</span>, four-wise independent hash functions.<br />
+4. <span class="math inline">\(M \leftarrow \{ 0 \}^{k \times
+m}\)</span> be a <span class="math inline">\(k \times m\)</span> matrix
+initialized with zeros.<br />
 4. For <span class="math inline">\((t, \Delta) \in S:\)</span><br />
-5. <span class="math inline">\(\qquad\)</span> For <span class="math inline">\(i \in [k]:\)</span><br />
-6. <span class="math inline">\(\qquad\qquad\)</span> <span class="math inline">\(M[i, h_i (t) ] \leftarrow M[i, h_i (t) ] + g_i(t) \cdot \Delta\)</span><br />
+5. <span class="math inline">\(\qquad\)</span> For <span
+class="math inline">\(i \in [k]:\)</span><br />
+6. <span class="math inline">\(\qquad\qquad\)</span> <span
+class="math inline">\(M[i, h_i (t) ] \leftarrow M[i, h_i (t) ] + g_i(t)
+\cdot \Delta\)</span><br />
 <span class="math inline">\(\qquad\)</span></p>
-<p><strong>Estimation of <span class="math inline">\(\Vert f \Vert_2^2\)</span></strong><br />
+<p><strong>Estimation of <span class="math inline">\(\Vert f
+\Vert_2^2\)</span></strong><br />
 1. For <span class="math inline">\(i \in [k]:\)</span><br />
-2. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(M_i\)</span> be the <span class="math inline">\(i\)</span>-th row of <span class="math inline">\(M\)</span>.<br />
-3. <span class="math inline">\(\qquad\)</span> Let <span class="math inline">\(a_i \leftarrow \Vert M_i \Vert_2\)</span>.<br />
-4. Return the median of <span class="math inline">\((a_i^2)_{i \in [k] }\)</span>.</p>
+2. <span class="math inline">\(\qquad\)</span> Let <span
+class="math inline">\(M_i\)</span> be the <span
+class="math inline">\(i\)</span>-th row of <span
+class="math inline">\(M\)</span>.<br />
+3. <span class="math inline">\(\qquad\)</span> Let <span
+class="math inline">\(a_i \leftarrow \Vert M_i \Vert_2\)</span>.<br />
+4. Return the median of <span class="math inline">\((a_i^2)_{i \in [k]
+}\)</span>.</p>
 </blockquote>
 <h2 id="analysis">Analysis</h2>
 <blockquote>
-<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall i \in [k], \mathbb{E}[ a_i^2 ] = \Vert f \Vert_2^2\)</span>.</p>
+<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall i \in
+[k], \mathbb{E}[ a_i^2 ] = \Vert f \Vert_2^2\)</span>.</p>
 </blockquote>
-<p><strong>Proof.</strong> Consider a fixed <span class="math inline">\(i \in [k]\)</span>. <span class="math inline">\(\forall j \in [m]\)</span>, define the set <span class="math inline">\(h_i^{-1}[j]\)</span> as elements in <span class="math inline">\([n]\)</span> hashed to <span class="math inline">\(j\)</span>: <span class="math display">\[
-    h_i^{-1}[j] \doteq \{ t \in [n] : h(t) = j \}. 
+<p><strong>Proof.</strong> Consider a fixed <span
+class="math inline">\(i \in [k]\)</span>. <span
+class="math inline">\(\forall j \in [m]\)</span>, define the set <span
+class="math inline">\(h_i^{-1}[j]\)</span> as elements in <span
+class="math inline">\([n]\)</span> hashed to <span
+class="math inline">\(j\)</span>: <span class="math display">\[
+    h_i^{-1}[j] \doteq \{ t \in [n] : h(t) = j \}.
 \]</span></p>
-<p>Once <span class="math inline">\(h_i\)</span> is fixed, it holds that <span class="math display">\[
+<p>Once <span class="math inline">\(h_i\)</span> is fixed, it holds that
+<span class="math display">\[
     M[i, j] = \sum_{ t \in h_i^{-1}[j] } g_i (t) \cdot f_t.
 \]</span></p>
-<p>By linearity of expectation and four-wise independence of <span class="math inline">\(g_i\)</span>, <span class="math display">\[
-    \underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t, t&#39; \in h_i^{-1}[j] } \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] \cdot f_t \cdot f_{t&#39;}. 
+<p>By linearity of expectation and four-wise independence of <span
+class="math inline">\(g_i\)</span>, <span class="math display">\[
+    \underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t, t&#39; \in
+h_i^{-1}[j] } \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ]
+\cdot f_t \cdot f_{t&#39;}.
 \]</span></p>
 <p>It holds that <span class="math display">\[
-    \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] = 
+    \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] =
     \begin{cases}
         1,  &amp; \text{ if } t = t&#39;,    \\
-        0,      &amp; \text{ otherwise }. 
+        0,      &amp; \text{ otherwise }.
     \end{cases}
 \]</span></p>
-<p>Therefore, <span class="math inline">\(\underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t \in h_i^{-1}[j] } f_t^2\)</span>.</p>
-<p><strong>Remark. This is a rather deep result, which says that whatever elements are hashed to bucket <span class="math inline">\(j\)</span>, <span class="math inline">\(\underset{g}{ \mathbb{E} } [ (M[i,j] )^2 ]\)</span> equals the sum of squares of these elements.</strong></p>
-<p>By linearity of expectation, when <span class="math inline">\(h_i\)</span> is fixed, <span class="math display">\[
-    \underset{g}{ \mathbb{E} } [ a_i^2 ] = \sum_{j \in [m] } \underset{g}{ \mathbb{E} } [ (M[i,j])^2 ] = \sum_{j \in [m] } \sum_{ t \in h_i^{-1}[j] } f_t^2 = \Vert f \Vert_2^2. 
+<p>Therefore, <span class="math inline">\(\underset{g_i}{ \mathbb{E} }[
+(M[i, j])^2 ] = \sum_{ t \in h_i^{-1}[j] } f_t^2\)</span>.</p>
+<p><strong>Remark. This is a rather deep result, which says that
+whatever elements are hashed to bucket <span
+class="math inline">\(j\)</span>, <span
+class="math inline">\(\underset{g}{ \mathbb{E} } [ (M[i,j] )^2
+]\)</span> equals the sum of squares of these elements.</strong></p>
+<p>By linearity of expectation, when <span
+class="math inline">\(h_i\)</span> is fixed, <span
+class="math display">\[
+    \underset{g}{ \mathbb{E} } [ a_i^2 ] = \sum_{j \in [m] }
+\underset{g}{ \mathbb{E} } [ (M[i,j])^2 ] = \sum_{j \in [m] } \sum_{ t
+\in h_i^{-1}[j] } f_t^2 = \Vert f \Vert_2^2.
 \]</span></p>
-<p>It follows that <span class="math inline">\(\underset{h}{ \mathbb{E} } \left[ \underset{g}{ \mathbb{E} } [ a_i^2 ] \right] = \Vert f \Vert_2^2\)</span>.</p>
-<p><strong>Remark. The proof holds even for <span class="math inline">\(m = 1\)</span>, i.e., we can use only one bucket to construct an unbiased estimator of <span class="math inline">\(\Vert f \Vert_2^2\)</span>.</strong></p>
+<p>It follows that <span class="math inline">\(\underset{h}{ \mathbb{E}
+} \left[ \underset{g}{ \mathbb{E} } [ a_i^2 ] \right] = \Vert f
+\Vert_2^2\)</span>.</p>
+<p><strong>Remark. The proof holds even for <span
+class="math inline">\(m = 1\)</span>, i.e., we can use only one bucket
+to construct an unbiased estimator of <span class="math inline">\(\Vert
+f \Vert_2^2\)</span>.</strong></p>
 <p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><strong>Theorem 2.</strong> <span class="math inline">\(\mathbb{Var}[ a_i^2 ] = \frac{\Vert x \Vert_2^4 }{ m }\)</span>.</p>
+<p><strong>Theorem 2.</strong> <span class="math inline">\(\mathbb{Var}[
+a_i^2 ] = \frac{\Vert x \Vert_2^4 }{ m }\)</span>.</p>
 </blockquote>
 <p><strong>Proof.</strong></p>
-<p><span class="math inline">\(\forall t \in [n]\)</span>, define <span class="math inline">\(X_t \doteq g_i(t) \cdot x_t\)</span>.</p>
-<p><span class="math inline">\(\forall t \in [n], j \in [m]\)</span>, define <span class="math inline">\(Y_{t, j} \doteq \mathbb{1}[ h_i[t] = j ] \cdot X_t\)</span>. Then <span class="math display">\[
-    M[i,j] = \sum_{t \in [n] } Y_{t, j}, 
+<p><span class="math inline">\(\forall t \in [n]\)</span>, define <span
+class="math inline">\(X_t \doteq g_i(t) \cdot x_t\)</span>.</p>
+<p><span class="math inline">\(\forall t \in [n], j \in [m]\)</span>,
+define <span class="math inline">\(Y_{t, j} \doteq \mathbb{1}[ h_i[t] =
+j ] \cdot X_t\)</span>. Then <span class="math display">\[
+    M[i,j] = \sum_{t \in [n] } Y_{t, j},
 \]</span> and hence</p>
 <p><span class="math display">\[
 \begin{aligned}
-    \mathbb{Var}[a_i^2] 
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } (M[i, j])^2 \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \left( \sum_{t \in [n] } Y_{t, j} \right)^2 \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \sum_{t, t&#39; \in [n]} Y_{t, j} Y_{t&#39;, j} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \sum_{j \in [m] } Y_{t, j} Y_{t&#39;, j} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \left( \sum_{j \in [m] } \mathbb{1}[ h_i[t] = j ] \cdot \mathbb{1}[ h_i[t&#39;] = j ] \right) \cdot X_t \cdot X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t \in [n] } f_t^2 + \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] 
+    \mathbb{Var}[a_i^2]
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } (M[i, j])^2 \right]
+\\
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \left( \sum_{t \in
+[n] } Y_{t, j} \right)^2 \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \sum_{t, t&#39; \in
+[n]} Y_{t, j} Y_{t&#39;, j} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \sum_{j \in
+[m] } Y_{t, j} Y_{t&#39;, j} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \left(
+\sum_{j \in [m] } \mathbb{1}[ h_i[t] = j ] \cdot \mathbb{1}[ h_i[t&#39;]
+= j ] \right) \cdot X_t \cdot X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \mathbb{1}[
+h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t \in [n] } f_t^2 + \sum_{t
+\neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot
+X_{t&#39;} \right] \\
+        &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]}
+\mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right]
 \end{aligned}
 \]</span></p>
-<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>, define <span class="math inline">\(Z_{t, t&#39;} = \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;}\)</span>. Then <span class="math display">\[
-    \mathbb{E}[ Z_{t, t&#39;} ] = \mathbb{E}[ \mathbb{1}[ h_i[t] = h_i[t&#39;] ] ]  \cdot \mathbb{E}[ X_t ] \cdot \mathbb{E}[ x_{t&#39;} ] = 0. 
+<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>,
+define <span class="math inline">\(Z_{t, t&#39;} = \mathbb{1}[ h_i[t] =
+h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;}\)</span>. Then <span
+class="math display">\[
+    \mathbb{E}[ Z_{t, t&#39;} ] = \mathbb{E}[ \mathbb{1}[ h_i[t] =
+h_i[t&#39;] ] ]  \cdot \mathbb{E}[ X_t ] \cdot \mathbb{E}[ x_{t&#39;} ]
+= 0.
 \]</span></p>
-<p>Consider <span class="math inline">\(t &lt; t&#39; \in [n]\)</span>, <span class="math inline">\(s &lt; s&#39; \in [n]\)</span>. If <span class="math inline">\((t, t&#39;) \neq (s, s&#39;)\)</span>, then either <span class="math inline">\(t \neq s\)</span> or <span class="math inline">\(t&#39; \neq s&#39;\)</span>. Therefore, there must be an element that appears only once among the four. WLOG, suppose that <span class="math inline">\(t\)</span> is a unique element. Then <span class="math display">\[
+<p>Consider <span class="math inline">\(t &lt; t&#39; \in [n]\)</span>,
+<span class="math inline">\(s &lt; s&#39; \in [n]\)</span>. If <span
+class="math inline">\((t, t&#39;) \neq (s, s&#39;)\)</span>, then either
+<span class="math inline">\(t \neq s\)</span> or <span
+class="math inline">\(t&#39; \neq s&#39;\)</span>. Therefore, there must
+be an element that appears only once among the four. WLOG, suppose that
+<span class="math inline">\(t\)</span> is a unique element. Then <span
+class="math display">\[
     Z_{t, t&#39;} Z_{s, s&#39;}
-            =  X_t \cdot \left( X_{t&#39;} \cdot X_s \cdot X_{s&#39;} \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right). 
+            =  X_t \cdot \left( X_{t&#39;} \cdot X_s \cdot X_{s&#39;}
+\cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] =
+h_i[s&#39;] ] \right).
 \]</span></p>
-<p>As <span class="math inline">\(g_i\)</span> is four-wise independent, and that <span class="math inline">\(t \neq t&#39;\)</span>, <span class="math inline">\(t \neq s\)</span> and <span class="math inline">\(t \neq s&#39;\)</span>, it holds that <span class="math inline">\(g_i(t)\)</span> is independent of <span class="math inline">\(\left( g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;) \cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot \mathbb{1}[ h_i[s] = h_i[s&#39;] ] \right)\)</span>. Hence, <span class="math display">\[
-    \mathbb{E}[ Z_{t, t&#39;} Z_{s, s&#39;}]  = 0. 
+<p>As <span class="math inline">\(g_i\)</span> is four-wise independent,
+and that <span class="math inline">\(t \neq t&#39;\)</span>, <span
+class="math inline">\(t \neq s\)</span> and <span
+class="math inline">\(t \neq s&#39;\)</span>, it holds that <span
+class="math inline">\(g_i(t)\)</span> is independent of <span
+class="math inline">\(\left( g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;)
+\cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot \mathbb{1}[ h_i[s] =
+h_i[s&#39;] ] \right)\)</span>. Hence, <span class="math display">\[
+    \mathbb{E}[ Z_{t, t&#39;} Z_{s, s&#39;}]  = 0.
 \]</span></p>
 <p>Therefore, <span class="math display">\[
     \begin{aligned}
-        \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;} \right] 
-            &amp;= \mathbb{E} \left[ \left( \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;} \right)^2 \right] \\
-            &amp;= \mathbb{E} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;}^2  \right] \\
-            &amp;= \sum_{t \neq t&#39; \in [n]} \frac{ x_t^2 x_{t&#39;}^2}{ m } \\
-            &amp;= \frac{\Vert x \Vert_2^4 }{ m }. 
+        \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;}
+\right]
+            &amp;= \mathbb{E} \left[ \left( \sum_{t \neq t&#39; \in [n]}
+Z_{t, t&#39;} \right)^2 \right] \\
+            &amp;= \mathbb{E} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t,
+t&#39;}^2  \right] \\
+            &amp;= \sum_{t \neq t&#39; \in [n]} \frac{ x_t^2
+x_{t&#39;}^2}{ m } \\
+            &amp;= \frac{\Vert x \Vert_2^4 }{ m }.
     \end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><span class="math inline">\(\forall i \in [k], \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \ge \epsilon \Vert x \Vert_2^2] \le \frac{1}{3}\)</span>.</p>
+<p><span class="math inline">\(\forall i \in [k], \Pr [ | a_i^2 - \Vert
+x \Vert_2^2 | \ge \epsilon \Vert x \Vert_2^2] \le
+\frac{1}{3}\)</span>.</p>
 </blockquote>
 <p><strong>Proof.</strong> By Chebyshev's inequality.</p>
 <p><span class="math inline">\(\square\)</span></p>
 <blockquote>
-<p><span class="math inline">\(\Pr \left[ \left| \{ i \in [k] : \Pr [ | a_i^2 - \Vert x \Vert_2^2 | \le \epsilon \Vert x \Vert_2^2] \} \right| &gt; \frac{k}{2} \right] \ge 1 - \delta\)</span>.</p>
+<p><span class="math inline">\(\Pr \left[ \left| \{ i \in [k] : \Pr [ |
+a_i^2 - \Vert x \Vert_2^2 | \le \epsilon \Vert x \Vert_2^2] \} \right|
+&gt; \frac{k}{2} \right] \ge 1 - \delta\)</span>.</p>
 </blockquote>
 <p><strong>Proof.</strong> By Chernoff bound.</p>
 <p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed. Cambridge University Press, 2020.</p>
+<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed.
+Cambridge University Press, 2020.</p>
 
       
     </div>
@@ -593,75 +880,151 @@ $$ -->
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Given a finite set $\Sigma$ with size $q = |\Sigma|$, and a integer $n \in \mathbb{N}_+$, a <em>code</em> $C \subseteq \Sigma^n$ is a set of strings that are far apart.<br>The set $\Sigma$ is called the <em>alphabet</em> of the code, and $n$ is called the <em>block length</em> of the code.<br>Strings in $C$ are called <em>codewords</em>. </p>
-<p>For $x, y \in \Sigma^n$, define their Hamming distance as </p>
-<script type="math/tex; mode=display">
-    \Delta(x, y) \doteq | \{ i \in [n] : x_i \neq y_i \} |.</script><p>The distance $\Delta(C)$ (or $d$ for a shorthand) of $C$, is defined as the minimum distance between two different codes words in $C$: </p>
-<script type="math/tex; mode=display">
-    \Delta(C)  = d \doteq \min_{x \neq  y \in C} \Delta(x, y).</script><!-- Suppose that we have a code $C$ with distance $d$.  -->
-<p>If we store a code $x \in C$, and up to $(d - 1) / 2$ bits of $x$ are corrupted, then we can still recover $x$.<br>Denote the ball centered at $x$ with radius $r \in \mathbb{R}_+$ as </p>
-<script type="math/tex; mode=display">
-    \mathcal{B}(x, r) \doteq \{ y \in \Sigma^n : \Delta(y, x) \le r \}.</script><blockquote>
-<p><strong>Fact.</strong> For $x \in \Sigma^n$, $r \in \mathbb{R}_+$, the size (volume) of the ball $\mathcal{B}(x, r)$ is independent of $x$ and is given by</p>
-<script type="math/tex; mode=display">
-    \mathbb{Vol}(r) \doteq | \mathcal{B}(x, r) | 
-        =  \sum_{i = 0}^{ \lfloor r \rfloor } \binom{n}{i} (q - 1)^i.</script></blockquote>
-<p>If the code $C$ has distance $\Delta(C) = d$, then the balls ${ \mathcal{B}(x, (d - 1) / 2) : x \in C }$ should be disjoint.<br>Therefore, we can upper bound the size $|C|$ in terms of the size of $\Sigma^n$, and the volume of the balls. </p>
+          <p>Given a finite set <span class="math inline">\(\Sigma\)</span> with
+size <span class="math inline">\(q = |\Sigma|\)</span>, and a integer
+<span class="math inline">\(n \in \mathbb{N}_+\)</span>, a <em>code</em>
+<span class="math inline">\(C \subseteq \Sigma^n\)</span> is a set of
+strings that are far apart. The set <span
+class="math inline">\(\Sigma\)</span> is called the <em>alphabet</em> of
+the code, and <span class="math inline">\(n\)</span> is called the
+<em>block length</em> of the code. Strings in <span
+class="math inline">\(C\)</span> are called <em>codewords</em>.</p>
+<p>For <span class="math inline">\(x, y \in \Sigma^n\)</span>, define
+their Hamming distance as <span class="math display">\[
+    \Delta(x, y) \doteq | \{ i \in [n] : x_i \neq y_i \} |.
+\]</span></p>
+<p>The distance <span class="math inline">\(\Delta(C)\)</span> (or <span
+class="math inline">\(d\)</span> for a shorthand) of <span
+class="math inline">\(C\)</span>, is defined as the minimum distance
+between two different codes words in <span
+class="math inline">\(C\)</span>: <span class="math display">\[
+    \Delta(C)  = d \doteq \min_{x \neq  y \in C} \Delta(x, y).
+\]</span></p>
+<!-- Suppose that we have a code $C$ with distance $d$.  -->
+<p>If we store a code <span class="math inline">\(x \in C\)</span>, and
+up to <span class="math inline">\((d - 1) / 2\)</span> bits of <span
+class="math inline">\(x\)</span> are corrupted, then we can still
+recover <span class="math inline">\(x\)</span>. Denote the ball centered
+at <span class="math inline">\(x\)</span> with radius <span
+class="math inline">\(r \in \mathbb{R}_+\)</span> as <span
+class="math display">\[
+    \mathcal{B}(x, r) \doteq \{ y \in \Sigma^n : \Delta(y, x) \le r \}.
+\]</span></p>
 <blockquote>
-<p><strong>Theorem (Hamming Bound).</strong> Let $C$ be a code with distance $d \ge 3$. Then </p>
-<script type="math/tex; mode=display">
-    |C| \le \frac{q^n }{ \mathbb{Vol} \Big( (d - 1) / 2 \Big) }.</script></blockquote>
-<p>We are going to prove an estimate of the volume. </p>
-<blockquote>
-<p><strong>Theorem (Estimate of Volume).</strong> Let $r \in \mathbb{R}_+$. When $r \le n - n / q$, </p>
-<script type="math/tex; mode=display">
-    q^{ n h_q ( r  / n) - O( \log n) } \le \mathbb{Vol} (r) \le q^{ n h_q ( \lfloor r \rfloor / n)},</script><p>where </p>
-<script type="math/tex; mode=display">
-    \begin{aligned}
-        h_q (\epsilon) 
-            &\doteq (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right) + (q - 1) \frac{\epsilon}{q - 1} \log_q \left( \frac{q - 1}{ \epsilon } \right) \\
-            &= (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right) + \epsilon \log_q \left( \frac{q - 1}{ \epsilon } \right). 
-    \end{aligned}</script></blockquote>
-<p>When $q = 2$, we have the following corollary. </p>
-<blockquote>
-<p><strong>Corollary.</strong> Let $r \in \mathbb{R}_+$. When $r \le n / 2$, </p>
-<script type="math/tex; mode=display">
-    2^{ n \cdot h_2 ( r / n) - O( \log n) } 
-        \le \sum_{i = 0}^{ \lfloor r \rfloor } \binom{n}{i}  
-        \le 2^{ n \cdot h_2 ( \lfloor r \rfloor / n)},</script><p>where $h_2( \cdot )$ is the Shannon’s entropy function.</p>
+<p><strong>Fact.</strong> For <span class="math inline">\(x \in
+\Sigma^n\)</span>, <span class="math inline">\(r \in
+\mathbb{R}_+\)</span>, the size (volume) of the ball <span
+class="math inline">\(\mathcal{B}(x, r)\)</span> is independent of <span
+class="math inline">\(x\)</span> and is given by <span
+class="math display">\[
+\mathbb{Vol}(r) \doteq | \mathcal{B}(x, r) |
+=  \sum_{i = 0}^{ \lfloor r \rfloor } \binom{n}{i} (q - 1)^i.
+\]</span></p>
 </blockquote>
-<p>Observe that by concavity of $\log_q (\cdot)$, we have </p>
-<script type="math/tex; mode=display">
-    h_q (\epsilon) \le \log_q \left( (1 - \epsilon)  \frac{1}{1 - \epsilon}  + \epsilon \frac{q - 1}{ \epsilon } \right) = 1.</script><p>The inequality holds with equality when $h_q(\epsilon)$ is maximized, i.e.,  when $1 - \epsilon = \epsilon / (q - 1)$, i.e., $1 - \epsilon = 1 / q$. </p>
-<h1 id="Rate-of-the-Code"><a href="#Rate-of-the-Code" class="headerlink" title="Rate of the Code"></a>Rate of the Code</h1><p>Based on the theorems of Hamming bound, and the estimate of the volume, we have</p>
-<script type="math/tex; mode=display">
+<p>If the code <span class="math inline">\(C\)</span> has distance <span
+class="math inline">\(\Delta(C) = d\)</span>, then the balls <span
+class="math inline">\(\{ \mathcal{B}(x, (d - 1) / 2) : x \in C
+\}\)</span> should be disjoint. Therefore, we can upper bound the size
+<span class="math inline">\(|C|\)</span> in terms of the size of <span
+class="math inline">\(\Sigma^n\)</span>, and the volume of the
+balls.</p>
+<blockquote>
+<p><strong>Theorem (Hamming Bound).</strong> Let <span
+class="math inline">\(C\)</span> be a code with distance <span
+class="math inline">\(d \ge 3\)</span>. Then <span
+class="math display">\[
+|C| \le \frac{q^n }{ \mathbb{Vol} \Big( (d - 1) / 2 \Big) }.
+\]</span></p>
+</blockquote>
+<p>We are going to prove an estimate of the volume.</p>
+<blockquote>
+<p><strong>Theorem (Estimate of Volume).</strong> Let <span
+class="math inline">\(r \in \mathbb{R}_+\)</span>. When <span
+class="math inline">\(r \le n - n / q\)</span>, <span
+class="math display">\[
+q^{ n h_q ( r  / n) - O( \log n) } \le \mathbb{Vol} (r) \le q^{ n h_q (
+\lfloor r \rfloor / n)},
+\]</span> where <span class="math display">\[
+\begin{aligned}
+h_q (\epsilon)
+&amp;\doteq (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right)
++ (q - 1) \frac{\epsilon}{q - 1} \log_q \left( \frac{q - 1}{ \epsilon }
+\right) \\
+&amp;= (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right) +
+\epsilon \log_q \left( \frac{q - 1}{ \epsilon } \right).
+\end{aligned}
+\]</span></p>
+</blockquote>
+<p>When <span class="math inline">\(q = 2\)</span>, we have the
+following corollary.</p>
+<blockquote>
+<p><strong>Corollary.</strong> Let <span class="math inline">\(r \in
+\mathbb{R}_+\)</span>. When <span class="math inline">\(r \le n /
+2\)</span>, <span class="math display">\[
+2^{ n \cdot h_2 ( r / n) - O( \log n) }
+\le \sum_{i = 0}^{ \lfloor r \rfloor } \binom{n}{i}  
+\le 2^{ n \cdot h_2 ( \lfloor r \rfloor / n)},
+\]</span> where <span class="math inline">\(h_2( \cdot )\)</span> is the
+Shannon's entropy function.</p>
+</blockquote>
+<p>Observe that by concavity of <span class="math inline">\(\log_q
+(\cdot)\)</span>, we have <span class="math display">\[
+    h_q (\epsilon) \le \log_q \left( (1 - \epsilon)  \frac{1}{1 -
+\epsilon}  + \epsilon \frac{q - 1}{ \epsilon } \right) = 1.
+\]</span></p>
+<p>The inequality holds with equality when <span
+class="math inline">\(h_q(\epsilon)\)</span> is maximized, i.e., when
+<span class="math inline">\(1 - \epsilon = \epsilon / (q - 1)\)</span>,
+i.e., <span class="math inline">\(1 - \epsilon = 1 / q\)</span>.</p>
+<h1 id="rate-of-the-code">Rate of the Code</h1>
+<p>Based on the theorems of Hamming bound, and the estimate of the
+volume, we have <span class="math display">\[
     \begin{aligned}
-        |C| \le \frac{q^n }{ \mathbb{Vol} \Big( (d - 1) / 2 \Big) } 
-            &\Longrightarrow
-            n h_q( \lparen d / 2 - 1 / 2 \rparen / n) + \log_q |C| \le n + O(\log n) \\
-            &\Longleftrightarrow  h_q( \lparen d / 2 - 1 / 2 \rparen / n) + \frac{ \log_q |C| }{ n } \le 1 + O\left(\frac{ \log_q n }{ n } \right) \\
-            &\Longrightarrow  h_q(  d / 2 n) + \frac{ \log_q |C| }{ n } \le 1 + O\left(\frac{ \log_q n }{ n } \right). 
-    \end{aligned}</script><p>The last $\Longleftrightarrow$ holds, since </p>
-<script type="math/tex; mode=display">
+        |C| \le \frac{q^n }{ \mathbb{Vol} \Big( (d - 1) / 2 \Big) }
+            &amp;\Longrightarrow
+            n h_q( \lparen d / 2 - 1 / 2 \rparen / n) + \log_q |C| \le n
++ O(\log n) \\
+            &amp;\Longleftrightarrow  h_q( \lparen d / 2 - 1 / 2 \rparen
+/ n) + \frac{ \log_q |C| }{ n } \le 1 + O\left(\frac{ \log_q n }{ n }
+\right) \\
+            &amp;\Longrightarrow  h_q(  d / 2 n) + \frac{ \log_q |C| }{
+n } \le 1 + O\left(\frac{ \log_q n }{ n } \right).
+    \end{aligned}
+\]</span></p>
+<p>The last <span class="math inline">\(\Longleftrightarrow\)</span>
+holds, since <span class="math display">\[
     \begin{aligned}
         q^{ n \cdot h_q( \lparen d - 1 \rparen / (2n) ) }
-            &= (q - 1)^r \left(\frac{n}{r} \right)^r \left(\frac{n}{n - r} \right)^{n - r} & \quad r \doteq (d - 1) / (2) \\
-            &\ge (q - 1)^{r'} \left(\frac{n}{r'} \right)^{r'} \left(\frac{n}{n - r'} \right)^{n - r'}  q^{ - 1 / (2) } \left(\frac{n}{r'} \right)^{-1 / (2) } \left(\frac{n - r'}{n - r} \right)^{n - r'}
-            & \quad r' \doteq d / 2 \\
-            &= q^{ n \cdot h_q( d / (2n) ) } \left(\frac{n}{n - r'} \right)^{n - r'}  q^{ - 1 / 2 } \left(\frac{n}{r'} \right)^{-1 / 2 } \left(\frac{n - r'}{n - r} \right)^{n - r'} \\ 
+            &amp;= (q - 1)^r \left(\frac{n}{r} \right)^r
+\left(\frac{n}{n - r} \right)^{n - r} &amp; \quad r \doteq (d - 1) / (2)
+\\
+            &amp;\ge (q - 1)^{r&#39;} \left(\frac{n}{r&#39;}
+\right)^{r&#39;} \left(\frac{n}{n - r&#39;} \right)^{n - r&#39;}  q^{ -
+1 / (2) } \left(\frac{n}{r&#39;} \right)^{-1 / (2) } \left(\frac{n -
+r&#39;}{n - r} \right)^{n - r&#39;}
+            &amp; \quad r&#39; \doteq d / 2 \\
+            &amp;= q^{ n \cdot h_q( d / (2n) ) } \left(\frac{n}{n -
+r&#39;} \right)^{n - r&#39;}  q^{ - 1 / 2 } \left(\frac{n}{r&#39;}
+\right)^{-1 / 2 } \left(\frac{n - r&#39;}{n - r} \right)^{n - r&#39;} \\
     \Longrightarrow
-        n \cdot h_q( d / (2n) ) 
-            &\le n \cdot h_q( \lparen d - 1 \rparen / (2n) ) 
-            + \log_q \left( 
-                q^{ 1 / 2 } \left(\frac{n}{r'} \right)^{ 1 / 2 } \left(\frac{n - r}{n - r'} \right)^{n - r'}
+        n \cdot h_q( d / (2n) )
+            &amp;\le n \cdot h_q( \lparen d - 1 \rparen / (2n) )
+            + \log_q \left(
+                q^{ 1 / 2 } \left(\frac{n}{r&#39;} \right)^{ 1 / 2 }
+\left(\frac{n - r}{n - r&#39;} \right)^{n - r&#39;}
             \right),
-    \end{aligned}</script><p>and</p>
-<script type="math/tex; mode=display">
-    \log_q \left( 
-         q^{ 1 / 2 } \left(\frac{n}{r'} \right)^{ 1 / 2 } \left(\frac{n - r}{n - r'} \right)^{n - r'}
+    \end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+    \log_q \left(
+         q^{ 1 / 2 } \left(\frac{n}{r&#39;} \right)^{ 1 / 2 }
+\left(\frac{n - r}{n - r&#39;} \right)^{n - r&#39;}
     \right)
-    = O \left(  1  + \log_q n + \log_q \left( 1 + \frac{1 / 2}{n - r'} \right)^{n - r'} \right) 
-    = O \left(  \log_q n  \right) .</script><!-- 
+    = O \left(  1  + \log_q n + \log_q \left( 1 + \frac{1 / 2}{n -
+r&#39;} \right)^{n - r&#39;} \right)
+    = O \left(  \log_q n  \right) .
+\]</span></p>
+<!-- 
 On the other hand, 
 $$
     \begin{aligned}
@@ -680,62 +1043,123 @@ $$
     \end{aligned}
 $$
  -->
-<p>Define the <em>rate</em> of the code $R = \frac{ \log_q |C| }{ n }$, and <em>relative distance</em> of the code as $\delta = \frac{d}{n}$, we get </p>
+<p>Define the <em>rate</em> of the code <span class="math inline">\(R =
+\frac{ \log_q |C| }{ n }\)</span>, and <em>relative distance</em> of the
+code as <span class="math inline">\(\delta = \frac{d}{n}\)</span>, we
+get</p>
 <blockquote>
-<script type="math/tex; mode=display">
-    R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).</script></blockquote>
-<p>In what’s follows, we prove the inequalities for volume estimation. WLOG, we assume that $r$ is an integer. </p>
-<h1 id="Upper-Bound"><a href="#Upper-Bound" class="headerlink" title="Upper Bound"></a>Upper Bound</h1><blockquote>
-<p><strong>Theorem.</strong> For $0 \le r \le n \cdot (1 - 1 / q)$, it holds that $\mathbb{Vol} (r) \le q^{n h_q(r / n)}$.</p>
+<p><span class="math display">\[
+R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
+\]</span></p>
 </blockquote>
-<h2 id="Algebraic-Approach"><a href="#Algebraic-Approach" class="headerlink" title="Algebraic Approach"></a>Algebraic Approach</h2><script type="math/tex; mode=display">
-    \begin{aligned}
-        (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left( \frac{  n }{ n - r } \right)^{n - r }   
-            &= (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left( \frac{  n }{ n - r } \right)^{n - r } \left( \frac{r}{n} + \frac{n - r}{n}  \right)^n \\
-            &\ge (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left( \frac{  n }{ n - r } \right)^{n - r } \sum_{i = 0}^{ r} \binom{ n }{i} \left( \frac{r}{n} \right)^i  \left( \frac{n - r }{n } \right)^{n - i}    \\
-            &\ge \sum_{i = 0}^{ r} \binom{ n }{i} (q - 1)^{ i }  \left( \left( \frac{n}{r} \right)^{ r  - i}  \left( \frac{n - r }{n } \right)^{r - i}  (q - 1)^{r - i}  \right) \\
-            &\ge \sum_{i = 0}^{ r} \binom{ n }{i} (q - 1)^{ i } \\
-            &= \mathbb{Vol}(r), 
-    \end{aligned}</script><p>where the last inequality follows from that </p>
-<script type="math/tex; mode=display">
-    \frac{n}{r} \cdot \frac{n - r}{ n } \cdot (q - 1) = \Big( \frac{n}{r} - 1 \Big) \cdot (q - 1)\ge 1,</script><p>as $r / n \le 1 - 1 / q = q / (q - 1)$.</p>
-<p>Finally, let $\epsilon \doteq \frac{r}{n}$, we have</p>
-<script type="math/tex; mode=display">
-    \begin{aligned}
-        \log \mathbb{Vol}(r) 
-            &\le r \cdot \log (q - 1) + r \cdot \log \frac{1}{\epsilon} + (n - r) \cdot \log \frac{1}{1 - \epsilon} \\
-            &= n \left( \epsilon \cdot \log (q - 1) + \epsilon \cdot \log \frac{1}{\epsilon} + (1 - \epsilon) \cdot \log \frac{1}{1 - \epsilon} \right) \\
-            &= n \Big( \epsilon \cdot \log (q - 1) + \mathbb{H}_2(\epsilon) \Big) \\
-            &= (\log q) \cdot  n \cdot h_q (\epsilon),
-    \end{aligned}</script><p>which proves the claim. </p>
-<h2 id="Entropy"><a href="#Entropy" class="headerlink" title="Entropy"></a>Entropy</h2><p>We rely on sub-additivity of entropy. </p>
+<p>In what's follows, we prove the inequalities for volume estimation.
+WLOG, we assume that <span class="math inline">\(r\)</span> is an
+integer.</p>
+<h1 id="upper-bound">Upper Bound</h1>
 <blockquote>
-<p>Let $X$ and $Y$ be discrete random variables, then    </p>
-<ol>
-<li>$H( X, Y ) \le H(X) + H(Y)$.       </li>
-<li>$H(X | Y) \le H(X)$.    </li>
-</ol>
+<p><strong>Theorem.</strong> For <span class="math inline">\(0 \le r \le
+n \cdot (1 - 1 / q)\)</span>, it holds that <span
+class="math inline">\(\mathbb{Vol} (r) \le q^{n h_q(r /
+n)}\)</span>.</p>
 </blockquote>
-<p><strong>Proof.</strong><br>Consider the ball $\mathcal{B}(1^n, r)$, and a uniform random point $X = (X_1, …, X_n)$ in the ball $\mathcal{B}(1^n, r)$. Its entropy is</p>
-<script type="math/tex; mode=display">
-    H(X) = \log \mathbb{Vol}(r).</script><!-- Let $I$ be a uniform integer in $n$ and let $Y = X_I$ be the coordinate of $X$.  -->
-<p>We write $Y = X_1$. By sub-additivity of entropy and by symmetry, </p>
-<script type="math/tex; mode=display">
+<h2 id="algebraic-approach">Algebraic Approach</h2>
+<p><span class="math display">\[
+    \begin{aligned}
+        (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left( \frac{  n
+}{ n - r } \right)^{n - r }   
+            &amp;= (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left(
+\frac{  n }{ n - r } \right)^{n - r } \left( \frac{r}{n} + \frac{n -
+r}{n}  \right)^n \\
+            &amp;\ge (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r }
+\left( \frac{  n }{ n - r } \right)^{n - r } \sum_{i = 0}^{ r} \binom{ n
+}{i} \left( \frac{r}{n} \right)^i  \left( \frac{n - r }{n } \right)^{n -
+i}    \\
+            &amp;\ge \sum_{i = 0}^{ r} \binom{ n }{i} (q - 1)^{ i
+}  \left( \left( \frac{n}{r} \right)^{ r  - i}  \left( \frac{n - r }{n }
+\right)^{r - i}  (q - 1)^{r - i}  \right) \\
+            &amp;\ge \sum_{i = 0}^{ r} \binom{ n }{i} (q - 1)^{ i } \\
+            &amp;= \mathbb{Vol}(r),
+    \end{aligned}
+\]</span></p>
+<p>where the last inequality follows from that <span
+class="math display">\[
+    \frac{n}{r} \cdot \frac{n - r}{ n } \cdot (q - 1) = \Big(
+\frac{n}{r} - 1 \Big) \cdot (q - 1)\ge 1,
+\]</span> as <span class="math inline">\(r / n \le 1 - 1 / q = q / (q -
+1)\)</span>.</p>
+<p>Finally, let <span class="math inline">\(\epsilon \doteq
+\frac{r}{n}\)</span>, we have <span class="math display">\[
+    \begin{aligned}
+        \log \mathbb{Vol}(r)
+            &amp;\le r \cdot \log (q - 1) + r \cdot \log
+\frac{1}{\epsilon} + (n - r) \cdot \log \frac{1}{1 - \epsilon} \\
+            &amp;= n \left( \epsilon \cdot \log (q - 1) + \epsilon \cdot
+\log \frac{1}{\epsilon} + (1 - \epsilon) \cdot \log \frac{1}{1 -
+\epsilon} \right) \\
+            &amp;= n \Big( \epsilon \cdot \log (q - 1) +
+\mathbb{H}_2(\epsilon) \Big) \\
+            &amp;= (\log q) \cdot  n \cdot h_q (\epsilon),
+    \end{aligned}
+\]</span> which proves the claim.</p>
+<h2 id="entropy">Entropy</h2>
+<p>We rely on sub-additivity of entropy.</p>
+<blockquote>
+<p>Let <span class="math inline">\(X\)</span> and <span
+class="math inline">\(Y\)</span> be discrete random variables,
+then<br />
+1. <span class="math inline">\(H( X, Y ) \le H(X) + H(Y)\)</span>.<br />
+2. <span class="math inline">\(H(X | Y) \le H(X)\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Consider the ball <span
+class="math inline">\(\mathcal{B}(1^n, r)\)</span>, and a uniform random
+point <span class="math inline">\(X = (X_1, ..., X_n)\)</span> in the
+ball <span class="math inline">\(\mathcal{B}(1^n, r)\)</span>. Its
+entropy is <span class="math display">\[
+    H(X) = \log \mathbb{Vol}(r).
+\]</span></p>
+<!-- Let $I$ be a uniform integer in $n$ and let $Y = X_I$ be the coordinate of $X$.  -->
+<p>We write <span class="math inline">\(Y = X_1\)</span>. By
+sub-additivity of entropy and by symmetry, <span class="math display">\[
     \begin{aligned}
         H(X)
-            &\le H(X_1) + H(X_2) + ... + H(X_n) 
-            &= n H(Y).
-    \end{aligned}</script><p>Let $\epsilon \doteq \Pr[ Y \neq 1]$ be the probability that $Y$ is not $1$.<br>Further, by symmetry, $\Pr[Y = i]$ has equal probability for each $i \neq 1$.<br>Hence,<br><!-- Then by concavity of $\log (\cdot)$, --></p>
-<script type="math/tex; mode=display">
+            &amp;\le H(X_1) + H(X_2) + ... + H(X_n)
+            &amp;= n H(Y).
+    \end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(\epsilon \doteq \Pr[ Y \neq
+1]\)</span> be the probability that <span
+class="math inline">\(Y\)</span> is not <span
+class="math inline">\(1\)</span>. Further, by symmetry, <span
+class="math inline">\(\Pr[Y = i]\)</span> has equal probability for each
+<span class="math inline">\(i \neq 1\)</span>. Hence,
+<!-- Then by concavity of $\log (\cdot)$, --> <span
+class="math display">\[
     \begin{aligned}
-        H(Y) 
-            &= \Pr[ Y = 1] \cdot \log \left( \frac{1}{\Pr[ Y = 1]}\right) + \sum_{i \neq 1} \Pr[ Y = i ] \cdot \log \left( \frac{1}{\Pr[ Y = i]}\right) \\
-            % &= (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \sum_{i \neq 1} \frac{ \Pr[ Y = i ] }{ \epsilon } \cdot \log \left( \frac{1}{\Pr[ Y = i]}\right) \\
-            % &\le (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \log \left( \sum_{i \neq 1} \frac{ \Pr[ Y = i ] }{ \epsilon } \frac{1}{\Pr[ Y = i]}\right) \\
-            &= (1 - \epsilon) \cdot \log \left( \frac{1}{1 - \epsilon} \right) + \epsilon \cdot \log \left( \frac{ q - 1 }{ \epsilon } \right) \\
-    \end{aligned}</script><p>where then entropy of $Y$ is maximized when $Y$ is uniform of the elements that are not 1. Further, it can be verified that $\epsilon &lt; r / n$. As $h_q (\epsilon)$ increases for $\epsilon &lt; 1 - 1 / q$, hence </p>
-<script type="math/tex; mode=display">
-    H(Y) \le (1 - r / n) \cdot \log \left( \frac{1}{1 - r / n} \right) + \frac{r}{n} \cdot \log \left( \frac{ q - 1 }{ r / n } \right).</script><p>$\square$</p>
+        H(Y)
+            &amp;= \Pr[ Y = 1] \cdot \log \left( \frac{1}{\Pr[ Y =
+1]}\right) + \sum_{i \neq 1} \Pr[ Y = i ] \cdot \log \left(
+\frac{1}{\Pr[ Y = i]}\right) \\
+            % &amp;= (1 - \epsilon) \cdot \log \left( \frac{1}{1 -
+\epsilon} \right) + \epsilon \cdot \sum_{i \neq 1} \frac{ \Pr[ Y = i ]
+}{ \epsilon } \cdot \log \left( \frac{1}{\Pr[ Y = i]}\right) \\
+            % &amp;\le (1 - \epsilon) \cdot \log \left( \frac{1}{1 -
+\epsilon} \right) + \epsilon \cdot \log \left( \sum_{i \neq 1} \frac{
+\Pr[ Y = i ] }{ \epsilon } \frac{1}{\Pr[ Y = i]}\right) \\
+            &amp;= (1 - \epsilon) \cdot \log \left( \frac{1}{1 -
+\epsilon} \right) + \epsilon \cdot \log \left( \frac{ q - 1 }{ \epsilon
+} \right) \\
+    \end{aligned}
+\]</span> where then entropy of <span class="math inline">\(Y\)</span>
+is maximized when <span class="math inline">\(Y\)</span> is uniform of
+the elements that are not 1. Further, it can be verified that <span
+class="math inline">\(\epsilon &lt; r / n\)</span>. As <span
+class="math inline">\(h_q (\epsilon)\)</span> increases for <span
+class="math inline">\(\epsilon &lt; 1 - 1 / q\)</span>, hence <span
+class="math display">\[
+    H(Y) \le (1 - r / n) \cdot \log \left( \frac{1}{1 - r / n} \right) +
+\frac{r}{n} \cdot \log \left( \frac{ q - 1 }{ r / n } \right).
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
 <!-- ### Supplementary Material
 
 > **Definition.** Let $X$ be a discrete r.v., the entropy of $X$ is given by 
@@ -778,40 +1202,60 @@ $$
 > $$
     H(X \mid Y) = H(X, Y) - H(Y) \le H(X). 
 > $$ -->
-<h1 id="Lower-Bound"><a href="#Lower-Bound" class="headerlink" title="Lower Bound"></a>Lower Bound</h1><blockquote>
-<p><strong>Theorem.</strong> For $r \in \mathbb{R}_+$, it holds that $\mathbb{Vol} (r) \ge q^{ n h_q (  r  / n) - O( \log n) }$.</p>
-</blockquote>
-<p>We rely on the Stirling’s approximation. </p>
+<h1 id="lower-bound">Lower Bound</h1>
 <blockquote>
-<p><strong>Fact.</strong> For $n \in \mathbb{N}_+$, $\sqrt{2 \pi n} \left(\frac{n}{e} \right)^n \le n! \le e \sqrt{n} \left(\frac{n}{e} \right)^n$. </p>
+<p><strong>Theorem.</strong> For <span class="math inline">\(r \in
+\mathbb{R}_+\)</span>, it holds that <span
+class="math inline">\(\mathbb{Vol} (r) \ge q^{ n h_q ( r / n) - O( \log
+n) }\)</span>.</p>
 </blockquote>
-<p><strong>Proof.</strong> First, assume that $r \in \mathbb{N}_+$.<br>It holds that</p>
-<script type="math/tex; mode=display">
+<p>We rely on the Stirling's approximation.</p>
+<blockquote>
+<p><strong>Fact.</strong> For <span class="math inline">\(n \in
+\mathbb{N}_+\)</span>, <span class="math inline">\(\sqrt{2 \pi n}
+\left(\frac{n}{e} \right)^n \le n! \le e \sqrt{n} \left(\frac{n}{e}
+\right)^n\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> First, assume that <span
+class="math inline">\(r \in \mathbb{N}_+\)</span>. It holds that <span
+class="math display">\[
     \begin{aligned}
-        \mathbb{Vol} (r) 
-            &\ge \binom{n}{r} (q - 1)^r \\
-            &\ge \frac{ \sqrt{2 \pi n } \left(\frac{n}{e} \right)^n }{ e \sqrt{r} \left(\frac{r}{e} \right)^r e \sqrt{n - r} \left(\frac{n - r}{e} \right)^{n - r} } (q - 1)^r \\
-            &= (q - 1)^r \left(\frac{n}{r} \right)^r \left(\frac{n}{n - r} \right)^{n - r} \sqrt{ \frac{2 \pi n }{e^4 r (n - r)} } \\
-            &= q^{n h_q ( r / n) - O(\log n) }
-    \end{aligned}</script><p>Assume that $r \in \mathbb{R}_+$.<br>Let $r’ = \lfloor r \rfloor$.<br>Then </p>
-<script type="math/tex; mode=display">
+        \mathbb{Vol} (r)
+            &amp;\ge \binom{n}{r} (q - 1)^r \\
+            &amp;\ge \frac{ \sqrt{2 \pi n } \left(\frac{n}{e} \right)^n
+}{ e \sqrt{r} \left(\frac{r}{e} \right)^r e \sqrt{n - r} \left(\frac{n -
+r}{e} \right)^{n - r} } (q - 1)^r \\
+            &amp;= (q - 1)^r \left(\frac{n}{r} \right)^r
+\left(\frac{n}{n - r} \right)^{n - r} \sqrt{ \frac{2 \pi n }{e^4 r (n -
+r)} } \\
+            &amp;= q^{n h_q ( r / n) - O(\log n) }
+    \end{aligned}
+\]</span> Assume that <span class="math inline">\(r \in
+\mathbb{R}_+\)</span>. Let <span class="math inline">\(r&#39; = \lfloor
+r \rfloor\)</span>. Then <span class="math display">\[
     \begin{aligned}
-        \mathbb{Vol} (r) 
-            \ge \mathbb{Vol} ( r' )  
-            \ge q^{n h_q ( r' / n) - O(\log n) }.
-    \end{aligned}</script><p>But</p>
-<script type="math/tex; mode=display">
+        \mathbb{Vol} (r)
+            \ge \mathbb{Vol} ( r&#39; )  
+            \ge q^{n h_q ( r&#39; / n) - O(\log n) }.
+    \end{aligned}
+\]</span> But <span class="math display">\[
     \begin{aligned}
         \frac{
             q^{n h_q ( r / n)}
         }{
-            q^{n h_q ( r' / n)}
+            q^{n h_q ( r&#39; / n)}
         }
-            \le (q - 1) \cdot \left(\frac{n}{r'} \right) \cdot \left(\frac{n - r}{n - r'} \right)^{n - r'}
-            \in  q^{ O \left( \log_q n \right) } . 
-    \end{aligned}</script><p>$\square$</p>
-<p>Hence, the upper bound is rather tight. </p>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] Anup Rao, <a target="_blank" rel="noopener" href="https://homes.cs.washington.edu/~anuprao/pubs/codingtheory/lecture3.pdf">Coding Theory Lecture 3: The Volume Bound and Finite Fields</a></p>
+            \le (q - 1) \cdot \left(\frac{n}{r&#39;} \right) \cdot
+\left(\frac{n - r}{n - r&#39;} \right)^{n - r&#39;}
+            \in  q^{ O \left( \log_q n \right) } .
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Hence, the upper bound is rather tight.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] Anup Rao, <a
+target="_blank" rel="noopener" href="https://homes.cs.washington.edu/~anuprao/pubs/codingtheory/lecture3.pdf">Coding
+Theory Lecture 3: The Volume Bound and Finite Fields</a></p>
 
       
     </div>
