@@ -146,6 +146,173 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/28/k-Center/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/04/28/k-Center/" class="post-title-link" itemprop="url">k-Center</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-28 22:35:10 / Modified: 23:54:27" itemprop="dateCreated datePublished" datetime="2022-04-28T22:35:10+10:00">2022-04-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(G = \langle V, E \rangle\)</span> be
+an undirected and complete graph, with a distance <span
+class="math inline">\(d(v, u) \in \mathbb{R}^+\)</span> between each
+pair of <span class="math inline">\(v, u \in V\)</span>. Assume that</p>
+<ul>
+<li><span class="math inline">\(d(v, v) = 0\)</span> for each <span
+class="math inline">\(v \in V\)</span>;</li>
+<li><span class="math inline">\(d(v, u) = d(u, v)\)</span> for each
+<span class="math inline">\(v, u \in V\)</span>;</li>
+<li>The distances satisfy triangle inequality: <span
+class="math display">\[
+  d(v, w) \le d(v, u) + d(u, w), \qquad \forall v, u, w \in V.
+\]</span></li>
+</ul>
+<p>The goal is to find a set <span class="math inline">\(S \subset
+V\)</span> with size <span class="math inline">\(|S| = k\)</span>, for
+given input parameter <span class="math inline">\(k \in
+\mathbb{N}\)</span>, to minimize <span class="math display">\[
+    \max_{v \in V} d(v, S),
+\]</span> where <span class="math inline">\(d(v, S) \doteq \min_{j \in
+S} d(v, u)\)</span> is the distance between <span
+class="math inline">\(i\)</span> and its nearest point in <span
+class="math inline">\(S\)</span>.</p>
+<h1 id="approximation-algorithm">Approximation Algorithm</h1>
+<blockquote>
+<p><strong>Algorithm <span
+class="math inline">\(\mathcal{A}\)</span></strong><br />
+1. Pick arbitrary point <span class="math inline">\(v_1\)</span> from
+<span class="math inline">\(V\)</span><br />
+2. <span class="math inline">\(S \leftarrow \{ v_1 \}\)</span><br />
+2. For <span class="math inline">\(t \leftarrow 2\)</span> to <span
+class="math inline">\(k\)</span> do<br />
+3. <span class="math inline">\(\qquad\)</span> let <span
+class="math inline">\(v_t \doteq \underset{v \in V}{\arg \max} \, d(v,
+S)\)</span><br />
+4. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(S \leftarrow S \cup \{ v_t \}\)</span></p>
+</blockquote>
+<p>Denote the optimal solution as <span class="math inline">\(S^* \doteq
+\{ v_1^*, \ldots, v_k^* \}\)</span>: <span class="math display">\[
+    S^* \doteq \underset{S \subseteq V, |S| = k}{\arg \min} \, \, \left(
+\max_{v \in V} d(v, S) \right).
+\]</span> We claim that the algorithm outputs a <span
+class="math inline">\(2\)</span>-approximate solution to <span
+class="math inline">\(S^*\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Algorithm <span
+class="math inline">\(\mathcal{A}\)</span> outputs a <span
+class="math inline">\(2\)</span>-approximate solution: <span
+class="math display">\[
+\max_{v \in V} d(v, S) \le 2 \cdot \max_{v \in V} d(v, S^*).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> We can partition the vertices in <span
+class="math inline">\(V\)</span> into <span
+class="math inline">\(k\)</span> subsets <span
+class="math inline">\(V_1^*, \ldots V_k^*\)</span>, such that <span
+class="math display">\[
+    V_i^* \doteq \left\{ v \in V: \underset{v^* \in S^*}{\arg \min} \,
+d(v, v^*)  = v_i^* \right\}, \qquad \forall i \in [k].
+\]</span></p>
+<blockquote>
+<p><strong>Lemma.</strong> If <span class="math inline">\(u, w\)</span>
+belongs to the same subset <span class="math inline">\(V_i^*\)</span>,
+then <span class="math display">\[
+d(u, w)
+\le
+d(u, v_i^*) + d(v_i^*, w)
+\le
+2 \cdot \max_{v \in V} d(v, S^*).
+\]</span></p>
+</blockquote>
+<p>We consider the following two cases:</p>
+<p><strong>Case One.</strong> For each <span class="math inline">\(i \in
+[k]\)</span>, <span class="math inline">\(|V_i^* \cap S| = 1\)</span>.
+Fix an <span class="math inline">\(i \in [k]\)</span>, and let <span
+class="math inline">\(v_t \in V_i^* \cap S\)</span>. Then for each <span
+class="math inline">\(u \in V_i^*\)</span>, via the lemma, <span
+class="math display">\[
+    d(u, S) \le d(u, v_t)
+    \le
+    2 \cdot \max_{v \in V} d(v, S^*).
+\]</span> Since <span class="math inline">\(V_i^*, i \in [k]\)</span> is
+a partition of <span class="math inline">\(V\)</span>, this holds for
+all <span class="math inline">\(u \in V\)</span>.</p>
+<p><strong>Case Two.</strong> There exists some <span
+class="math inline">\(V_i^*\)</span> contains more than one points in
+<span class="math inline">\(S\)</span>. This implies that at some
+iteration, the algorithm <span
+class="math inline">\(\mathcal{A}\)</span> selects a point <span
+class="math inline">\(v_t \in V_i^*\)</span>, even though it has
+selected a point <span class="math inline">\(v_t&#39; \in V_i^*\)</span>
+in an earlier iteration.</p>
+<p>When <span class="math inline">\(v_t\)</span> is selected, via the
+lemma, it holds that <span class="math display">\[
+    d(v_t, S) \le d(v_t, v_t&#39;) \le 2 \cdot \max_{v \in V} d(v, S^*).
+\]</span></p>
+<p>Since <span class="math inline">\(v_t\)</span> is the farthest point
+from <span class="math inline">\(S\)</span> when it is selected, all
+points are within a distance of <span class="math inline">\(2 \cdot
+\max_{v \in V} d(v, S^*)\)</span> from <span
+class="math inline">\(S\)</span>. This remains true as the algorithm
+<span class="math inline">\(\mathcal{A}\)</span> adds more points.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>D. P. Williamson and D. B. Shmoys, The Design of
+Approximation Algorithms. Cambridge: Cambridge University Press,
+2011.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/21/Set-Cover/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -717,111 +884,6 @@ $$
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/31/Clarkson-Type-Inequalities/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/03/31/Clarkson-Type-Inequalities/" class="post-title-link" itemprop="url">Clarkson Type Inequalities</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2022-03-31 10:41:59 / Modified: 11:59:48" itemprop="dateCreated datePublished" datetime="2022-03-31T10:41:59+11:00">2022-03-31</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p><strong>Theorem.</strong> Let <span class="math inline">\(p \in (1,
-2]\)</span>. Then for <span class="math inline">\(x, y \in
-\mathbb{R}\)</span>, it holds that <span class="math display">\[
-\frac{1}{2} |x - y|^p + \frac{1}{2} |x + y|^p \le |x|^p + |y|^p.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(z = \big(a,
-b\big) \in \mathbb{R}^2\)</span>. Since <span class="math inline">\(p
-\le 2\)</span>, it holds that <span class="math display">\[
-    \left( |a|^p + |b|^p \right)^{1 / p}
-    = \Vert z \Vert_p \ge \Vert z \Vert_2
-    = \left( |a|^2 + |b|^2 \right)^{1 / 2}
-    = \left( \frac{1}{2}|a + b|^2 + \frac{1}{2}|a - b|^2 \right)^{1 /
-2}.
-\]</span> Raising the power of both hand sides by <span
-class="math inline">\(p\)</span>, and via concavity of the function
-<span class="math inline">\(y = x^{p / 2}\)</span>, we get<br />
-<span class="math display">\[
-    \begin{aligned}
-        |a|^p + |b|^p
-            &amp;\ge \left( \frac{1}{2}|a + b|^2 + \frac{1}{2}|a - b|^2
-\right)^{p / 2} \\
-            &amp;\ge \frac{1}{2} \left( |a + b|^2  \right)^{p / 2}
-            + \frac{1}{2} \left( |a - b|^2 \right)^{p / 2} \\
-            &amp;\ge \frac{1}{2} |a + b|^p + \frac{1}{2} |a - b|^p.
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<p>Remark: in general, for <span class="math inline">\(z \in
-\mathbb{R}^n\)</span>, and <span class="math inline">\(0 &lt; q \le
-p\)</span>, we have <span class="math display">\[
-    \Vert z \Vert_q = \left( \sum_{i \in [n]} |z_i|^q \right)^{1 / q}
-    \ge
-    \Vert z \Vert_p = \left( \sum_{i \in [n]} |z_i|^p \right)^{1 / p}
-\]</span></p>
-<p>To prove this, let <span class="math inline">\(y_i = |z_i|^q\)</span>
-for each <span class="math inline">\(i \in [n]\)</span>, and <span
-class="math inline">\(r = p / q \ge 1\)</span>. It suffices to show that
-<span class="math display">\[
-    \left( \sum_{i \in [n]} y_i \right)^r \ge \sum_{i \in [n]} y_i^r.
-\]</span></p>
-<p>Further, let <span class="math inline">\(x_j = y_j / \left( \sum_{i
-\in [n]} y_i \right)\)</span> for each <span class="math inline">\(j \in
-[n]\)</span>. It reduces to prove that<br />
-<span class="math display">\[
-    \sum_{j \in [n]} x_j^r \le \sum_{j \in [n]} x_j =1 .
-\]</span></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -891,7 +953,7 @@ class="math inline">\(r = p / q \ge 1\)</span>. It suffices to show that
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">191</span>
+          <span class="site-state-item-count">192</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
