@@ -20,19 +20,19 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="In the discrete Fourier transform, we want to project a vector \(v \in \mathbb{C}^n\) to the orthonormal bases \[ \begin{aligned}     &amp;e_0 &#x3D; \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot 0 \c">
+  <meta name="description" content="In the discrete Fourier transform, we want to project a vector $v \in \mathbb{C}^n$ to the orthonormal bases   \begin{aligned}     &amp;e_0 &#x3D; \frac{1}{\sqrt n} \left( e^{ 0 \cdot \frac{2 \cdot 0 \cdot \p">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Fast Fourier Transform">
 <meta property="og:url" content="http://example.com/2021/02/02/Fast-Fourier-Transform/index.html">
 <meta property="og:site_name" content="WOW">
-<meta property="og:description" content="In the discrete Fourier transform, we want to project a vector \(v \in \mathbb{C}^n\) to the orthonormal bases \[ \begin{aligned}     &amp;e_0 &#x3D; \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot 0 \c">
+<meta property="og:description" content="In the discrete Fourier transform, we want to project a vector $v \in \mathbb{C}^n$ to the orthonormal bases   \begin{aligned}     &amp;e_0 &#x3D; \frac{1}{\sqrt n} \left( e^{ 0 \cdot \frac{2 \cdot 0 \cdot \p">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/1.png?raw=true">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/2.png?raw=true">
 <meta property="og:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/3.png?raw=true">
-<meta property="article:published_time" content="2021-02-01T23:31:22.000Z">
-<meta property="article:modified_time" content="2021-02-04T11:50:26.000Z">
+<meta property="article:published_time" content="2021-02-02T09:31:22.000Z">
+<meta property="article:modified_time" content="2023-11-20T09:39:11.000Z">
 <meta property="article:author" content="WOW">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true">
@@ -179,14 +179,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-02-02 10:31:22" itemprop="dateCreated datePublished" datetime="2021-02-02T10:31:22+11:00">2021-02-02</time>
+              <time title="Created: 2021-02-02 10:31:22" itemprop="dateCreated datePublished" datetime="2021-02-02T10:31:22+01:00">2021-02-02</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-04 22:50:26" itemprop="dateModified" datetime="2021-02-04T22:50:26+11:00">2021-02-04</time>
+                <time title="Modified: 2023-11-20 10:39:11" itemprop="dateModified" datetime="2023-11-20T10:39:11+01:00">2023-11-20</time>
               </span>
 
           
@@ -201,93 +201,51 @@
 
       
         <!-- ![](https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.npng?raw=true) -->
-<p>In the discrete Fourier transform, we want to project a vector <span
-class="math inline">\(v \in \mathbb{C}^n\)</span> to the orthonormal
-bases <span class="math display">\[
+<p>In the discrete Fourier transform, we want to project a vector $v \in \mathbb{C}^n$ to the orthonormal bases </p>
+<script type="math/tex; mode=display">
 \begin{aligned}
-    &amp;e_0 = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot 0 \cdot \pi
-i}{ n} }, e^{ 1 \frac{2 \cdot 0 \cdot \pi i}{ n} }, ..., e^{ (n - 1)
-\cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } ), \\
-    &amp;... \\
-    &amp;e_{k - 1} = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot (k -
-1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} },
-..., e^{ (n - 1) \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} } ), \\
-    &amp;... \\
-    &amp;e_{n - 1} = \frac{1}{\sqrt n} ( e^{ 0 \cdot \frac{2 \cdot (n -
-1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} },
-..., e^{ (n - 1) \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} } ).
-\end{aligned}
-\]</span></p>
-<p>We use <span class="math inline">\(\mathcal{S}\)</span> to denote the
-linear span of <span class="math inline">\(e_0, e_1, ..., e_{n -
-1}\)</span>.</p>
-<h2 id="orthonormal-bases-verification">Orthonormal bases
-verification</h2>
-<p>It is easy to see that <span class="math inline">\(e_k\)</span> is a
-unit vector, <span class="math inline">\(\forall k \in [0, n)\)</span>.
-The vectors in the bases are also mutually orthogonal, as for <span
-class="math inline">\(k, l \in [0, n), k \neq l\)</span>, <span
-class="math display">\[
-    \left&lt; e_k, e_l \right&gt;_H = \sum_{j = 0 }^{n - 1} e^{ j \cdot
-\frac{ 2 (l - k) \pi i }{ n } } = \frac{ 1 - e^{ n \cdot \frac{ 2 (l -
-k) \pi i }{ n } } }{ 1 - e^{ \frac{ 2 (l - k) \pi i }{ n } } } = 0.
-\]</span></p>
-<h2 id="the-projection">The projection</h2>
-<p>The projection of <span class="math inline">\(v\)</span> to the
-bases, is defined as the vector in the linear span of the bases that is
-closest to <span class="math inline">\(v\)</span>. It is given by <span
-class="math display">\[
-    P(v) \doteq \sum_{k \in [0, n) } a_k e_k,
-\]</span></p>
-<p>where <span class="math inline">\(a_k = \left&lt; e_k, v\right&gt;_H
-\doteq \bar e_k \cdot v\)</span>.</p>
+    &e_0 = \frac{1}{\sqrt n} \left( e^{ 0 \cdot \frac{2 \cdot 0 \cdot \pi i}{ n} }, e^{ 1 \frac{2 \cdot 0 \cdot \pi i}{ n} }, ..., e^{ (n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \right), \\
+    &... \\
+    &e_{k - 1} = \frac{1}{\sqrt n} \left( e^{ 0 \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} }, ..., e^{ (n - 1) \cdot \frac{2 \cdot (k - 1) \cdot  \pi i}{ n} } \right), \\
+    &... \\
+    &e_{n - 1} = \frac{1}{\sqrt n} \left( e^{ 0 \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} }, e^{ 1 \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} }, ..., e^{ (n - 1) \cdot \frac{2 \cdot (n - 1) \cdot  \pi i}{ n} } \right).
+\end{aligned}</script><p>We use $\mathcal{S}$ to denote the linear span of $e<em>0, e_1, …, e</em>{n - 1}$. </p>
+<h1 id="Orthonormal-Bases"><a href="#Orthonormal-Bases" class="headerlink" title="Orthonormal Bases"></a>Orthonormal Bases</h1><p>It is easy to see that $e_k$ is a unit vector, $\forall k \in \mathbb{Z}_n$. The vectors in the bases are also mutually orthogonal, as for $k, \ell \in \mathbb{Z}_n, k \neq \ell$, </p>
+<script type="math/tex; mode=display">
+    \left< e_k, e_\ell \right>_H = \sum_{j \in \mathbb{Z}_n } e^{ j \cdot \frac{ 2 (\ell - k) \pi i }{ n } } = \frac{ 1 - e^{ n \cdot \frac{ 2 (\ell - k) \pi i }{ n } } }{ 1 - e^{ \frac{ 2 (\ell - k) \pi i }{ n } } } = 0.</script><h1 id="Projection"><a href="#Projection" class="headerlink" title="Projection"></a>Projection</h1><p>The projection of $v$ to the bases, is defined as the  vector in the linear span of the bases that is closest to $v$. It is given by </p>
+<script type="math/tex; mode=display">
+    P(v) \doteq \sum_{k \in \mathbb{Z}_n} a_k e_k,</script><p>where $a_k = \left&lt; e_k, v\right&gt;_H \doteq \bar e_k \cdot v$. </p>
 <blockquote>
-<p>Lemma. For any vector <span class="math inline">\(u\)</span> in <span
-class="math inline">\(S\)</span>, it holds that <span
-class="math display">\[
-\left&lt; u, v \right&gt;_H = \left&lt; u, P(v) \right&gt;_H.
-\]</span> Or, equivalently, <span class="math display">\[
-\left&lt; u , v - P(v) \right&gt;_H = \left&lt; v - P(v), u \right&gt;_H
-= 0.
-\]</span> <em>Proof:</em> Let <span class="math inline">\(u = \sum_{k
-\in [0, n) } c_k e_k : c_k \in \mathbb{C}, \forall k \in [0, n)\)</span>
-be a vector in <span class="math inline">\(\mathcal{S}\)</span>. As
-<span class="math inline">\(e_0, e_1, ..., e_{n - 1}\)</span> are
-mutually orthogonal, <span class="math display">\[
-\left&lt; u, v \right&gt;_H = \sum_{k \in [0, n) } \bar c_k \cdot a_k
-=\left&lt; u, P(v) \right&gt;_H.
-\]</span></p>
-</blockquote>
-<p>Next, we verify that <span class="math inline">\(P(v)\)</span>
-minimizes the distance to <span class="math inline">\(v\)</span>.</p>
+<p><strong>Lemma.</strong> For any vector $u$ in $\mathcal{S}$, it holds that </p>
+<script type="math/tex; mode=display">
+    \left< u, v \right>_H = \left< u, P(v) \right>_H.</script><p>Or, equivalently, </p>
+<script type="math/tex; mode=display">
+    \left< u , v - P(v) \right>_H = \left< v - P(v), u \right>_H = 0.</script></blockquote>
+<p><strong>Proof.</strong> Let $u = \sum<em>{k \in \mathbb{Z}_n} c_k e_k : c_k \in \mathbb{C}, \forall k \in \mathbb{Z}_n$ be a vector in $\mathcal{S}$. As $e_0, e_1, …, e</em>{n - 1}$ are mutually orthogonal, </p>
+<script type="math/tex; mode=display">
+    \left< u, v \right>_H = \sum_{k \in \mathbb{Z}_n} \bar c_k \cdot a_k =\left< u, P(v) \right>_H.</script><p>$\square$</p>
+<p>Next, we verify that $P(v)$ minimizes the distance to $v$. </p>
 <blockquote>
-<p>Theorem. <span class="math display">\[
-P(v) = \argmin_{w \in \mathcal{S} } ||u - w||^2.
-\]</span> <em>Proof:</em> Let <span class="math inline">\(w = \sum_{k
-\in [0, n) } d_k e_k : d_k \in \mathbb{C}, \forall k \in [0, n)\)</span>
-and define <span class="math inline">\(u = P(v) - w\)</span>. Observe
-that <span class="math inline">\(u \in \mathcal{S}\)</span>. By the
-previous lemma, <span class="math display">\[
-\begin{aligned}
-|| v - w ||^2
-&amp;= || v - P(v) + P(v) - w ||^2 \\
-&amp;= || v - P(v) ||^2 + ||P(v) - w||^2 + \left&lt; v - P(v), u
-\right&gt;_H + \left&lt; u, v - P(v) \right&gt;_H \\
-&amp;= || v - P(v) ||^2 + ||P(v) - w||^2
-\end{aligned}
-\]</span> Hence, <span class="math inline">\(|| v - w ||^2\)</span> is
-minimized if and only if <span class="math inline">\(w =
-P(v)\)</span>.</p>
-</blockquote>
-<h2 id="matrix-form">Matrix Form</h2>
-<p>The coefficients of <span class="math inline">\(a_0, a_1, ..., a_{n -
-1}\)</span> can be given in matrix form: <span class="math display">\[
+<p><strong>Theorem.</strong> </p>
+<script type="math/tex; mode=display">
+    P(v) = \argmin_{w \in \mathcal{S} } ||u - w||^2.</script></blockquote>
+<p><strong>Proof.</strong> Let $w = \sum_{k \in \mathbb{Z}_n} d_k e_k : d_k \in \mathbb{C}, \forall k \in \mathbb{Z}_n$ and define $u = P(v) - w$. Observe that $u \in \mathcal{S}$. By the previous lemma, </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        || v - w ||^2 
+            &= || v - P(v) + P(v) - w ||^2 \\
+            &= || v - P(v) ||^2 + ||P(v) - w||^2 + \left< v - P(v), u \right>_H + \left< u, v - P(v) \right>_H \\
+            &= || v - P(v) ||^2 + ||P(v) - w||^2
+    \end{aligned}</script><p>Hence, $|| v - w ||^2$ is minimized if and only if $w = P(v)$. </p>
+<p>$\square$</p>
+<h1 id="Matrix-Form"><a href="#Matrix-Form" class="headerlink" title="Matrix Form"></a>Matrix Form</h1><p>The coefficients of $a<em>0, a_1, …, a</em>{n - 1}$ can be given in matrix form:</p>
+<script type="math/tex; mode=display">
 \begin{bmatrix}
     a_0 \\
     a_1 \\
     ... \\
     a_{n - 1}
-\end{bmatrix}
+\end{bmatrix} 
 =
 \begin{bmatrix}
     - \bar e_0 - \\
@@ -295,204 +253,123 @@ P(v)\)</span>.</p>
     - \bar e_k - \\
     ... \\
     - \bar e_{n - 1} - \\
-\end{bmatrix} v
+\end{bmatrix} v 
 =
 \frac{1}{ \sqrt n }
 \begin{bmatrix}
-    e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2
-\cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0
-\cdot  \pi i}{ n} } \\
+    e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2 \cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
     ...\\
-    e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1
-\frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot
-\frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
+    e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
     ... \\
-    e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1
-\frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot
-\frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
-\end{bmatrix} v.
-\]</span></p>
-<p>Define the matrix <span class="math inline">\(M_n\)</span> as <span
-class="math display">\[
-    M_n \doteq
+    e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
+\end{bmatrix} v.</script><p>Define the matrix $M_n$ as </p>
+<script type="math/tex; mode=display">
+    M_n \doteq 
     \begin{bmatrix}
-        e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2
-\cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0
-\cdot  \pi i}{ n} } \\
+        e^{ -0 \cdot \frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -1 \frac{2 \cdot 0 \cdot  \pi i}{ n} }, ..., e^{ -(n - 1) \cdot  \frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
         ...\\
-        e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1
-\frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot
-\frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
+        e^{ -0 \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (k - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (k - 1) \cdot \pi i}{ n} } \\
         ... \\
-        e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1
-\frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot
-\frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
-    \end{bmatrix}.
-\]</span></p>
-<p>The key result of this section is the following theorem.</p>
+        e^{ -0 \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, e^{ -1 \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }, ..., e^{ -(n - 1) \cdot \frac{2 \cdot (n - 1) \cdot \pi i}{ n} }  \\
+    \end{bmatrix}.</script><p>The key result of this section is the following theorem.</p>
 <blockquote>
-<p>Theorem. An <span class="math inline">\(n\)</span>-dimension discrete
-Fourier transform can be performed in <span class="math inline">\(O(n
-\log n)\)</span> time. Equivalently, given <span class="math inline">\(v
-\in \mathbb{C}^n\)</span>, <span class="math inline">\(M_n v\)</span>
-can be computed in <span class="math inline">\(O(n \log n)\)</span>
-time.</p>
+<p><strong>Theorem.</strong> An $n$-dimension discrete Fourier transform can be performed in $O(n \log n)$ time. Equivalently, given $v \in \mathbb{C}^n$, $M_n v$ can be computed in $O(n \log n)$ time. </p>
 </blockquote>
-<p>The underlying idea of the theorem is divide-and-conquer. Let <span
-class="math inline">\(T(n)\)</span> be the time of performing an <span
-class="math inline">\(n\)</span>-dimension discrete Fourier transform.
-We will prove the following recursion</p>
+<p>The underlying idea of the theorem is divide-and-conquer. Let $T(n)$ be the time of performing an $n$-dimension discrete Fourier transform. We will prove the following recursion </p>
 <blockquote>
-<p><span class="math inline">\(T(n) = 2 \cdot T(n / 2) +
-O(n)\)</span>.</p>
+<p>$T(n) = 2 \cdot T(n / 2) + O(n)$.</p>
 </blockquote>
-<p>We begin by a special case where <span class="math inline">\(n =
-8\)</span>. As each entry in <span class="math inline">\(M_8\)</span> is
-complex number with unit length, we can represent it by a unit length
-vector, as the figure below shows.</p>
-<p>There are some patterns in <span class="math inline">\(M_8\)</span>
-and it can be decomposed into 4 matrices related to <span
-class="math inline">\(M_4\)</span>.</p>
-<p><em>Remark: I get this visualization idea from [1].</em></p>
+<p>We begin by a special case where $n = 8$. As each entry in $M_8$ is complex number with unit length, we can represent it by a unit length vector, as the figure below shows. </p>
+<p>There are some patterns in $M_8$ and it can be decomposed into 4 matrices related to $M_4$. </p>
+<p><em>Remark: I get this visualization idea from [1].</em> </p>
 <div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true" width="400" height="400" /></p>
+<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/0.png?raw=true" width="400" height="400" />
 </div>
-<p>First, look the the first half of the rows of <span
-class="math inline">\(M\)</span>, denoted as <span
-class="math inline">\(M_U\)</span>. The even columns constitute exactly
-the matrix <span class="math inline">\(M_4\)</span>. The odd columns
-forms a <span class="math inline">\(4 \times 4\)</span> matrix that can
-be obtained by proper rotations of <span
-class="math inline">\(M_4\)</span>.</p>
-<p>Let <span class="math inline">\(v_e\)</span>, <span
-class="math inline">\(v_o\)</span> be the even and odd dimensions of
-<span class="math inline">\(v\)</span>, respectively. Then <span
-class="math display">\[
-    M_U v = M_4 v_e +
-        \begin{bmatrix}
+
+<p>First, look the the first half of the rows of $M$, denoted as $M_U$. The even columns constitute exactly the matrix $M_4$. The odd columns forms a $4 \times 4$ matrix that can be obtained by proper rotations of $M_4$.</p>
+<p>Let $v_e$, $v_o$ be the even and odd dimensions of $v$, respectively. Then </p>
+<script type="math/tex; mode=display">
+    M_U v = M_4 v_e + 
+        \begin{bmatrix} 
            e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} } \\
            e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} } \\
            e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} } \\
            e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} }
-        \end{bmatrix} \times M_4 v_0,
-\]</span></p>
-<p>where <span class="math inline">\(\times\)</span> is element-wise
-multiplication between two vectors. This can also be replaced by matrix
-multiplication. <span class="math display">\[
-    M_U v = M_4 v_e +
-        \text{diag} \left(
+        \end{bmatrix} \times M_4 v_0,</script><p>where $\times$ is element-wise multiplication between two vectors. This can also be replaced by matrix multiplication. </p>
+<script type="math/tex; mode=display">
+    M_U v = M_4 v_e + 
+        \text{diag} \left( 
                 e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
                 e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
                 e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_4
-v_0,
-\]</span></p>
-<p>where <span class="math inline">\(\text{diag} \left( e^{ -\frac{2
-\cdot 0 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 1 \cdot \pi i}{ n} }, e^{
--\frac{2 \cdot 2 \cdot \pi i}{ n} }, e^{ -\frac{2 \cdot 3 \cdot \pi i}{
-n} } \right)\)</span> denotes a <span class="math inline">\(4 \times
-4\)</span>-diagonal matrix.</p>
+                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_4 v_0,</script><p>where $\text{diag} \left( e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} }, e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },  e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} }, e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)$ denotes a $4 \times 4$-diagonal matrix. </p>
 <div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/1.png?raw=true" width="400" height="400" /></p>
+<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/1.png?raw=true" width="400" height="400" />
 </div>
-<p>First, look the the second half of the rows of <span
-class="math inline">\(M\)</span>, denoted as <span
-class="math inline">\(M_D\)</span>. The even columns constitute exactly
-the matrix <span class="math inline">\(M_4\)</span>, which is the same
-as the even columns of <span class="math inline">\(M_U\)</span>.</p>
+
+<p>First, look the the second half of the rows of $M$, denoted as $M_D$. The even columns constitute exactly the matrix $M_4$, which is the same as the even columns of $M_U$. </p>
 <div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/2.png?raw=true" width="400" height="400" /></p>
+<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/2.png?raw=true" width="400" height="400" />
 </div>
-<p>For the odd columns of <span class="math inline">\(M_D\)</span>, they
-are in the opposite directions of the odds columns of <span
-class="math inline">\(M_U\)</span>. This can also be verified
-algebraically. An entry <span class="math inline">\(M_{k, l}\)</span> in
-the odd columns <span class="math inline">\(M_U\)</span> (<span
-class="math inline">\(k \in [0, n / 2)\)</span> and <span
-class="math inline">\(l\)</span> is odd) equals to <span
-class="math display">\[
-    M_{k, l} = e^{ - l \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n}
-}.
-\]</span></p>
-<p>Its corresponding entry in <span class="math inline">\(M_D\)</span>
-is <span class="math display">\[
-    M_{k + n / 2, l} = e^{ - l \cdot (k + n / 2- 1) \cdot \frac{2 \cdot
-\pi \cdot i}{n} } = e^{ - l \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot
-i}{n} } \cdot e^{ - l \cdot \pi \cdot i } = M_{k, l} \cdot (-1).
-\]</span></p>
-<p>The last equality holds since <span class="math inline">\(l\)</span>
-is odd.</p>
-<p><em>Remark:</em> This also explains why <span
-class="math inline">\(M_{k + n / 2, l} = M_{k, l}\)</span> when <span
-class="math inline">\(l\)</span> is even.</p>
+
+<p>For the odd columns of $M<em>D$, they are in the opposite directions of the odds columns of $M_U$. This can also be verified algebraically. An entry $M</em>{k, \ell}$ in the odd columns $M_U$ ($k \in [0, n / 2)$ and $\ell$ is odd) equals to </p>
+<script type="math/tex; mode=display">
+    M_{k, \ell} = e^{ - \ell \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n} }.</script><p>Its corresponding entry in $M_D$ is </p>
+<script type="math/tex; mode=display">
+    M_{k + n / 2, \ell} = e^{ - \ell \cdot (k + n / 2- 1) \cdot \frac{2 \cdot \pi \cdot i}{n} } = e^{ - \ell \cdot (k - 1) \cdot \frac{2 \cdot \pi \cdot i}{n} } \cdot e^{ - \ell \cdot \pi \cdot i } = M_{k, \ell} \cdot (-1).</script><p>The last equality holds since $\ell$ is odd. </p>
+<p><em>Remark:</em> This also explains why $M<em>{k + n / 2, \ell} = M</em>{k, \ell}$ when $\ell$ is even. </p>
 <div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/3.png?raw=true" width="400" height="400" /></p>
+<img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/FastFourierTransformation/3.png?raw=true" width="400" height="400" />
 </div>
-<p>In summary, we have <span class="math display">\[
-M v
+
+<p>In summary, we have </p>
+<script type="math/tex; mode=display">
+M v 
     =   \begin{bmatrix}
             M_U \\
             M_D
         \end{bmatrix} v
     =   \begin{bmatrix}
-             M_{n / 2} v_e +
-        \text{diag} \left(
+             M_{n / 2} v_e + 
+        \text{diag} \left( 
                 e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
                 e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
                 e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n /
-2} v_0  \\
-            M_{n / 2} v_e -
-        \text{diag} \left(
+                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n / 2} v_0  \\
+            M_{n / 2} v_e - 
+        \text{diag} \left( 
                 e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
                 e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
                 e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n /
-2} v_0
-        \end{bmatrix}.
-\]</span></p>
-<p>And the Fast Fourier Transform algorithm is shown as below.</p>
+                e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  M_{n / 2} v_0
+        \end{bmatrix}.</script><p>And the Fast Fourier Transform algorithm is shown as below. </p>
 <blockquote>
-<p><strong>Algorithm FFT (Fast Fourier Transform).</strong><br />
-<strong>Input.</strong> <span class="math inline">\(v \in
-\mathbb{C}^n\)</span>.<br />
-1. If <span class="math inline">\(n = 1\)</span>, return <span
-class="math inline">\(v\)</span>.<br />
-2. Compute <span class="math inline">\(r_e \leftarrow M_{n / 2}
-v_e\)</span> by <strong>FFT(<span
-class="math inline">\(v_e\)</span>)</strong>.<br />
-3. Compute <span class="math inline">\(r_o \leftarrow M_{n / 2}
-v_o\)</span> by <strong>FFT(<span
-class="math inline">\(v_o\)</span>)</strong>.<br />
-4. Return<br />
-<span class="math display">\[
-r \leftarrow  
-\begin{bmatrix}
-r_e +   
-\text{diag} \left(
-e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o \\
-r_e -   
-\text{diag} \left(
-e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
-e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
-\end{bmatrix}.
-\]</span></p>
+<p><strong>Algorithm FFT (Fast Fourier Transform).</strong><br><strong>Input.</strong> $v \in \mathbb{C}^n$.    </p>
+<ol>
+<li>If $n = 1$, return $v$.    </li>
+<li>Compute $r<em>e \leftarrow M</em>{n / 2} v_e$ by <strong>FFT($v_e$)</strong>.      </li>
+<li>Compute $r<em>o \leftarrow M</em>{n / 2} v_o$ by <strong>FFT($v_o$)</strong>.      </li>
+<li>Return     <script type="math/tex; mode=display">
+ r \leftarrow  
+ \begin{bmatrix}
+          r_e +   
+     \text{diag} \left( 
+             e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
+             e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
+             e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
+             e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o \\
+         r_e -   
+     \text{diag} \left( 
+             e^{ -\frac{2 \cdot 0 \cdot  \pi i}{ n} },
+             e^{ -\frac{2 \cdot 1 \cdot  \pi i}{ n} },
+             e^{ -\frac{2 \cdot 2 \cdot  \pi i}{ n} },
+             e^{ -\frac{2 \cdot 3 \cdot  \pi i}{ n} } \right)  r_o
+     \end{bmatrix}.</script></li>
+</ol>
 </blockquote>
-<p>Both step 2 and 3 have time <span class="math inline">\(T(n /
-2)\)</span>. Step 4 aggregates the results and has time <span
-class="math inline">\(O(n)\)</span>, which implies that <span
-class="math display">\[
-    T(n) = 2 \cdot T(n / 2) + O(n).
-\]</span></p>
-<h3 id="reference">Reference</h3>
-<p>[1] T. Roughgarden and G. Valiant, “CS168: The Modern Algorithmic
-Toolbox Lecture #15 and #16: The Fourier Transform and Convolution,” p.
-12.</p>
+<p>Both step 2 and 3 have time $T(n / 2)$. Step 4 aggregates the results and has time $O(n)$, which implies that </p>
+<script type="math/tex; mode=display">
+    T(n) = 2 \cdot T(n / 2) + O(n).</script><h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] T. Roughgarden and G. Valiant, “CS168: The Modern Algorithmic Toolbox Lecture #15 and #16: The Fourier Transform and Convolution,” p. 12.</p>
 
     </div>
 
@@ -573,8 +450,7 @@ Toolbox Lecture #15 and #16: The Fourier Transform and Convolution,” p.
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#orthonormal-bases-verification"><span class="nav-number">1.</span> <span class="nav-text">Orthonormal bases
-verification</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#the-projection"><span class="nav-number">2.</span> <span class="nav-text">The projection</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#matrix-form"><span class="nav-number">3.</span> <span class="nav-text">Matrix Form</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#reference"><span class="nav-number">3.1.</span> <span class="nav-text">Reference</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Orthonormal-Bases"><span class="nav-number">1.</span> <span class="nav-text">Orthonormal Bases</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Projection"><span class="nav-number">2.</span> <span class="nav-text">Projection</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Matrix-Form"><span class="nav-number">3.</span> <span class="nav-text">Matrix Form</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -588,12 +464,12 @@ verification</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -620,7 +496,7 @@ verification</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

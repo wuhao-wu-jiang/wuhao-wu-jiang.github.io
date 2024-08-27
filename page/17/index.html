@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/21/AMS-Sketch-For-Inner-Product-Estimation/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/13/Poisson-Tail-Bound/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/05/21/AMS-Sketch-For-Inner-Product-Estimation/" class="post-title-link" itemprop="url">AMS Sketch For Inner Product Estimation</a>
+            <a href="/2021/06/13/Poisson-Tail-Bound/" class="post-title-link" itemprop="url">Poisson Tail Bound</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-05-21 23:23:12" itemprop="dateCreated datePublished" datetime="2021-05-21T23:23:12+10:00">2021-05-21</time>
+              <time title="Created: 2021-06-13 07:30:31" itemprop="dateCreated datePublished" datetime="2021-06-13T07:30:31+02:00">2021-06-13</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-05-22 11:58:57" itemprop="dateModified" datetime="2021-05-22T11:58:57+10:00">2021-05-22</time>
+                <time title="Modified: 2021-06-16 08:35:55" itemprop="dateModified" datetime="2021-06-16T08:35:55+02:00">2021-06-16</time>
               </span>
 
           
@@ -191,875 +191,513 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="problem">Problem</h1>
-<p>Let <span class="math inline">\(\vec x = (x_1, ..., x_n)\)</span>,
-<span class="math inline">\(\vec y = (y_1, ..., y_n) \in
-\mathbb{R}^n\)</span>. Given <span class="math inline">\(\delta \in (0,
-1)\)</span>, construct a data structure with space usage <span
-class="math inline">\(O \left( \frac{1}{\epsilon^2} \log
-\frac{1}{\delta} \right)\)</span>, such that with failure probability at
-most <span class="math inline">\(\delta \in (0, 1)\)</span>,</p>
-<ul>
-<li>it returns an estimate of the inner product <span
-class="math inline">\(\left&lt; \vec x, \vec y \right&gt;\)</span> with
-error <span class="math inline">\(O( \epsilon \cdot \Vert \vec x \Vert_2
-\cdot \Vert \vec y \Vert_2 )\)</span>.</li>
-</ul>
-<p><strong>Remark:</strong> If we have <span class="math inline">\(\vec
-x = \vec y\)</span>, we get an estimator of <span
-class="math inline">\(\Vert \vec x \Vert_2^2\)</span> with <span
-class="math inline">\(\epsilon\)</span>-relative error.</p>
-<h1 id="prototype">Prototype</h1>
-<p>Let <span class="math inline">\(\vec \sigma = (\sigma_1, ...,
-\sigma_n) \in \{ - 1, 1 \}^n\)</span> a sequence of <span
-class="math inline">\(n\)</span> independent Rademachers.</p>
-<p>Define <span class="math display">\[
-    X \doteq \left&lt; \vec x, \vec \sigma \right&gt;, \qquad Y \doteq
-\left&lt; \vec y, \vec \sigma \right&gt;.
+          <p>We discuss deviation bounds for Poisson random variables. A random
+variable <span class="math inline">\(X\)</span> follows Poisson
+distribution with mean <span class="math inline">\(\mu\)</span>, if for
+all <span class="math inline">\(n \ge 0\)</span>, <span
+class="math display">\[
+    \Pr[ X = n] = \exp( -\mu ) \cdot \frac{ \mu^n }{ n! }.
 \]</span></p>
+<p>The bounds share similar forms to the Chernoff bound for independent
+Bernoulli random variables.</p>
 <blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(X \cdot
-Y\)</span> is an unbiased estimator of <span
-class="math inline">\(\left&lt; \vec x, \vec y \right&gt;\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Observe <span class="math inline">\(\forall
-i, j \in [n]\)</span>, if entries of <span
-class="math inline">\(\sigma\)</span> are pairwise independent, then
+<p><strong>Chernoff Bound.</strong> Let <span class="math inline">\(X_1,
+\ldots, X_n\)</span> be independent 0-1 random variables such that <span
+class="math inline">\(\Pr[ X_i = 1] = \mu_i\)</span>. Let <span
+class="math inline">\(X = \sum_{i \in [n] } X_i\)</span> and <span
+class="math inline">\(\mu = \mathbb{E} [ X_i ]\)</span>. Then 1. For all
+<span class="math inline">\(\delta &gt; 0\)</span>, <span
+class="math display">\[
+\Pr[ X \ge (1 + \delta) \mu ] \le \left( \frac{ e^\delta }{ (1 + \delta
+)^{1 + \delta} } \right)^\mu;
+\]</span> 2. For all <span class="math inline">\(\delta \in (0,
+1)\)</span>,<br />
 <span class="math display">\[
-    \mathbb{E} [ \sigma_i \sigma_j ] = \begin{cases}
-        1,  &amp; i = j \\
-        0,  &amp; i \neq j
-    \end{cases}.
+\Pr[ X \le (1 - \delta) \mu ] \le \left( \frac{ e^{- \delta } }{ (1 -
+\delta )^{1 - \delta} } \right)^\mu.
+\]</span></p>
+</blockquote>
+<h1 id="moment-generating-function">Moment Generating Function</h1>
+<blockquote>
+<p>Let <span class="math inline">\(X\)</span> be a Poisson random
+variable with mean <span class="math inline">\(\mu\)</span>. For all
+<span class="math inline">\(s &gt; 0\)</span>, <span
+class="math display">\[
+\begin{aligned}
+\mathbb{E} [ \exp( s X ) ]
+= e^{ ( e^s - 1 )  \mu }.
+\end{aligned}
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> For all <span class="math inline">\(s &gt;
+0\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} [ \exp( s X ) ]
+            = \sum_n  e^{ sn } e^{- \mu } \frac{ \mu^n }{ n! }
+            = e^{- \mu } \sum_n \frac{ (e^s \cdot \mu)^n }{ n! }
+            = e^{- \mu + e^s \mu }
+            = e^{ ( e^s - 1 )  \mu }.
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="upper-bound">Upper Bound</h1>
+<blockquote>
+<p>Let <span class="math inline">\(X\)</span> be a Poisson random
+variable with mean <span class="math inline">\(\mu\)</span>. Then for
+all <span class="math inline">\(\eta \ge 0\)</span>, <span
+class="math display">\[
+\Pr[ X \ge \mu + \eta ]
+\le  \left( \frac{ \exp \Big( \frac{\eta}{ \mu} \Big) }{  \Big( 1 +
+\frac{ \eta }{ \mu } \Big)^{ 1 + \frac{ \eta }{ \mu }  } } \right)^\mu
+\le \exp \left( - \frac{ \eta^2 }{ 2 \mu + \eta } \right).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Via Markov's inequality, for all <span
+class="math inline">\(s &gt; 0, \eta \ge 0\)</span>, <span
+class="math display">\[ \small
+    \begin{aligned}
+        \Pr[ X \ge \mu + \eta ]
+            &amp;= \Pr \Big[ \exp( s X ) \ge \exp \big( s ( \mu + \eta)
+\big) \Big] \\
+            &amp;\le \frac{ \mathbb{E} [ \exp( s X ) ] }{ \exp \big( s (
+\mu + \eta) \big) } \\
+            &amp;= \exp \Big( ( e^s - 1 )  \mu - \big( s ( \mu + \eta)
+\big) \Big).
+    \end{aligned}
+\]</span></p>
+<p>Define <span class="math inline">\(f(s) = ( e^s - 1 ) \mu - \big( s (
+\mu + \eta) \big)\)</span>. Letting <span class="math display">\[
+    f&#39;(s) = \mu e^s - (\mu + \eta) = 0,
+\]</span></p>
+<p>we get <span class="math inline">\(s = \ln \frac{\mu + \eta}{
+\mu}\)</span> and <span class="math display">\[ \small
+    \begin{aligned}
+        \Pr[ X \ge \mu + \eta ]
+            &amp;\le \exp \left( \Big( \frac{\mu + \eta}{ \mu} - 1 \Big)
+\cdot \mu - ( \mu + \eta) \cdot \ln \frac{\mu + \eta}{ \mu} \right) \\
+            &amp;= \exp \left( - \mu \left\{ - \frac{\eta}{ \mu} + \Big(
+1 + \frac{ \eta }{ \mu } \Big) \cdot \ln \Big( 1 + \frac{ \eta }{ \mu }
+\Big) \right\} \right) \\
+            &amp;=  \left( \frac{ \exp \Big( \frac{\eta}{ \mu} \Big)
+}{  \Big( 1 + \frac{ \eta }{ \mu } \Big)^{ 1 + \frac{ \eta }{ \mu }  } }
+\right)^\mu.
+    \end{aligned}
+\]</span></p>
+<p>Next, we prove the inequality of <span class="math display">\[
+    \left( \frac{ \exp \Big( \frac{\eta}{ \mu} \Big) }{  \Big( 1 +
+\frac{ \eta }{ \mu } \Big)^{ 1 + \frac{ \eta }{ \mu }  } } \right)^\mu
+    \le
+    \exp \left( - \frac{ \eta^2 }{ 2 \mu + \eta } \right).
+\]</span></p>
+<p>Let <span class="math inline">\(t = \frac{\eta}{\mu} \ge 0\)</span>.
+It suffices to prove that <span class="math display">\[
+    \begin{aligned}
+        (1 + t) \ln (1 + t) - t &amp;\ge  \frac{ t^2 }{ 2 + t  }.
+    \end{aligned}
+\]</span></p>
+<p>The inequality follows from that for <span class="math inline">\(t
+\ge 0\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \ln (1 + t) \ge \frac{t}{1 + t / 2} = \frac{2t}{2 + t}.
+    \end{aligned}
+\]</span></p>
+<p>The inequality clearly holds for <span class="math inline">\(t =
+0\)</span>. Define <span class="math inline">\(g(x) = \frac{1}{1 +
+x}\)</span>, which is convex. Via Hermite-Hadamard inequality, when
+<span class="math inline">\(t &gt; 0\)</span>, <span
+class="math display">\[
+    \frac{\ln (1 + t) }{ t } = \frac{1}{t} \int_0^t g(x) \ dx \ge
+\frac{1}{ 1 + \frac{1}{t} \int_0^t x \ d x } = \frac{1}{ 1 + t / 2}.
+\]</span></p>
+<p><strong>Remark:</strong> A tighter bound shows that <span
+class="math display">\[
+    (1 + t) \ln (1 + t) - t \ge \frac{t^2}{ 2 + (2 / 3) t},
+\quad  \forall t \ge 0.
+\]</span></p>
+<p>which gives <span class="math display">\[
+    \left( \frac{ \exp \Big( \frac{\eta}{ \mu} \Big) }{  \Big( 1 +
+\frac{ \eta }{ \mu } \Big)^{ 1 + \frac{ \eta }{ \mu }  } } \right)^\mu
+    \le
+    \exp \left( - \frac{ \eta^2 }{ 2 \mu + (2 / 3) \eta } \right).
+\]</span></p>
+<p>To prove it, define <span class="math display">\[
+    f(t) \doteq (1 + t) \ln (1 + t) - t.
+\]</span></p>
+<p>As <span class="math inline">\(f(0）= 0\)</span>, <span
+class="math display">\[ \small
+    \begin{aligned}
+        f(t)
+            = \int_0^1 f&#39;( tx ) \, d\, (tx)  
+            = \int_0^1 \int_0^x f&#39;&#39;( ty ) \, d\, (ty) \, d\,
+(tx)   
+            = t^2 \int_0^1 \int_0^x \frac{1}{1 + ty} \, d\, y \, d\,
+x   
+    \end{aligned}.
+\]</span></p>
+<p>The function <span class="math inline">\(g(x, y) = \frac{1}{1 +
+ty}\)</span> is convex on the region <span class="math display">\[
+    \{ (x, y) : x \in [0, 1], y \in [0, x] \}.
+\]</span></p>
+<p>It has area <span class="math inline">\(1 / 2\)</span>. By Jensen's
+inequality, <span class="math display">\[
+    \frac{1}{1 / 2} \int_0^1 \int_0^x \frac{1}{1 + ty} \, d\, y \, d\,
+x  \ge  \frac{1}{1 + t \cdot \frac{1}{1 / 2} \cdot  \int_0^1 \int_0^x
+y  \, d\, y \, d\, x  } = \frac{1}{1 + t / 3}.
+\]</span></p>
+<p><strong>Remark:</strong> A looser bound can be obtained as follows.
+Define <span class="math display">\[
+    f(t) \doteq (1 + t) \ln (1 + t) - t.
+\]</span> Then <span class="math inline">\(f&#39;(t) = \ln (1 +
+t)\)</span> and <span class="math inline">\(f&#39;&#39;(t) = 1 / (1 +
+t)\)</span>. Using Taylor's expansion, there exists some <span
+class="math inline">\(c \in [0, t]\)</span>, such that <span
+class="math display">\[
+    f(t) = f(0) + f&#39;(0) \cdot t + f&#39;&#39;(c) \cdot \frac{t^2}{2}
+= \frac{1}{1 + c} \cdot \frac{t^2}{2}.
+\]</span></p>
+<p>The bound we obtained before asserts that <span
+class="math inline">\(c \le t / 2\)</span>. This is due to that <span
+class="math inline">\(f(t)\)</span> is convex and is increasing for
+<span class="math inline">\(t \ge 0\)</span>. Even if we don't know
+this, we can lower bound <span class="math inline">\(f(t)\)</span> by
+<span class="math display">\[
+    f(t) = \frac{1}{1 + c} \cdot \frac{t^2}{2} \ge \frac{1}{1 + t} \cdot
+\frac{t^2}{2},
+\]</span></p>
+<p>which gives <span class="math display">\[
+    \left( \frac{ \exp \Big( \frac{\eta}{ \mu} \Big) }{  \Big( 1 +
+\frac{ \eta }{ \mu } \Big)^{ 1 + \frac{ \eta }{ \mu }  } } \right)^\mu
+    \le
+    \exp \left( - \frac{ \eta^2 }{ 2 (\mu +  \eta) } \right).
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="lower-bound">Lower Bound</h1>
+<blockquote>
+<p>Let <span class="math inline">\(X\)</span> be a Poisson random
+variable with mean <span class="math inline">\(\mu\)</span>. Then for
+all <span class="math inline">\(0 \le \eta \le \mu\)</span>, <span
+class="math display">\[
+\Pr[ X \le \mu - \eta ]
+=  \left( \frac{ \exp \Big( \frac{\eta}{ \mu} \Big) }{  \Big( 1 - \frac{
+\eta }{ \mu } \Big)^{ 1 - \frac{ \eta }{ \mu }  } } \right)^\mu
+\le
+\exp \left( - \frac{ \eta^2 }{ 2 \mu } \right).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Via Markov's inequality, for all <span
+class="math inline">\(s &gt; 0, 0 \le \eta \le \mu\)</span>, <span
+class="math display">\[ \small
+    \begin{aligned}
+        \Pr[ X \le \mu - \eta ]
+            &amp;= \Pr \Big[ \exp( - s X ) \ge \exp \big( -s ( \mu -
+\eta) \big) \Big] \\
+            &amp;\le \frac{ \mathbb{E} [ \exp( - s X ) ] }{ \exp \big( -
+s ( \mu - \eta) \big) } \\
+            &amp;= \exp \Big(  ( e^{-s} - 1 )  \mu + \big( s ( \mu -
+\eta) \big) \Big).
+    \end{aligned}
+\]</span></p>
+<p>Define <span class="math inline">\(f(s) = ( e^{-s} - 1 ) \mu + \big(
+s ( \mu - \eta) \big)\)</span>. Letting <span class="math display">\[
+    f&#39;(s) = - \mu e^{-s} + (\mu - \eta) = 0,
+\]</span></p>
+<p>we get <span class="math inline">\(s = - \ln \frac{\mu - \eta}{
+\mu}\)</span> and <span class="math display">\[ \small
+    \begin{aligned}
+        \Pr[ X \ge \mu - \eta ]
+            &amp;\le \exp \left( \Big( \frac{\mu - \eta}{ \mu} - 1 \Big)
+\cdot \mu - ( \mu - \eta) \cdot \ln \frac{\mu - \eta}{ \mu} \right) \\
+            &amp;= \exp \left( - \mu \left\{  \frac{\eta}{ \mu} + \Big(
+1 - \frac{ \eta }{ \mu } \Big) \cdot \ln \Big( 1 - \frac{ \eta }{ \mu }
+\Big) \right\} \right) \\
+            &amp;=  \left( \frac{ \exp \Big( - \frac{\eta}{ \mu} \Big)
+}{  \Big( 1 - \frac{ \eta }{ \mu } \Big)^{ 1 - \frac{ \eta }{ \mu }  } }
+\right)^\mu.
+    \end{aligned}
+\]</span></p>
+<p>Next, we prove the inequality of <span class="math display">\[
+    \left( \frac{ \exp \Big( - \frac{\eta}{ \mu} \Big) }{  \Big( 1 -
+\frac{ \eta }{ \mu } \Big)^{ 1 - \frac{ \eta }{ \mu }  } } \right)^\mu
+    \le
+    \exp \left( - \frac{ \eta^2 }{ 2 \mu } \right).
+\]</span></p>
+<p>Let <span class="math inline">\(t = \frac{\eta}{\mu} \in [0,
+1)\)</span>. It suffices to prove that <span class="math display">\[
+    (1 - t) \ln (1 - t) + t \ge  \frac{ t^2 }{ 2 }.
+\]</span></p>
+<p>Let <span class="math inline">\(f(t) = (1 - t) \ln (1 - t) +
+t\)</span>. Then <span class="math display">\[
+    \begin{aligned}
+        f&#39;(t)   &amp;= -\ln (1 - t),  \\
+        f&#39;&#39;(t)  &amp;= \frac{1}{1 - t}.
+    \end{aligned}
+\]</span></p>
+<p>Using Taylor's expansion, there exists some <span
+class="math inline">\(c \in [0, t]\)</span>, such that <span
+class="math display">\[
+    f(t)
+    = f(0) + f&#39;(0) \cdot t + f&#39;&#39;(c) \cdot \frac{t^2}{2}
+    = \frac{1}{1 - c} \cdot \frac{t^2}{2}.
+\]</span></p>
+<p>The proof follows by observing that <span
+class="math inline">\(\frac{1}{1 - c} \ge 1\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1]. <em>David Pollard. Chapter 2, MiniEmpirical.
+http://www.stat.yale.edu/~pollard/Books/Mini/, 2015.
+Manuscript</em><br />
+[2]. <em>Mitzenmacher, M. and Upfal, E., 2017. Probability and
+computing: Randomization and probabilistic techniques in algorithms and
+data analysis. Cambridge university press.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/09/Maximum-of-Sub-Gaussian-Random-Variables/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/09/Maximum-of-Sub-Gaussian-Random-Variables/" class="post-title-link" itemprop="url">Maximum of Sub-Gaussian Random Variables</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-06-09 16:42:23 / Modified: 17:08:56" itemprop="dateCreated datePublished" datetime="2021-06-09T16:42:23+02:00">2021-06-09</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><strong>Definition.</strong> A random variable <span
+class="math inline">\(X \in \mathbb{R}\)</span> is said to be
+sub-Gaussian with variance proxy <span
+class="math inline">\(\sigma^2\)</span> if <span
+class="math inline">\(\mathbb{E} [X] = 0\)</span> and its moment
+generating function satisfies <span class="math display">\[
+    \mathbb{E}[ \exp (sX) ] \le \exp \left( \frac{\sigma^2 s^2 }{2}
+\right), \qquad \forall s \in \mathbb{R}.
+\]</span></p>
+<p>In this case we write <span class="math inline">\(X \sim
+\text{subG}(\sigma^2)\)</span>.</p>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(X_1,
+\ldots, X_n\)</span> be <span class="math inline">\(n\)</span> random
+variables such that <span class="math inline">\(X_i \sim
+\text{subG}(\sigma^2)\)</span>. Then <span class="math display">\[
+    \mathbb{E} \Big[ \max_{i \in [n] } X_i \Big] \le \sigma \sqrt{ 2
+\log n },
+    \qquad
+    \mathbb{E} \Big[ \max_{i \in [n] } | X_i | \Big] \le \sigma \sqrt{ 2
+\log (2 n ) }.
+\]</span></p>
+<p><strong>Proof.</strong> <span class="math inline">\(\forall s &gt;
+0\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} \Big[ \max_{i \in [n] } X_i \Big]
+            &amp;= \frac{1}{s} \mathbb{E} \Big[ \max_{i \in [n] } s X_i
+\Big] \\
+            &amp;= \frac{1}{s} \mathbb{E} \Big[ \ln \Big( \exp \Big(
+\max_{i \in [n] } s X_i \Big) \Big) \Big] \\
+            &amp;\le \frac{1}{s} \ln \Big( \mathbb{E} \Big[  \exp \Big(
+\max_{i \in [n] } s X_i \Big) \Big) \Big]
+            \qquad \text{Jensen}    \\
+            &amp;= \frac{1}{s} \ln \Big( \mathbb{E} \Big[  \max_{i \in
+[n] } \exp \Big(  s X_i \Big) \Big) \Big] \\
+            &amp;\le \frac{1}{s} \ln \Big( \sum_{i \in [n] } \mathbb{E}
+\Big[ \exp \Big(  s X_i \Big) \Big) \Big] \\
+            &amp;\le \frac{1}{s} \ln \Big( \sum_{i \in [n] } \exp \Big(
+\frac{\sigma^2 s^2}{2} \Big) \Big) \\
+            &amp;= \frac{1}{s} \ln n + \frac{\sigma^2 s}{2} \\
+            &amp;\le 2 \sqrt{ \frac{\sigma^2}{2} \ln n}
+            \qquad \text{Setting } s = \sqrt{ \frac{2 \ln n}{\sigma^2} }
+\\
+            &amp;= \sigma \sqrt{ 2 \ln n}.
+    \end{aligned}
+\]</span></p>
+<p>To prove the second inequality, we can set <span
+class="math inline">\(X_{i + n} = - X_i\)</span>, for all <span
+class="math inline">\(i \in [n]\)</span>, so that <span
+class="math display">\[
+    \mathbb{E} \Big[ \max_{i \in [n] } | X_i | \Big] = \mathbb{E} \Big[
+\max_{i \in [2n] } X_i \Big] \le \sigma \sqrt{ 2 \log (2n) }.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1]. <em>Rigollet, Phillippe, and Jan-Christian Hütter. "High
+dimensional statistics." Lecture notes for course 18S997 813 (2015):
+814.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/08/Least-Square-Estimation-Error-Bound/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/06/08/Least-Square-Estimation-Error-Bound/" class="post-title-link" itemprop="url">Least Square Estimation Error Bound</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-06-08 16:10:33" itemprop="dateCreated datePublished" datetime="2021-06-08T16:10:33+02:00">2021-06-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-06-09 03:26:54" itemprop="dateModified" datetime="2021-06-09T03:26:54+02:00">2021-06-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><strong>Theorem.</strong> Let <span class="math inline">\(S \subseteq
+\mathbb{R}^d\)</span> be a symmetric convex body, and let <span
+class="math inline">\(\vec{x} \in S\)</span> and <span
+class="math inline">\(\vec y = \vec x + \vec a\)</span> for some <span
+class="math inline">\(\vec a \in \mathbb{R}^d\)</span>. Set <span
+class="math inline">\(\vec z = \arg \min_{\vec v \in S} \Vert \vec v -
+\vec y \Vert_2\)</span>. Let <span class="math inline">\(\vec c = \vec z
+- \vec x\)</span>. Then we must have <span class="math display">\[
+\Vert \vec c \Vert_2^2 \le 4 \min \Big\{ \Vert \vec a \Vert_2^2, \Vert
+\vec a \Vert_{S^*} \Big\},
+\]</span> where <span class="math inline">\(\Vert \vec z \Vert_{S^*}
+\doteq \sup_{ \vec v \in S} | \left&lt; \vec v, \vec a
+\right&gt;|\)</span>.</p>
+</blockquote>
+<p><img
+src="https://raw.githubusercontent.com/wuhao-wu-jiang/BlogImgs/master/Least-Square-Estimation-Error-Bound.png" /></p>
+<p><strong>Proof.</strong> Let <span class="math inline">\(\vec b = \vec
+z - \vec y\)</span>. Then <span class="math display">\[     
+    \vec c = \vec a + \vec b.      
+\]</span></p>
+<ol type="1">
+<li><p>By the definition of <span class="math inline">\(\vec z\)</span>,
+it holds that <span class="math display">\[
+     \Vert \vec b \Vert_2 \le \Vert \vec a \Vert_2.
+\]</span> Hence, by triangle inequality, <span class="math display">\[
+     \Vert \vec c \Vert_2 \le \Vert \vec b \Vert_2 + \Vert \vec a
+\Vert_2 \le 2 \Vert \vec a \Vert_2.
+\]</span></p></li>
+<li><p>In the plot, we notices that <span
+class="math inline">\(\left&lt; \vec c, \vec b \right&gt; \le 0 \le
+\left&lt; \vec c, \vec a \right&gt;\)</span>. Formally, <span
+class="math display">\[
+     \begin{aligned}
+         \left&lt; \vec c, \vec b \right&gt;
+         &amp;= \left&lt; \vec b, \vec b \right&gt;
+         + \left&lt; \vec a, \vec b \right&gt; \\
+         &amp;= \left&lt; \vec a, \vec b \right&gt; + \Vert \vec b
+\Vert_2^2 \\
+         &amp;\le \left&lt; \vec a, \vec b \right&gt; + \Vert \vec a
+\Vert_2^2  \\
+         &amp;= \left&lt; \vec c, \vec a \right&gt;
+     \end{aligned}
 \]</span></p>
 <p>Hence, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E} [ X \cdot Y ]
-            &amp;= \mathbb{E} \left[ \left( \sum_{i \in [n] } \sigma_i
-x_i \right) \left( \sum_{j \in [n] } \sigma_j y_j \right) \right] \\
-            &amp;= \sum_{i, j \in [n] } \mathbb{E} [ \sigma_i \sigma_j
-]x_i y_j \\
-            &amp;= \sum_{i \in [n] } x_i y_i.
-    \end{aligned}
+     \begin{aligned}
+         \Vert \vec c \Vert_2^2       
+             &amp;= \left&lt; \vec c, \vec c \right&gt; \\  
+             &amp;= \left&lt; \vec c, \vec a \right&gt; + \left&lt; \vec
+c, \vec b \right&gt; \\      
+             &amp;\le \left&lt; \vec c, \vec a \right&gt; + \left&lt;
+\vec c, \vec a \right&gt;\\  
+             &amp;= 2 \left&lt; \vec c, \vec a \right&gt;\\
+             &amp;\le 2 \Vert \vec c \Vert_{S} \Vert \vec a \Vert_{S^*}
+     \end{aligned}
 \]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(\mathbb{Var}[ X
-\cdot Y ] \le \Vert \vec x \Vert_2^2 \cdot \Vert \vec y
-\Vert_2^2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> If entries of <span
-class="math inline">\(\sigma\)</span> are four-wise independent, then
-<span class="math display">\[
-    \begin{aligned}
-        \mathbb{Var} [ X \cdot Y ]
-            &amp;= \mathbb{Var} \left[ \left( \sum_{i \in [n] } \sigma_i
-x_i \right) \left( \sum_{j \in [n] } \sigma_j y_j \right) \right] \\
-            &amp;= \mathbb{Var} \left[ \sum_{i \neq j \in [n] } \sigma_i
-\sigma_j x_i y_j \right] \\
-            &amp;= \sum_{i \neq j } \mathbb{Var} \left[  \sigma_i
-\sigma_j x_i y_j \right] + \sum_{i \neq j, k \neq \ell, (i, j) \neq (k,
-\ell) } \mathbb{Cov} [ \sigma_i \sigma_j x_i y_j, \sigma_k \sigma_\ell
-x_k y_\ell ]\\
-            &amp;= \sum_{i \neq j } x_i^2 y_j^2 \\
-            &amp;\le \Vert \vec x \Vert_2^2 \cdot \Vert \vec  y
-\Vert_2^2
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>If we have <span class="math inline">\(m\)</span> independent copies
-of <span class="math inline">\(X\)</span> and <span
-class="math inline">\(Y\)</span>, denoted as <span
-class="math inline">\(X_1, ..., X_m\)</span>, and <span
-class="math inline">\(Y_1, ..., Y_m\)</span>, then we can compute the
-average <span class="math inline">\((1 / m) \cdot \sum_{i \in [m] } X_i
-\cdot Y_i\)</span>, whose variance is bounded by <span
-class="math inline">\((1 / m) \cdot \Vert \vec x \Vert_2^2 \cdot \Vert
-\vec y \Vert_2^2\)</span>. If we set <span class="math inline">\(m = 1 /
-\epsilon^2\)</span>, then it becomes <span
-class="math inline">\(\epsilon^2 \cdot \Vert \vec x \Vert_2^2 \cdot
-\Vert \vec y \Vert_2^2\)</span> and by Chebyshev's inequality <span
-class="math inline">\(|(1 / m) \cdot \sum_{i \in [m] } X_i \cdot Y_i -
-\left&lt; \vec x , \vec y \right&gt; |\)</span> is bounded by <span
-class="math inline">\(\epsilon \cdot \Vert \vec x \Vert_2 \cdot \Vert
-\vec y \Vert_2\)</span> with constant probability.</p>
-<p>By Chernoff bound, we can boost the probability to <span
-class="math inline">\(1 - \delta\)</span>, by repeating the experiment
-<span class="math inline">\(O(\log \frac{1}{\delta})\)</span> times and
-taking the median of the estimation.</p>
-<p>Computing <span class="math inline">\((1 / m) \cdot \sum_{i \in [m] }
-X_i \cdot Y_i\)</span> takes <span class="math inline">\(O( 1 /
-\epsilon^2 )\)</span> time. Repeating this <span
-class="math inline">\(O(\log \frac{1}{ \delta})\)</span> times and
-taking the median results in time complexity <span
-class="math inline">\(O( \frac{\log (1 / \delta) }{\epsilon^2}
-)\)</span>.</p>
-<p>On the other hand, we construct <span class="math inline">\(O (
-\epsilon^2 \cdot \log \frac{1}{\delta} )\)</span> copies of <span
-class="math inline">\(X\)</span>, which takes time <span
+<p>where <span class="math inline">\(\Vert \vec c \Vert_S \doteq \inf \{
+r \in \mathbb{R}_{\ge 0} : \vec c \in r S \}\)</span> and the last
+inequality follows from Holder Inequality. As <span
 class="math display">\[
-    O ( n \cdot  \epsilon^2 \cdot \log \frac{1}{\delta} ).
-\]</span></p>
-<h1 id="algorithm">Algorithm</h1>
-<p>In this section, we show how to reduce the construction time to <span
-class="math display">\[
-    O ( n \cdot \log \frac{1}{\delta} ).
-\]</span></p>
-<p>Given <span class="math inline">\(m \in \mathbb{N}^+\)</span>, let
-<span class="math inline">\(h : [n] \rightarrow [m]\)</span> be a
-pairwise independent hash function.</p>
-<p>Let <span class="math inline">\(\vec X = (X_1, ..., X_m), \vec Y =
-(Y_1, ..., Y_m) \in \mathbb{R}^m\)</span> be random vectors, such that
-<span class="math inline">\(\forall t \in [m]\)</span>, <span
-class="math display">\[
-    X_t = \sum_{ i \in [n] : h(i) = t } \sigma_i x_i, \\
-    Y_t = \sum_{ i \in [n] : h(i) = t } \sigma_i y_i.
-\]</span></p>
-<blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(\left&lt; \vec
-X, \vec Y \right&gt;\)</span> is an unbiased estimator of <span
-class="math inline">\(\left&lt; \vec x, \vec y \right&gt;\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong></p>
-<p>If entries of <span class="math inline">\(\sigma\)</span> are
-pairwise independent, then <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E} \left[ \left&lt; \vec X, \vec Y \right&gt; \right]
-            &amp;= \sum_{ t \in [m] } \mathbb{E}[ X_t Y_t ] \\
-            &amp;= \sum_{ t \in [m] } \mathbb{E} \left[ \sum_{ i, j \in
-[n] : h(i) = h(j)  = t } \sigma_i \sigma_j x_i y_j \right] \\
-            &amp;= \sum_{ t \in [m] } \mathbb{E} \left[ \sum_{ i \in
-[n]  } \frac{1}{m} x_i y_i + \sum_{ i \neq j  } \frac{1}{m^2} \sigma_i
-\sigma_j x_i y_j\right] \\
-            &amp;= \sum_{ i \in [n]  }  x_i y_i
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(\mathbb{Var}
-\left[ \left&lt; \vec X, \vec Y \right&gt; \right] \le \frac{1}{m} \cdot
-\Vert \vec x \Vert_2^2 \cdot \Vert \vec y \Vert_2^2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> If entries of <span
-class="math inline">\(\sigma\)</span> are four-wise independent, then
-<span class="math display">\[
-    \begin{aligned}
-        \mathbb{Var} \left[ \left&lt; \vec X, \vec Y \right&gt; \right]
-            &amp;=  \mathbb{Var} \left[ \sum_{ t \in [m] } X_t Y_t
-\right] \\
-            &amp;=  \mathbb{Var} \left[ \sum_{ i, j \in [n] : h(i) =
-h(j) } \sigma_i \sigma_j x_i y_j \right] \\
-            &amp;=  \mathbb{Var} \left[ \sum_{ i \neq j, h(i) = h(j)  }
-\sigma_i \sigma_j x_i y_j \right] \\
-            &amp;= \sum_{i \neq j } \mathbb{Var} \left[ 1_{ [ h(i) = h
-(j) ] } \cdot \sigma_i \sigma_j x_i y_j \right] \\
-            &amp;\quad+ \sum_{i \neq j, k \neq \ell, (i, j) \neq (k,
-\ell) } \mathbb{Cov} [ 1_{ [ h(i) = h (j) ] } \cdot \sigma_i \sigma_j
-x_i y_j, 1_{ [ h(k) = h (\ell ) ] } \cdot \sigma_k \sigma_\ell x_k
-y_\ell ] \\
-            &amp;= \sum_{i \neq j } \mathbb{E} \left[ \left( 1_{ [ h(i)
-= h (j) ] } \cdot \sigma_i \sigma_j x_i y_j \right)^2 \right] \\
-            &amp;= \sum_{i \neq j } \frac{1}{m} \cdot x_i^2 y_j^2 \\
-            &amp;\le \frac{1}{m} \cdot  \Vert \vec x \Vert_2^2 \cdot
-\Vert \vec  y \Vert_2^2
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p>By setting <span class="math inline">\(m = 1/ \epsilon^2\)</span>,
-repeating the procedure <span class="math inline">\(O(\log
-\frac{1}{\delta})\)</span> times and taking the median as our
-estimation, we can obtained the desired result.</p>
-<h1 id="reference">Reference</h1>
-<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed.
-Cambridge University Press, 2020.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/16/L0-Sampling/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/16/L0-Sampling/" class="post-title-link" itemprop="url">L0 Sampling</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-04-16 18:53:42" itemprop="dateCreated datePublished" datetime="2021-04-16T18:53:42+10:00">2021-04-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-05-15 12:15:01" itemprop="dateModified" datetime="2021-05-15T12:15:01+10:00">2021-05-15</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="problem">Problem</h1>
-<p>Let <span class="math inline">\(x \in \mathbb{R}^n\)</span> be a
-vector initialized with all zeros. There is a stream <span
-class="math inline">\(S\)</span> of updates, each of which is a pair
-<span class="math inline">\((t, \Delta) \in [n] \times
-\mathbb{R}\)</span>, causing <span class="math inline">\(x_t \leftarrow
-x_t + \Delta\)</span>.</p>
-<p>Define the support <span
-class="math inline">\(\mathbb{Supp}(x)\)</span> to be the set of all
-non-zero indexes of <span class="math inline">\(x\)</span>: <span
-class="math display">\[
-    \mathbb{Supp}(x) \doteq \{ i \in [n] : x_i \neq 0 \}.
-\]</span></p>
-<blockquote>
-<p><strong><span class="math inline">\(\ell_0\)</span>
-sampling</strong>: output an index uniformly at random from the support
-<span class="math inline">\(\mathbb{Supp}(x)\)</span>.</p>
-</blockquote>
-<p>We assume that at any time, <span class="math inline">\(\forall t \in
-[n], x_t \le M\)</span> for some <span class="math inline">\(M \in
-\mathbb{R}\)</span>.</p>
-<h2 id="naive-solutions">Naive Solutions</h2>
-<p>We can uses an array to keep <span class="math inline">\(x\)</span>
-explicitly. But this has size <span class="math inline">\(O( n \cdot
-\log M)\)</span> bits.</p>
-<blockquote>
-<p>Goal: design an algorithm for <span
-class="math inline">\(\ell_0\)</span> sampling with space less than
-<span class="math inline">\(O( n \cdot \log M)\)</span> bits.</p>
-</blockquote>
-<p>If there are only insertion updates, i.e., <span
-class="math inline">\(\forall (t, \Delta) \in S\)</span>, it holds that
-<span class="math inline">\(\Delta &gt; 0\)</span>, then we can use a
-hash set to keep the non-zero elements and their frequencies, which has
-size <span class="math inline">\(O( |\mathbb{Supp}(x) | \cdot \log
-M)\)</span>. If <span class="math inline">\(x\)</span> is dense, i.e.,
-<span class="math inline">\(|\mathbb{Supp}(x)|\)</span> is large, this
-is still infeasible.</p>
-<h2 id="sampling-game">Sampling Game</h2>
-<p>We discuss one sampling game that illustrates the key ideas used in
-<span class="math inline">\(\ell_0\)</span>-sampling.</p>
-<p>In this game, we want to sample one integer uniformly at random from
-<span class="math inline">\([k]\)</span>. Instead of sampling it
-directly, we choose some <span class="math inline">\(p \in (0,
-1]\)</span> and perform the following two steps:</p>
-<ol type="1">
-<li>First, we sample each <span class="math inline">\(i \in [k]\)</span>
-uniformly and independent at random with probability <span
-class="math inline">\(p\)</span>. Denote <span
-class="math inline">\(B\)</span> the set of sampled elements.<br />
-</li>
-<li>If <span class="math inline">\(B \neq \emptyset\)</span>, then
-output one element from <span class="math inline">\(B\)</span> uniformly
-at random.</li>
+     \Vert \vec c \Vert_{S}  =  \Vert \vec z - \vec x \Vert_{S} \le
+\Vert \vec z \Vert_{S} + \Vert \vec x \Vert_{S} \le 2,
+\]</span> we get <span class="math inline">\(\Vert \vec c \Vert_{S} \le
+4 \Vert \vec a \Vert_{S^*}\)</span>.</p></li>
 </ol>
-<blockquote>
-<p><strong>Property.</strong> <span class="math inline">\(\mathbb{E} [
-|B| ] = kp\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Property.</strong> <span class="math inline">\(\Pr[ |B| &gt;
-0 ] = (1 - p)^k \le \exp(-kp)\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Property.</strong> By Bernstein's Inequality, <span
-class="math inline">\(\forall \delta \in (0, 1)\)</span>, with
-probability at least <span class="math inline">\(1 - \delta\)</span>, we
-have <span class="math display">\[
-|B| - \mathbb{E} [ |B| ] \le \sqrt{2 \cdot k \cdot p \cdot (1 - p) \cdot
-\ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta} }{3}.
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Theorem.</strong> Each element in <span
-class="math inline">\([k]\)</span> is outputted with equal probability
-<span class="math display">\[
-\frac{1 - \left(1 - p \right)^k }{ k }.
-\]</span></p>
-</blockquote>
-<p><strong>Remark: when <span class="math inline">\(p = 1\)</span>, this
-reduces to sampling an element uniformly at random from <span
-class="math inline">\([k]\)</span>.</strong></p>
-<p><strong>Proof.</strong> The probability that <span
-class="math inline">\(B = \emptyset\)</span> is given by <span
-class="math inline">\((1 - p)^k\)</span>. Conditioned on that <span
-class="math inline">\(B \neq \emptyset\)</span>, by symmetry, each
-element is sampled with equal probability.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Remark:</strong> We can also have a proof by algebra. For
-evert <span class="math inline">\(i \in [k]\)</span>, the probability
-that it is sampled is given by <span class="math display">\[
-\begin{aligned}
-    \sum_{t = 1}^k \frac{1}{t} \cdot \Pr [ i \in B \mid |B| = t] \cdot
-\Pr[ |B| = t]
-         &amp;= \sum_{t = 1}^k  \frac{1}{t} \frac{ \binom{k - 1}{t - 1}
-}{ \binom{k}{t} } \binom{k}{t} p^t (1 - p)^{k - t} \\
-         &amp;= \sum_{t = 1}^k  \frac{1}{t} \binom{k - 1}{t - 1} p^t (1
-- p)^{k - t} \\
-         &amp;= \frac{1}{k} \sum_{t = 1}^k  \binom{k}{t} p^t (1 - p)^{k
-- t} \\
-         &amp;= \frac{1}{k} \left( 1 - \binom{k}{0} p^0 (1 - p)^{k - 0}
-\right) \\
-         &amp;= \frac{1 - \left(1 - p \right)^k }{ k }.
-\end{aligned}
-\]</span></p>
-<h1 id="sampling-with-known-support-size">Sampling With Known Support
-Size</h1>
-<p>We use the technique developed in the <em>Sampling Game</em> section,
-to avoid using <span class="math inline">\(O( | \mathbb{Supp}(x) | \log
-M)\)</span> bits. We have seen that <span
-class="math inline">\(p\)</span> controls the tradeoff between the size
-of <span class="math inline">\(B\)</span>, and the successful
-probability of sampling an element (<span class="math inline">\(B \neq
-\emptyset\)</span>).</p>
-<p>We begin with the assumption that the size of <span
-class="math inline">\(\mathbb{Supp}(x)\)</span> is known.</p>
-<h2 id="insertion-only">Insertion Only</h2>
-<p>As before, we consider insertion only model first.</p>
-<blockquote>
-<p><strong>Claim.</strong> There is an algorithm such that 1. with
-probability <span class="math inline">\(1 - \delta\)</span>, it returns
-an element from <span class="math inline">\(\mathbb{Supp}(x)\)</span>
-uniformly at random;<br />
-2. with probability <span class="math inline">\(\delta\)</span>, it
-returns nothing.</p>
-<p>Further, the space usage is <span class="math inline">\(O \left( \ln
-\frac{1}{\delta} \right)\)</span> with probability at least <span
-class="math inline">\(1 - \delta\)</span>.</p>
-</blockquote>
-<p>For simplicity, we assume a perfect hash function <span
-class="math inline">\(h\)</span> that maps elements in <span
-class="math inline">\([n]\)</span> to <span class="math inline">\(\{0,
-1\}\)</span> independently with probability <span
-class="math inline">\(p\)</span> (to be determined). For each update
-<span class="math inline">\((t, \Delta)\)</span> in the stream, we
-process it only if <span class="math inline">\(h(t) = 1\)</span>. As we
-are dealing with insertion only model, we can use a hashset to maintain
-the elements with hash value 1.</p>
-<p>Let <span class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. As
-analysed before, with probability <span class="math inline">\((1 -
-p)^k\)</span>, the algorithm fails. To make the failure probability as
-small as <span class="math inline">\(\delta\)</span>, we have that <span
-class="math inline">\((1 - p)^k = \delta\)</span>, i.e., <span
-class="math display">\[
-    p = 1 - \delta^{ \frac{1}{k} } \le -\ln \delta^{ \frac{1}{k} } =
-\frac{1}{k} \ln \frac{1}{\delta}.
-\]</span></p>
-<p>The last inequality holds since the function <span
-class="math inline">\(y = - \ln x\)</span> is convex, and <span
-class="math inline">\(y = 1 - x\)</span> is the tangent line of <span
-class="math inline">\(y = - \ln x\)</span> at the point <span
-class="math inline">\((1, 0)\)</span>. By previous analysis, with
-probability at least <span class="math inline">\(1 - \delta\)</span>,
-the size of <span class="math inline">\(B\)</span> is bounded by <span
-class="math display">\[
-    \left( kp + \sqrt{2 k p (1 - p) \ln \frac{1}{\delta} } + \frac{2}{3}
-\ln \frac{1}{\delta} \right) \in O \left( \ln \frac{1}{\delta} \right).
-\]</span></p>
-<h2 id="handling-deletion">Handling Deletion</h2>
-<p>When deletions are possible, we can't use a hashset to keep the
-sampled updates. E.g., suppose we have a sequence <span
-class="math inline">\((1, 6), (1, -6), (2, 5), (3, 7), (4, 9)\)</span>,
-and that <span class="math inline">\(h(1) = h(2) = 1, h(3) = h(4) =
-0\)</span>. We need a hashset of size 2 to keep both the frequencies of
-element 1 and element 2. Even through the frequency of element <span
-class="math inline">\(1\)</span> is 0 finally, we don't this before we
-see the entire string.</p>
-<p>In general, <span class="math inline">\(h\)</span> maps <span
-class="math inline">\(np\)</span> elements in <span
-class="math inline">\([n]\)</span> to <span
-class="math inline">\(1\)</span>. If we use a hashset, its size can grow
-to <span class="math inline">\(O(n p)\)</span>.</p>
-<p>However, there is data structure that can handle deletions while
-using less than <span class="math inline">\(O(np)\)</span> space.</p>
-<blockquote>
-<p><strong>Sparse Recovery.</strong> Given an integer <span
-class="math inline">\(d\)</span> at the beginning of the stream, if
-<span class="math inline">\(\mathbb{Supp}(x) \le d\)</span> when the
-stream stops, there is a data structure that returns</p>
-<ol type="1">
-<li>indices in <span
-class="math inline">\(\mathbb{Supp}(x)\)</span>;</li>
-<li>and their values,</li>
-</ol>
-<p>using <span class="math inline">\(O(d (\log n + \log M) ) \subset O(
-d \log (nM) )\)</span> bits. It processes each update <span
-class="math inline">\((t, \Delta)\)</span> in the stream in <span
-class="math inline">\(O(d)\)</span> time and recovers <span
-class="math inline">\(x\)</span> in <span class="math inline">\(O(d^2
-polylog(nM))\)</span> time. Its recovery can be wrong if <span
-class="math inline">\(\mathbb{Supp}(x) &gt; d\)</span>.</p>
-</blockquote>
-<p>It suffices to use such a data structure for the sampled set <span
-class="math inline">\(B\)</span> with <span class="math inline">\(d \in
-O( \ln \frac{1}{\delta} )\)</span>. We have seen that if we sampled each
-element in <span class="math inline">\(\mathbb{Supp}(x)\)</span> with
-probability <span class="math inline">\(p = 1 - \delta^{1 / k}\)</span>,
-then with probability at least <span class="math inline">\(1 -
-\delta\)</span>, we obtain a sampled set <span
-class="math inline">\(B\)</span> with size at most <span
-class="math inline">\(d\)</span>. Then we return one element from <span
-class="math inline">\(B\)</span> uniformly at random.</p>
-<p>Analyzing the probability of sampling an element is more subtle than
-the previous section. In previous section, each element is under-sampled
-with probability <span class="math inline">\(\frac{1 - \left(1 - p
-\right)^k }{ k }\)</span>. Here, conditioned on <span
-class="math inline">\(|B|\le d\)</span>, each element is sampled equally
-likely. However, <span class="math inline">\(|B| &gt; d\)</span>, the
-recovery of sampled elements fails, some element can be returned more
-frequently and some can be returned less frequently (the recovery
-behavior is un-defined). As the failure probability is bounded by <span
-class="math inline">\(\delta\)</span>, each element is returned with
-probability <span class="math display">\[
-    \left[ \frac{1 - \left(1 - p \right)^k }{ k } \pm \delta \right]
-\subseteq \left[ 1 - \left( 1 + \frac{ 1 }{ k } \right) \cdot \delta, 1
-+ \left( 1 - \frac{ 1 }{ k } \right) \cdot \delta \right].
-\]</span></p>
-<h1 id="sampling-with-unknown-support-size">Sampling With UnKnown
-Support Size</h1>
-<p>Previously, we want to sample each element in <span
-class="math inline">\([n]\)</span> with probability <span
-class="math inline">\(1 - \delta^{ \frac{1}{k} } \le \ln \delta^{
-\frac{1}{k} } = \frac{1}{k} \ln \frac{1}{\delta}\)</span>, where <span
-class="math inline">\(k = | \mathbb{Supp}(x) |\)</span>. When this
-information is unavailable, we can guess by trying the values <span
-class="math display">\[
-    1 / 2, \quad 1 / 4, \quad 1 / 8, \quad 1 / 16,  ...
-\]</span></p>
-<p>We don't need to guess the value of <span
-class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta}\)</span> exactly.
-In order that the sparse recovery data structure works, any guess within
-a constant factor suffices.</p>
-<p>For simplicity, assume that <span class="math inline">\(n\)</span> is
-some power of <span class="math inline">\(2\)</span>. Now, instead of
-using one sampling set <span class="math inline">\(B\)</span>, we use
-<span class="math inline">\(\log n + 2\)</span> of them <span
-class="math inline">\(B_1, B_2, B_3, ...\)</span>, each associated with
-a sparse recovery structure with parameter <span class="math inline">\(d
-\in \Theta( \ln \frac{1}{\delta} )\)</span>. Assume that we have a
-perfect hash function <span class="math inline">\(h: [n] \rightarrow
-[\log n + 2]\)</span> such that it holds independently for every <span
-class="math inline">\(t \in [n]\)</span>, <span class="math display">\[
-\begin{aligned}
-    &amp;\Pr[ h(t) = i ]         = \frac{1}{2^i}, \forall i \in [\log n
-+ 1], \\
-    &amp;\Pr[ h(t) = \log n + 2] = \frac{1}{ 2^{\log n + 1} }.   
-\end{aligned}
-\]</span></p>
-<p>The distribution is well defined, as <span
-class="math inline">\(\sum_{i \in [\log n + 1] } 1 / 2^i + 1 / 2^{ \log
-n + 1} = 1 - 1 / 2^{ \log n + 1} + 1 / 2^{ \log n + 1} = 1\)</span>.</p>
-<p>If <span class="math inline">\(k = 1\)</span>, some <span
-class="math inline">\(B_i\)</span> must recovers <span
-class="math inline">\(x\)</span> successfully.</p>
-<p>Otherwise, <span class="math inline">\(\exists i \in [\log
-n]\)</span>, such that <span class="math inline">\(\frac{1}{2^i} \ge
-\frac{1}{k} \ln \frac{1}{\delta} &gt; \frac{1}{2^{i + 1} }\)</span>. We
-study the following good events:</p>
-<blockquote>
-<p><strong>Event</strong> <span class="math inline">\(E_1:\)</span> for
-all <span class="math inline">\(j \ge i\)</span>, it holds that <span
-class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) = j \}| \le
-d\)</span>.</p>
-</blockquote>
-<p>Under <span class="math inline">\(E_1\)</span>, the sparse recovery
-structure associated with <span class="math inline">\(B_j\)</span>
-recovers <span class="math inline">\(B_j\)</span> successfully for all
-<span class="math inline">\(j \ge i\)</span>.</p>
-<blockquote>
-<p><strong>Event</strong> <span class="math inline">\(E_2:\)</span>
-<span class="math inline">\(|\{ t \in \mathbb{Supp}(x) : h(t) \ge i \}|
-&gt; 0\)</span>.</p>
-</blockquote>
-<p>Under <span class="math inline">\(E_2\)</span>, there exists at least
-one element that is mapped to <span class="math inline">\(B_j\)</span>
-for some <span class="math inline">\(j \ge i\)</span>.</p>
-<p>Under these two good events, we sample one element as follows:</p>
-<blockquote>
-<p>For <span class="math inline">\(j \leftarrow \log n + 2\)</span>
-downto <span class="math inline">\(1\)</span> do<br />
-<span class="math inline">\(\qquad\)</span> recover <span
-class="math inline">\(B_j\)</span>;<br />
-<span class="math inline">\(\qquad\)</span> if <span
-class="math inline">\(B_j \neq \emptyset\)</span> then<br />
-<span class="math inline">\(\qquad\qquad\)</span> return one element
-from <span class="math inline">\(B_j\)</span> uniformly at random.</p>
-</blockquote>
-<p><strong>Analysis the probability of <span
-class="math inline">\(E_1\)</span>:</strong></p>
-<p>For <span class="math inline">\(j \ge i\)</span>, it holds that <span
-class="math inline">\(\mathbb{E} [ |B_j| ] = k / 2^j\)</span>. Suppose
-that <span class="math inline">\(d = 2 \cdot C_d \cdot \ln
-\frac{1}{\delta}\)</span> for some constant <span
-class="math inline">\(C_d\)</span> (to be determined). Since <span
-class="math inline">\(\frac{1}{k} \ln \frac{1}{\delta} \ge 1 / 2^{i +
-1}\)</span>, we have that <span class="math display">\[
-    \frac{d}{\mathbb{E} [ |B_j| ]} \ge \frac{ 2^j }{ k } \cdot 2 \cdot
-C_d \cdot \ln \frac{1}{\delta} \ge C_d \cdot 2^{j - i}.
-\]</span></p>
-<p>By Chernoff bound, <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ |B_j| \ge d \right]
-            &amp;\le \left( \frac{e^{ \left( {d} / { \mathbb{E}  [ |B_j|
-] } \right) - 1 } }{ \left( {d} / { \mathbb{E} [ |B_j| ] } \right)^{
-\left( {d} / { \mathbb{E} [ |B_j| ] } \right) }  } \right)^{
-\mathbb{E}  [ |B_j| ]} \\
-            &amp;\le \left( \frac{e}{C_d \cdot 2^{j - i} } \right)^d
-\left( \frac{1}{e} \right)^{ \mathbb{E}  [ |B_j| ]}.
-    \end{aligned}
-\]</span></p>
-<p>By union bound, when <span class="math inline">\(C_d \ge
-e^2\)</span>, it holds that <span class="math display">\[
-    \begin{aligned}
-        \Pr \left[ \exists j \ge i : |B_j| \ge d \right]
-            &amp;\le \sum_{j \ge i} \left( \frac{e}{C_d \cdot 2^{j - i}
-} \right)^d \\
-            &amp;\le \left( \frac{e}{C_d } \right)^d \sum_{j = 0}^\infty
-\left( \frac{1}{2^{d} } \right)^j \\
-            &amp;\le \left( \frac{e}{C_d } \right)^d \frac{1}{1 -
-\frac{1}{2^{d} } } \\
-            &amp;\le 2 \cdot \delta^{2 e^2}.
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Analysis the probability of <span
-class="math inline">\(E_2\)</span>:</strong></p>
-<p>For each <span class="math inline">\(t \in \mathbb{Supp}(x)\)</span>,
-we have <span class="math display">\[
-    \Pr[ h(t) &lt; i ] = \left( 1 - \frac{1}{2^i} \right).
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    \Pr[ h(t) &lt; i : \forall t \in \mathbb{Supp}(x)  ] = \left( 1 -
-\frac{1}{2^i} \right)^k \le \left( 1 - \frac{1}{k} \ln \frac{1}{\delta}
-\right)^k \le \delta.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<!-- 
-By Bernstein's inequality, with probability at least $1 - \delta$, it holds that 
-$$
-    |B_i| - \mathbb{E} \big[ |B_i| \big] \le \sqrt{2 k \frac{1}{2^i} \ln \frac{1}{\delta} } + \frac{2 \ln \frac{1}{\delta } }{ 3 }. 
-$$
-
-And for $j > i$, let $\delta_j = \delta / 2^{ j- i}$. It holds with probability $1 - \delta_j$ that
-$$
-    \begin{aligned}
-        |B_j| - \mathbb{E} \big[ |B_j| \big] 
-        &\le \sqrt{2 k \frac{1}{2^j} \ln \frac{1}{\delta_j} } + \frac{2 \ln \frac{1}{\delta_j } }{ 3 } \\
-        &= \sqrt{2 k \frac{1}{2^j} \left( (j - i）\cdot \ln 2 + \ln \frac{1}{\delta} \right) } + \frac{2 \ln \frac{1}{\delta } }{ 3 } \\
-    \end{aligned}
-$$
-
-Suppose that $d = C_d \cdot \ln \frac{1}{\delta}$. For $j \ge i$, as $\frac{1}{k} \ln \frac{1}{\delta} > \frac{1}{2^{i + 1} }$, we have that $2^{i - j + 2} \ln \frac{1}{\delta} \ge \frac{2k}{2^j}$
-
-$$
-    \begin{aligned}
-        \Pr \left[ |B_j| - \mathbb{E} \big[ |B_j| \big]  \ge  d \right] 
-            &\le \exp \left( - \frac{d^2}{ \frac{2k }{2^j} + \frac{2 d}{3} }\right) \\
-            &\le \exp \left( -\frac{ d^2 }{ 2^{i - j + 2} \cdot \frac{1}{C_d} \cdot d + \frac{2}{3} d } \right) \\
-            &= \exp(- \Theta(d) )
-    \end{aligned}
-$$ -->
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/14/AMS-Sketch/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/04/14/AMS-Sketch/" class="post-title-link" itemprop="url">AMS Sketch</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-04-14 15:41:33" itemprop="dateCreated datePublished" datetime="2021-04-14T15:41:33+10:00">2021-04-14</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-05-14 21:20:45" itemprop="dateModified" datetime="2021-05-14T21:20:45+10:00">2021-05-14</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="problem">Problem</h1>
-<p>There is a stream <span class="math inline">\(S\)</span> of elements,
-each consists of a pair <span class="math inline">\((t, \Delta) \in [n]
-\times \mathbb{R}\)</span>. Let <span class="math inline">\(f \in
-\mathbb{R}^n\)</span> be the frequency vector of <span
-class="math inline">\(S\)</span>, s.t., <span
-class="math inline">\(\forall i \in [n]\)</span>, <span
-class="math display">\[
-    f_i = \sum_{ (t, \Delta) \in S \wedge t = i} \Delta.
-\]</span></p>
-<p>Given <span class="math inline">\(\epsilon \in (0, 1)\)</span>,
-design a data structure that outputs an <span class="math inline">\((1
-\pm \epsilon)\)</span> estimate <span class="math inline">\(\Vert f
-\Vert_2^2\)</span> with probability at least <span
-class="math inline">\(1 - \delta\)</span>, and uses space of <span
-class="math inline">\(O( \frac{1}{\epsilon^2 } \ln \frac{1}{\delta}
-)\)</span>.</p>
-<h1 id="solution">Solution</h1>
-<p>Based on Count-Sketch.</p>
-<h2 id="algorithm">Algorithm</h2>
-<blockquote>
-<hr />
-<p><strong>Count-Sketch</strong><br />
-1. <span class="math inline">\(k \leftarrow O \left( \ln \frac{1}{
-\delta} \right); m \leftarrow \frac{3}{\epsilon^2}\)</span>.<br />
-2. <span class="math inline">\(h_1, h_2, ..., h_k: [n] \rightarrow
-[m]\)</span>, pairwise independent hash functions.<br />
-3. <span class="math inline">\(g_1, g_2, ..., g_k: [n] \rightarrow \{-1,
-1\}\)</span>, four-wise independent hash functions.<br />
-4. <span class="math inline">\(M \leftarrow \{ 0 \}^{k \times
-m}\)</span> be a <span class="math inline">\(k \times m\)</span> matrix
-initialized with zeros.<br />
-4. For <span class="math inline">\((t, \Delta) \in S:\)</span><br />
-5. <span class="math inline">\(\qquad\)</span> For <span
-class="math inline">\(i \in [k]:\)</span><br />
-6. <span class="math inline">\(\qquad\qquad\)</span> <span
-class="math inline">\(M[i, h_i (t) ] \leftarrow M[i, h_i (t) ] + g_i(t)
-\cdot \Delta\)</span><br />
-<span class="math inline">\(\qquad\)</span></p>
-<p><strong>Estimation of <span class="math inline">\(\Vert f
-\Vert_2^2\)</span></strong><br />
-1. For <span class="math inline">\(i \in [k]:\)</span><br />
-2. <span class="math inline">\(\qquad\)</span> Let <span
-class="math inline">\(M_i\)</span> be the <span
-class="math inline">\(i\)</span>-th row of <span
-class="math inline">\(M\)</span>.<br />
-3. <span class="math inline">\(\qquad\)</span> Let <span
-class="math inline">\(a_i \leftarrow \Vert M_i \Vert_2\)</span>.<br />
-4. Return the median of <span class="math inline">\((a_i^2)_{i \in [k]
-}\)</span>.</p>
-</blockquote>
-<h2 id="analysis">Analysis</h2>
-<blockquote>
-<p><strong>Theorem 1.</strong> <span class="math inline">\(\forall i \in
-[k], \mathbb{E}[ a_i^2 ] = \Vert f \Vert_2^2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Consider a fixed <span
-class="math inline">\(i \in [k]\)</span>. <span
-class="math inline">\(\forall j \in [m]\)</span>, define the set <span
-class="math inline">\(h_i^{-1}[j]\)</span> as elements in <span
-class="math inline">\([n]\)</span> hashed to <span
-class="math inline">\(j\)</span>: <span class="math display">\[
-    h_i^{-1}[j] \doteq \{ t \in [n] : h(t) = j \}.
-\]</span></p>
-<p>Once <span class="math inline">\(h_i\)</span> is fixed, it holds that
-<span class="math display">\[
-    M[i, j] = \sum_{ t \in h_i^{-1}[j] } g_i (t) \cdot f_t.
-\]</span></p>
-<p>By linearity of expectation and four-wise independence of <span
-class="math inline">\(g_i\)</span>, <span class="math display">\[
-    \underset{g_i}{ \mathbb{E} }[ (M[i, j])^2 ] = \sum_{ t, t&#39; \in
-h_i^{-1}[j] } \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ]
-\cdot f_t \cdot f_{t&#39;}.
-\]</span></p>
-<p>It holds that <span class="math display">\[
-    \underset{g_i}{ \mathbb{E} } [ g_i (t) \cdot g_i (t) ] =
-    \begin{cases}
-        1,  &amp; \text{ if } t = t&#39;,    \\
-        0,      &amp; \text{ otherwise }.
-    \end{cases}
-\]</span></p>
-<p>Therefore, <span class="math inline">\(\underset{g_i}{ \mathbb{E} }[
-(M[i, j])^2 ] = \sum_{ t \in h_i^{-1}[j] } f_t^2\)</span>.</p>
-<p><strong>Remark. This is a rather deep result, which says that
-whatever elements are hashed to bucket <span
-class="math inline">\(j\)</span>, <span
-class="math inline">\(\underset{g}{ \mathbb{E} } [ (M[i,j] )^2
-]\)</span> equals the sum of squares of these elements.</strong></p>
-<p>By linearity of expectation, when <span
-class="math inline">\(h_i\)</span> is fixed, <span
-class="math display">\[
-    \underset{g}{ \mathbb{E} } [ a_i^2 ] = \sum_{j \in [m] }
-\underset{g}{ \mathbb{E} } [ (M[i,j])^2 ] = \sum_{j \in [m] } \sum_{ t
-\in h_i^{-1}[j] } f_t^2 = \Vert f \Vert_2^2.
-\]</span></p>
-<p>It follows that <span class="math inline">\(\underset{h}{ \mathbb{E}
-} \left[ \underset{g}{ \mathbb{E} } [ a_i^2 ] \right] = \Vert f
-\Vert_2^2\)</span>.</p>
-<p><strong>Remark. The proof holds even for <span
-class="math inline">\(m = 1\)</span>, i.e., we can use only one bucket
-to construct an unbiased estimator of <span class="math inline">\(\Vert
-f \Vert_2^2\)</span>.</strong></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Theorem 2.</strong> <span class="math inline">\(\mathbb{Var}[
-a_i^2 ] = \frac{\Vert x \Vert_2^4 }{ m }\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong></p>
-<p><span class="math inline">\(\forall t \in [n]\)</span>, define <span
-class="math inline">\(X_t \doteq g_i(t) \cdot x_t\)</span>.</p>
-<p><span class="math inline">\(\forall t \in [n], j \in [m]\)</span>,
-define <span class="math inline">\(Y_{t, j} \doteq \mathbb{1}[ h_i[t] =
-j ] \cdot X_t\)</span>. Then <span class="math display">\[
-    M[i,j] = \sum_{t \in [n] } Y_{t, j},
-\]</span> and hence</p>
-<p><span class="math display">\[
-\begin{aligned}
-    \mathbb{Var}[a_i^2]
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } (M[i, j])^2 \right]
-\\
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \left( \sum_{t \in
-[n] } Y_{t, j} \right)^2 \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{j \in [m] } \sum_{t, t&#39; \in
-[n]} Y_{t, j} Y_{t&#39;, j} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \sum_{j \in
-[m] } Y_{t, j} Y_{t&#39;, j} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \left(
-\sum_{j \in [m] } \mathbb{1}[ h_i[t] = j ] \cdot \mathbb{1}[ h_i[t&#39;]
-= j ] \right) \cdot X_t \cdot X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t, t&#39; \in [n]} \mathbb{1}[
-h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t \in [n] } f_t^2 + \sum_{t
-\neq t&#39; \in [n]} \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot
-X_{t&#39;} \right] \\
-        &amp;= \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]}
-\mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;} \right]
-\end{aligned}
-\]</span></p>
-<p>For <span class="math inline">\(t \neq t&#39; \in [n]\)</span>,
-define <span class="math inline">\(Z_{t, t&#39;} = \mathbb{1}[ h_i[t] =
-h_i[t&#39;] ] \cdot X_t \cdot X_{t&#39;}\)</span>. Then <span
-class="math display">\[
-    \mathbb{E}[ Z_{t, t&#39;} ] = \mathbb{E}[ \mathbb{1}[ h_i[t] =
-h_i[t&#39;] ] ]  \cdot \mathbb{E}[ X_t ] \cdot \mathbb{E}[ x_{t&#39;} ]
-= 0.
-\]</span></p>
-<p>Consider <span class="math inline">\(t &lt; t&#39; \in [n]\)</span>,
-<span class="math inline">\(s &lt; s&#39; \in [n]\)</span>. If <span
-class="math inline">\((t, t&#39;) \neq (s, s&#39;)\)</span>, then either
-<span class="math inline">\(t \neq s\)</span> or <span
-class="math inline">\(t&#39; \neq s&#39;\)</span>. Therefore, there must
-be an element that appears only once among the four. WLOG, suppose that
-<span class="math inline">\(t\)</span> is a unique element. Then <span
-class="math display">\[
-    Z_{t, t&#39;} Z_{s, s&#39;}
-            =  X_t \cdot \left( X_{t&#39;} \cdot X_s \cdot X_{s&#39;}
-\cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ]  \cdot \mathbb{1}[ h_i[s] =
-h_i[s&#39;] ] \right).
-\]</span></p>
-<p>As <span class="math inline">\(g_i\)</span> is four-wise independent,
-and that <span class="math inline">\(t \neq t&#39;\)</span>, <span
-class="math inline">\(t \neq s\)</span> and <span
-class="math inline">\(t \neq s&#39;\)</span>, it holds that <span
-class="math inline">\(g_i(t)\)</span> is independent of <span
-class="math inline">\(\left( g_i(t&#39;) \cdot g_i(s) \cdot g_i(s&#39;)
-\cdot \mathbb{1}[ h_i[t] = h_i[t&#39;] ] \cdot \mathbb{1}[ h_i[s] =
-h_i[s&#39;] ] \right)\)</span>. Hence, <span class="math display">\[
-    \mathbb{E}[ Z_{t, t&#39;} Z_{s, s&#39;}]  = 0.
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    \begin{aligned}
-        \mathbb{Var} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t, t&#39;}
-\right]
-            &amp;= \mathbb{E} \left[ \left( \sum_{t \neq t&#39; \in [n]}
-Z_{t, t&#39;} \right)^2 \right] \\
-            &amp;= \mathbb{E} \left[ \sum_{t \neq t&#39; \in [n]} Z_{t,
-t&#39;}^2  \right] \\
-            &amp;= \sum_{t \neq t&#39; \in [n]} \frac{ x_t^2
-x_{t&#39;}^2}{ m } \\
-            &amp;= \frac{\Vert x \Vert_2^4 }{ m }.
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><span class="math inline">\(\forall i \in [k], \Pr [ | a_i^2 - \Vert
-x \Vert_2^2 | \ge \epsilon \Vert x \Vert_2^2] \le
-\frac{1}{3}\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> By Chebyshev's inequality.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><span class="math inline">\(\Pr \left[ \left| \{ i \in [k] : \Pr [ |
-a_i^2 - \Vert x \Vert_2^2 | \le \epsilon \Vert x \Vert_2^2] \} \right|
-&gt; \frac{k}{2} \right] \ge 1 - \delta\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> By Chernoff bound.</p>
-<p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1] G. Cormode and K. Yi, Small Summaries for Big Data, 1st ed.
-Cambridge University Press, 2020.</p>
+<p>[1] <em>Nikolov, Aleksandar, Kunal Talwar, and Li Zhang. "The
+geometry of differential privacy: the sparse and approximate cases." In
+Proceedings of the forty-fifth annual ACM symposium on Theory of
+computing, pp. 351-360. 2013.</em></p>
 
       
     </div>
@@ -1078,7 +716,7 @@ Cambridge University Press, 2020.</p>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/16/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/18/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1144,12 +782,12 @@ Cambridge University Press, 2020.</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -1176,7 +814,7 @@ Cambridge University Press, 2020.</p>
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/25/Beta-Distribution/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/22/Riemann-Integral/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/11/25/Beta-Distribution/" class="post-title-link" itemprop="url">Beta Distribution</a>
+            <a href="/2023/05/22/Riemann-Integral/" class="post-title-link" itemprop="url">Riemann Integral</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-11-25 22:39:00" itemprop="dateCreated datePublished" datetime="2022-11-25T22:39:00+11:00">2022-11-25</time>
+              <time title="Created: 2023-05-22 16:11:03" itemprop="dateCreated datePublished" datetime="2023-05-22T16:11:03+02:00">2023-05-22</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-01 23:18:59" itemprop="dateModified" datetime="2022-12-01T23:18:59+11:00">2022-12-01</time>
+                <time title="Modified: 2023-05-23 08:10:44" itemprop="dateModified" datetime="2023-05-23T08:10:44+02:00">2023-05-23</time>
               </span>
 
           
@@ -191,580 +191,546 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>We start with a possibly biased coin which lands on head with unknown
-probability <span class="math inline">\(p\)</span> when tossed. Suppose
-we obtain <span class="math inline">\(Y = a\)</span> heads and <span
-class="math inline">\(Z = b\)</span> tails out of <span
-class="math inline">\(a + b\)</span> tosses. Conditioned on <span
-class="math inline">\(p = x\)</span> for some <span
-class="math inline">\(x \in (0, 1)\)</span>, we have <span
-class="math display">\[
-    \Pr[ Y = a, Z = b \mid p = x ] = \binom{a + b}{a} \cdot x^a (1 -
-x)^b.
-\]</span></p>
-<p>Assume further that we have equal prior of <span
-class="math inline">\(p\)</span> over <span class="math inline">\([0,
-1]\)</span>, then the posterior probability density function <span
-class="math inline">\(f(x)\)</span> of <span
-class="math inline">\(p\)</span> satisfies <span class="math display">\[
-    f(x) \propto x^a (1 - x)^b, \qquad \forall x \in (0, 1).
-\]</span></p>
-<p>This motivates the definition of Beta distribution.</p>
+          <h1 id="Integration-of-Real-valued-Functions"><a href="#Integration-of-Real-valued-Functions" class="headerlink" title="Integration of Real-valued Functions"></a>Integration of Real-valued Functions</h1><h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a><strong>Motivation</strong></h2><p>Given an interval $[a, b]$ and some function $f: [a, b] \rightarrow \R$, we want to create some rule, that computes the area under the curve $y = f(x)$ between $x = a$ and $x = b$.</p>
+<p>This rule, which assigns real numbers to functions, can be itself represented as a function $\varphi_{[a, b]} : \mathcal{F} \big( [a, b] \big) \rightarrow \R$.<br>Here, $\mathcal{F} \big( [a, b] \big)$, the domain of $\varphi$, refers to a collection of functions defined on $[a, b]$ such that the area under the curve $y = f(x)$ between $x = a$ and $x = b$ is well-defined according to the rule.</p>
+<p>The <em>integral</em> of a function $f \in \mathcal{F} \big( [a, b] \big)$ is defined as the value obtained under the rule $\varphi_{[a, b]}$. To represent this value, we conventionally use the notation: </p>
+<script type="math/tex; mode=display">
+    \int_a^b f \, dx \doteq \varphi_{[a, b]} (f).</script><p>Similarly, when considering another interval $[s, t]$, we can establish a similar rule $\varphi_{[s, t]}$ with domain $\mathcal{F} \big( [s, t] \big)$. The integral of $f$ over $[s, t]$ is denoted as:</p>
+<script type="math/tex; mode=display">
+    \int_s^t f \, dx \doteq \varphi_{[s, t]} (f).</script><p>In the subsequent discussion, we will employ the notation on the left-hand side exclusively.</p>
+<p>The integral should adhere to our geometric understanding of areas and satisfy various properties.<br>First and foremost, the integral should accurately compute the area of rectangles.</p>
 <blockquote>
-<p><strong>Definition (Beta distribution).</strong> A random variable
-<span class="math inline">\(X\)</span> follows the Beta distribution
-with parameters <span class="math inline">\(a &gt; 0\)</span> and <span
-class="math inline">\(b &gt; 0\)</span>, written as <span
-class="math inline">\(X \sim \mathcal{B}(a, b)\)</span>, if its density
-is <span class="math display">\[
-f(x) = \frac{1}{\beta(a, b)} \cdot x^{a−1} (1 − x)^{b−1}, \qquad 0 &lt;
-x &lt; 1,
-\]</span> where <span class="math inline">\(\beta(a, b)\)</span> is a
-constant.</p>
+<p><strong>Property (Area of Rectangle).</strong> If $\exist c \in \R$, s.t., $f(x) = c$ for each $x \in [a, b]$, then $f \in \mathcal{F} \big( [a, b] \big)$ and $\int_a^b f \, dx = c \cdot (b - a)$. . </p>
 </blockquote>
-<p>Note that it is just a convention that we define <span
-class="math inline">\(f(x) \propto x^{a - 1} (1 - x)^{b - 1}\)</span>
-for <span class="math inline">\(\mathcal{B}(a, b)\)</span>, instead of
-<span class="math inline">\(f(x) \propto x^{a - 1} (1 - x)^{b -
-1}\)</span>.</p>
-<p>The fact that <span class="math inline">\(f(x)\)</span> integrates to
-<span class="math inline">\(1\)</span> implies that <span
-class="math display">\[
-    \beta(a, b) = \int_0^1 x^{a−1} (1 − x)^{b−1} \, dx.
-\]</span></p>
+<p>Secondly, the integrals should demonstrate linearity.</p>
 <blockquote>
-<p><strong>Property.</strong> Given <span class="math inline">\(n, k \in
-\mathbb{N}\)</span>, with <span class="math inline">\(k \le n\)</span>,
-<span class="math display">\[
-\int_0^1 \binom{n}{k} x^k (1 - x)^{n - k} \, dx
-= \frac{1}{n + 1}.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong></p>
-<p><em>Procedure One.</em> Consider throwing independently and uniformly
-at random <span class="math inline">\(n\)</span> red balls and <span
-class="math inline">\(1\)</span> blue ball onto the interval <span
-class="math inline">\([0, 1]\)</span>. Denote <span
-class="math inline">\(Z\)</span> the number of red balls to the left of
-the blue ball. The integration gives the probability <span
-class="math inline">\(\Pr[ Z = k ]\)</span>.</p>
-<p><em>Procedure Two.</em> On the other hand, if we 1) throw <span
-class="math inline">\(n + 1\)</span> red balls uniformly at random onto
-the interval <span class="math inline">\([0, 1]\)</span>; 2) pick one
-red ball at random; 3) and replace it by a blue one, then the number of
-red balls to the left of the blue one follows the same distribution as
-in procedure one. Hence <span class="math display">\[
-    \Pr[ Z = k ] = \frac{1}{n + 1}.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary.</strong> Given <span class="math inline">\(a, b
-\in \mathbb{N}^+\)</span>, <span class="math display">\[
-\begin{aligned}
-\beta(a, b)
-= \int_0^1 x^{a - 1} (1 - x)^{b - 1} \, dx
-= \frac{(a - 1)! (b - 1)!}{(a + b - 1)!}
-= \frac{\Gamma(a) \Gamma(b)}{ \Gamma(a + b) }.
-\end{aligned}
-\]</span></p>
-</blockquote>
-<p><strong>Remark:</strong> the result can be generalized to <span
-class="math inline">\(a, b &gt; 0\)</span>.</p>
-<blockquote>
-<p><strong>Property.</strong> <span class="math display">\[
-\mathbb{E}[X] = \frac{a}{a + b}.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[X]
-        &amp;= \frac{1}{\beta(a, b)} \cdot \int_0^1 x^{a} (1 − x)^{b−1}
-\, dx \\
-        &amp;= \frac{\beta(a + 1, b)}{\beta(a, b)} \\
-        &amp;= \frac{\Gamma(a + 1) \Gamma(b)}{ \Gamma(a + b + 1)} \cdot
-\frac{ \Gamma(a + b) }{\Gamma(a) \Gamma(b)} \\
-        &amp;= \frac{a}{a + b}.
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Property.</strong> <span class="math display">\[
-\mathbb{Var}[X] = \frac{ ab }{(a + b + 1)(a + b)^2}.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[X^2]
-        &amp;= \frac{1}{\beta(a, b)} \cdot \int_0^1 x^{a + 1} (1 −
-x)^{b−1} \, dx \\
-        &amp;= \frac{\beta(a + 2, b)}{\beta(a, b)} \\
-        &amp;= \frac{\Gamma(a + 2) \Gamma(b)}{ \Gamma(a + b + 2)} \cdot
-\frac{ \Gamma(a + b) }{\Gamma(a) \Gamma(b)} \\
-        &amp;= \frac{(a + 1) a}{(a + b + 1)(a + b)}.
-    \end{aligned}
-\]</span></p>
-Hence, $$
-<span class="math display">\[\begin{aligned}
-        \mathbb{Var}[X] &amp;= \mathbb{E}[X^2] - \big( \mathbb{E}[X]
-\big)^2 \\
-                &amp;= \frac{(a + 1) a}{(a + b + 1)(a + b)} - \left(
-\frac{a}{a + b} \right)^2 \\
-                &amp;= \frac{(a + 1) a (a + b) - a^2 (a + b + 1) }{(a +
-b + 1)(a + b)^2} \\
-                &amp;= a \cdot \frac{ a^2 + ab + a + b - a^2 - a b - a
-}{(a + b + 1)(a + b)^2} \\
-                &amp;= \frac{ ab }{(a + b + 1)(a + b)^2}.
-    \end{aligned}\]</span>
-<p>$$</p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Property (Beta Binomial Conjugacy).</strong> Let <span
-class="math inline">\(n \in \mathbb{N}^+\)</span>. Suppose that <span
-class="math inline">\(X \sim \mathcal{B}(a, b)\)</span>, and <span
-class="math inline">\(Z \sim \textnormal{Bin}(n, X)\)</span>, then for
-each <span class="math inline">\(k \in \mathbb{N}^+\)</span>, <span
-class="math inline">\(k \le n\)</span>, then the posterior probability
-distribution of <span class="math inline">\(X\)</span> equals <span
-class="math inline">\(\mathcal{B}(a + k, b + n - k)\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(f(x \mid Z =
-k)\)</span> be the posterior density function. Then for each <span
-class="math inline">\(x \in [0, 1]\)</span>, <span
-class="math display">\[
-    \begin{aligned}
-        f(x \mid Z = k)
-            &amp;= \frac{
-                \binom{n}{k} x^k (1 - x)^{n - k} f(x)
-            }{
-                \Pr[ Z = k ]
-            } \\
-            &amp;= \frac{
-                \binom{n}{k} x^{a + k - 1} (1 - x)^{b + n - k - 1}
-            }{
-                \Pr[ Z = k ] \cdot \beta(a, b)
-            } \\
-            &amp;\propto x^{a + k - 1} (1 - x)^{b + n - k - 1}.
-    \end{aligned}
-\]</span></p>
-<p>The last ''<span class="math inline">\(\propto\)</span>'' holds since
-<span class="math inline">\(\Pr[ Z = k ]\)</span> is a constant.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1] <em>J. Blitzstein and J. Hwang, Introduction to
-Probability.</em></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/19/Integrating-sin-x-x-from-zero-to-infinity/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/19/Integrating-sin-x-x-from-zero-to-infinity/" class="post-title-link" itemprop="url">Integrating sin(x)/x from zero to infinity</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-11-19 11:02:28" itemprop="dateCreated datePublished" datetime="2022-11-19T11:02:28+11:00">2022-11-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-09 15:18:18" itemprop="dateModified" datetime="2023-03-09T15:18:18+11:00">2023-03-09</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>We want to prove the following improper integral</p>
-<blockquote>
-<p><strong>Theorem.</strong> <span class="math display">\[
-\lim_{a \rightarrow \infty} \int_0^a \frac{\sin x}{x} \, dx =
-\frac{\pi}{2}.
-\]</span></p>
-</blockquote>
-<h2 id="existence-of-limit">Existence of Limit</h2>
-<p>Since <span class="math inline">\(\int_{n \pi}^{(n + 1) \pi} \sin x
-\, dx = (-1)^{n} \cdot 2\)</span>, <span class="math display">\[
-    \int_{n \pi}^{(n + 1) \pi} \frac{\sin x}{x} \, dx
-        \in \Theta \left( \frac{ (-1)^{n} }{n} \right).
-\]</span></p>
-<p>Hence <span class="math inline">\(\lim_{a \rightarrow \infty}
-\int_0^a \frac{\sin x}{x} \, dx\)</span> exists. On the other hand,
-<span class="math inline">\(\frac{\sin x}{x}\)</span> is not Lebesgue
-integrable over <span class="math inline">\([0, \infty)\)</span>.</p>
-<h2 id="proving-the-limit">Proving the Limit</h2>
-<blockquote>
-<p><strong>Observation.</strong> <span class="math display">\[
-\int_0^\infty e^{-xy} \sin x \, dy = \frac{\sin x}{x}.
-\]</span></p>
-</blockquote>
-<p>We need two technical lemmas to finish the proof.</p>
-<blockquote>
-<p><strong>Lemma 1.</strong> <span class="math inline">\(e^{-xy} \sin
-x\)</span> is integrable on <span class="math inline">\([0, a] \times
-[0, \infty)\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Lemma 2.</strong> <span class="math display">\[
-\begin{aligned}
-\int_0^a e^{-xy} \sin x \, dx
-&amp;= \frac{
-- e^{-xy} \cos x \mid_0^a - y e^{-xy} \sin x \mid_0^a
-}{1 + y^2} \\
-&amp;= \frac{
-1 - e^{- ay} \cos a - y e^{-ay} \sin a
-}{1 + y^2}.
-\end{aligned}
-\]</span></p>
-</blockquote>
-<p>We defer the proof of the lemmas to the end of the article. Denote
-<span class="math inline">\(\mathcal{F}\)</span> the collection of
-Lebesgue measurable sets on <span
-class="math inline">\(\mathbb{R}\)</span>, and <span
-class="math inline">\(\lambda\)</span> the Lebesgue measure defined on
-<span class="math inline">\(\mathcal{F}\)</span>. Let <span
-class="math inline">\(\mu \doteq \lambda \times \lambda\)</span> be the
-product measure on <span class="math inline">\((\mathbb{R} \times
-\mathbb{R}, \mathcal{F} \otimes \mathcal{F})\)</span>. Now, via Fubini's
-theorem, <span class="math display">\[
-    \begin{aligned}
-        \int_0^a \frac{\sin x}{x} dx  
-        &amp;= \int_0^a \int_0^\infty e^{-xy} \sin x \, d y dx  \\
-        &amp;=\int_{[0, a] \times [0, \infty)} e^{-xy} \sin x  \, d \mu
-\\
-        &amp;= \int_0^\infty \int_0^a e^{-xy} \sin x \, dx d y \\
-        &amp;=\int_0^\infty \frac{
-            1 - e^{- ay} \cos a - y e^{-ay} \sin a
-        }{1 + y^2} \, d y \\
-        &amp;= \arctan y \mid_0^\infty - \int_0^\infty \frac{
-            e^{- ay} \cos a + y e^{-ay} \sin a
-        }{1 + y^2} \, d y \\
-        &amp;= \frac{\pi}{2} - \int_0^\infty \frac{
-            e^{- ay} \cos a + y e^{-ay} \sin a
-        }{1 + y^2} \, d y.
-    \end{aligned}
-\]</span></p>
-<p>The right hand side converges to <span
-class="math inline">\(0\)</span> as <span
-class="math inline">\(a\)</span> approaches infinity: <span
-class="math display">\[
-    \begin{aligned}
-        \lim_{a \rightarrow \infty} \int_0^\infty \left| \frac{
-            e^{- ay} \cos a + y e^{-ay} \sin a
-        }{1 + y^2} \right| \, d y
-        &amp;\le \lim_{a \rightarrow \infty} \int_0^\infty (1 + y)
-e^{-ay} \, d y \\
-        &amp;= \lim_{a \rightarrow \infty} -\frac{1}{a} \left( (1 + y)
-e^{-ay} + \frac{1}{a} e^{-ay} \right) \Bigg|_0^\infty = 0.
-    \end{aligned}
-\]</span></p>
-<p><strong>Proof of Lemma 1.</strong> Via Tonelli's theorem, <span
-class="math display">\[
-    \begin{aligned}
-        \int_{[0, a] \times [0, \infty)} | e^{-xy} \sin x | \, d \mu
-        &amp;= \int_0^a \int_0^\infty | e^{-xy} \sin x | \, d y dx  \\
-        &amp;\le \int_0^a \int_0^\infty e^{-xy} \, d y dx  \\
-        &amp;= \int_0^a \frac{1}{x} \, d y dx \\
-        &amp;= \ln a \\
-        &amp;\le \infty.
-    \end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Proof of Lemma 2.</strong> <span class="math display">\[
-    \begin{aligned}
-        \int_0^a e^{-xy} \sin x \, dx
-        &amp;= - e^{-xy} \cos x \mid_0^a - y \int_0^a e^{-xy} \cos x \,
-dx \\
-        &amp;= - e^{-xy} \cos x \mid_0^a - y \left( e^{-xy} \sin x
-\mid_0^a + y \int_0^a e^{-xy} \sin x \, dx \right).
-    \end{aligned}
-\]</span></p>
-<p><strong>Another proof of Lemma 2</strong>. <span
-class="math display">\[
-    \begin{aligned}
-        \int_0^a e^{-xy} e^{ix} \, dx
-        &amp;= \int_0^a e^{-x (y - i)} \, dx \\
-        &amp;= \frac{-1}{y - i} \cdot e^{-x (y - i)} \mid_0^a \\
-        &amp;= \frac{1}{y - i} \cdot \left( 1 - e^{- a(y - i)} \right)
-\\
-        &amp;= \frac{y + i}{1 + y^2} \cdot \left( 1 - e^{-ay} (\cos a +
-i \sin a ) \right).
-    \end{aligned}
-\]</span></p>
-<p>Hence, <span class="math display">\[
-     \int_0^a e^{-xy} \sin x \, dx
-        = \Im \left( \int_0^a e^{-xy} e^{ix} \, dx \right)
-        = \frac{
-            1 - e^{- ay} \cos a - y e^{-ay} \sin a
-        }{1 + y^2}.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1] P. Billingsley, Probability and measure Anniversary Edition, 3rd
-ed. New York: Wiley, 1995.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/13/Lebesgue-Integration-of-Complex-Value-Function/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/13/Lebesgue-Integration-of-Complex-Value-Function/" class="post-title-link" itemprop="url">Lebesgue Integration of Complex Value Function</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-11-13 09:42:45" itemprop="dateCreated datePublished" datetime="2022-11-13T09:42:45+11:00">2022-11-13</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-11-20 10:49:20" itemprop="dateModified" datetime="2022-11-20T10:49:20+11:00">2022-11-20</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let <span class="math inline">\((\Omega, \mathcal{F}, \mu)\)</span>
-be a measure space.Let <span class="math inline">\(f: \Omega \rightarrow
-\mathbb{C}\)</span> be a complex valued function. It can be written as
-<span class="math inline">\(f(\omega) \doteq g(\omega) + i
-h(\omega)\)</span>, where <span class="math inline">\(g, h\)</span> are
-both real functions on <span class="math inline">\(\Omega\)</span>.</p>
-<blockquote>
-<p><strong>Definition [Measurability].</strong> A function <span
-class="math inline">\(f\)</span> is measurable <span
-class="math inline">\(\mathcal{F}\)</span> if both <span
-class="math inline">\(g\)</span> and <span
-class="math inline">\(h\)</span> are.</p>
-</blockquote>
-<blockquote>
-<p><strong>Definition [Integral].</strong> <span
-class="math inline">\(f\)</span> is integrable if both <span
-class="math inline">\(g\)</span> and <span
-class="math inline">\(h\)</span> are, and its integral is defined by
-<span class="math display">\[
-\int f \, d \mu \doteq \int g \, d \mu + i \int h \, d \mu.
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Theorem.</strong> <span class="math inline">\(f\)</span> is
-integrable if and only if <span class="math inline">\(|f|\)</span> is
-integrable.</p>
-</blockquote>
-<p>Remark: the integral of the former is complex-valued, while the later
-is real-valued.</p>
-<p><strong>Proof.</strong> The claim follows from that <span
-class="math display">\[
-    \max \{ |g|, |h| \} \le |f| = \sqrt{|g|^2 + |h|^2} \le |g| + |h|.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Theorem [Linearity].</strong> Let <span
-class="math inline">\(f_1, f_2\)</span> be integrable. Then <span
-class="math inline">\(f_1 + f_2\)</span> is integrable, and <span
-class="math display">\[
-\int f_1 + f_2 \, d \mu = \int f_1 \, d \mu + \int f_2 \, d \mu.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> The integrability of <span
-class="math inline">\(f_1 + f_2\)</span> follows from the one of <span
-class="math inline">\(|f_1 + f_2|\)</span>, which is integrable as <span
-class="math inline">\(|f_1 + f_2| \le |f_1| + |f_2|\)</span>.</p>
-<p>To prove linearity, let <span class="math inline">\(f_1 = g_1 + i
-h_1\)</span> and <span class="math inline">\(f_2 = g_2 + i h_2\)</span>.
-Then <span class="math display">\[
-    \begin{aligned}
-        \int f_1 + f_2 \, d \mu
-            &amp;\doteq \int g_1 + g_2 \, d \mu + i \int h_1 + h_2 \, d
-\mu \\
-            &amp;= \int g_1 \, d \mu + i \int h_1 \, d \mu
-            + \int g_2 \, d \mu + i \int h_2 \, d \mu \\
-            &amp;\doteq \int f_1 \, d \mu + \int f_2 \, d \mu.
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Theorem.</strong> If <span class="math inline">\(f\)</span>
-is integrable, then <span class="math display">\[
-\left| \int f \, d \mu \right|
-\le \int |f| \, d \mu.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(f = g + i
-h\)</span>. Consider first that <span class="math inline">\(g\)</span>
-and <span class="math inline">\(h\)</span> are simple functions.
-W.L.O.G., assume <span class="math inline">\(g = \sum_{k \in [n]} x_k
-\mathbb{I}_{A_k}\)</span>, <span class="math inline">\(h = \sum_{k \in
-[n]} y_k \mathbb{I}_{A_k}\)</span>, where <span
-class="math inline">\(A_k \in \mathcal{F}, k \in [n]\)</span> constitute
-a partition of <span class="math inline">\(\Omega\)</span>.</p>
-<p><span class="math display">\[
-    \begin{aligned}
-        \left| \int f \, d \mu \right|
-            &amp;= \left|\int g \, d \mu + i \int h \, d \mu \right| \\
-            &amp;= \left| \sum_{k \in [n]} x_k \cdot \mu (A_k) + i
-\sum_{k \in [n]} y_k \cdot \mu (A_k) \right| \\
-            &amp;= \left| \sum_{k \in [n]} \big( x_k + i  y_k \big)
-\cdot \mu (A_k)  \right| \\
-            &amp;\le \sum_{k \in [n]} \left| \big( x_k + i y_k \big)
-\cdot \mu (A_k)  \right| \\
-            &amp;= \sum_{k \in [n]} \left| \big( x_k + i y_k \big)
-\right| \cdot \mu (A_k) \\
-            &amp;= \int |f| \, d \mu.
-    \end{aligned}
-\]</span></p>
-<p>For general integrable <span class="math inline">\(f = g + i
-h\)</span>, there exists simple functions <span
-class="math inline">\(g_n, h_n\)</span> such that</p>
-<ol type="1">
-<li><p><span class="math inline">\(\lim_n g_n = g\)</span> and <span
-class="math inline">\(\lim_n h_n = h\)</span>;</p></li>
-<li><p><span class="math inline">\(|g_n| \le |g|\)</span> and <span
-class="math inline">\(|h_n| \le |h|\)</span> for all <span
-class="math inline">\(n \in \mathbb{N}^+\)</span>;</p></li>
-<li><p><span class="math inline">\(\lim_n \int g_n \, d \mu = \int g \,
-d \mu\)</span> and <span class="math inline">\(\lim_n \int h_n \, d \mu
-= \int h \, d \mu\)</span>.</p></li>
+<p><strong>Property (Linearity).</strong> </p>
+<ol>
+<li>If $f \in \mathcal{F} \big( [a, b] \big)$ and $c \in \R$, then $c \cdot f \in \mathcal{F} \big( [a, b] \big)$ and <script type="math/tex; mode=display">
+ \int _{a}^{b} c \cdot f \, dx = c \cdot \int_{a}^{b} f \, dx.</script></li>
+<li>If $f_1, f_2 \in \mathcal{F} \big( [a, b] \big)$, then $f_1 + f_2 \in \mathcal{F} \big( [a, b] \big)$, and    <script type="math/tex; mode=display">
+ \int _{a}^{b} f_1 + f_2 \, dx = \int_{a}^{b} f_1 \, dx + \int_{a}^{b} f_2 \, dx.</script></li>
+<li>If $f \in \mathcal{F} \big( [a, b] \big)$ and $c \in (a, b)$, then $f \in \mathcal{F} \big( [a, c] \big)$ and $f \in \mathcal{F} \big( [c, b] \big)$, and <script type="math/tex; mode=display">
+ \int _{a}^{b} f \, dx = \int _{a}^{c} f \, dx + \int _{c}^{b} f \, dx.</script></li>
 </ol>
-<p>It follows that <span class="math inline">\(|g_n + i h_n| \uparrow
-|f|\)</span>. Hence, <span class="math display">\[
-    \begin{aligned}
-        \left| \int f \, d \mu \right|
-            &amp;= \left|\int g \, d \mu + i \int h \, d \mu \right| \\
-            &amp;= \left| \lim_n \int \left( g_n + i h_n \right)\, d \mu
-\right| \\
-            &amp;= \lim_n \left| \int g_n + i h_n \, d \mu \right| \\
-            &amp;\stackrel{(a)}{\le} \lim_n \int \left| g_n + i h_n
-\right| \, d \mu \\
-            &amp;\stackrel{(b)}{=} \int |f| \, d \mu,
-    \end{aligned}
-\]</span> where Inequality <span class="math inline">\((a)\)</span>
-follows from previous claim, and Inequality <span
-class="math inline">\((b)\)</span> follows from monotone convergence
-theorem.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Theorem.</strong> Suppose that <span
-class="math inline">\(f_n = g_n + i h_n\)</span> are complex integrable
-functions satisfying <span class="math inline">\(\sum_{n \ge 1} \int
-|f_n| \, d \mu &lt; \infty\)</span>. Then <span
-class="math inline">\(\sum_{n \ge 1} f_n\)</span> is integrable, and
-<span class="math display">\[
-\int \sum_{n \ge 1} f_n \, d \mu = \sum_{n \ge 1} \int f_n \, d \mu.
-\]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> By monotone convergence theorem, we have
-<span class="math display">\[
-    \int \sum_{n \ge 1} |f_n| \, d \mu = \sum_{n \ge 1} \int |f_n| \, d
-\mu &lt; \infty.
-\]</span></p>
-<p>Since <span class="math display">\[
-    \Bigg| \sum_{n \ge 1} g_n \Bigg| \le \sum_{n \ge 1} |g_n| \le
-\sum_{n \ge 1} |f_n|,
-\]</span> <span class="math inline">\(\sum_{n \ge 1} g_n\)</span> is
-integrable. Via dominated convergence theorem, <span
-class="math display">\[
-    \int \sum_{n \ge 1} g_n \, d \mu = \sum_{n \ge 1} \int g_n \, d \mu.
-\]</span></p>
-<p>Similar argument shows that <span class="math inline">\(\sum_{n \ge
-1} h_n\)</span> is integrable, and <span class="math display">\[
-    \int \sum_{n \ge 1} h_n \, d \mu = \sum_{n \ge 1} \int h_n \, d \mu.
-\]</span></p>
-<p>Therefore, <span class="math inline">\(\sum_{n \ge 1} f_n\)</span> is
-integrable, and <span class="math display">\[
+<p>The integrals should allow for meaningful comparisons. </p>
+<blockquote>
+<p><strong>Property (Monotonicity).</strong> </p>
+<ol>
+<li>If $f_1, f_2 \in \mathcal{F} \big( [a, b] \big)$ and $f_1 \le f_2$, then <script type="math/tex; mode=display">
+ \int_{a}^{b} f_1 \, dx \le \int_{a}^{b} f_2 \, dx.</script></li>
+<li>If $f \in \mathcal{F} \big( [a, b] \big)$ and $|f| \le M$, then <script type="math/tex; mode=display">
+ \left| \int_{a}^{b} f \, dx \right| \le M \cdot (b - a).</script></li>
+</ol>
+</blockquote>
+<p>So far, it is straightforward to specify a family of functions, and a rule that assigning real numbers to them,satisfying the aforementioned properties.<br>For instance, we can define $\mathcal{F}\big( [a, b] \big)$ as the set of <em>step functions</em> on $[a, b]$.<br>Each step function $f$ can be expressed as: </p>
+<script type="math/tex; mode=display">
+    f(x) = \sum_{i \in [n]} c_i \cdot \mathbb{I}_{E_i} (x),</script><p>where $E_i, i \in [n]$, are sub-intervals, forming a partition of $[a, b]$.<br>Further, we can define the integral as</p>
+<script type="math/tex; mode=display">
+    \int_a^b f \, dx \doteq \sum_{i \in [n]} c_i \cdot |E_i|,</script><p>where $|E_i|$ is the length of $E_i$. </p>
+<p>However, it is also desirable for the constructed integrals to satisfy convergence properties.</p>
+<blockquote>
+<p><strong>Property (Convergence).</strong> </p>
+<ol>
+<li>If $f_i \in \mathcal{F} \big( [a, b] \big)$ for each $i \in \N^+$ and $f_i \rightarrow f$ under some metric, then $f \in \mathcal{F} \big( [a, b] \big)$ and <script type="math/tex; mode=display">
+ \lim_{n \rightarrow \infty} \int_{a}^{b} f_i \, dx 
+     = \int_{a}^{b} f \, dx.</script></li>
+</ol>
+</blockquote>
+<p>Unfortunately, the previous construction does not satisfy convergence properties. Additional considerations and refinements are required in order to establish an integral that fulfills the desired convergence properties.</p>
+<h2 id="Construction"><a href="#Construction" class="headerlink" title="Construction"></a><strong>Construction</strong></h2><p>Bernhard Riemann presented the following construction of integral.</p>
+<p>Let $[a, b]$ be a given interval.<br>$P = { x_0 , x_1 , \ldots, x_n }$ is a partition of $[a, b]$, if</p>
+<script type="math/tex; mode=display">
+    a = x_0 \le x_1 \cdots \le x_n = b.</script><p>For each $i \in [n]$, let $\Delta x<em>i \doteq x_i, - x</em>{i - 1}$.</p>
+<p>Assume $f: [a, b] \rightarrow \R$ is a <em>bounded</em> function.<br>Associated with each partition $P$, define </p>
+<script type="math/tex; mode=display">
+    M_i \doteq \sup_{x \in [x_{i - 1}, x_i]} f(x), \qquad
+    m_i \doteq \inf_{x \in [x_{i - 1}, x_i]} f(x).</script><p>Further, let </p>
+<script type="math/tex; mode=display">
+    U(P, f) \doteq \sum_{i \in [n]} M_i \cdot \Delta x_i, \quad
+    L(P, f) \doteq \sum_{i \in [n]} m_i \cdot \Delta x_i.</script><p>Finally, consider</p>
+<script type="math/tex; mode=display">
+    \overline{\int _{a}^{b}} f \, dx \doteq \inf U(P, f), \quad
+    \underline{\int_{a}^{b}} f \, dx \doteq \sup L(P, f),</script><p>where the inf and sup are taken over all partitions $P$ of $[a, b]$. </p>
+<blockquote>
+<p><strong>Definition</strong> $f: [a, b] \rightarrow \R$ is considered Riemann integrable, if</p>
+<script type="math/tex; mode=display">
+    \overline{\int _{a}^{b}} f \, dx = \underline{\int_{a}^{b}} f \, dx.</script><p>In this cases, we define the integral of $f$ over the interval $[a, b]$ as:</p>
+<script type="math/tex; mode=display">
+    \int _{a}^{b} f \, dx \doteq \overline{\int _{a}^{b}} f \, dx = \underline{\int_{a}^{b}} f \, dx.</script><p>We denote the collection of functions that are Riemann integrable on $[a, b]$ as $\mathfrak{R}\big( [a, b] \big)$.</p>
+</blockquote>
+<p><strong>Remark.</strong> It is reasonable to assume that $f$ is bounded on the closed interval $[a, b]$, in order that it is Riemann integrable.<br>If $f$ is unbounded, for each partition $P$, there exists some $i \in [n]$, s.t., $M<em>i - m_i = \infty$.<br>Hence it is impossible that $\overline{\int </em>{a}^{b}} f \, dx = \underline{\int_{a}^{b}} f \, dx$.</p>
+<h2 id="Properties"><a href="#Properties" class="headerlink" title="Properties"></a><strong>Properties</strong></h2><p>It is straightforward to see the proposed construction of integral captures the area of rectangles, and demonstrates linearity and monotonicity.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Assume that for each $n \in \mathbb{N}^+$, $f<em>n \in \mathfrak{R} \big( [a, b] \big)$, and that $f_n \rightarrow f$ uniformly on $[a, b]$ (i.e., $\sup</em>{x \in [a, b]} |f_n(x) - f(x)| \rightarrow 0$).<br>Then $f\in \mathfrak{R} \big( [a, b] \big)$, and </p>
+<script type="math/tex; mode=display">
+    \int_a^b f \, dx = \lim_{n \rightarrow \infty} \int_a^b f_n \, dx.</script><p>(The existence of the limit is part of the conclusion.)</p>
+</blockquote>
+<p><strong>Proof.</strong><br>Choose $\varepsilon &gt; 0$.<br>For large enough $n$, we have $|f_n - f| \le \varepsilon$. </p>
+<p>Let $P = { x_0 , x_1 , \ldots, x_n }$ be a partition of $[a, b]$.</p>
+<script type="math/tex; mode=display">
+    L(P, f_n) - \varepsilon \cdot (b - a) 
+        \le L(P, f) \le U(P, f) 
+        \le U(P, f_n) + \varepsilon \cdot (b - a)</script><p>Taking sup and inf over all possible partitions of $P$ on $[a, b]$, and given the Riemann integrability of $f_n$, we have </p>
+<script type="math/tex; mode=display">
+    \int_a^b f_n \, dx - \varepsilon \cdot (b - a) 
+        \le \underline{\int_{a}^{b}} f \, dx  
+        \le \overline{\int _{a}^{b}} f \, dx 
+        \le \int_a^b f_n \, dx + \varepsilon \cdot (b - a).</script><p>Since $\varepsilon$ is chosen arbitrarily, we have $\underline{\int<em>{a}^{b}} f \, dx  = \overline{\int </em>{a}^{b}} f \, dx$ and therefore $f \in \mathfrak{R} \big( [a, b] \big)$. </p>
+<p>Finally, </p>
+<script type="math/tex; mode=display">
+    \int_a^b f_n \, dx - \varepsilon \cdot (b - a) 
+        \le \int_{a}^{b} f \, dx  
+        \le \int_a^b f_n \, dx + \varepsilon \cdot (b - a),</script><p>implies that $\lim<em>{n \rightarrow \infty} \int_a^b f_n \, dx$ exists, and equals $\int</em>{a}^{b} f \, dx$.  </p>
+<p>$\square$</p>
+<h3 id="Integration-and-Differentiation"><a href="#Integration-and-Differentiation" class="headerlink" title="Integration and Differentiation"></a><strong>Integration and Differentiation</strong></h3><blockquote>
+<p><strong>Theorem.</strong> Suppose that $f \in \mathfrak{R} \big( [a, b] \big)$.<br>Define</p>
+<script type="math/tex; mode=display">
+    F(t) \doteq \int_a^t f \,  dx, \quad \forall t \in [a, b].</script><p>Then $F$ is continuous on $[a, b]$; furthermore, if $f$ is continuous at a point $t \in [a, b]$, then $F$ is differentiable at $t$, and $F’(t) = f(t)$.</p>
+</blockquote>
+<p><strong>Proof.</strong><br>Since $f\in \mathfrak{R} \big( [a, b] \big)$, it is bounded.<br>Let $M \doteq \max_{x \in [a, b]} |f(x)|$.<br>It follows that </p>
+<script type="math/tex; mode=display">
+    |F(x) - F(y)| \le M \cdot |x - y|, \quad \forall x, y \in [a, b].</script><p>which proves uniform continuity of $F$. </p>
+<p>With out lose of generality, assume that $t \in (a, b)$.<br>Since $f$ is continuous at $t$, $\exists \delta &gt; 0$, s.t., $[t - \delta, t + \delta] \subseteq [a, b]$ and $\forall s \in [t - \delta, t + \delta]$, it holds that $|f(s) - f(t)| \le \epsilon$.<br>It follows that for all $\ell, r \in [t - \delta, t + \delta]$, </p>
+<script type="math/tex; mode=display">
     \begin{aligned}
-        \int \sum_{n \ge 1} f_n \, d \mu
-            &amp;\doteq \int \sum_{n \ge 1} g_n \, d \mu
-            + i \int \sum_{n \ge 1} h_n \, d \mu \\
-            &amp;= \sum_{n \ge 1} \int g_n \, d \mu
-            + \sum_{n \ge 1} i \int h_n \, d \mu \\
-            &amp;\doteq \sum_{n \ge 1} \int f_n \, d \mu.  
-    \end{aligned}
-\]</span> <span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1] P. Billingsley, Probability and measure Anniversary Edition, 3rd
-ed. New York: Wiley, 1995.</p>
+        \left| \frac{F(r) - F(\ell)}{r - \ell} - f(t) \right|
+            &= \left| \frac{1}{r - \ell} \int_\ell^r [ f(x) - f(t) ] \,  dx \right| \\
+            &\le \frac{1}{r - \ell} \int_\ell^r \left|  f(x) - f(t) \right| \,  dx 
+            \le 2 \cdot \epsilon. 
+    \end{aligned}</script><p>$\square$</p>
+<blockquote>
+<p><strong>Theorem (The fundamental theorem of calculus).</strong>  Suppose that $f \in \mathfrak{R} \big( [a, b] \big)$ and that $F$ are differentiable function on $[a, b]$ such that $F’ = f$, then </p>
+<script type="math/tex; mode=display">
+    \int_a^b f \, dx = F(b) - F(a).</script></blockquote>
+<p><strong>Proof.</strong><br>Let $P = { x<em>0 , x_1 , \ldots, x_n }$ be a partition of $[a, b]$.<br>For each $i \in [n]$, by mean value theorem, $\exists t_i \in [x</em>{i - 1}, x_i]$, s.t., </p>
+<script type="math/tex; mode=display">
+    F(x_i) - F(x_{i - 1}) = f(t_i) \cdot \Delta x_i.</script><p>Hence, </p>
+<script type="math/tex; mode=display">
+    L(P, f) \le F(b) - F(a) = \sum_{i \in [n]} f(t_i) \cdot \Delta x_i \le U(P, f).</script><p>Taking sup and inf over all partitions $P$ finishes the proof. </p>
+<p>$\square$</p>
+<blockquote>
+<p><strong>Corollary (Integration by parts).</strong>  If $f_1, f_2\in \mathfrak{R} \big( [a, b] \big)$, and $F_1$ and $F_2$ are differentiable function on $[a, b]$ such that $F_1’ = f_1$ and $F_2’ = f_2$, then </p>
+<script type="math/tex; mode=display">
+    \int_a^b F_1 \cdot f_2 \, dx 
+        = F_1(b) \cdot F_2(b) - F_1(a) \cdot F_2(a) - \int_a^b F_2 \cdot f_1 \, dx.</script></blockquote>
+<h2 id="Existence"><a href="#Existence" class="headerlink" title="Existence"></a><strong>Existence</strong></h2><p>In this section, we delve into the functions are encompassed within $\mathfrak{R} \big( [a, b] \big)$.</p>
+<blockquote>
+<p><strong>Theorem.</strong>  </p>
+<ol>
+<li>If $f$ is continuous on $[a, b]$ then $f\in \mathfrak{R} \big( [a, b] \big)$.  </li>
+<li>If $f$ is monotonic on $[a, b]$, then $f\in \mathfrak{R} \big( [a, b] \big)$.  </li>
+<li>If $f$ is bounded on $[a, b]$ and has only finitely many points of discontinuity on $[a, b]$, then $f\in \mathfrak{R} \big( [a, b] \big)$.  </li>
+</ol>
+<p><strong>Theorem.</strong> Suppose </p>
+<ol>
+<li>$f \in \mathfrak{R} \big( [a, b] \big)$, and $f([a, b]) \subseteq [m, M]$,</li>
+<li>$g: [m, M] \rightarrow \R$ is continuous, and</li>
+<li>$h \doteq g \circ f$. </li>
+</ol>
+<p>Then $h \in \mathfrak{R} \big( [a, b] \big)$.</p>
+</blockquote>
+<p>Note that if $f \in \mathfrak{R} \big( [a, b] \big)$, then it is bounded.<br>Therefore, we can always find a closed interval $[m, M] \subseteq \R$ such that $f([a, b]) \subseteq [m, M]$.<br>The only requirement of the theorem is that, the continuous function $g$ is defined over some of such intervals. </p>
+<p><strong>Proof.</strong><br>Consider a given $\varepsilon  &gt; 0$. </p>
+<p>Since $g$ is continuous on $[m, M]$, there exists $K \doteq \sup_{t \in [m, M]} | g(t) |$.<br>Further, it is uniformly continuous on $[m, M]$.<br>Hence,  </p>
+<script type="math/tex; mode=display">
+    \exists \delta \in (0, \varepsilon), \,  \quad \text{s.t.} | g(s) - g(t) | < \varepsilon, \quad  \forall s, t \in [m, M] : |s - t| \le \delta.</script><p>Since $f \in \mathfrak{R} \big( [a, b] \big)$, there is a partition $P = { x_0 , x_1 , \ldots, x_n }$ of $[a, b]$ such that </p>
+<script type="math/tex; mode=display">
+    U(P,f) - L(P,f) < \delta^2.</script><p>Let </p>
+<script type="math/tex; mode=display">
+    M_i \doteq \sup_{x \in [x_{i - 1}, x_i]} f(x), \qquad
+    m_i \doteq \inf_{x \in [x_{i - 1}, x_i]} f(x), \\
+    M_i^* \doteq \sup_{x \in [x_{i - 1}, x_i]} h(x), \qquad
+    m_i^* \doteq \inf_{x \in [x_{i - 1}, x_i]} h(x).</script><p>Clearly it holds that $|M_i^<em>| \le K$ and $|m_i^</em>| \le K$.<br>Define </p>
+<script type="math/tex; mode=display">
+    A \doteq \{ i \in [n]: M_i - m_i < \delta \}, \quad 
+    B \doteq \{ i \in [n]: M_i - m_i \ge \delta \}.</script><p>Then we have</p>
+<ul>
+<li>$\forall i \in  A$, $M_i^<em> - m_i^</em> \le \varepsilon$, and </li>
+<li>$\sum_{i \in B} \Delta x_i \le \delta$ since<script type="math/tex; mode=display">
+  \delta^2 > \sum_{i \in B} (M_i - m_i) \Delta x_i \ge \delta \sum_{i \in B} \Delta x_i.</script></li>
+</ul>
+<p>It follows that </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}    
+        U(P, h)- L(P, h) 
+            &= \sum_{i \in A} (M_i^* - m_i^*) \Delta x_i + \sum_{i \in B} (M_i^* - m_i^*) \Delta x_i \\
+            &\le \varepsilon \cdot (b - a) + 2 \cdot K \cdot \delta \\
+            &< \varepsilon \cdot [b - a + 2 \cdot K].
+    \end{aligned}</script><p>$\square$</p>
+<blockquote>
+<p><strong>Corollary.</strong> If $f_1, f_2 \in \mathfrak{R} \big( [a, b] \big)$, then </p>
+<ol>
+<li>$f_1 \cdot f_2\in \mathfrak{R} \big( [a, b] \big)$; </li>
+<li>$|f_1|\in \mathfrak{R} \big( [a, b] \big)$ and<script type="math/tex; mode=display">
+ \left| \int _{a}^{b} f_1 \, dx \right| \le \int_{a}^{b} | f_1 | \, dx.</script></li>
+</ol>
+</blockquote>
+<p><strong>Proof.</strong><br>Since the square function is continuous on $\R$, it follows that $(f_1 + f_2)^2, (f_1 - f_2)^2 \in \mathfrak{R} \big( [a, b] \big)$.<br>Claim 1 follows from that $4 \cdot f_1 \cdot f_2 = (f_1 + f_2)^2 - (f_1 - f_2)^2$. </p>
+<p>Since the absolute function is continuous on $\R$, it follows that $|f_1|\in \mathfrak{R} \big( [a, b] \big)$.<br>The inequality follows from monotonicity of Riemann integration. </p>
+<p>$\square$</p>
+<h1 id="Integration-of-Vector-valued-Functions"><a href="#Integration-of-Vector-valued-Functions" class="headerlink" title="Integration of Vector-valued Functions"></a>Integration of Vector-valued Functions</h1><p>Let $\vec{f} \doteq (f_1, \ldots , f_k): [a, b] \rightarrow \R^k$ vector-valued function.<br>We call it <em>Riemann integrable</em> if for each $i \in [k]$, $f_i \in \mathfrak{R} \big( [a, b] \big)$.<br>In this case, we write</p>
+<script type="math/tex; mode=display">
+    \int_a^b \vec{f} \, dx \doteq \left( \int_a^b f_1 \, dx, \ldots , \int_a^b f_k \, dx \right).</script><h2 id="Properties-1"><a href="#Properties-1" class="headerlink" title="Properties"></a><strong>Properties</strong></h2><blockquote>
+<p><strong>Theorem.</strong> If $\vec{f} \doteq (f_1, \ldots , f_k): [a, b] \rightarrow \R^k$ is Riemann integrable, then </p>
+<script type="math/tex; mode=display">
+    \lVert \vec{f} \rVert_2 \doteq \sqrt{f_1^2 + \cdots + f_k^2} \in \mathfrak{R} \big( [a, b] \big).</script><p>Further it holds that </p>
+<script type="math/tex; mode=display">
+    \left\lVert \int_a^b \vec{f} \, dx \right\rVert_2 \le \int_a^b \lVert \vec{f} \rVert_2 \, dx.</script></blockquote>
+<p><strong>Proof.</strong><br>Given the Riemann integrability of $f_i$ on $[a, b]$ and the continuity of the square function on $\R$, we can deduce that $f_i^2 \in \mathfrak{R} \big( [a, b] \big)$.<br>Thus, $\lVert \vec{f} \rVert_2^2 \in \mathfrak{R} \big( [a, b] \big)$.</p>
+<p>Moreover, considering the Riemann integrability of each $f_i$ on the interval $[a, b]$, we can infer that they are bounded.<br>Hence, we can assume an upper bound $M$ for each $f_i^2$.</p>
+<p>Furthermore, since the square root function is continuous on the interval $[0, M]$, we can conclude that $\lVert \vec{f} \rVert_2 \in \mathfrak{R} \big( [a, b] \big)$.</p>
+<p>Let $\vec{y} = (y_1, \ldots, y_k)$ be a shorthand for $\int_a^b \vec{f} \, dx$.<br>Then </p>
+<script type="math/tex; mode=display">
+    \lVert \vec{y} \rVert_2^2 = \sum_{i \in [k]} y_i^2 
+        = \sum_{i \in [k]} y_i \int_a^b f_i \, dx = \int_a^b \sum_{i \in [k]} y_i f_i \, dx
+        \le \int_a^b \lVert \vec{y} \rVert_2 \cdot \lVert \vec{f} \rVert_2 \, dx</script><p>$\square$</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] <em>W. Rudin, Principles of mathematical analysis, 3d ed. in International series in pure and applied mathematics. New York: McGraw-Hill, 1976.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/21/Rectifiable-Curve/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/21/Rectifiable-Curve/" class="post-title-link" itemprop="url">Rectifiable Curve</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-05-21 15:59:39" itemprop="dateCreated datePublished" datetime="2023-05-21T15:59:39+02:00">2023-05-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-05-23 09:28:08" itemprop="dateModified" datetime="2023-05-23T09:28:08+02:00">2023-05-23</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Curve"><a href="#Curve" class="headerlink" title="Curve"></a>Curve</h1><p>A curve can be conceptualized as the trace created by a moving pen on a piece of paper.<br>It is considered a one-dimensional object, which implies that a single number is sufficient to describe the position of a point on the curve.<br>More generally, in $\mathbb{R}^k$, we define a curve rigorously thus.</p>
+<blockquote>
+<p><strong>Definition.</strong> A continuous mapping $\gamma$ of an interval $[a, b]$ into $\R^k$ is called a curve in $\R^k$. </p>
+</blockquote>
+<p>It is important to note that, under this definition, different curves may specify the same set of points, i.e. they have the same range.</p>
+<h1 id="Curve-Length"><a href="#Curve-Length" class="headerlink" title="Curve Length"></a>Curve Length</h1><p>Given a partition $P = {x_0 , \ldots , x_n }$ of $[a, b]$, define</p>
+<script type="math/tex; mode=display">
+    \Lambda(P, \gamma) \doteq \sum_{i \in [n]} \Vert \gamma(x_i) - \gamma(x_{i - 1}) \Vert_2,</script><p>where the $i^{(th)}$ term in the sum is the Euclidean distance between $\gamma(x_{i - 1})$ and $\gamma(x_i)$.</p>
+<p>Therefore, $\Lambda(P, \gamma)$ represents the length of a polygonal path with vertices located at $\gamma(x_0), \gamma(x_1), \ldots , \gamma(x_n)$ in order.<br>As the partition becomes increasingly finer, the polygon approaches the range of $\gamma$ more closely.<br>Hence, it is reasonable to define the length of $\gamma$ as </p>
+<script type="math/tex; mode=display">
+    \Lambda(\gamma) \doteq \sup \Lambda(P, \gamma),</script><p>where the supremum is taken over all partitions of $[a, b]$.<br>If $\Lambda(\gamma) &lt; \infty$, we say that $\gamma$ is rectifiable. </p>
+<h2 id="Riemann-Integral"><a href="#Riemann-Integral" class="headerlink" title="Riemann Integral"></a>Riemann Integral</h2><p>In certain cases, $A( \gamma)$ is given by a Riemann integral.<br>We shall prove this for continuously differentiable curves, i.e., for curves $\gamma$ whose derivative $\gamma’$ is continuous. </p>
+<blockquote>
+<p><strong>Theorem.</strong> If $\gamma’$ is continuous on $[a, b]$, then $\gamma$ is rectifiable, and </p>
+<script type="math/tex; mode=display">
+    \Lambda(\gamma) = \int_{x_{i - 1}}^{x_i} \left\Vert \gamma'(t) \right\Vert_2 \, dx.</script></blockquote>
+<p><strong>Proof.</strong><br>For each partition $P = {x_0 , \ldots , x_n }$ of $[a, b]$, we have </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \Lambda(P, \gamma) 
+            &= \sum_{i \in [n]} \Vert \gamma(x_i) - \gamma(x_{i - 1}) \Vert_2 \\
+            &= \sum_{i \in [n]} \left\Vert \int_{x_{i - 1}}^{x_i} \gamma'(t) \, dx \right\Vert_2 
+            \le \sum_{i \in [n]} \int_{x_{i - 1}}^{x_i} \left\Vert \gamma'(t) \right\Vert_2 \, dx 
+            = \int_{a}^{b} \left\Vert \gamma'(t) \right\Vert_2 \, dx . 
+    \end{aligned}</script><p>It follows that<br>$<br>    \Lambda(\gamma) \le \int_{a}^b \left\Vert \gamma’(t) \right\Vert_2 \, dx<br>$<br>and $\gamma$ is rectifiable. </p>
+<p>Further, since $\gamma’$ is uniformly continuous on $[a, b]$, for each $\varepsilon &gt; 0$, there exists $\delta &gt; 0$, such that for each partition $P$ with $\max<em>{i \in [n]} (x_i - x</em>{i - 1}) \le \delta$, we have </p>
+<script type="math/tex; mode=display">
+    \Vert \gamma'(s) - \gamma'(t) \Vert_2 \le \varepsilon, 
+    \quad
+    \forall s, t \in [x_{i - 1}, x_i].</script><p>Hence for each $i \in [n]$, </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \int_{x_{i - 1}}^{x_i} \Vert \gamma'(t) \Vert_2 \, dx
+            &\le \int_{x_{i - 1}}^{x_i} \Big( \Vert \gamma'(x_i) \Vert_2 + \varepsilon \Big) \, dx \\
+            &= \left\Vert \int_{x_{i - 1}}^{x_i} \gamma'(x_i) \, dx \right\Vert_2 + \int_{x_{i - 1}}^{x_i} \varepsilon \, dx \\
+            &\le \left\Vert \int_{x_{i - 1}}^{x_i} \gamma'(x_i) - \gamma'(t) \, dx \right\Vert_2 
+            + \left\Vert \int_{x_{i - 1}}^{x_i} \gamma'(t) \, dx \right\Vert_2 
+            + \int_{x_{i - 1}}^{x_i} \varepsilon \, dx \\
+            &\le \varepsilon \cdot (x_i - x_{i - 1})
+            + \left\Vert \int_{x_{i - 1}}^{x_i} \gamma'(t) \, dx \right\Vert_2 
+            + \varepsilon \cdot (x_i - x_{i - 1}) \\
+            &= \Vert \gamma(x_i) - \gamma(x_{i - 1}) \Vert_2 + 2 \varepsilon \cdot (x_i - x_{i - 1}). 
+    \end{aligned}</script><p>Summing over all $i \in [n]$, we have</p>
+<script type="math/tex; mode=display">
+    \int_a^b \Vert \gamma'(t) \Vert_2 \, dx 
+        \le \Lambda(P, \gamma) + 2 \varepsilon (b - a) 
+        \le \Lambda(\gamma) + 2 \varepsilon (b - a).</script><p>$\square$</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] <em>W. Rudin, Principles of mathematical analysis, 3d ed. in International series in pure and applied mathematics. New York: McGraw-Hill, 1976.</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/10/Characteristic-Function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/10/Characteristic-Function/" class="post-title-link" itemprop="url">Characteristic Function</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-03-10 00:14:41" itemprop="dateCreated datePublished" datetime="2023-03-10T00:14:41+01:00">2023-03-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-05-10 07:33:25" itemprop="dateModified" datetime="2023-05-10T07:33:25+02:00">2023-05-10</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h1><p>Let $(\Omega, \mathcal{F}, \mathbb{P})$ be a probability space, and $X$ be a random variable on the space.<br>Further, denote $\mu$ the distribution of $X$, s.t., </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        &\mu(A) = \mathbb{P} \Big( X^{-1}(A) \Big), 
+            &\forall A \in \mathcal{B},
+    \end{aligned}</script><p>where $\mathcal{B}$ is the collection of Borel set on $\mathbb{R}$.</p>
+<blockquote>
+<p><strong>Definition.</strong> The characteristic function r.w.t. $\mu$ is given by </p>
+<script type="math/tex; mode=display">
+    \varphi(t) = \int_\mathbb{R} e^{itx} \, \mu (dx) .</script><p><strong>Theorem.</strong> </p>
+<script type="math/tex; mode=display">
+    \varphi(t) = \mathbb{E} \left[ e^{itX} \right].</script></blockquote>
+<p><strong>Proof.</strong><br>Recall that, by definition of expectation, we have </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \mathbb{E} \left[ e^{itX} \right] 
+            &\doteq \int_\Omega e^{it X(\omega) } \, \mathbb{P} (d \omega) \\
+            &\doteq \int_\Omega \left( \sin \big( t X(\omega) \big) + i \cdot \cos \big( t X(\omega) \big) \right) \, \mathbb{P} (d \omega) \\
+            &\stackrel{(a)}{=} \int_\mathbb{R} \sin \big( t x \big) \, \mu (dx) + i \cdot \int_\mathbb{R} \cos \big( t x \big) \, \mu (d x) \\
+            &= \int_\mathbb{R} e^{itx} \, \mu (dx) \\
+            &= \varphi(t),
+    \end{aligned}</script><p>where in Equation $(a)$, we have applied the fact that for each function $f$ that is measurable $\mathcal{B} / \mathcal{B}$, </p>
+<script type="math/tex; mode=display">
+    \int_\Omega f(X(\omega)) \, \mathbb{P}(d\omega)
+        = \int_\mathbb{R} f(x) \, \mu(dx).</script><p>$\square$</p>
+<h1 id="Independence"><a href="#Independence" class="headerlink" title="Independence"></a>Independence</h1><blockquote>
+<p><strong>Theorem.</strong> Let $X$ and $Y$ be independent random variables.<br>Then</p>
+<script type="math/tex; mode=display">
+    \varphi(X + Y) = \varphi(X) \varphi(Y).</script></blockquote>
+<p><strong>Proof.</strong><br>Since $X$ and $Y$ are independent, the following pairs of random variables are independent </p>
+<ol>
+<li>$\sin \big( t X(\omega) \big)$, $\sin \big( t Y(\omega) \big)$; </li>
+<li>$\cos \big( t X(\omega) \big)$, $\cos \big( t Y(\omega) \big)$;</li>
+<li>$\sin \big( t X(\omega) \big)$, $\cos \big( t Y(\omega) \big)$;</li>
+<li>$\cos \big( t X(\omega) \big)$, $\sin \big( t Y(\omega) \big)$.</li>
+</ol>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \varphi(X + Y) 
+            &= \mathbb{E} \left[ e^{it(X + Y)} \right] \\
+            &= \mathbb{E} \left[ 
+                \left( \sin \big( t X(\omega) \big) + i \cdot \cos \big( t X(\omega) \big) \right) 
+                \left( \sin \big( t Y(\omega) \big) + i \cdot \cos \big( t Y(\omega) \big) \right)
+            \right] \\
+            &= \mathbb{E} \left[ 
+                    \sin \big( t X(\omega) \big) 
+                \right]
+                \mathbb{E} \left[ 
+                    \sin \big( t Y(\omega) \big)
+                \right]
+                - \mathbb{E} \left[ 
+                    \cos \big( t X(\omega) \big) 
+                \right]
+                \mathbb{E} \left[ 
+                    \cos \big( t Y(\omega) \big) 
+                \right] \\
+            &\qquad 
+                + i \mathbb{E} \left[ 
+                    \sin \big( t X(\omega) \big) 
+                \right]
+                \mathbb{E} \left[ 
+                    \cos \big( t Y(\omega) \big)
+                \right]
+                + i \mathbb{E} \left[ 
+                    \cos \big( t X(\omega) \big) 
+                \right]
+                \mathbb{E} \left[ 
+                    \sin \big( t Y(\omega) \big)
+                \right] \\
+            &= \varphi(X) \varphi(Y).
+    \end{aligned}</script><p>$\square$</p>
+<h1 id="Uniqueness"><a href="#Uniqueness" class="headerlink" title="Uniqueness"></a>Uniqueness</h1><blockquote>
+<p><strong>Theorem.</strong> Let $\mu$ and $\nu$ be probability measures on $\mathbb{R}$.<br>If $\mu$ and $\nu$ has the same characteristic functions, then</p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        &\mu(A) = \nu(A), &\forall A \in \mathcal{B}. 
+    \end{aligned}</script></blockquote>
+<p>The proof follows from the following lemma: </p>
+<blockquote>
+<p><strong>Lemma.</strong> Let $a, b \in \mathbb{R}$, s.t. $a &lt; b$.<br>If $\mu({a}) = \mu({b}) = 0$, then</p>
+<script type="math/tex; mode=display">
+    \mu \Big( (a, b] \Big) 
+        = \lim_{T \rightarrow \infty} \frac{1}{2 \pi} \int_{-T}^T \frac{e^{-ita} - e^{-itb}}{it} \varphi(t) \, d t.</script></blockquote>
+<p><strong>Proof of the Theorem.</strong><br>For each $n \in \mathbb{N}<em>+$, define $E_n \doteq { x \in \mathbb{R} : \mu( { x } ) \ge 1 / n }$.<br>It is easy to see that $|E_n| \le n$.<br>It follows that the $E \doteq \cup</em>{n \in \mathbb{N}_+} E_n$ is countable. </p>
+<p>Consider the set $S = { (a, b] : a &lt; b, \mu({a}) = \mu({b}) = 0 }$.<br>Obviously this is a $\pi$ system.<br>Further, it generates $\mathcal{B}$.<br>To see this, for each point $c \in E$, we can find </p>
+<ol>
+<li>a sequence $a_1, a_2, \ldots$ from $\bar{E}$ that increases to $c$,</li>
+<li>a sequence $b_1, b_2, \ldots$ from $\bar{E}$ that decreases to $c$. </li>
+</ol>
+<p>Then $(a<em>i, b_i] \in S$, and $\cap</em>{i \ge 1} (a_i, b_i] = [c, c]$. </p>
+<p>It follows that every interval $(a, b] \subseteq \mathbb{R}$ can be generated by intervals in $S$.</p>
+<p>According to the lemma, $\mu$ and $\nu$ agrees on a $\pi$ system that generates $\mathcal{B}$.<br>By $\pi$-$\lambda$ theorem, they agree on each set in $\mathcal{B}$. </p>
+<p>$\square$</p>
+<p><strong>Proof of the Lemma.</strong><br>We are going to prove that, for each $a &lt; b$, </p>
+<script type="math/tex; mode=display">
+    \lim_{T \rightarrow \infty} \frac{1}{2 \pi} \int_{-T}^T \frac{e^{-ita} - e^{-itb}}{it} \varphi(t) \, d t
+        = \mu(a, b) + \mu \big( \{a, b \} \big).</script><p>Define</p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        I_T 
+            &\doteq \int_{-T}^T \frac{e^{-ita} - e^{-itb}}{it} \varphi(t) \, d t \\
+            &= \int_{-T}^T \int_\mathbb{R} \frac{e^{-it(a - x)} - e^{-it(b - x)}}{it} \,\mu(dx) \, d t \\
+            &\stackrel{(a)}{=} \int_\mathbb{R} \int_{-T}^T \frac{e^{-it(a - x)} - e^{-it(b - x)}}{it} \, d t \, \mu(dx) \\
+            &\stackrel{(b)}{=} \int_\mathbb{R} \int_{-T}^T \left[ \frac{\sin \big( (x - a) t \big) }{t}  - \frac{\sin \big( (x - b) t \big) }{t} \right] \, d t \, \mu(dx) \\
+            &\stackrel{(c)}{=} 2 \int_\mathbb{R} \int_{0}^T \left[ \frac{\sin \big( (x - a) t \big) }{t}  - \frac{\sin \big( (x - b) t \big) }{t} \right] \, d t \, \mu(dx) 
+    \end{aligned}</script><p>where </p>
+<ul>
+<li>Equation $(a)$ holds: since $e^{-i x} = 1 + \int_0^x e^{-is} \, d s$, <script type="math/tex; mode=display">
+      \begin{aligned}
+          \left| \frac{e^{-it(a - x)} - e^{-it(b - x)}}{it} \right|
+              = \left| 
+                  \int_{(b - x)}^{(a - x)} e^{-is} \, d s
+              \right| 
+              \le |b - a|
+      \end{aligned}</script>  is therefore bounded.<br>  Hence, by Fubini’s theorem, we can exchange the order of the double integral over finite product measure. </li>
+</ul>
+<ul>
+<li><p>Equation $(b)$ holds: since $\cos \big( (x - a) t \big) / (it)$ and $\cos \big( (x - b) t \big) / (it)$ are odd functions over $[-T, T]$</p>
+</li>
+<li><p>Equation $(c)$ holds: since $\sin \big( (x - a) t \big) / (it)$ and $\sin \big( (x - b) t \big) / (it)$ are even functions over $[-T, T]$</p>
+</li>
+</ul>
+<p>Next, define $S(T) \doteq \int_0^T \tfrac{\sin x}{x} \, dx$.<br>Introducing the function </p>
+<script type="math/tex; mode=display">
+    \mathsf{sgn}(\theta) 
+        = \begin{cases}
+        1, &\text{ if }\, \theta > 0, \\
+        0, &\text{ if }\, \theta = 0, \\
+        -1, &\text{ if }\, \theta < 0,
+    \end{cases}</script><p>we can write </p>
+<script type="math/tex; mode=display">
+    R(\theta, T) \doteq \int_0^T \frac{\sin \theta x}{x} \, dx 
+        = \mathsf{sgn}(\theta) \cdot S(|\theta| T).</script><p>Since ${T \rightarrow \infty}$, $S(T) \rightarrow \pi / 2$, we have $R(\theta, T) \rightarrow \mathsf{sgn}(\theta) \cdot \pi / 2$.<br>Hence, </p>
+<script type="math/tex; mode=display">
+    \lim_{T \rightarrow \infty} \Big\{ R(x - a, T) - R(x - b, T) \Big\}
+        = \begin{cases}
+            0,          &   x < a,      \\
+            \pi / 2,    &   x = a,      \\ 
+            \pi,        &   a < x < b,  \\ 
+            \pi / 2,    &   x = b,      \\ 
+            0,          &   x > b.  
+        \end{cases}</script><p>Finally, $|R(\theta, T)| = \Big| S \big( |\theta| T \big) \Big| \le \sup_t S(t) &lt; \infty$, by bounded convergence theorem, </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \lim_{T \rightarrow \infty} I_T 
+            &= 2 \lim_{T \rightarrow \infty} \int_\mathbb{R} \int_{0}^T \left[ \frac{\sin \big( (x - a) t \big) }{t}  - \frac{\sin \big( (x - b) t \big) }{t} \right] \, d t \, \mu(dx) \\
+            &= 2 \lim_{T \rightarrow \infty} \int_\mathbb{R} \Big\{ R(x - a, T) - R(x - b, T) \Big\} \, \mu(dx) \\
+            &= 2 \int_\mathbb{R} \lim_{T \rightarrow \infty} \Big\{ R(x - a, T) - R(x - b, T) \Big\} \, \mu(dx) \\
+            &= 2 \pi \cdot \mu (a, b) + \pi \mu (\{a, b\}), 
+    \end{aligned}</script><p>which concludes the proof.</p>
+<p><strong>Remark.</strong><br>Here, let $f<em>T(x) \doteq R(x - a, T) - R(x - b, T)$, and $f(x) \doteq \lim</em>{T \rightarrow \infty} f_T(x)$.<br>Since $f_T(x)$ is bounded, assume that $|f_T(x)| \le B, \forall x, T$.</p>
+<p>Let $\epsilon &gt; 0$.<br>For each $T \in \mathbb{R}^+$, define $E_T \doteq { x \in \mathbb{R} : | f_T(x) - f(x) | \le \epsilon }$.<br>Then</p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \left| \int_\mathbb{R} f_T(x) - f(x) \, \mu (dx) \right|
+            &\le \int_\mathbb{R} \left| f_T(x) - f(x) \right|\, \mu (dx) \\
+            &= \int_{E_T} \left| f_T(x) - f(x) \right|\, \mu (dx) + \int_{\overline{E_T}} \left| f_T(x) - f(x) \right| \, \mu (dx) \\
+            &\le \epsilon +  2B \cdot \mu \Big( \overline{E_T} \Big). 
+    \end{aligned}</script><p>Finally, for $x \notin (a - \epsilon, a + \epsilon) \cup (b - \epsilon, b + \epsilon)$, we have $|x - a| T, |x - b| T \ge \epsilon T$.<br>Hence, </p>
+<script type="math/tex; mode=display">
+    |f_T(x) - f(x)| \le 2 \cdot \left| S(\epsilon T) - S(\infty)\right|,</script><p>which approaches $0$ as $T \rightarrow \infty$.<br>So</p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \left| \int_\mathbb{R} f_T(x) - f(x) \, \mu (dx) \right|
+            \rightarrow (1 +  2B) \cdot \epsilon.
+    \end{aligned}</script><p>$\square$</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] P. Billingsley, Probability and measure Anniversary Edition, 3rd ed. New York: Wiley, 1995.</p>
+<p>[2] R. Durrett, “Probability : theory and examples,” p. 432.</p>
 
       
     </div>
@@ -783,7 +749,7 @@ ed. New York: Wiley, 1995.</p>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -849,12 +815,12 @@ ed. New York: Wiley, 1995.</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -881,7 +847,7 @@ ed. New York: Wiley, 1995.</p>
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

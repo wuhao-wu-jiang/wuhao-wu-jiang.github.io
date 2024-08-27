@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/16/Range-Min-Query/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/11/Approximate-Densest-Subgraph/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/12/16/Range-Min-Query/" class="post-title-link" itemprop="url">Range Min Query</a>
+            <a href="/2022/02/11/Approximate-Densest-Subgraph/" class="post-title-link" itemprop="url">Approximate Densest Subgraph</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2021-12-16 23:36:24" itemprop="dateCreated datePublished" datetime="2021-12-16T23:36:24+11:00">2021-12-16</time>
+              <time title="Created: 2022-02-11 12:49:24" itemprop="dateCreated datePublished" datetime="2022-02-11T12:49:24+01:00">2022-02-11</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-01-08 17:33:51" itemprop="dateModified" datetime="2022-01-08T17:33:51+11:00">2022-01-08</time>
+                <time title="Modified: 2022-02-12 07:32:34" itemprop="dateModified" datetime="2022-02-12T07:32:34+01:00">2022-02-12</time>
               </span>
 
           
@@ -191,1119 +191,167 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="problem">Problem</h1>
-<blockquote>
-<p><strong>Definition (Range Min Query).</strong> Let <span
-class="math inline">\(a_1, \ldots, a_n \in \mathbb{R}\)</span>. Given
-<span class="math inline">\(\ell, r \in [n]\)</span>, <span
-class="math inline">\(\ell \le r\)</span>, return <span
-class="math inline">\(\min \{ a_\ell, \ldots, a_r \}\)</span>.</p>
-</blockquote>
-<h1 id="basic-solutions">Basic Solutions</h1>
-<p>A data structure for the <strong>Range Min Query (RMQ)</strong> has
-complexity <span class="math inline">\(\left&lt; p(n), q(n)
-\right&gt;\)</span> if it has pre-processing and query-answering time
-<span class="math inline">\(p(n)\)</span> and <span
-class="math inline">\(q(n)\)</span> on input instance of size <span
-class="math inline">\(n\)</span>, respectively.</p>
-<h2 id="mathcala_1-precompute-none"><span
-class="math inline">\(\mathcal{A}_1\)</span> Precompute-None</h2>
-<blockquote>
-<p>Scan <span class="math inline">\(a_\ell, \ldots, a_r\)</span> to find
-the min. * This is an <span class="math inline">\(\left&lt; 0, O(n)
-\right&gt;\)</span> solution.</p>
-</blockquote>
-<h2 id="mathcala_2-complete-binary-tree"><span
-class="math inline">\(\mathcal{A}_2\)</span> Complete Binary Tree</h2>
-<blockquote>
-<p>Construct a complete binary tree with <span
-class="math inline">\(a_1, \ldots, a_n\)</span> being the leaf nodes.
-Each internal node of the tree is augmented with the minimum value of
-its subtree.<br />
-* This is an <span class="math inline">\(\left&lt; O(n), O(\log n)
-\right&gt;\)</span> solution.</p>
-</blockquote>
-<h2 id="mathcala_3-precompute-all"><span
-class="math inline">\(\mathcal{A}_3\)</span> Precompute-All</h2>
-<blockquote>
-<p>Create a <span class="math inline">\(n \times n\)</span> table <span
-class="math inline">\(M\)</span>. For each <span
-class="math inline">\(\ell, r \in [n]\)</span>, <span
-class="math inline">\(\ell \le r\)</span>, the <span
-class="math inline">\((\ell, r)\)</span>-th entry records <span
-class="math inline">\(\min \{ a_\ell, \ldots, a_r \}\)</span>.<br />
-* This is an <span class="math inline">\(\left&lt; O(n^2), O(1)
-\right&gt;\)</span> solution.</p>
-</blockquote>
-<ul>
-<li><p><span class="math inline">\(p(n) = O(n^2)\)</span>.</p>
-<ul>
-<li>Dynamic Programming.</li>
-<li><span class="math inline">\(\forall \ell, r \in [n], \ell \le
-r\)</span>, <span class="math display">\[
-    M[\ell, r] =
-        \begin{cases}            
-            a_\ell  &amp; \ell = r, \\
-            \min \{ M[\ell, r - 1], M[\ell + 1, r] \}, &amp; \ell &lt;
-r.
-        \end{cases}
-\]</span></li>
-</ul></li>
-<li><p><span class="math inline">\(q(n) = O(1)\)</span>.</p></li>
-</ul>
-<h2 id="mathcala_4-sparse-table"><span
-class="math inline">\(\mathcal{A}_4\)</span> Sparse Table</h2>
-<blockquote>
-<p>Create a <span class="math inline">\(n \times \lfloor \log n
-\rfloor\)</span> table <span class="math inline">\(M\)</span>. For each
-<span class="math inline">\(\ell \in [n], k \in \big[ \lfloor \log n
-\rfloor \big]\)</span>, <span class="math inline">\(r \doteq \ell +
-\big( 2^k - 1 \big) \le n\)</span>, the <span
-class="math inline">\((\ell, k)\)</span>-th entry records <span
-class="math inline">\(\min \{ a_\ell, \ldots, a_{\ell + 2^k - 1}
-\}\)</span>.<br />
-* This is an <span class="math inline">\(\left&lt; O(n \log n), O(1)
-\right&gt;\)</span> solution.</p>
-</blockquote>
-<ul>
-<li><p><span class="math inline">\(p(n) = O(n \log n)\)</span>.</p>
-<ul>
-<li>Dynamic Programming.</li>
-<li>For each <span class="math inline">\(\ell \in [n], k \in \big[
-\lfloor \log n \rfloor \big]\)</span>, <span class="math inline">\(r
-\doteq \ell + \big( 2^k - 1 \big) \le n\)</span>, let <span
+          <p>Let <span class="math inline">\(G = (V, E)\)</span> be an undirected
+graph with <span class="math inline">\(|V| = n\)</span> vertices and
+<span class="math inline">\(|E| = m\)</span> edges.<br />
+For each <span class="math inline">\(S \subset V\)</span>, denote <span
+class="math inline">\(E(S)\)</span> the set of edges in the subgraph
+induced by <span class="math inline">\(S\)</span>, i.e., <span
 class="math display">\[
-    M[\ell, k] =
-        \begin{cases}            
-            \min \{ a_\ell, a_{\ell + 1} \}  &amp;   k = 1, \\
-            \min \{ M[\ell, \ell + 2^{k - 1} - 1], M[r -  2^{k - 1} + 1,
-r] \}, &amp; \ell &lt; r.
-        \end{cases}
-\]</span></li>
-</ul></li>
-<li><p><span class="math inline">\(q(n) = O(1)\)</span>.</p></li>
-</ul>
-<h1 id="divide-and-conquer">Divide and Conquer</h1>
-<h2 id="preprocessing">Preprocessing</h2>
-<ol type="1">
-<li><p>Pick <span class="math inline">\(s \in \mathbb{N}_+\)</span>, and
-let <span class="math inline">\(m = n / s\)</span>.</p></li>
-<li><p>Partition <span class="math inline">\(a_1, \ldots, a_n\)</span>
-into <span class="math inline">\(m\)</span> blocks <span
-class="math inline">\(B_1, \ldots B_m\)</span>, such that <span
-class="math inline">\(B_1\)</span> contains the first <span
-class="math inline">\(s\)</span> elements, <span
-class="math inline">\(B_2\)</span> contains the next <span
-class="math inline">\(s\)</span> elements, and so on. In general,<br />
-<span class="math display">\[
-B_i \doteq \{ a_{ (i - 1) \cdot s + 1 },  \ldots, a_{i \cdot s} \},
-\quad \forall i \in [m].  
-\]</span></p></li>
-<li><p>Denote <span class="math inline">\(b_1, \ldots, b_m\)</span> be
-the minimum element in <span class="math inline">\(B_1, \ldots
-B_m\)</span>, respectively.</p></li>
-</ol>
-<h2 id="query">Query</h2>
-<ol start="4" type="1">
-<li><p>Given <span class="math inline">\(\ell, r \in [n]\)</span>, <span
-class="math inline">\(\ell \le r\)</span>, consider</p>
-<ul>
-<li><p><span class="math inline">\(C_1\)</span> be the collection of
-indexes of the blocks <span class="math inline">\(B_i \subset \{ a_\ell,
-\ldots, a_r \}\)</span>: <span class="math display">\[
-      C_1 \doteq \{ i \in [m] : B_i \subset \{ a_\ell, \ldots, a_r \} \}
-  \]</span> If <span class="math inline">\(C_1 \neq \emptyset\)</span>,
-let <span class="math inline">\(\ell&#39; = \min_{i \in C_1} i\)</span>
-and <span class="math inline">\(r&#39; = \max_{i \in C_1}
-i\)</span>.</p></li>
-<li><p><span class="math inline">\(C_2\)</span> be the collection of
-indexes of the blocks <span class="math inline">\(B_i\)</span> such that
-<span class="math inline">\(B_i \nsubseteq \{ a_\ell, \ldots, a_r
-\}\)</span> and <span class="math inline">\(B_i \cap \{ a_\ell, \ldots,
-a_r \} \neq \emptyset\)</span> <span class="math display">\[
-      C_2 \doteq \{  i \in [m] : B_i \cap \{ a_\ell, \ldots, a_r \} \neq
-\emptyset \wedge B_i \nsubseteq \{ a_\ell, \ldots, a_r \} \}.
-  \]</span> It must be that <span class="math inline">\(|C_2| \le
-2\)</span>.</p></li>
-</ul></li>
-<li><p>To return <span class="math inline">\(\min \{ a_\ell, \ldots, a_r
-\}\)</span>, return the minimum of</p>
-<ul>
-<li><span class="math inline">\(\min_{i \in C_1} b_i\)</span>, if <span
-class="math inline">\(C_1 \neq \emptyset\)</span>.</li>
-<li><span class="math inline">\(\min_{i \in C_2} \min \big( B_i \cap \{
-a_\ell, \ldots, a_r \}\big)\)</span>.</li>
-</ul>
-<p>Note that</p>
-<ul>
-<li>The first one is a range-min query on <span
-class="math inline">\(b_1, \ldots, b_m\)</span>.</li>
-<li>The second one consists of range-min queries on the blocks <span
-class="math inline">\(B_i\)</span> for <span class="math inline">\(i \in
-C_2\)</span></li>
-</ul></li>
-</ol>
-<h2 id="approach-one">Approach One</h2>
-<ol type="1">
-<li><p>Suppose we invoke an algorithm <span
-class="math inline">\(A_{up}\)</span> to answer the range-min query on
-<span class="math inline">\(b_1, \ldots, b_m\)</span>, with complexity
-<span class="math inline">\(\left&lt; p_1(m), q_1(m)
-\right&gt;\)</span>.</p></li>
-<li><p>Suppose we invoke an algorithm <span
-class="math inline">\(A_{down}\)</span> to answer the range-min query
-range-min queries on the blocks <span class="math inline">\(B_i\)</span>
-for <span class="math inline">\(i \in C_2\)</span>, with complexity
-<span class="math inline">\(\left&lt; p_2(s), q_2(s)
-\right&gt;\)</span>.<br />
-<!-- Suppose that it has pre-processing $p_1(m)$ and query-answering time $q_1(m)$ for a single block.  --></p></li>
-<li><p>Since the set <span class="math inline">\(C_2\)</span> depends on
-the range min query, to answer arbitrary range min query, we need to run
-the pre-processing of <span class="math inline">\(A_{down}\)</span> on
-each block <span class="math inline">\(B_i, i \in [m]\)</span>.</p></li>
-</ol>
-<p>This approach has complexity <span class="math display">\[
-    \begin{aligned}
-        &amp;\left&lt; O \big( n + p_1(m) + m \cdot p_2 (s) \big) , O
-\big( q_1(m) + q_2 (s) \big) \right&gt; \\
-        &amp;=
-        \left&lt; O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big),
-O \big( q_1(n / s) + q_2 (s) \big) \right&gt;.
-    \end{aligned}
+    E(S) \doteq \{ (u, v) \in E : u, v \in S \}.
+\]</span> The density of the subgraph induced by <span
+class="math inline">\(S\)</span> is <span class="math display">\[
+    d_G(S) \doteq \frac{|E(S)|}{|S|}.
 \]</span></p>
-<h2 id="instantiation">Instantiation</h2>
-<h3 id="mathcala_5-two-level-precompute-none"><span
-class="math inline">\(\mathcal{A}_5\)</span> Two-Level
-Precompute-None</h3>
-<p>Choose Precompute-None <span
-class="math inline">\(\mathcal{A}_1\)</span> for both <span
-class="math inline">\(A_{up}\)</span> and <span
-class="math inline">\(A_{down}\)</span>.</p>
-<ul>
-<li>Total preprocessing time: <span class="math inline">\(O \big( n
-\big)\)</span>.<br />
-</li>
-<li>Total query time: <span class="math inline">\(O \big( m + s \big) =
-O \big( \sqrt{n} \big)\)</span>, if <span class="math inline">\(m = s =
-\sqrt{n}\)</span>.</li>
-</ul>
 <blockquote>
-<p>Hence, it has complexity <span class="math inline">\(\left&lt; O
-\big( n \big), O \big( \sqrt{n} \big) \right&gt;\)</span>.</p>
+<p><strong>Problem.</strong> Find <span class="math inline">\(S^*
+\subset V\)</span>, s.t. <span class="math inline">\(d_G(S^*)\)</span>
+is maximized.</p>
 </blockquote>
-<h3 id="mathcala_6-two-level-binary-tree"><span
-class="math inline">\(\mathcal{A}_6\)</span> Two-Level Binary Tree</h3>
-<p>This is just a complete binary tree over <span
-class="math inline">\(a_1, \ldots, a_n\)</span>. Therefore,</p>
-<ul>
-<li><p>Total preprocessing time: <span class="math inline">\(O \big( n
-\big)\)</span>.</p></li>
-<li><p>Total query time: <span class="math inline">\(O \big( \log n
-\big)\)</span>.</p></li>
-</ul>
+<h1 id="greedy-algorithm">Greedy Algorithm</h1>
 <blockquote>
-<p>Hence, it has complexity <span class="math inline">\(\left&lt; O
-\big( n \big), O \big( \log n \big) \right&gt;\)</span>.</p>
+<p><strong>Definition.</strong> Given <span class="math inline">\(S
+\subset V\)</span>, for each <span class="math inline">\(u \in
+S\)</span>, define the set of edges incident to <span
+class="math inline">\(u\)</span> in <span
+class="math inline">\(S\)</span> as <span class="math display">\[
+E(u, S) \doteq \{ (u, v) \in E(S) \}.
+\]</span></p>
+<p><strong>Definition.</strong> A function <span
+class="math inline">\(w: E \rightarrow V\)</span> is called an edge
+assignment, if it maps each edge <span class="math inline">\((u, v) \in
+E\)</span> to one of its endpoints <span class="math inline">\(\{u, v
+\}\)</span>.</p>
 </blockquote>
-<h3 id="mathcala_7-two-level-sparse-table"><span
-class="math inline">\(\mathcal{A}_7\)</span> Two-Level Sparse Table</h3>
-<p>We don't investigate Precompute-All, as the sparse table is always
-better.</p>
-<p>Choose sparse table <span
-class="math inline">\(\mathcal{A}_3\)</span> for both <span
-class="math inline">\(A_{up}\)</span> and <span
-class="math inline">\(A_{down}\)</span>.</p>
-<ul>
-<li><p>Total preprocessing time: <span class="math inline">\(O \big( m
-\log m + m \cdot s \log s \big)\)</span>.<br />
-Since <span class="math inline">\(m \cdot s = n\)</span>, we have <span
+<p>There is a linear time, 2-approximation greedy algorithm [1] which
+works as follows.</p>
+<blockquote>
+<p><strong>Greedy Algorithm.</strong> 1. <span class="math inline">\(S_1
+\leftarrow V\)</span>;<br />
+2. for <span class="math inline">\(i \in [n]\)</span> do<br />
+3. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(u_i \leftarrow \arg\min_{u \in S_i} |E(u,
+S_i)|\)</span>;<br />
+4. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(S_{i + 1} \leftarrow S_i \setminus \{ u_i
+\}\)</span>;<br />
+5. <span class="math inline">\(\qquad\)</span> for <span
+class="math inline">\(e = (u_i, v) \in E(u_i, S_i)\)</span> do<br />
+6. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(w(e)
+\leftarrow u_i\)</span>;<br />
+7. <span class="math inline">\(k \leftarrow \arg\max_{i \in n]} |E(u_i,
+S_i)|\)</span>;<br />
+8. return <span class="math inline">\(S_k\)</span>;</p>
+</blockquote>
+<h1 id="approximation-guarantee">Approximation Guarantee</h1>
+<blockquote>
+<p><strong>Definition.</strong> Given an edge assignment <span
+class="math inline">\(w\)</span>, for each <span class="math inline">\(u
+\in V\)</span>, denote the set of edges assigned to <span
+class="math inline">\(u\)</span> as <span class="math display">\[
+A_w(u) \doteq \{ e = (u, v) \in E : w(e) = u \}.
+\]</span></p>
+</blockquote>
+<p>The approximation guarantee relies on the following lemma.</p>
+<blockquote>
+<p><strong>Lemma.</strong> For edge assignment <span
+class="math inline">\(w\)</span> and each <span class="math inline">\(S
+\subset V\)</span>, it holds that <span class="math display">\[
+\max_{u \in V} |A_w(u)| \ge d_G(S).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Observe that all edges in <span
+class="math inline">\(E(S)\)</span> are assigned to vertices in <span
+class="math inline">\(S\)</span>. It follows that <span
 class="math display">\[
-      O \Big( m \log m + m \cdot s \log s \Big) = O \Big( \frac{n}{s}
-\log \frac{n}{s} + n \log s \Big),
-  \]</span> which is minimized when <span class="math display">\[
-      \begin{aligned}
-          \frac{n}{s} \log \frac{n}{s} = n \log s
-          &amp;\iff \log n - \log s = s \log s \\
-          &amp;\iff \log n = \Theta (s \log s ) \\
-          &amp;\iff \log \log n = \Theta (\log s).
-      \end{aligned}
-  \]</span> Therefore, the pre-processing time is reduced to <span
+    \max_{u \in V} |A_w(u)|
+        \ge \max_{u \in S} |A_w(u)|
+        \ge \frac{|E(S)|}{|S|} = d_G(S).
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem.</strong> The solution <span
+class="math inline">\(S_k\)</span> satisfies <span
 class="math display">\[
-      O \Big( n \log \log n \Big).
-  \]</span></p></li>
-<li><p>Total query time: <span class="math inline">\(O \big( 1 + 1 \big)
-= O \big( 1 \big)\)</span>.</p></li>
-</ul>
-<blockquote>
-<p>Hence, it has complexity <span class="math inline">\(\left&lt; O
-\big( n \log \log n \big), O \big( 1 \big) \right&gt;\)</span>.</p>
-</blockquote>
-<p><strong>Remark:</strong> <em>Personally I suspect this approach is
-fast in practice. Since <span class="math inline">\(A_{down}\)</span>
-involves a linear scan of at most two blocks with size <span
-class="math inline">\(O(\log n)\)</span>, and linear scan is
-cache-friendly.</em></p>
-<p><strong>Remark:</strong> If we apply two level <span
-class="math inline">\(\mathcal{A}_7\)</span>, then the preprocessing
-time is <span class="math display">\[
-    O \Big( m \log \log m + m \cdot s \log \log s \Big) = O \Big(
-\frac{n}{s} \log \log \frac{n}{s} + n \log \log s \Big),
-\]</span> Choosing <span class="math inline">\(s = \log \log s\)</span>
-minimized this to <span class="math display">\[
-    O \Big( n \log \log \log \log s\Big).
+d_G(S_k) \ge \frac{1}{2} \cdot d_G (S^*).
 \]</span></p>
-<p>Further, the query time remains <span
-class="math inline">\(O(1)\)</span>.</p>
-<h3 id="mathcala_8-hybrid-sparse-table-and-precompute-none"><span
-class="math inline">\(\mathcal{A}_8\)</span> Hybrid-Sparse Table and
-Precompute-None</h3>
-<p>Choose sparse table <span
-class="math inline">\(\mathcal{A}_3\)</span> for <span
-class="math inline">\(A_{up}\)</span> and Precompute-None <span
-class="math inline">\(\mathcal{A}_1\)</span> for <span
-class="math inline">\(A_{down}\)</span>.</p>
-<ul>
-<li><p>Total preprocessing time: <span class="math inline">\(O \big( (n
-/ s) \log (n / s) \big)\)</span>.</p></li>
-<li><p>Total query time: <span class="math inline">\(O \big( 1 + s
-\big)\)</span>.</p></li>
-</ul>
-<p>If we choose <span class="math inline">\(s = \log n\)</span>,
-then</p>
-<ul>
-<li><p>Total preprocessing time: <span class="math inline">\(O \big( n
-\big)\)</span>.</p></li>
-<li><p>Total query time: <span class="math inline">\(O \big( \log n
-\big)\)</span>.</p></li>
-</ul>
-<blockquote>
-<p>Hence, it has complexity <span class="math inline">\(\left&lt; O
-\big( n \big), O \big( \log n \big) \right&gt;\)</span>.</p>
-</blockquote>
-<h3 id="mathcala_9-hybrid-sparse-table-and-binary-tree"><span
-class="math inline">\(\mathcal{A}_9\)</span> Hybrid-Sparse Table and
-Binary Tree</h3>
-<p>Choose sparse table <span
-class="math inline">\(\mathcal{A}_3\)</span> for <span
-class="math inline">\(A_{up}\)</span> and complete binary tree <span
-class="math inline">\(\mathcal{A}_2\)</span> for <span
-class="math inline">\(A_{down}\)</span>.</p>
-<ul>
-<li><p>Total preprocessing time: <span class="math inline">\(O \big( (n
-/ s) \log (n / s) + (n / s)\cdot s \big)\)</span>.</p></li>
-<li><p>Total query time: <span class="math inline">\(O \big( 1 + \log s
-\big)\)</span>.</p></li>
-</ul>
-<p>If we choose <span class="math inline">\(s = \log n\)</span>,
-then</p>
-<ul>
-<li><p>Total preprocessing time: <span class="math inline">\(O \big( n
-\big)\)</span>.</p></li>
-<li><p>Total query time: <span class="math inline">\(O \big( \log \log n
-\big)\)</span>.</p></li>
-</ul>
-<blockquote>
-<p>Hence, it has complexity <span class="math inline">\(\left&lt; O
-\big( n \big), O \big( \log \log n \big) \right&gt;\)</span>.</p>
-</blockquote>
-<p><strong>Remark:</strong> If we apply two level <span
-class="math inline">\(\mathcal{A}_9\)</span>, then the preprocessing
-time is <span class="math display">\[
-    O \big( n + n / s + n / s \cdot s \big) = O(n),
-\]</span></p>
-<p>Further, the query time is <span class="math display">\[
-    O \big( \log \log (n / s) + \log \log s \big).
-\]</span></p>
-<p>Unfortunately, this is still <span class="math inline">\(\log \log
-n\)</span>.</p>
-<h2 id="approach-two">Approach Two</h2>
-<!-- Can we achieve $O(n)$ preprocessing time and $O(1)$ under the hybrid framework? 
-Recall that it has
-* Total preprocessing time: $O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big)$.   
-* Total query time: $O \big( q_1(n / s) + q_2 (s) \big)$.    -->
-<p>Can we achieve <span class="math inline">\(\left&lt; O \big( n \big),
-O \big( 1 \big) \right&gt;\)</span> under approach one? Recall that
-approach one has complexity <span class="math display">\[
-    \begin{aligned}
-        \left&lt; O \big( n + p_1(n / s) + (n / s) \cdot p_2 (s) \big),
-O \big( q_1(n / s) + q_2 (s) \big) \right&gt;.
-    \end{aligned}
-\]</span></p>
-<p>Suppose we want to achieve preprocessing time <span
-class="math inline">\(O(n)\)</span> and query time <span
-class="math inline">\(O(1)\)</span>, then <span
-class="math inline">\(p_2(s)\)</span> and <span
-class="math inline">\(q_2(s)\)</span> needs to satisfy that <span
-class="math inline">\(p_2(s) = s\)</span> and <span
-class="math inline">\(q_2(s) = 1\)</span>. But this is exactly the
-property we want to achieve!</p>
-<p>It seems to be impossible to achieve the desired complexity under the
-divide and conquer framework.</p>
-<p>The key is to observe that the following are two different
-problems.</p>
-<blockquote>
-<ol type="1">
-<li>Finding a <strong>RMQ</strong> algorithm with complexity <span
-class="math inline">\(\left&lt; O(n), O(1) \right&gt;\)</span>.<br />
-</li>
-<li>Finding an algorithm that preprocess the all block <span
-class="math inline">\(B_i\)</span> in <span
-class="math inline">\(O(n)\)</span> time, such that the range-min query
-on each <span class="math inline">\(B_i\)</span> can be answered in
-<span class="math inline">\(O(1)\)</span> time.</li>
-</ol>
-</blockquote>
-<p>For the divide-and-conquer framework to work to achieve complexity
-<span class="math inline">\(\left&lt; O(n), O(1) \right&gt;\)</span>, it
-suffices to find an algorithm for the second problem.</p>
-<!-- ### **Construction** -->
-<blockquote>
-<p><strong>Theorem.</strong> There exists some <span
-class="math inline">\(s \in \Theta(\log n)\)</span>, such that we can
-find an algorithm that preprocess the all block <span
-class="math inline">\(B_i\)</span> in <span
-class="math inline">\(O(n)\)</span> time, such that the range-min query
-on each <span class="math inline">\(B_i\)</span> can be answered in
-<span class="math inline">\(O(1)\)</span> time.</p>
-</blockquote>
-<p>Denote such an algorithm as <span
-class="math inline">\(\mathcal{A}^*\)</span>. Since <span
-class="math inline">\(s \in \Theta(\log n)\)</span>, choosing sparse
-table algorithm <span class="math inline">\(\mathcal{A}_3\)</span> to
-answer the range-min query on <span class="math inline">\(b_1, \ldots,
-b_m\)</span> incurs additional preprocessing time <span
-class="math inline">\(O( n / s \cdot \log (n / s) ) = O(n)\)</span>.
-Further, answering a query requires only <span
-class="math inline">\(O(1)\)</span> time.</p>
-<p>It is left to show the construction of <span
-class="math inline">\(\mathcal{A}^*\)</span>.</p>
-<h3 id="block-type"><strong>Block Type</strong></h3>
-<p>W.L.O.G., consider the first block <span class="math inline">\(B_1 =
-\{ a_{ 1 }, \ldots, a_{ s} \}\)</span> be a block of <span
-class="math inline">\(s\)</span> elements. We can construct a binary
-tree over the elements, such that it satisfies</p>
-<blockquote>
-<ol type="1">
-<li><strong>Min Heap Property:</strong> <em>each node of the tree is the
-smallest one in the subtree rooted at this node.</em><br />
-</li>
-<li>The in-order traversal of the tree gives the array <span
-class="math inline">\(B_1\)</span>.</li>
-</ol>
-</blockquote>
-<p>Such a binary tree is called a <strong>Cartesian Tree</strong> and
-the <strong><em>type</em></strong> of the block.</p>
-<p>On the other hand, suppose we are given a <strong>Cartesian
-Tree</strong> tree constructed on <span
-class="math inline">\(B_1\)</span>, and suppose that the value of each
-node of the tree is hidden. Hence, we only know the topology or shape of
-the binary tree. For all <span class="math inline">\(1 \le \ell \le r
-\le s\)</span>, we can still return the index of the minimum element
-among <span class="math inline">\(a_\ell, \ldots, a_s\)</span>, purely
-based on the topology of the binary tree.</p>
-<p>In this sense, the answers to the RMQ on <span
-class="math inline">\(B_1\)</span> is entirely determined by its
-corresponding <strong>Cartesian Tree</strong>.</p>
-<h3 id="enumeration"><strong>Enumeration</strong></h3>
-<p>This motivates the following strategy.</p>
-<ol type="1">
-<li><p>Enumerate all possible <strong>Cartesian Trees</strong>.</p></li>
-<li><p>For each <strong>Cartesian Tree</strong>, invoke the sparse table
-algorithm <span class="math inline">\(\mathcal{A}_3\)</span> algorithm
-on this tree, so that all possible range min query for this tree can be
-answer in <span class="math inline">\(O(1)\)</span> time.</p></li>
-<li><p>For each block <span class="math inline">\(B_i, i \in
-[m]\)</span>, determine its <strong>Cartesian Trees</strong>. To answer
-a RMQ on <span class="math inline">\(B_i\)</span>, access the
-pre-computed result on its corresponding <strong>Cartesian
-Trees</strong>.</p></li>
-</ol>
-<blockquote>
-<p><strong>Fact.</strong> The number of distinct <strong>Cartesian
-Trees</strong> with size <span class="math inline">\(s\)</span> is given
-by <span class="math display">\[
-\frac{1}{1 + s}\binom{2s}{s}.
-\]</span></p>
-</blockquote>
-<p>Therefore, enumerating the <strong>Cartesian Trees</strong>, and
-constructing sparse tables on them for <strong>RMQ</strong>, take time
-and space <span class="math display">\[
-    \frac{1}{1 + s}\binom{2s}{s} \cdot s \cdot \log s
-    = \Theta \left( \frac{s \cdot \log s}{1 + s} \frac{ \sqrt{2s} \cdot
-\big( 2s / e \big)^{2s} }{ \Big( \sqrt{s} \cdot \big( s / e \big)^{s}
-\Big)^2 } \right)
-    = \Theta \left( \frac{\log s}{\sqrt{s}} \cdot 2^{2s} \right).
-\]</span></p>
-<p>Choosing <span class="math inline">\(s = \big( 0.5 \cdot \log n
-\big)\)</span> gives <span class="math inline">\(\Theta( n \cdot \big(
-\log \log n \big) / \sqrt{\log n}) \subset O(n)\)</span>.</p>
-<h3 id="determining-the-block-type"><strong>Determining the Block
-Type</strong></h3>
-<p>In this section, we show how to construct the corresponding Cartesian
-Tree given the block <span class="math inline">\(B_1\)</span>, and to
-create a unique identifier <span class="math inline">\(\in O(n)\)</span>
-for the Cartesian Tree.</p>
-<p>We illustrate the idea with an example. In this example, <span
-class="math inline">\(B_1 = (2, 4, 3, 1)\)</span>. We will construct the
-Cartesian Tree, by including the elements from <span
-class="math inline">\(B_1\)</span> one by one. Further, we maintain a
-<em>stack</em> and a <em>stack operation sequence</em>, both of which
-are initially empty. The stack keeps elements from the right spine of
-the tree, and the stack operation sequence records the "in stack" and
-"out stack" operations as we include more elements from <span
-class="math inline">\(B_1\)</span> into the tree.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/01.png?raw=true" width="250" height="" /></p>
-</div>
-<p>We first include the element <span class="math inline">\(2\)</span>
-into the tree. Since the tree consists of only one node, it is the root
-of the tree. It is also the only node in the right spine of the tree, so
-we put <span class="math inline">\(2\)</span> into the stack, and append
-<span class="math inline">\(1\)</span> to the stack operation sequence,
-to record the in-stack operation.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/02.png?raw=true" width="250" height="" /></p>
-</div>
-<p>Next we include the element <span class="math inline">\(4\)</span>
-into the tree. Since the tree satisfies min-heap property, <span
-class="math inline">\(4\)</span> must be the child of <span
-class="math inline">\(2\)</span>. Since the in-order traversal of the
-tree gives the array <span class="math inline">\(2, 4\)</span>, the node
-<span class="math inline">\(4\)</span> must be the right child of <span
-class="math inline">\(2\)</span>. We put <span
-class="math inline">\(4\)</span> into the stack, and append <span
-class="math inline">\(1\)</span> to the stack operation sequence, to
-record the in-stack operation.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/03.png?raw=true" width="250" height="" /></p>
-</div>
-<p>We want to include the element <span class="math inline">\(3\)</span>
-into the existing tree. Since after inclusion, the in-order traversal of
-the tree gives the array <span class="math inline">\(2, 4, 3\)</span>,
-the node <span class="math inline">\(3\)</span> must be in the right
-spine of the tree. Indeed, this is a general principle for adding a new
-element into the tree.</p>
-<blockquote>
-<p><strong>Lemma (In the Right Spine).</strong> For each <span
-class="math inline">\(j \in [s]\)</span>, let <span
-class="math inline">\(T_j\)</span> be the Cartesian tree constructed on
-<span class="math inline">\(a_1, \ldots, a_j\)</span>. Then <span
-class="math inline">\(a_j\)</span> be must in the right spine of <span
-class="math inline">\(T_j\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong></p>
-<ol type="1">
-<li>If <span class="math inline">\(a_j\)</span> has right-child in <span
-class="math inline">\(T_j\)</span>, then it is not the last element
-visited by the in-order traversal of <span
-class="math inline">\(T_j\)</span>.</li>
-<li>If <span class="math inline">\(a_j\)</span> has a parent node in
-<span class="math inline">\(T_j\)</span> and is the left-child of its
-parent, then it is not the last element visited by the in-order
-traversal of <span class="math inline">\(T_j\)</span>.</li>
-</ol>
-<p><span class="math inline">\(\square\)</span></p>
-<p>In this case, the right spine consists of <span
-class="math inline">\(2\)</span> and <span
-class="math inline">\(4\)</span>. We compare <span
-class="math inline">\(3\)</span> with <span
-class="math inline">\(4\)</span>. As it is smaller than <span
-class="math inline">\(4\)</span>, we pop <span
-class="math inline">\(4\)</span> out of the stack. We compare <span
-class="math inline">\(3\)</span> with <span
-class="math inline">\(2\)</span>. As it is larger than <span
-class="math inline">\(2\)</span>, we put <span
-class="math inline">\(3\)</span> into the stack. We include <span
-class="math inline">\(3\)</span> as the right-child of <span
-class="math inline">\(2\)</span>, and set <span
-class="math inline">\(4\)</span> as the left child of <span
-class="math inline">\(3\)</span>. We see that after these operations,
-the stack still contains the nodes in the right spine of the tree.
-Further, the min-heap property of the tree is maintained. We append
-<span class="math inline">\(01\)</span> to the stack operation sequence,
-to record the out-stack and in-stack operations performed.</p>
-<p>We now formally states the rules for adding an element to the right
-spine.</p>
-<blockquote>
-<p><strong>Incremental Construction Rule.</strong> For each <span
-class="math inline">\(1 \le j &lt; s\)</span>, let <span
-class="math inline">\(T_j\)</span> be the Cartesian tree constructed on
-<span class="math inline">\(a_1, \ldots, a_j\)</span>, and suppose that
-<span class="math inline">\(a_1&#39; \le a_2&#39; \ldots \le
-a_k&#39;\)</span> are the elements in the right spine of <span
-class="math inline">\(T_j\)</span>. Then <span
-class="math inline">\(a_{j + 1}\)</span> is added to <span
-class="math inline">\(T_j\)</span> as follows:</p>
-<ol type="1">
-<li><p>If <span class="math inline">\(a_{j + 1} &lt; a_1&#39;\)</span>,
-then set <span class="math inline">\(a_1&#39;\)</span> as the left child
-of <span class="math inline">\(a_{j + 1}\)</span>.</p></li>
-<li><p>If <span class="math inline">\(a_{j + 1} &gt; a_k&#39;\)</span>,
-then set <span class="math inline">\(a_{j + 1}\)</span> as the right
-child of <span class="math inline">\(a_k&#39;\)</span>.</p></li>
-<li><p>Otherwise, there exists <span class="math inline">\(1 \le i &lt;
-k\)</span>, such that <span class="math inline">\(a_i&#39; \le a_{j + 1}
-&lt; a_{i + 1}&#39;\)</span>. Replace <span class="math inline">\(a_{i +
-1}&#39;\)</span> by <span class="math inline">\(a_{j + 1}\)</span> as
-the right child of <span class="math inline">\(a_i&#39;\)</span>, and
-set <span class="math inline">\(a_{i + 1}&#39;\)</span> as the left
-child of <span class="math inline">\(a_{j + 1}\)</span>.</p></li>
-</ol>
-</blockquote>
-<p>It is easy to verify that after the construction</p>
-<ol type="1">
-<li><span class="math inline">\(a_{j + 1}\)</span> is in the right spine
-of the tree.<br />
-</li>
-<li>The min-heap property is maintained.</li>
-</ol>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/04.png?raw=true" width="400" height="" /></p>
-</div>
-<p>We want to include the element <span class="math inline">\(1\)</span>
-into the existing tree. Since after inclusion, the in-order traversal of
-the tree gives the array <span class="math inline">\(2, 4, 3,
-1\)</span>, the node <span class="math inline">\(1\)</span> must be in
-the right spine of the tree. In this case, the right spine consists of
-<span class="math inline">\(2\)</span> and <span
-class="math inline">\(3\)</span>. As <span
-class="math inline">\(1\)</span> is smaller than <span
-class="math inline">\(2\)</span>, we pop <span
-class="math inline">\(3\)</span> and <span
-class="math inline">\(2\)</span> out of the stack, put <span
-class="math inline">\(1\)</span> into the stack, and set <span
-class="math inline">\(2\)</span> as the left child of <span
-class="math inline">\(1\)</span>. We append <span
-class="math inline">\(001\)</span> to the stack operation sequence, to
-record the stack operations performed.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/05.png?raw=true" width="460" height="" /></p>
-</div>
-<p>Finally, we pop <span class="math inline">\(1\)</span> out of the
-stack, and append <span class="math inline">\(0\)</span> to the stack
-operation sequence, to record the stack operation performed. We perform
-this operation, so that whatever sequence of <span
-class="math inline">\(a_1, \ldots, a_s\)</span>, the stack operation
-sequence corresponding to the Cartesian Tree construction procedure
-stated as above has length <span class="math inline">\(2s\)</span>.</p>
-<div style="text-align:center">
-<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/RangeMinQuery/06.png?raw=true" width="300" height="" /></p>
-</div>
-<blockquote>
-<p>The construction also reveal an interesting fact: each Cartesian Tree
-with <span class="math inline">\(s\)</span> node corresponding a <span
-class="math inline">\(0\)</span>-<span class="math inline">\(1\)</span>
-sequence with length <span class="math inline">\(2s\)</span>, such that
-each prefix of the sequence contains no less <span
-class="math inline">\(1\)</span>'s than <span
-class="math inline">\(0\)</span>'s.</p>
-</blockquote>
-<p>We know that <span class="math display">\[
-    | \{ t \in \{0, 1\}^{2s} : \text{each prefix of } t \text{ contains
-no less } 1 \text{ than } 0 \} | = \frac{1}{1 + s} \binom{2s}{s},
-\]</span> which gives a construct proof of the number of binary trees
-with <span class="math inline">\(s\)</span> nodes.</p>
-<h1 id="reference">Reference</h1>
-<p>[1] Stanford, CS 166, <a
-target="_blank" rel="noopener" href="https://web.stanford.edu/class/cs166/lectures/00/Slides00.pdf">Range
-Minimum Queries</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/22/Random-Variable/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/11/22/Random-Variable/" class="post-title-link" itemprop="url">Random Variable</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-11-22 23:57:05" itemprop="dateCreated datePublished" datetime="2021-11-22T23:57:05+11:00">2021-11-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-31 22:16:18" itemprop="dateModified" datetime="2022-03-31T22:16:18+11:00">2022-03-31</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="random-variable">Random Variable</h1>
-<p>Let <span class="math inline">\((\Omega, \mathcal{F},
-\mathbb{P})\)</span> be a probability space, and let <span
-class="math inline">\(\mathcal{B}\)</span> be the collection of Borel
-sets in <span class="math inline">\(\mathbb{R}\)</span>.</p>
-<blockquote>
-<p><strong>Definition.</strong> A random variable <span
-class="math inline">\(Y: \Omega \rightarrow \mathbb{R}\)</span> on <span
-class="math inline">\((\Omega, \mathcal{F}, \mathbb{P})\)</span> is a
-function that is <span class="math inline">\(\mathcal{F} /
-\mathcal{B}\)</span> measurable, i.e., <span class="math display">\[
-Y^{-1}(E) \doteq \{ \omega \in \Omega : Y(\omega) \in E \} \in
-\mathcal{F}, \quad \forall E \in \mathcal{B}.
-\]</span></p>
-</blockquote>
-<p>It is not easy to verify this condition for each <span
-class="math inline">\(E \in \mathcal{B}\)</span> directly. It suffices
-to check one of the following equivalent conditions:</p>
-<ol type="1">
-<li><span class="math inline">\(Y^{-1}( (-\infty, a] ) \in \mathcal{F},
-\forall a \in \mathbb{R}\)</span>.</li>
-<li><span class="math inline">\(Y^{-1}( (-\infty, a) ) \in \mathcal{F},
-\forall a \in \mathbb{R}\)</span>.</li>
-<li><span class="math inline">\(Y^{-1}( [a, \infty) ) \in \mathcal{F},
-\forall a \in \mathbb{R}\)</span>.</li>
-<li><span class="math inline">\(Y^{-1}( (a, \infty) ) \in \mathcal{F},
-\forall a \in \mathbb{R}\)</span>.</li>
-</ol>
-<p>The correctness follows from the following theorem.</p>
-<blockquote>
-<p><strong>Theorem.</strong> If there exists a subset <span
-class="math inline">\(\mathcal{S} \subseteq 2^{\mathbb{R}}\)</span> such
-that 1) <span class="math inline">\(\mathcal{S}\)</span> generates <span
-class="math inline">\(\mathcal{B}\)</span>, i.e., <span
-class="math inline">\(\sigma(\mathcal{S}) = \mathcal{B}\)</span>; 2) for
-each <span class="math inline">\(E \in \mathcal{S}\)</span>, <span
-class="math inline">\(Y^{-1}(E) \in \mathcal{F}\)</span>, then <span
-class="math inline">\(Y\)</span> is measurable.</p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(\mathcal{L}
-\doteq \{ E \in \mathcal{B} : Y^{-1}(E) \in \mathcal{F} \}\)</span>. We
-claim that <span class="math inline">\(\mathcal{L}\)</span> it is a
-<span class="math inline">\(\sigma\)</span>-field in <span
-class="math inline">\(\mathbb{R}\)</span>, by showing that it is closed
-under complement and countable union.</p>
-<p>Via that <span class="math inline">\(\mathcal{F}\)</span> is a <span
-class="math inline">\(\sigma\)</span>-field,</p>
-<ol type="1">
-<li><p>If <span class="math inline">\(Y^{-1}(E) \in
-\mathcal{F}\)</span>, then <span class="math inline">\(Y^{-1}(\mathbb{R}
-- E) = \Omega - Y^{-1}(E) \in \mathcal{F}\)</span>.</p></li>
-<li><p>If <span class="math inline">\(Y^{-1}(E_n) \in
-\mathcal{F}\)</span> for disjoint <span class="math inline">\(E_n, n \in
-\mathbb{N}^+\)</span>, then <span class="math display">\[
-     Y^{-1}( \cup_{n \in \mathbb{N}^+} E_n ) = \cup_{n \in \mathbb{N}^+}
-Y^{-1}( E_n ) \in \mathcal{F}.
-\]</span></p></li>
-</ol>
-<p>Finally, <span class="math inline">\(\mathcal{S} \subseteq
-\mathcal{L}\)</span>, then <span
-class="math inline">\(\sigma(\mathcal{S}) \subseteq
-\mathcal{L}\)</span>, the theorem follows.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h2 id="distribution">Distribution</h2>
-<blockquote>
-<p><strong>Definition.</strong> The distribution <span
-class="math inline">\(\mu: \mathcal{B} \rightarrow \mathbb{R}_{\ge
-0}\)</span> of <span class="math inline">\(Y\)</span> is a probability
-measure on <span class="math inline">\((\mathbb{R},
-\mathcal{B})\)</span> defined by <span class="math display">\[
-\mu(E) = \mathbb{P}[ Y \in E ] = \mathbb{P} \circ Y^{-1} (E), \quad
-\forall E \in \mathcal{B},
-\]</span> where <span class="math inline">\(Y \in E\)</span> is a
-shorthand for <span class="math inline">\(Y^{-1}(E)\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> We verify that <span
-class="math inline">\(\mu\)</span> is a probability measure. Note that
-<span class="math inline">\(\mu(\emptyset) = 0\)</span>, and <span
-class="math inline">\(\mu(\mathbb{R}) = 1\)</span>. <span
-class="math inline">\(\mu\)</span> is countably additive: consider
-disjoint <span class="math inline">\(E_1, E_2, \ldots \in
-\mathcal{B}\)</span>, <span class="math display">\[
-    \begin{aligned}
-        \mu( \cup_{n \ge 1} E_n )
-            &amp;= \mathbb{P}\big[ Y^{-1} \big( \cup_{n \ge 1} E_n \big)
-\big] \\
-            &amp;= \mathbb{P}\big[ \cup_{n \ge 1} Y^{-1} \big( E_n \big)
-\big] \\
-            &amp;= \sum_{n \ge 1} \mathbb{P}\big[  Y^{-1} \big( E_n
-\big) \big]\\
-            &amp;= \sum_{n \ge 1} \mu( E_n ).
-    \end{aligned}
-\]</span></p>
-<p>Hence, <span class="math inline">\((\mathbb{R}, \mathcal{B},
-\mu)\)</span> constitutes a probability space.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h3 id="properties"><strong>Properties</strong></h3>
-<blockquote>
-<p><strong>Theorem.</strong> There can't be an uncountable collection of
-disjoint sets in <span class="math inline">\(\mathcal{B}\)</span> with
-positive <span class="math inline">\(\mu\)</span>-measure.</p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(\mathcal{C}
-\subset \mathcal{B}\)</span> be a disjoint collection of sets with
-positive <span class="math inline">\(\mu\)</span>-measure. Consider
-<span class="math inline">\((0, 1]\)</span>. For each <span
-class="math inline">\(k \in \mathbb{N}^+\)</span>, let <span
-class="math display">\[
-    \mathcal{D}_{1, k} \doteq \{ E \in \mathcal{C}, \mu \big( E \cap (0,
-1] \big) \ge 1 /  k \}.
-\]</span> Then <span class="math inline">\(|\mathcal{D}_{1, k}| \le
-k\)</span>, since <span class="math inline">\(1 / k \cdot
-|\mathcal{D}_{1, k}| \le \sum_{E \in \mathcal{D}_{1, k} } \mu(x) \le
-1\)</span>. Therefore the set <span class="math inline">\(\mathcal{C}_0
-\doteq \cup_{k \ge 1} \mathcal{D}_{1, k}\)</span> is countable.</p>
-<p>Similarly we can define <span
-class="math inline">\(\mathcal{C}_n\)</span>, for each interval <span
-class="math inline">\((n, n + 1]\)</span>. If <span
-class="math inline">\(E \in \mathcal{C}\)</span>, then there exists at
-least one <span class="math inline">\(n \in \mathbb{Z}\)</span>, such
-that <span class="math inline">\(E \in \mathcal{C}_n\)</span>. So <span
-class="math inline">\(\mathcal{C} = \cup_{n \in \mathbb{Z} }
-\mathcal{C}_n\)</span> is countable.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Comment:</strong> <em>what would be the value of <span
-class="math inline">\(1 / k \cdot |\mathcal{D}_{1, k}|\)</span> if <span
-class="math inline">\(\mathcal{D}_{1, k}\)</span> is uncountable? One
-possible way to avoid such multiplication is by applying the axiom of
-choice. Suppose that the set <span class="math inline">\(\mathcal{D}_{1,
-k}\)</span> contains more than <span class="math inline">\(k\)</span>
-elements, then by the axiom of choice we can iteratively pick at most
-<span class="math inline">\(k\)</span> element (without replacement)
-from the set. We can not find more item from the set, since the
-intersection of <span class="math inline">\((0,1]\)</span> with each
-element has <span class="math inline">\(\mu\)</span>-measure at least
-<span class="math inline">\(1 / k\)</span>.</em></p>
-<h2 id="expectation">Expectation</h2>
-<blockquote>
-<p><strong>Definition.</strong> Let <span class="math inline">\((\Omega,
-\mathcal{F}, \mathbb{P})\)</span> be a probability space and <span
-class="math inline">\(Y\)</span> is a random variable defined on it. The
-expectation of <span class="math inline">\(Y\)</span> is defined by
-<span class="math display">\[
-\mathbb{E}[ Y ]
-\doteq \int Y \, d \mathbb{P}
-= \int_{ \Omega } Y(\omega) \, \mathbb{P} ( d \omega ).
-\]</span></p>
-</blockquote>
-<p>For nonnegative <span class="math inline">\(Y\)</span>, <span
-class="math inline">\(\mathbb{E}[ Y ]\)</span> is always defined. For
-general <span class="math inline">\(Y\)</span>, <span
-class="math inline">\(\mathbb{E}[ Y ]\)</span> is defined if at least
-one of <span class="math inline">\(\mathbb{E}[ X_+ ]\)</span> or <span
-class="math inline">\(\mathbb{E}[ X_- ]\)</span> is finite. <span
-class="math inline">\(Y\)</span> is integrable if <span
-class="math inline">\(\mathbb{E}[ |Y| ] &lt; \infty\)</span>.</p>
-<h2 id="composition">Composition</h2>
-<blockquote>
-<p><strong>Theorem.</strong> Consider a function <span
-class="math inline">\(f: \mathbb{R} \rightarrow \mathbb{R}\)</span> is
-that is <span class="math inline">\(\mathcal{B} / \mathcal{B}\)</span>
-measurable. The composition of <span class="math inline">\(f\)</span>
-and <span class="math inline">\(Y\)</span>, denoted by <span
-class="math inline">\(f \circ Y\)</span> or <span
-class="math inline">\(f(Y)\)</span>, is a random variable.</p>
-</blockquote>
-<p><strong>Proof.</strong> For each Borel set <span
-class="math inline">\(E \in \mathcal{B}\)</span>,</p>
-<ol type="1">
-<li>Its inverse image <span class="math inline">\(f^{-1} (E)\)</span> is
-a Borel set since <span class="math inline">\(f\)</span> is measurable
-<span class="math inline">\(\mathcal{B} / \mathcal{B}\)</span>.</li>
-<li>The inverse image of <span class="math inline">\(f^{-1} (E)\)</span>
-belongs to <span class="math inline">\(\mathcal{F}\)</span> since <span
-class="math inline">\(Y\)</span> is a random variable.</li>
-</ol>
-<p>It concludes that <span class="math inline">\(\big( f \circ Y
-\big)^{-1}(E) \in \mathcal{F}\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h3 id="expectation-under-composition">Expectation Under
-Composition</h3>
-<p>On the one hand, <span class="math inline">\(f \circ Y\)</span> is
-random variable on <span class="math inline">\((\Omega, \mathcal{F},
-\mathbb{P})\)</span>. It expectation is given by <span
-class="math display">\[
-    \mathbb{E}[ f(Y) ] = \int_{ \Omega } f( Y(\omega) ) \, \mathbb{P} (
-d \omega ).
-\]</span></p>
-<p>Let <span class="math inline">\(\mu\)</span> be the distribution of
-<span class="math inline">\(Y\)</span>. Since <span
-class="math inline">\((\mathbb{R}, \mathcal{B}, \mu)\)</span>
-constitutes a probability space, and <span
-class="math inline">\(f\)</span> is <span
-class="math inline">\(\mathcal{B} / \mathcal{B}\)</span> measurable, it
-is a random variable defined on <span class="math inline">\((\mathbb{R},
-\mathcal{B}, \mu)\)</span>. By definition, its expectation is given by
-<span class="math display">\[
-    \mathbb{E}[ f ] = \int_{ \mathbb{R} } f(x) \, \mu (d x).
-\]</span></p>
-<p>It is therefore of interest whether these two definitions are
-consistent, i.e., whether two integrals are equal.</p>
-<blockquote>
-<p><strong>Theorem.</strong> If <span class="math inline">\(f\)</span>
-is nonnegative and measurable <span class="math inline">\(\mathcal{B} /
-\mathcal{B}\)</span>, then <span class="math display">\[
-\mathbb{E}[ f(Y) ]
-= \int_{ \Omega } f( Y(\omega) ) \, \mathbb{P} ( d \omega )
-= \int_{ \mathbb{R} } f(x) \, \mu (d x)
-= \mathbb{E}[ f ].
-\]</span> Further, <span class="math inline">\(f\)</span> (not
-necessarily nonnegative) is integrable with respect to <span
-class="math inline">\(\mu = \mathbb{P} \circ Y^{-1}\)</span> if and only
-if <span class="math inline">\(f \circ Y = f(Y)\)</span> is integrable
-with respect to <span class="math inline">\(\mathbb{P}\)</span>, in
-which case the above equation holds.</p>
 </blockquote>
 <p><strong>Proof.</strong><br />
-1. Suppose <span class="math inline">\(f = \mathbb{1}_{A}\)</span> is an
-indicator function for a measurable set, then <span
+Let <span class="math inline">\(w\)</span> be the assignment constructed
+by the greedy algorithm, and denote <span class="math display">\[
+    d_{\max} \doteq \max_{u \in V} |A_w(u)| = \max_{i \in [n]} |E(u_i,
+S_i)| = |E(u_k, S_k)|.
+\]</span> Via the previous lemma, it holds that <span
 class="math display">\[
-        \begin{aligned}
-            \mathbb{E}[ f(Y) ]
-                &amp;= \int_{ \Omega } f( Y(\omega) ) \, \mathbb{P} ( d
-\omega )  = \int_{ \Omega } \mathbb{1}_{A} ( Y(\omega) ) \, \mathbb{P} (
-d \omega )  = \mathbb{P} [ Y \in A],\, \\
-            \mathbb{E}[ f ]  
-                &amp;= \int_{ \mathbb{R} } f(x) \, \mu (d x) = \int_{
-\mathbb{R} } \mathbb{1}_{A} (x) \, \mu (d x) = \mu (A) = \mathbb{P} [ Y
-\in A].
-        \end{aligned}
-    \]</span> Therefore, <span class="math inline">\(\mathbb{E}[ f(Y) ]
-= \mathbb{E}[ f ]\)</span>.</p>
-<ol start="2" type="1">
-<li><p>By linearity, this holds for nonnegative simple
-functions.</p></li>
-<li><p>Suppose that <span class="math inline">\(f\)</span> is a
-non-negative function that is measurable <span
-class="math inline">\(\mathcal{B} / \mathcal{B}\)</span>, then there is
-a sequence of non-negative simple functions <span
-class="math inline">\(f_n \uparrow f\)</span>. Hence <span
-class="math inline">\(f_n(Y) \uparrow f(Y)\)</span>. For each <span
-class="math inline">\(n \in \mathbb{N}^+\)</span>, it holds that <span
-class="math display">\[
-     \mathbb{E}[ f_n(Y) ] = \mathbb{E}[ f_n ].
-\]</span> The claim follows by monotone convergence theorem.</p></li>
-</ol>
-<p>For general function <span class="math inline">\(f\)</span> that is
-measurable <span class="math inline">\(\mathcal{B} /
-\mathcal{B}\)</span>, applying the above claim to <span
-class="math inline">\(|f|\)</span> establishes integrability.
-Decomposing <span class="math inline">\(f\)</span> into positive part
-and negative parts proves the claim.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Example.</strong> Taking <span class="math inline">\(f(x) =
-x, \forall x \in \mathbb{R}\)</span>, we see <span
-class="math display">\[
-\mathbb{E}[ Y ] = \int_{ \Omega } Y (\omega) \, \mathbb{P} (d \omega) =
-\int_{ \mathbb{R} } x \, \mu (d x).
+    d_G(S^*) \le d_{\max} = |E(u_k, S_k)|.
 \]</span></p>
-</blockquote>
-<h1 id="density">Density</h1>
-<p>Let <span class="math inline">\((\Psi, \mathcal{M}, \lambda)\)</span>
-be arbitrary measurable space.</p>
-<blockquote>
-<p><strong>Theorem.</strong> Let <span class="math inline">\(\delta:
-\Psi \rightarrow \mathbb{R}_{\ge 0}\)</span> be a function that is
-measurable <span class="math inline">\(\mathcal{M} /
-\mathcal{B}\)</span>. Then we can define a measure by <span
-class="math display">\[
-\nu(E) \doteq \int_{E} \delta d \lambda, \quad \forall E \in
-\mathcal{M}.
-\]</span> <span class="math inline">\(\nu\)</span> is said to have
-<em>density</em> <span class="math inline">\(\delta\)</span> with
-respect to <span class="math inline">\(\lambda\)</span>.</p>
-</blockquote>
-<p><em>Note that <span class="math inline">\(\nu(E)\)</span> can be
-<span class="math inline">\(\infty\)</span>.</em></p>
-<p><strong>Proof.</strong> Clearly <span
-class="math inline">\(\nu(\emptyset) = 0\)</span>. Let <span
-class="math inline">\(E_n \in \mathcal{M}, n \in \mathbb{N}^+\)</span>
-be disjoint. Then via monotone convergence theorem, <span
-class="math display">\[
-    \begin{aligned}
-        \nu(\cup_{n \ge 1} E_n)
-            &amp;= \int \delta \cdot \mathbb{1}_{ \cup_{n \ge 1} E_n} d
-\lambda \\
-            &amp;= \lim_{n \ge 1} \int \delta \cdot \left( \sum_{k \in
-[n] }\mathbb{1}_{ E_k } \right) d \lambda \\
-            &amp;= \sum_{k \ge 1} \int \delta \cdot \mathbb{1}_{ E_k
-}  d \lambda \\
-            &amp;= \sum_{k \ge 1} \nu(E_k).
-    \end{aligned}
+<p>Further, as <span class="math inline">\(u_k\)</span> is the vertices
+with minimum degree in the subgraph induced by <span
+class="math inline">\(S_k\)</span>, <span class="math inline">\(|E(u_k,
+S_k)|\)</span> should be upper bounded by the average degree in <span
+class="math inline">\(S_k\)</span>: <span class="math display">\[
+    d_G(S^*) \le |E(u_k, S_k)| \le 2 \cdot  \frac{|E(S_k)|}{ |S_k| } = 2
+\cdot d_G(S_k).
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
+<h1 id="running-time">Running Time</h1>
 <blockquote>
-<p><strong>Theorem.</strong> Let <span class="math inline">\(Y: \Psi
-\rightarrow \mathbb{R}_{\ge 0}\)</span> be measurable <span
-class="math inline">\(\mathcal{M} / \mathcal{B}\)</span>. Then <span
-class="math display">\[
-\int Y \, d \nu = \int Y \cdot \delta \, d \lambda.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> 1. If <span class="math inline">\(Y =
-\mathbb{1}_{A}\)</span> for <span class="math inline">\(A \in
-\mathcal{M}\)</span>, then <span class="math display">\[
-        \begin{aligned}
-            \int Y \, d \nu
-                = \int \mathbb{1}_{A} \, d \nu
-                = \nu(A)
-                = \int_A \delta \, d \lambda
-                = \int \mathbb{1}_{A} \cdot \delta \, d \lambda.
-        \end{aligned}
-    \]</span></p>
-<ol start="2" type="1">
-<li><p>Via linearity of expectation, this holds for all non-negative
-simple functions.</p></li>
-<li><p>Let <span class="math inline">\(X_n, n \in \mathbb{N}^+\)</span>
-be non-negative simple functions such that <span
-class="math inline">\(X_n \uparrow Y\)</span>. Then <span
-class="math inline">\(X_n \cdot \delta \uparrow Y \cdot \delta\)</span>.
-Via monotone convergence theorem, we get <span class="math display">\[
-     \int Y \, d \nu = \lim_n \int X_n \, d \nu = \lim_n \int X_n \cdot
-\delta \, d \lambda = \int Y \cdot \delta \, d \lambda.
-\]</span></p></li>
-</ol>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary.</strong> Let <span class="math inline">\(Y: \Psi
-\rightarrow \mathbb{R}\)</span> be measurable <span
-class="math inline">\(\mathcal{M} / \mathcal{B}\)</span>. It is
-integrable with respect to <span class="math inline">\(\nu\)</span> if
-and only if <span class="math inline">\(Y \cdot f\)</span> is integrable
-with respect to <span class="math inline">\(\lambda\)</span>.</p>
+<p><strong>Theorem.</strong> The algorithm can be implemented in <span
+class="math inline">\(O(m + n)\)</span> time.</p>
 </blockquote>
 <p><strong>Proof.</strong></p>
-<p>By applying the previous theorem to <span
-class="math inline">\(|Y|\)</span>.</p>
+<p>We can maintain the degrees of the vertices in <span
+class="math inline">\(S_i, i \in [n]\)</span> dynamically.</p>
+<ol type="1">
+<li><p>At the beginning of the algorithm, set <span
+class="math inline">\(d(u) = |E(u, V)| = |E(u, S_i)|\)</span> for each
+<span class="math inline">\(u \in V\)</span>. We maintain the invariant
+that <span class="math inline">\(d(u) = |E(u, S_i)|\)</span> at the
+beginning of each iteration <span class="math inline">\(i \in
+[n]\)</span>.</p></li>
+<li><p>At the <span class="math inline">\(i^{(th)}\)</span> iteration,
+when <span class="math inline">\(u_i\)</span> is removed from <span
+class="math inline">\(S_i\)</span> to construct <span
+class="math inline">\(S_{i + 1}\)</span>, we decrease <span
+class="math inline">\(d(v)\)</span> by <span
+class="math inline">\(1\)</span>, if <span class="math inline">\((u_i,
+v) \in E(S_i)\)</span>.</p></li>
+</ol>
+<p>It is easy to see that the invariant is maintained, and the total
+update time is <span class="math inline">\(O(m)\)</span>.</p>
+<p>Next, we design a data structure that supports the extraction of
+<span class="math inline">\(u_i\)</span>, the vertex with minimum degree
+in <span class="math inline">\(S_i\)</span>, in <span
+class="math inline">\(O(1)\)</span> time. We keep an array with size
+<span class="math inline">\(n\)</span>.</p>
+<ul>
+<li><p>Each vertex <span class="math inline">\(u\)</span> is kept in the
+<span class="math inline">\(d(u)\)</span>-th bucket of the array. When
+<span class="math inline">\(d(u)\)</span> is updated, we update the
+bucket of <span class="math inline">\(u\)</span> correspondingly. The
+total update cost is <span class="math inline">\(O(m)\)</span>.</p></li>
+<li><p>At the beginning of the algorithm, we search bucket <span
+class="math inline">\(0, 1, \ldots\)</span> , until we find the first
+non-empty bucket <span class="math inline">\(j \in [n]\)</span>. Then we
+extract a vertex <span class="math inline">\(u\)</span> from the bucket
+<span class="math inline">\(j\)</span>, and updates the <span
+class="math inline">\(d(v)\)</span> for which <span
+class="math inline">\(v\)</span> is neighbor of <span
+class="math inline">\(u\)</span> in the induced subgraph. The update
+decreases <span class="math inline">\(d(v)\)</span> by <span
+class="math inline">\(1\)</span>. Therefore, the bucket <span
+class="math inline">\(\max \{ 0, j - 1 \}\)</span> can become non-empty
+at the next iteration, from which we should try to find the next vertex
+with minimum degree. There are <span class="math inline">\(n\)</span>
+iteration, and we can move backward at the array by at most <span
+class="math inline">\(n\)</span> steps. It follows that the total
+searching cost in the array is <span
+class="math inline">\(O(n)\)</span>.</p></li>
+</ul>
 <p><span class="math inline">\(\square\)</span></p>
-<h1 id="equality">Equality</h1>
-<blockquote>
-<p><strong>Theorem.</strong> If <span class="math inline">\(Y\)</span>
-is non-negative, then <span class="math display">\[
-\mathbb{E}[ Y ]
-= \int_{ \mathbb{R} } x \, d \mu
-= \int_{ \mathbb{R} } \mathbb{P}[ Y &gt; t ] \, d t
-= \int_{ \mathbb{R} } \mathbb{P}[ Y \ge t ] \, d t,
-\]</span> where <span class="math inline">\(\int_{ \mathbb{R} } \cdot \,
-d t\)</span> is the Lebesgue integral.</p>
-</blockquote>
-<p><strong>Proof.</strong> Since there are countably many of points in
-<span class="math inline">\(\mathbb{R}\)</span> for which <span
-class="math inline">\(\mathbb{P}(Y = x) \neq 0\)</span>, therefore the
-set for which <span class="math inline">\(\mathbb{P}(Y \ge t) \neq
-\mathbb{P}(Y &gt; t)\)</span> has Lebesgue measure 0. It holds that
-<span class="math display">\[
-    \int_{ \mathbb{R} } \mathbb{P}[ Y &gt; t ] \, d t
-     = \int_{ \mathbb{R} } \mathbb{P}[ Y \ge t ] \, d t.      
-\]</span></p>
-<p><strong>Case One: <span class="math inline">\(Y\)</span> is
-simple.</strong></p>
-<p>If <span class="math inline">\(Y = \sum_{i \in [n] } a_i
-\mathbf{1}_{A_i}\)</span> is a simple non-negative function such that
-the <span class="math display">\[
-    a_0 \doteq 0 \le a_1 &lt; \ldots &lt; a_n
-\]</span> are distinct, and the <span class="math inline">\(A_i\)</span>
-are disjoint. For each <span class="math inline">\(i \in [n]\)</span>,
-define <span class="math inline">\(\Delta_i = a_i - a_{i - 1}\)</span>.
-Then <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[ Y ]
-            &amp;= \sum_{i \in [n] } a_i \mathbb{P}(Y = a_i) \\
-            &amp;= \sum_{i \in [n] } \sum_{j \in [i] } \Delta_j
-\mathbb{P}(Y = a_i) \\
-            &amp;= \sum_{j \in [n] } \sum_{i = j }^n  \Delta_j
-\mathbb{P}(Y = a_i) \\
-            &amp;= \sum_{j \in [n] } \Delta_j \mathbb{P}(Y \ge a_i)
-    \end{aligned}
-\]</span></p>
-<p>Since for each <span class="math inline">\(t \in (a_{i - 1},
-a_i]\)</span>, it holds that <span class="math inline">\(\mathbb{P}[Y
-\ge t] = \mathbb{P}[ Y \ge a_i]\)</span>, and for each <span
-class="math inline">\(t &gt; a_n\)</span>, it holds that <span
-class="math inline">\(\mathbb{P}[Y \ge t] = 0\)</span>, we get <span
-class="math display">\[
-    \begin{aligned}
-        \mathbb{E}[ Y ]
-            &amp;= \sum_{j \in [n] } \Delta_j \mathbb{P}(Y \ge a_i) \\
-            &amp;= \sum_{j \in [n] } \int_{ t \in (a_{i - 1}, a_i] }
-\mathbb{P}(Y \ge t) \, d t \\
-            &amp;= \int_{ t \in (a_0, a_n] } \mathbb{P}(Y \ge t) \, d t
-\\
-            &amp;= \int_{ t = 0 }^\infty \mathbb{P}(Y \ge t) \, d t.
-    \end{aligned}
-\]</span></p>
-<p>Since <span class="math inline">\(\mathbb{P}(Y \ge t) = \mathbb{P} (Y
-&gt; t)\)</span> almost everywhere <span class="math display">\[
-    \mathbb{E}[ Y ]
-          = \int_{ t = 0 }^\infty \mathbb{P}(Y \ge t) \, d t.
-          = \int_{ t = 0 }^\infty \mathbb{P}(Y &gt; t) \, d t.
-\]</span></p>
-<p><strong>Case Two: <span class="math inline">\(Y\)</span> is general
-non-negative measurable function.</strong></p>
-<p>If <span class="math inline">\(Y\)</span> is non-negative, then there
-is an increasing sequence of simple random variables <span
-class="math inline">\(\{ X_n \} \uparrow Y\)</span>. Hence <span
-class="math display">\[
-    \begin{aligned}
-        \mathbb{P}( X_n &gt; t)
-        &amp;= \mathbb{P} \left( \{ \omega \in \Omega : X_n(\omega) &gt;
-t \} \right)  \\
-        &amp;\uparrow \mathbb{P} (Y &gt; t)
-        = \mathbb{P} \left( \{ \omega \in \Omega : Y(\omega) &gt; t \}
-\right).
-    \end{aligned}
-\]</span> As <span class="math display">\[
-    \mathbb{E}[ X_n ] = \int_{ t = 0 }^\infty \mathbb{P}(X_n &gt; t) \,
-d t.
-\]</span> By applying monotone convergence theorem to both hand
-side,<br />
-<span class="math display">\[
-    \mathbb{E}[ Y ]
-          = \int_{ t = 0 }^\infty \mathbb{P}(Y &gt; t) \, d t.
-\]</span></p>
-<p><strong>Remark:</strong> <em>We can't argue that <span
-class="math inline">\(\mathbb{P}(X_n \ge t) \uparrow \mathbb{P}(Y \ge
-t)\)</span>, even though <span class="math inline">\(X_n \uparrow
-Y\)</span>. For example, the functions <span class="math inline">\(X_n =
-(1 - 1 / n) \cdot \mathbb{1}_{[0, 1]}\)</span> increases to <span
-class="math inline">\(Y = \mathbb{1}_{[0, 1]}\)</span>. But <span
-class="math inline">\(\mathbb{P}(X_n \ge 1) = 0\)</span> and <span
-class="math inline">\(\mathbb{P}(Y \ge 1) = 1\)</span>.</em></p>
-<p><span class="math inline">\(\square\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>M. Charikar, “Greedy Approximation Algorithms for Finding
+Dense Components in a Graph,” 2000</em>.</p>
 
       
     </div>
@@ -1323,7 +371,7 @@ class="math inline">\(\mathbb{P}(Y \ge 1) = 1\)</span>.</em></p>
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/16/Total-Variation-Distance-and-Product-Measure/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/08/Sparse-Vector/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1337,7 +385,306 @@ class="math inline">\(\mathbb{P}(Y \ge 1) = 1\)</span>.</em></p>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/11/16/Total-Variation-Distance-and-Product-Measure/" class="post-title-link" itemprop="url">Total Variation Distance and Product Measure</a>
+            <a href="/2022/02/08/Sparse-Vector/" class="post-title-link" itemprop="url">Sparse Vector</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-02-08 17:59:19" itemprop="dateCreated datePublished" datetime="2022-02-08T17:59:19+01:00">2022-02-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-04-11 22:42:55" itemprop="dateModified" datetime="2024-04-11T22:42:55+02:00">2024-04-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Let $(\mathcal{X}, \Vert \cdot \Vert)$ be metric space.</p>
+<blockquote>
+<p><strong>Definition.</strong> Two elements $D, D’ \in \mathcal{X}$ are neighboring, denoted as $D \sim D’$,  if $\Vert D’, D’ \Vert = 1$.<br><strong>Definition.</strong> A function $q: \mathcal{X} \rightarrow \mathbb{R}$ has sensitivity $\Delta \in \mathbb{R}^+$, if </p>
+<script type="math/tex; mode=display">
+    \Delta = \sup_{ D, D' \in \mathcal{X}, D \sim D' } | q(D) - q(D') |.</script></blockquote>
+<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><blockquote>
+<p>Let $q_i: \mathcal{X} \rightarrow \mathbb{R}, i \in \mathbb{N}^+$ be a sequence of functions with sensitivity $\Delta$.<br>Let $t \in \mathbb{R}$ be a threshold.<br>Design an $\epsilon$-differentially private algorithm, that reports the first $i \in \mathbb{N}^+$ for which $q_i(D)$ is near or above $t$.</p>
+</blockquote>
+<h1 id="Mechanism-One"><a href="#Mechanism-One" class="headerlink" title="Mechanism One"></a>Mechanism One</h1><blockquote>
+<p><strong>Definition.</strong> For each $b \in \mathbb{R}^+$, let $\mathcal{Lap}(b)$ be the Laplacian distribution with parameter $b$. </p>
+</blockquote>
+<p>The algorithm is described as follows. </p>
+<blockquote>
+<p><strong>Algorithm $\mathcal{A}$.</strong>      </p>
+<ol>
+<li>$\hat t \leftarrow t + Z$ where $Z \sim \mathcal{Lap}(3 \Delta / \epsilon)$     </li>
+<li><strong>for</strong> $i \in \mathbb{N}^+$ <strong>do</strong>      </li>
+<li>$\qquad$   $\hat q_i(D) \leftarrow q_i(D) + X_i$, where $X_i \sim \mathcal{Lap}( 3 \Delta / \epsilon)$        </li>
+<li>$\qquad$ <strong>if</strong> $\hat q_i(D) \ge \hat t$ <strong>then</strong>      </li>
+<li>$\qquad\qquad$ <strong>output</strong> $\bot$    </li>
+<li>$\qquad\qquad$ <strong>halt</strong>     </li>
+<li>$\qquad$ <strong>else</strong>    </li>
+<li>$\qquad\qquad$ <strong>output</strong> $\top$     </li>
+</ol>
+</blockquote>
+<p>Note that it is necessary to add noise to $t$, to obtain $\hat{t}$. </p>
+<p>Otherwise, assume that $\mathcal{A} (D) = \mathcal{A} (D’) = \underbrace{\top \ldots \top}_{ n \text{ occurrences} } \bot$ for some $n \in \mathbb{N}$ and neighboring datasets $D$ and $D’$. </p>
+<p>Assume further that $t = 0$, $q_i(D) = \Delta$ and $q_i(D’) = 0$ for all $i \in \mathbb{N}$.<br>Then </p>
+<script type="math/tex; mode=display">
+    \begin{align*}
+         \Pr[ \mathcal{A} (D) = \underbrace{\top \ldots \top}_{ n \text{ occurrences} } \bot ] 
+            &= \left( \frac{1}{2} \right)^{n + 1} \exp \left( - \frac{\epsilon \cdot n }{3} \right) \left( 1 - \exp \left( - \frac{\epsilon}{3} \right)\right). \\
+         \Pr[ \mathcal{A} (D') = \underbrace{\top \ldots \top}_{ n \text{ occurrences} } \bot ] 
+            &= \left( \frac{1}{2} \right)^{n + 1}. 
+    \end{align*}</script><h2 id="Privacy-Guarantee"><a href="#Privacy-Guarantee" class="headerlink" title="Privacy Guarantee"></a>Privacy Guarantee</h2><p>Let $D’$ be a neighboring dataset of $D$.  </p>
+<blockquote>
+<p><strong>Theorem.</strong> For each $i \in \mathbb{N}^+$, let $s<em>i \doteq \underbrace{\top \ldots \top}</em>{ i - 1 \text{ occurrences} } \bot$.<br>Then </p>
+<script type="math/tex; mode=display">
+    e^{-\epsilon}
+    \le 
+    \frac{\Pr[ \mathcal{A}(D) = s_i ]}{\Pr[ \mathcal{A}(D') = s_i ]} 
+    \le 
+    e^{\epsilon}.</script></blockquote>
+<p><strong>Proof 1.</strong><br>&lt;!— </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \Pr[ \mathcal{A}(D) = s_i ] 
+            &= \Pr[ \wedge_{\ell = 1}^{i - 1} \,\, q_\ell (D) + X_\ell < t + Z \, \wedge \, q_i (D) + X_i \ge t + Z ] \\
+            &= \E_{z \sim \mathcal{Lap}(3 \Delta / \epsilon)} \left[ \Pr \left[ \wedge_{\ell = 1}^{i - 1} \,\, q_\ell (D) + X_\ell < t + z \, \wedge \, q_i (D) + X_i \ge t + z \right] \right] \\
+            &= \E_{z \sim \mathcal{Lap}(3 \Delta / \epsilon)} \left[ \prod_{\ell = 1}^{i - 1} \Pr \left[ q_\ell (D) + X_\ell < t + z \right] \cdot \Pr \left[ q_i (D) + X_i \ge t + z \right] \right] \\
+    \end{aligned}</script><p>—&gt;</p>
+<p>Fix an $i \in \mathbb{N}^+$.<br>For each dataset $D$ and each $\vec x<em>{i - 1} = (x_1, \ldots, x</em>{i - 1} ) \in \mathbb{R}^{i - 1}$, define</p>
+<script type="math/tex; mode=display">
+    M(D, \vec x_{i - 1}) = \max_{j \in [i - 1]} \Big( q_j(D) + x_j \Big).</script><p>Denote $\vec X<em>{i - 1} \doteq (X_1, \ldots, X</em>{i - 1})$, and<br>the event $\mathcal{A}(D) = s_i$ happens if and only if   </p>
+<script type="math/tex; mode=display">
+    M(D, \vec X_{i - 1}) < \hat t \le \hat q_i(D).</script><p>Fix a sequence $\vec x<em>{i - 1} = (x_1, \ldots, x</em>{i - 1} ) \in \mathbb{R}^{i - 1}$.<br>Let $\mu$ be a shorthand of $\mathcal{Lap}(3 \Delta / \epsilon)$, and $F$ be its cumulative function.<br>Since the random variables $Z, \vec X_{i - 1}, X_i$ are independent, via Fubini’s theorem, </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] 
+            &= \Pr \big[ M(D, \vec x_{i - 1}) < \hat t \le \hat q_i(D) \big] \\
+            &= \Pr \big[ M(D, \vec x_{i - 1}) < t + Z \le q_i(D) + X_i \big] \\
+            &= \mathbb{E}_{z \sim \mu} \left[ \mathbb{I} \Big[ M(D, \vec x_{i - 1}) < t + z \Big] \cdot \big( 1 - F ( t + z - q_i(D) ) \big) \right] \\
+            &= \mathbb{E}_{z \sim \mu} \left[ \mathbb{I} \Big[ M(D, \vec x_{i - 1}) < t + z \Big] \cdot F \big(  - t - z + q_i(D) \big) \right] \\
+            &= \int_{M(D, \vec x_{i - 1}) - t}^\infty p(z) \cdot F \big(  - t - z + q_i(D) \big) \, d z \\ 
+            &= \int_{M(D', \vec x_{i - 1}) - t}^\infty p\big( z + \kappa \big) \cdot F \big(  - t - z - \kappa + q_i(D) \big) \, d z, 
+    \end{aligned}</script><p>where $\kappa \doteq M(D, \vec x<em>{i - 1}) - M(D’, \vec x</em>{i - 1})$. </p>
+<!-- 
+Since $M(D, \vec x_{i - 1}) \ge M(D', \vec x_{i - 1}) - \Delta$, and $q_i(D) \le q_i(D') + \Delta$, we have 
+$$
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] 
+            &= \mathbb{E}_{z \sim \mu} \left[ \mathbb{I} \Big[ M(D, \vec x_{i - 1}) < t + z \Big] \cdot F \big(  - t - z + q_i(D) \big) \right] \\
+            &\le \mathbb{E}_{z \sim \mu} \left[ \mathbb{I} \Big[ M(D', \vec x_{i - 1}) - \Delta < t + z \Big] \cdot F \big(  - t - z + q_i(D') + \Delta \big) \right] \\
+    \end{aligned}
+$$ 
+-->
+<p>Similarly, the conditional probability density of $\Pr\big[ \mathcal{A}(D’) = s_i \big]$ is given by </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D') = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] 
+            &= \int_{M(D', \vec x_{i - 1}) - t}^\infty p(z) \cdot F \big(  - t - z + q_i(D') \big) \, d z.
+    \end{aligned}</script><p>Comparing $p(z)$ and $p(z + \kappa)$, $F \big(  - t - z - \kappa + q_i(D) \big)$ and $F \big(  - t - z + q_i(D’) \big)$ finishes the proof. </p>
+<p>$\square$</p>
+<p><strong>Proof 2.</strong></p>
+<p>Fix an $i \in \mathbb{N}^+$.<br>For each dataset $D$ and each $\vec x<em>{i - 1} = (x_1, \ldots, x</em>{i - 1} ) \in \mathbb{R}^{i - 1}$, define</p>
+<script type="math/tex; mode=display">
+    M(D, \vec x_{i - 1}) = \max_{j \in [i - 1]} \Big( q_j(D) + x_j \Big).</script><p>Denote $\vec X<em>{i - 1} \doteq (X_1, \ldots, X</em>{i - 1})$, and<br>the event $\mathcal{A}(D) = s_i$ happens if and only if   </p>
+<script type="math/tex; mode=display">
+    M(D, \vec X_{i - 1}) < \hat t \le \hat q_i(D).</script><p>Fix a sequence $\vec x<em>{i - 1} = (x_1, \ldots, x</em>{i - 1} ) \in \mathbb{R}^{i - 1}$.<br>Since the random variables $Z, \vec X<em>{i - 1}, X_i$ are independent,<br>&lt;!—<br>Conditioned on $\vec X</em>{i - 1} = \vec x_{i - 1}$, the probability density of $\Pr\big[ \mathcal{A}(D) = s_i \big]$ is given by<br>—&gt;</p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] 
+            &= \Pr \big[ M(D, \vec x_{i - 1}) < \hat t \le \hat q_i(D) \big] \\
+            &= \Pr \big[ M(D, \vec x_{i - 1}) < t + Z \le q_i(D) + X_i \big] \\
+            &= \int \int p(z) \cdot p(x_i) \cdot \mathbb{I} \Big[ M(D, \vec x_{i - 1}) < t + z \le q_i(D) + x_i \Big] \, d x_i \, dz,
+    \end{aligned}</script><p>where $p(z)$ and $p(x_i)$ are probability densities of $Z$ and $X_i$, respectively.<br>Similarly, the conditional probability density of $\Pr\big[ \mathcal{A}(D’) = s_i \big]$ is given by </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D') = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] 
+            &= \Pr \big[ M(D', \vec x_{i - 1}) < \hat t \le \hat q_i(D') \big] \\
+            &= \Pr \big[ M(D', \vec x_{i - 1}) < t + Z \le q_i(D') + X_i \big] \\
+            &= \int \int  p(z') \cdot p(x_i') \cdot \mathbb{I} \Big[ M(D', \vec x_{i - 1}) < t + z' \le q_i(D') + x_i' \Big] \, d x_i' \, dz'.
+    \end{aligned}</script><p>Suppose that the following equations holds: </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        t + z' - M(D', \vec x_{i - 1}) &= t + z - M(D, \vec x_{i - 1}), \\
+        q_i(D') + x_i' - (t + z') &= q_i(D) + x_i - (t + z).
+    \end{aligned}</script><p>Then </p>
+<script type="math/tex; mode=display">
+    \mathbb{I} \Big[ M(D', \vec x_{i - 1}) < t + z' \le q_i(D') + x_i' \Big] 
+    = \mathbb{I} \Big[ M(D, \vec x_{i - 1}) < t + z \le q_i(D) + x_i \Big].</script><p>But this implies that </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        |z' - z|    &= |M(D', \vec x_{i - 1}) - M(D, \vec x_{i - 1})| \le \Delta \\
+        |x_i' - x_i|    &= |z' - q_i(D') - z + q_i(D)| \\
+                    &= |M(D', \vec x_{i - 1}) - M(D, \vec x_{i - 1}) + q_i(D) - q_i(D')| \\
+                    &\le 2 \cdot \Delta.
+    \end{aligned}</script><p>Further, observe that </p>
+<script type="math/tex; mode=display">
+    \begin{vmatrix}
+        \begin{aligned}    
+
+                \frac{d x_i'}{d_{x_i}},     &\frac{d x_i'}{d_z} \\
+                \frac{d z'}{d_{x_i}},     &\frac{d z'}{d_z} 
+
+        \end{aligned}
+    \end{vmatrix}
+    = 
+    \begin{vmatrix}
+        1,     &0 \\
+        0,     &1 
+    \end{vmatrix} = 1,</script><p>Therefore, by integration by substitution,</p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \frac{\Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big]}{\Pr \big[ \mathcal{A}(D') = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] } 
+            &= \frac{ 
+                \int \int p(z) \cdot p(x_i) \cdot \mathbb{I} \Big[ M(D, \vec x_{i - 1}) < t + z \le q_i(D) + x_i \Big] \, d x_i \, dz 
+            }
+            {
+                \int \int  p(z') \cdot p(x_i') \cdot \mathbb{I} \Big[ M(D', \vec x_{i - 1}) < t + z' \le q_i(D') + x_i' \Big] \, d x_i' \, dz'
+            } \\
+            &= \frac{ 
+                \int \int p(z) \cdot p(x_i) \cdot \mathbb{I} \Big[ M(D, \vec x_{i - 1}) < t + z \le q_i(D) + x_i \Big] \, d x_i \, dz 
+            }
+            {
+                \int \int  p(z') \cdot p(x_i') \cdot \mathbb{I} \Big[ M(D, \vec x_{i - 1}) < t + z \le q_i(D) + x_i \Big] \, d x_i \, dz
+            } \\
+            &\le \exp \Big( \Delta \cdot \frac{\epsilon}{3\Delta}\Big) \cdot \exp \Big( 2 \cdot \Delta \cdot \frac{\epsilon}{3\Delta} \Big) \\
+            &\le \exp(\epsilon).
+    \end{aligned}</script><p>Integrating over $\vec X<em>{i - 1} = \vec x</em>{i - 1}$ for all possible $\vec x_{i - 1}$ proves that $\Pr\big[ \mathcal{A}(D) = s_i \big] \le e^\epsilon \cdot \Pr\big[ \mathcal{A}(D’) = s_i \big]$.</p>
+<p>$\square$</p>
+<h1 id="Mechanism-Two"><a href="#Mechanism-Two" class="headerlink" title="Mechanism Two"></a>Mechanism Two</h1><blockquote>
+<p><strong>Definition.</strong> For each $b \in \mathbb{R}^+$, let $\mathcal{Exp}(b)$ be the exponential distribution with parameter $b$. </p>
+</blockquote>
+<p>The algorithm is described as follows. </p>
+<blockquote>
+<p><strong>Algorithm $\mathcal{A}$.</strong>      </p>
+<ol>
+<li>$\hat t \leftarrow t + Z$ where $Z \sim \mathcal{Exp}(3 \Delta / \epsilon)$     </li>
+<li><strong>for</strong> $i \in \mathbb{N}^+$ <strong>do</strong>      </li>
+<li>$\qquad$   $\hat q_i(D) \leftarrow q_i(D) + X_i$, where $X_i \sim \mathcal{Exp}( 3 \Delta / \epsilon)$        </li>
+<li>$\qquad$ <strong>if</strong> $\hat q_i(D) \ge \hat t$ <strong>then</strong>      </li>
+<li>$\qquad\qquad$ <strong>output</strong> $\bot$    </li>
+<li>$\qquad\qquad$ <strong>halt</strong>     </li>
+<li>$\qquad$ <strong>else</strong>    </li>
+<li>$\qquad\qquad$ <strong>output</strong> $\top$     </li>
+</ol>
+</blockquote>
+<h2 id="Privacy-Guarantee-1"><a href="#Privacy-Guarantee-1" class="headerlink" title="Privacy Guarantee"></a>Privacy Guarantee</h2><p>Let $D’$ be a neighboring dataset of $D$.  </p>
+<blockquote>
+<p><strong>Theorem.</strong> For each $i \in \mathbb{N}^+$, let $s<em>i \doteq \underbrace{\top \ldots \top}</em>{ i - 1 \text{ occurrences} } \bot$.<br>Then </p>
+<script type="math/tex; mode=display">
+    e^{-\epsilon}
+    \le 
+    \frac{\Pr[ \mathcal{A}(D) = s_i ]}{\Pr[ \mathcal{A}(D') = s_i ]} 
+    \le 
+    e^{\epsilon}.</script></blockquote>
+<p>THe analysis is very similar to the one for report noisy max.<br>Informally speaking, we are applying report noisy max twice, one for $\hat t$ being max among $(\hat t, \hat q(D<em>1), \ldots, \hat q(D</em>{i - 1}))$, one for $\hat q(D<em>i)$ being max among $(\hat t, \hat q(D_1), \ldots, \hat q(D</em>{i}))$. </p>
+<p><strong>Proof.</strong></p>
+<p>Fix an $i \in \mathbb{N}^+$.<br>For each dataset $D$ and each $\vec x<em>{i - 1} = (x_1, \ldots, x</em>{i - 1} ) \in \mathbb{R}^{i - 1}$, define</p>
+<script type="math/tex; mode=display">
+    M(D, \vec x_{i - 1}) = \max_{1 \le j \le i - 1} \Big( q_j(D) + x_j \Big).</script><p>Denote $\vec X<em>{i - 1} \doteq (X_1, \ldots, X</em>{i - 1})$, and<br>The event $\mathcal{A}(D) = s_i$ happens if and only if   </p>
+<script type="math/tex; mode=display">
+    M(D, \vec X_{i - 1}) < \hat t \le \hat q_i(D).</script><p>Fix a sequence $\vec x<em>{i - 1} = (x_1, \ldots, x</em>{i - 1} ) \in \mathbb{R}^{i - 1}$.<br>Since the random variables $Z, \vec X_{i - 1}, X_i$ are independent, </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] 
+            &= \Pr \big[ M(D, \vec x_{i - 1}) < \hat t \le \hat q_i(D) \big] \\
+            &= \Pr \big[ M(D, \vec x_{i - 1}) < t + Z \le q_i(D) + X_i \big] \\
+            &= \int_{M(D, \vec x_{i - 1}) - t}^\infty \left( p(z) \cdot \int_{t + z - q_i (D)}^\infty p(x_i) \, d x_i \right) \, dz \\
+            &= \int_{M(D, \vec x_{i - 1}) - t}^\infty 
+                p(z) \cdot 
+                \exp \left( -\frac{\epsilon}{3 \Delta} \cdot \max \big\{ 0, t + z - q_i (D) \big\} 
+            \right) \, dz 
+    \end{aligned}</script><p>where $p(z)$ and $p(x_i)$ are probability densities of $Z$ and $X_i$, respectively.<br>For now, let </p>
+<script type="math/tex; mode=display">
+    \kappa \doteq M(D, \vec x_{i - 1}) - M(D', \vec x_{i - 1}) \in [- \Delta, \Delta] .</script><p>Following similar vein, the conditional probability density of $\Pr\big[ \mathcal{A}(D’) = s_i \big]$ is given by </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \Pr \big[ \mathcal{A}(D') = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] 
+            &= \Pr \big[ M(D', \vec x_{i - 1}) < \hat t \le \hat q_i(D') \big] \\
+            &= \Pr \big[ M(D', \vec x_{i - 1}) < t + Z \le q_i(D') + X_i \big] \\
+            &= \int_{M(D', \vec x_{i - 1}) - t}^\infty \left( p(z) \cdot \int_{t + z - q_i (D')}^\infty p(x_i) \, d x_i \right) \, dz \\
+            &= \int_{M(D', \vec x_{i - 1}) - t}^\infty 
+                p(z) \cdot 
+                \exp \left( -\frac{\epsilon}{3 \Delta} \cdot \max \big\{ 0, t + z - q_i (D') \big\} 
+            \right) \, dz \\
+            &\stackrel{y \doteq z + \kappa}{=} \int_{M(D, \vec x_{i - 1}) - t}^\infty 
+                p(y - \kappa) \cdot 
+                \exp \left( -\frac{\epsilon}{3 \Delta} \cdot \max \big\{ 0, t + y - \kappa - q_i (D') \big\} 
+            \right) \, dy
+    \end{aligned}</script><p>Comparing the integrands we have</p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \frac{\Pr \big[ \mathcal{A}(D) = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big]}{\Pr \big[ \mathcal{A}(D') = s_i \Vert \vec X_{i - 1} = \vec x_{i - 1} \big] } 
+            &\le \exp(\epsilon).
+    \end{aligned}</script><p>Integrating over $\vec X<em>{i - 1} = \vec x</em>{i - 1}$ for all possible $\vec x_{i - 1}$ proves that $\Pr\big[ \mathcal{A}(D) = s_i \big] \le e^\epsilon \cdot \Pr\big[ \mathcal{A}(D’) = s_i \big]$.</p>
+<p>$\square$</p>
+<h1 id="Utility-Guarantee"><a href="#Utility-Guarantee" class="headerlink" title="Utility Guarantee"></a>Utility Guarantee</h1><p>Suppose that the algorithm outputs $\top$ at the $i$-th query, we measure the empirical error by $\max {0, q_i(D) - t }$, i.e., if $q_i(D)$ does not exceed $t$, then we regards the empirical error as $0$.<br>Similarly, for an output $\bot$, the empirical error is measured by $\max {0, t - q_i(D) }$.</p>
+<blockquote>
+<p><strong>Theorem.</strong> Fix a sequence of $k$ queries $q_1, \ldots, q_k$ to be performed by the algorithm. With probability at most $\beta$, the<br>maximum empirical error exceeds </p>
+<script type="math/tex; mode=display">
+    \frac{6 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta}.</script></blockquote>
+<p><strong>Proof.</strong> </p>
+<script type="math/tex; mode=display">
+    \Pr \left[ |Z| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta} \right] 
+        \le \exp \left( 2 \cdot \ln \frac{k + 1}{\beta} \right)
+        = \frac{\beta}{k + 1}.</script><p>Similarly, for each $i \in [k]$, </p>
+<script type="math/tex; mode=display">
+    \Pr \left[ |X_i| \ge \frac{2 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta} \right] 
+        \le \exp \left( 2 \cdot \ln \frac{k + 1}{\beta} \right)
+        = \frac{\beta}{k + 1}.</script><p>By union bound, with probability at most $\beta$, it holds that </p>
+<script type="math/tex; mode=display">
+    |Z| + \max_{i \in [k]} |X_i| \ge \frac{6 \cdot \Delta}{\epsilon}\ln \frac{k + 1}{\beta}.</script><p>$\square$</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] <em>C. Dwork and A. Roth, “The Algorithmic Foundations of Differential Privacy,”</em> </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/04/Dijkstra-s-Algorithm-With-d-Ary-Heap/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/02/04/Dijkstra-s-Algorithm-With-d-Ary-Heap/" class="post-title-link" itemprop="url">Dijkstra's Algorithm With d-Ary Heap</a>
         </h2>
 
         <div class="post-meta">
@@ -1348,7 +695,7 @@ class="math inline">\(\mathbb{P}(Y \ge 1) = 1\)</span>.</em></p>
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-11-16 11:02:49 / Modified: 11:38:05" itemprop="dateCreated datePublished" datetime="2021-11-16T11:02:49+11:00">2021-11-16</time>
+              <time title="Created: 2022-02-04 13:26:53 / Modified: 13:50:55" itemprop="dateCreated datePublished" datetime="2022-02-04T13:26:53+01:00">2022-02-04</time>
             </span>
 
           
@@ -1362,51 +709,58 @@ class="math inline">\(\mathbb{P}(Y \ge 1) = 1\)</span>.</em></p>
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Let <span class="math inline">\(\mu_i, \nu_i\)</span> be probability
-measures on the finite space <span class="math inline">\((\Omega_i,
-2^{\Omega_i} )\)</span>, <span class="math inline">\(i \in [n]\)</span>.
-Define <span class="math inline">\(\mu = \prod_{i \in [n]}
-\mu_i\)</span> and <span class="math inline">\(\nu = \prod_{i \in [n]}
-\nu_i\)</span> be the product measure on the product space <span
-class="math inline">\((\Omega, 2^{\Omega})\)</span>. Then <span
-class="math display">\[
-    \Vert \mu - \nu \Vert_{TV} \le \sum_{i \in [n] } \Vert \mu_i - \nu_i
-\Vert_{TV},
-\]</span> where <span class="math inline">\(\Vert \cdot
-\Vert_{TV}\)</span> is the total variation distance.</p>
-<p><strong>Proof.</strong> Consider an <span class="math inline">\(x =
-(x_1, \ldots, x_n) \in \Omega\)</span>.</p>
-<p>For each <span class="math inline">\(i \in 0, \ldots, n\)</span>, let
-<span class="math display">\[
-    s(i) \doteq \mu_1 (x_1) \cdots \mu_i(x_i) \cdot \nu_{i + 1} (x_{i +
-1} ) \cdots \nu_n (x_n).
-\]</span> So <span class="math inline">\(s(0) = \nu(x)\)</span> and
-<span class="math inline">\(s(n) = \mu(x)\)</span>. It follows that
-<span class="math display">\[
-    \begin{aligned}
-        \nu(x) - \mu(x)
-            &amp;= \sum_{i \in [n]} \left( s(i - 1) - s(i) \right) \\
-            &amp;= \sum_{i \in [n]} \left( \big( \nu_i(x_i) - \mu_i(x_i)
-\big) \cdot \mu_1 (x_1) \cdots \mu_{i - 1} (x_{i - 1}) \cdot \nu_{i + 1}
-(x_{i + 1} ) \cdots \nu_n (x_n)\right).
-    \end{aligned}
-\]</span> Hence, <span class="math display">\[
-    \begin{aligned}
-        2 \cdot \Vert \mu - \nu \Vert_{TV}
-            &amp;= \sum_{x \in \Omega} \vert \nu(x) - \mu(x) \vert \\
-            &amp;= \sum_{x \in \Omega} \left\vert \sum_{i \in [n]} \big(
-\nu_i(x_i) - \mu_i(x_i) \big) \cdot \mu_1 (x_1) \cdots \mu_{i - 1} (x_{i
-- 1}) \cdot \nu_{i + 1} (x_{i + 1} ) \cdots \nu_n (x_n)\right\vert \\
-            &amp;\le \sum_{x \in \Omega} \sum_{i \in [n]} \left\vert
-\nu_i(x_i) - \mu_i(x_i) \right\vert \cdot \mu_1 (x_1) \cdots \mu_{i - 1}
-(x_{i - 1}) \cdot \nu_{i + 1} (x_{i + 1} ) \cdots \nu_n (x_n) \\
-            &amp;= \sum_{i \in [n]} \sum_{x_i \in \Omega_i} \left\vert
-\nu_i(x_i) - \mu_i(x_i) \right\vert \\
-            &amp;= \sum_{i \in [n]} 2 \cdot \Vert \mu_i - \nu_i
-\Vert_{TV}.
-    \end{aligned}
+          <p>A <span class="math inline">\(d\)</span>-ary min heap with <span
+class="math inline">\(n\)</span> elements has the following time
+complexity:</p>
+<ul>
+<li><strong>Insertion.</strong> <span class="math inline">\(O\big((\log
+n) / (\log d) \big)\)</span>.<br />
+</li>
+<li><strong>Extract-Min.</strong> <span class="math inline">\(O\big(d
+\cdot (\log n) / (\log d) \big)\)</span>.<br />
+</li>
+<li><strong>Decrease-Key.</strong> <span
+class="math inline">\(O\big((\log n) / (\log d) \big)\)</span>.</li>
+</ul>
+<p>Recall that for a single source shortest path query on a graph with
+<span class="math inline">\(n\)</span> vertices and <span
+class="math inline">\(m\)</span> edges, the Dijkstra's Algorithm
+performs <span class="math inline">\(n\)</span> extract-min operations,
+and <span class="math inline">\(m\)</span> decrease-key operation.
+Working with <span class="math inline">\(d\)</span>-ary min heap, it has
+time complexity <span class="math display">\[
+    O \left( n \cdot d \cdot \frac{\log n}{\log d} + m \cdot \frac{\log
+n}{\log d} \right)
 \]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
+<p>Setting <span class="math inline">\(d = m / n\)</span> minimizes this
+to <span class="math display">\[
+    O \left( m \cdot \log_{m / n} n \right) = O \left( m \cdot
+\frac{\log n}{\log (m / n)} \right).
+\]</span></p>
+<p>Consider the following cases:</p>
+<ul>
+<li><p><span class="math inline">\(m = O(n)\)</span>, then the time
+complexity is <span class="math inline">\(O(n \log n)\)</span>.</p></li>
+<li><p><span class="math inline">\(m = \Theta (n \log n)\)</span>, then
+the time complexity is <span class="math display">\[
+      O \left( n \cdot (\log n) \cdot \frac{\log n}{\log \log n }
+\right).
+  \]</span><br />
+Example:</p>
+<ol type="1">
+<li>when <span class="math inline">\(n = 2^{20} = 1\)</span>M, <span
+class="math inline">\((\log n) / (\log \log n) = 20 / (\log 20) \approx
+4.6\)</span>.</li>
+<li>when <span class="math inline">\(n = 2^{30} = 1\)</span>G, <span
+class="math inline">\((\log n) / (\log \log n) = 30 / (\log 20) \approx
+6.1\)</span>.</li>
+</ol></li>
+<li><p><span class="math inline">\(m = \Theta \big( n^{1 + \epsilon}
+\big)\)</span> for some <span class="math inline">\(\epsilon &gt;
+0\)</span>, then the time complexity is <span class="math display">\[
+      O \left( \frac{m}{\epsilon} \right).
+  \]</span></p></li>
+</ul>
 
       
     </div>
@@ -1425,7 +779,7 @@ class="math display">\[
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1491,12 +845,12 @@ class="math display">\[
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -1523,7 +877,7 @@ class="math display">\[
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

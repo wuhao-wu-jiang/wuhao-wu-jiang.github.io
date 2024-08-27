@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/26/The-Remainder-Term-in-Taylor-Series/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/06/Gradient-Descent/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/02/26/The-Remainder-Term-in-Taylor-Series/" class="post-title-link" itemprop="url">The Remainder Term in Taylor Series</a>
+            <a href="/2020/03/06/Gradient-Descent/" class="post-title-link" itemprop="url">Gradient Descent</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-02-26 13:57:00" itemprop="dateCreated datePublished" datetime="2020-02-26T13:57:00+11:00">2020-02-26</time>
+              <time title="Created: 2020-03-06 00:10:45" itemprop="dateCreated datePublished" datetime="2020-03-06T00:10:45+01:00">2020-03-06</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-02-28 11:22:58" itemprop="dateModified" datetime="2020-02-28T11:22:58+11:00">2020-02-28</time>
+                <time title="Modified: 2021-09-17 09:07:01" itemprop="dateModified" datetime="2021-09-17T09:07:01+02:00">2021-09-17</time>
               </span>
 
           
@@ -191,168 +191,229 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="taylor-series">Taylor Series</h2>
-<p>The philosophy of Taylor series is to approximate a function with
-polynomials that use only the information of a single point in the
-domain of the function. Consider the function <span
-class="math inline">\(f: \mathbb{R} \rightarrow \mathbb{R}\)</span> and
-a point <span class="math inline">\(a \in \mathbb{R}\)</span>. Further,
-we would like to use <span class="math inline">\((x-a)^0\)</span>, <span
-class="math inline">\((x- a)^1\)</span>, <span class="math inline">\((x-
-a)^2\)</span>, ..., <span class="math inline">\((x- a)^n\)</span> as the
-basic building blocks of our approximation. The polynomial constructed
-is of the form: <span class="math display">\[
-p_n(x) = c_0 + c_1 (x - a) + c_2(x - a)^2 + ... + c_n (x - a)^n
-\]</span> Now, assume that the <span class="math inline">\(n\)</span>-th
-derivative of <span class="math inline">\(f\)</span> exits. To
-approximate <span class="math inline">\(f\)</span> well, <span
-class="math inline">\(p_n\)</span> should satisfy <span
-class="math display">\[
-p_n(a) = f(a)
-\]</span> so that <span class="math inline">\(c_0 = f(a)\)</span>.</p>
-<p>Further, <span class="math inline">\(f&#39;(a)\)</span> tell how the
-function <span class="math inline">\(f(x)\)</span> changes when <span
-class="math inline">\(x\)</span> moves from <span
-class="math inline">\(a\)</span> by a little bit. We require <span
-class="math inline">\(p_n(x)\)</span> to exhibit the same behavior:
+          <h1 id="problem">Problem</h1>
+<p>Gradient descent is a greedy search method for optimization, whose
+analysis varies depending on the kind of constraints you place on
+it.</p>
+<p>We study a baby version of the method. Let <span
+class="math inline">\(f\)</span> be a twice continuous differentiable
+and convex function. We are interested in the minimization problem:
 <span class="math display">\[
-p&#39;_n(a) = f&#39;(a)
-\]</span> so that <span class="math inline">\(c_1 =
-f&#39;(a)\)</span>.</p>
-<p>To fit <span class="math inline">\(f(x)\)</span> even better, we
-force the second order derivative of <span
-class="math inline">\(p_n(x)\)</span> at <span
-class="math inline">\(x\)</span> comply with <span
-class="math inline">\(f&#39;&#39;(a)\)</span>, hence <span
+\min_{x \in \mathbb{R }^n} f(x)
+\]</span></p>
+<p>The convexity of <span class="math inline">\(f\)</span> guarantees
+the existence of a unique minimum value <span
+class="math inline">\(\min_{x \in \mathbb{R }^n} f(x)\)</span>.</p>
+<p>In addition, we assume that <span class="math inline">\(f\)</span>
+indeed achieves this minimum value at some point, denoted as <span
+class="math inline">\(x^*\)</span>. We need this assumption, as in some
+case, <span class="math inline">\(f\)</span> can never achieve the
+minimum value. For example, let <span class="math inline">\(f(x) =
+e^x\)</span>. <span class="math inline">\(f\)</span> approaches <span
+class="math inline">\(0\)</span> when <span class="math inline">\(x
+\rightarrow -\infty\)</span> but never achieves it.</p>
+<h2 id="notations">Notations</h2>
+<p>Before we delve into the details, we need to define some frequently
+used notations.</p>
+<ul>
+<li><p>The gradient <span class="math inline">\(\nabla f(x):\mathbb{R
+}^n \rightarrow \mathbb{R }^n\)</span> is the vector of partial
+derivatives of <span class="math inline">\(f\)</span> at point <span
+class="math inline">\(x\)</span>: <span class="math display">\[
+\nabla f(x) = \left[ \frac{\partial f (x) }{\partial x_1},
+\frac{\partial f (x)}{\partial x_2}, .., \frac{\partial f (x) }{\partial
+x_n} \right]
+\]</span></p></li>
+<li><p>The Hessian <span class="math inline">\(\nabla^2 f(x) : \mathbb{R
+}^n \rightarrow \mathbb{R }^{n \times n}\)</span> is the matrix of
+second order derivatives of <span class="math inline">\(f\)</span> at
+<span class="math inline">\(x\)</span>: <span class="math display">\[
+  \nabla f(x) =
+      \left[
+      \begin{aligned}
+          \frac{\partial^2 f (x)}{\partial x_1 \partial x_1},
+\frac{\partial^2 f (x)}{\partial x_1 \partial x_2}, &amp;...,
+\frac{\partial^2 f (x)}{\partial x_1 \partial x_n} \\
+          \frac{\partial^2 f (x)}{\partial x_2 \partial x_1},
+\frac{\partial^2 f (x)}{\partial x_2 \partial x_2}, &amp;...,
+\frac{\partial^2 f (x)}{\partial x_2 \partial x_n} \\
+          &amp;...\\
+          \frac{\partial^2 f (x)}{\partial x_n \partial x_1},
+\frac{\partial^2 f (x)}{\partial x_n \partial x_2}, &amp;...,
+\frac{\partial^2 f (x)}{\partial x_n \partial x_n} \\
+      \end{aligned}
+      \right]
+  \]</span> Since <span class="math inline">\(f\)</span> is twice
+continuous differentiable, the Hessian is symmetric.</p></li>
+</ul>
+<h1 id="algorithm">Algorithm</h1>
+<p>The algorithm is itself very simple.</p>
+<blockquote>
+<p><strong>Gradient Descent</strong><br />
+<strong>Require:</strong> Initialization point <span
+class="math inline">\(x_0 \in \mathbb{R }^n\)</span>; Step size: <span
+class="math inline">\(\eta \in \mathbb{R}_+\)</span>; #iterations: <span
+class="math inline">\(T\)</span>.<br />
+1. For <span class="math inline">\(t \in [T]\)</span>:<br />
+2. <span class="math inline">\(\qquad x^{t + 1} \leftarrow x^t - \eta
+\cdot \nabla f(x^t)\)</span>.</p>
+</blockquote>
+<p>Below is an example that show how <span
+class="math inline">\(f\)</span> decreases as the algorithm
+iterates.</p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/GradientDescent/GradientDescent1.png" /></p>
+<h2 id="convergence"><strong>Convergence</strong></h2>
+<p>To analyze the convergence rate of <span
+class="math inline">\(f\)</span>, we need additional assumptions. Here
+we adopt two strong ones:</p>
+<blockquote>
+<p><strong>Assumptions.</strong> 1. <span
+class="math inline">\(f\)</span> is <span
+class="math inline">\(\beta\)</span> smooth, i.e., <span
+class="math inline">\(\nabla f(z) \le \beta I\)</span> for <span
+class="math inline">\(\forall z \in \mathbb{R }^n\)</span>.<br />
+2. <span class="math inline">\(f\)</span> is <span
+class="math inline">\(\alpha\)</span> strongly convex, i.e., <span
+class="math inline">\(\nabla f(z) \ge \alpha I\)</span> for <span
+class="math inline">\(\forall z \in \mathbb{R }^n\)</span>.</p>
+</blockquote>
+<p><span class="math inline">\(\beta\)</span> upper bounds the largest
+possible eigenvalue of the Hessian of <span
+class="math inline">\(f\)</span> at each point in <span
+class="math inline">\(\mathbb{R}\)</span>, and <span
+class="math inline">\(\alpha\)</span> lower bounds it. By definition we
+have <span class="math inline">\(\beta \ge \alpha\)</span>.</p>
+<blockquote>
+<p><strong>Definitions.</strong> 1. For each <span
+class="math inline">\(t \in [T]\)</span>, let <span
+class="math inline">\(\Delta_t \doteq f(x^t) - f(x^*)\)</span> be the
+gap between <span class="math inline">\(f(x^t)\)</span> and the minimum
+value <span class="math inline">\(f(x^*)\)</span>.<br />
+2. Let <span class="math inline">\(\kappa \doteq
+\frac{\beta}{\alpha}\)</span> between <span
+class="math inline">\(\beta\)</span> and <span
+class="math inline">\(\alpha\)</span>.</p>
+</blockquote>
+<p>The following theorem characterize the convergence rate of the
+algorithm:</p>
+<blockquote>
+<p><strong>Theorem (Convergence Rate).</strong> <em>If we set <span
+class="math inline">\(\eta = \frac{1}{\beta}\)</span>, then it holds
+that</em> <span class="math display">\[
+\Delta_t \le \Delta_0 \left( 1 - \frac{1}{ \kappa } \right)^t.
+\]</span></p>
+</blockquote>
+<p>By the theorem, given any <span class="math inline">\(\epsilon &gt;
+0\)</span>, the number of iteration <span
+class="math inline">\(t\)</span> for which <span
+class="math inline">\(\Delta_t \le \epsilon\)</span> is given by <span
 class="math display">\[
-p_n&#39;&#39;(a) = f&#39;&#39;(a)
-\]</span> and <span class="math inline">\(c_2 = \frac{1}{2}
-f&#39;&#39;(a)\)</span>.</p>
-<p>Following the above procedure,we get <span class="math display">\[
-c_i = \frac{1}{i!}f^{(i) } (a)
-\]</span> and <span class="math display">\[
-p_n(x) = \sum_{k = 0}^n \frac{ f^{( k ) }(a) }{ k! }  (x - a)^k
-\]</span> where <span class="math inline">\(f^{(0)} \doteq f\)</span>,
-<span class="math inline">\(0! \doteq 1\)</span>. We have just show that
-the construct polynomial satisfies</p>
-<p><strong><em>Theorem. <span class="math inline">\(p^{ (k) }_n (a) =
-f^{ (k) } (a)\)</span>, for <span class="math inline">\(k \in
-[n]\)</span>.</em></strong></p>
-<h2 id="remainder">Remainder</h2>
-<p>One natural to ask is that, how accurate is the <span
-class="math inline">\(p_n(x)\)</span>. In particular, given <span
-class="math inline">\(x \neq a\)</span>, we want to measure the error
-<span class="math display">\[
-r_n(x) = f(x) - p_n(x)
-\]</span> quantitively.</p>
-<p>Note that if the function <span class="math inline">\(f\)</span> is
-itself a polynomial up to order <span class="math inline">\(n\)</span>,
-then the approximation is accurate that is <span
-class="math inline">\(r_n(x) \equiv 0\)</span> for <span
-class="math inline">\(x \in \mathbb{R}\)</span>. In this case, we
-recover <span class="math inline">\(f\)</span> globally using only local
-information at <span class="math inline">\(a\)</span>.</p>
-<p>In general, if <span class="math inline">\(f^{ (n + 1)} (x)\)</span>
-exists and is continuous, then the error is characterized as</p>
-<p><strong><em>Theorem</em></strong> <span class="math display">\[
-r_n(x) = \frac{1}{n!} \int_a^x f^{ (n + 1) } (t) (x - t)^{n } dt =
--\int_a^x f^{ (n + 1) } (t)  d \left( \frac{(x - t)^{n + 1} }{(n + 1)!}
-\right)
-\]</span> <em>Proof.</em></p>
-<p>By fundamental theorem of calculus, we have <span
-class="math display">\[
-f(x) = f(a) + \int_{a}^x f&#39;(t) dt
-\]</span> On the other hand <span class="math display">\[
-\frac{\partial [f&#39;(t) (t - x)] }{\partial t} = f&#39;&#39;(t) (t -
-x) + f&#39;(t)
-\]</span> Therefore, <span class="math display">\[
-f&#39;(t) (t - x) \mid_{t = a}^x = f&#39;(a) (x -a)  = \int_{a}^x
-f&#39;&#39;(t) (t - x) dt  + \int_{a}^x f&#39;(t) dt
-\]</span> and <span class="math display">\[
-f(x) = f(a) + f&#39;(a) (x - a) +  \int_{a}^x f&#39;&#39;(t) (x - t) dt
-\]</span> Similarly, <span class="math display">\[
+    O \left( \kappa \log \frac{\Delta_0}{\epsilon} \right).
+\]</span></p>
+<p><strong>Proof:</strong> The proof consists of two parts. <span
+class="math inline">\(\beta\)</span>-smoothness and <span
+class="math inline">\(\alpha\)</span>-convexity play a role in each part
+separately.</p>
+<p>The first claim states that</p>
+<blockquote>
+<p><strong>Claim 1.</strong> If <span class="math inline">\(\eta = 1 /
+\beta\)</span>, then <span class="math display">\[
+\Delta_{t + 1} \le \Delta_t - \frac{1}{2 \beta} \| \nabla f(x_t) \|^2.
+\]</span></p>
+</blockquote>
+<p>We might still have a problem, if when <span
+class="math inline">\(x^t\)</span> approaches <span
+class="math inline">\(x^*\)</span>, <span class="math inline">\(\|
+\nabla f(x^t) \|\)</span> decreases too fast. That where <span
+class="math inline">\(\alpha\)</span> convexity comes into play.</p>
+<blockquote>
+<p><strong>Claim 2.</strong> <span class="math display">\[
+- \frac{1}{2 \alpha } \cdot  \| \nabla f(x^t) \|^2 \le \Delta_t.
+\]</span></p>
+</blockquote>
+<p>In combination, we conclude that <span class="math display">\[
 \begin{aligned}
-\int_{a}^x f&#39;&#39;(t) (x - t) dt
-    &amp;= - \int_{a}^x f&#39;&#39;(t) d \frac{ (x - t)^2}{2!} \\
-    &amp;= f&#39;&#39;(a) \frac{ (x - a)^2}{2!} + \int_{a}^x \frac{ (x -
-t)^2}{2!} f^{(3) } (t) dt
+    \Delta_{t + 1}
+        &amp;\le \Delta_t \left( 1- \frac{\alpha }{\beta} \right).
 \end{aligned}
-\]</span> As just shown, the proof can be finished by induction. <span
-class="math inline">\(\square\)</span></p>
-<p><strong><em>Weighted Mean Value Theorem.</em></strong> Given a
-continuous functions <span class="math inline">\(f \ge 0\)</span> and an
-Riemann integral function <span class="math inline">\(g \ge 0\)</span>
-defined on an closed interval <span class="math inline">\(I\)</span>,
-then <span class="math display">\[
-\int_I f(t) g(t) dt = f(c) \int_I g(t) dt
-\]</span> for some <span class="math inline">\(c \in I\)</span>.</p>
-<p><em>Proof.</em> As <span class="math inline">\(f\)</span> is
-continuous and <span class="math inline">\(I\)</span> is closed, <span
-class="math inline">\(\exists m, M \in \mathbb{R}\)</span>, s.t., <span
-class="math display">\[
-m \le f(t) \le M, \qquad \forall t \in I
 \]</span></p>
-<p>Therefore, <span class="math display">\[
-mg(t) \le f(t) g(t) \le M g(t), \qquad \forall t \in I
-\]</span></p>
-<p>Define <span class="math inline">\(S = \int_I g(t) dt\)</span>. By
-monotonicity of Riemann integration, we have <span
-class="math display">\[
-m S \le \int_I f(t) g(t) dt \le M S
-\]</span></p>
-<p>Note that <span class="math inline">\(S f(t)\)</span> is a continuous
-function in <span class="math inline">\(I\)</span>. Hence, by mean value
-theorem, <span class="math inline">\(\exists c \in I\)</span>, such that
+<blockquote>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/GradientDescent/GradientDescent2.png" />
+The figure gives some intuition about the algorithm. The function <span
+class="math inline">\(f\)</span> is plotted as the blue, real line.
+Suppose that <span class="math inline">\(A = f( x^t )\)</span>. We
+search along the direction of <span class="math inline">\(- \nabla
+f(x)\)</span> for the minimum value of <span
+class="math inline">\(f(x)\)</span> by computing <span
+class="math inline">\(x^{t + 1} = x^t - \eta \nabla f(x)\)</span>.</p>
+<p>We don't want <span class="math inline">\(\eta\)</span> to be too
+large, such that <span class="math inline">\(x^{t + 1}\)</span> passes
+the minimum point. How do we guarantee this? We create a quadratic
+approximation <span class="math inline">\(y = f(x^t) + \nabla f(x^t) ( y
+- x) + (\beta / 2) \cdot \Vert y - x \Vert_2^2\)</span> of the <span
+class="math inline">\(f\)</span> at <span
+class="math inline">\(x^t\)</span>, whose Hessian is <span
+class="math inline">\(\beta I\)</span>, which upper bounds the Hessian
+of <span class="math inline">\(f\)</span> at every point. The minimum
+point of the quadratic approximation is a conservative estimate of <span
+class="math inline">\(f(x^t)\)</span>. As we will prove, it holds that
 <span class="math display">\[
-S f(c) = \int_I f(t) g(t) dt
-\]</span> <span class="math inline">\(\square\)</span></p>
-<p><strong><em>Corollary 1.</em></strong> By weighted mean value
-theorem, we have <span class="math display">\[
+f( x^* ) \le f( x^t ) - \frac{1}{2 \beta} \Vert \nabla f( x^t)
+\Vert_2^2.
+\]</span></p>
+</blockquote>
+<p><strong>Proof of the Lemma.</strong> Via Taylor's expansion, for all
+<span class="math inline">\(x, y \in \mathbb{R }^n\)</span>, there
+exists some <span class="math inline">\(z \in [x, y]\)</span>, such
+that<br />
+<span class="math display">\[
+    f(y) = f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} (y - x)^T \nabla^2
+f(z) (y - x).
+\]</span></p>
+<p>By assumption that <span class="math inline">\(\alpha I \le \nabla
+f(z) \le \beta I\)</span>, we have <span class="math display">\[
+    f(y) \le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \|y - x
+\|^2, \\
+    f(y) \ge f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \alpha \|y - x
+\|^2.
+\]</span></p>
+<p>For the first inequality, the RHS is minimized when <span
+class="math inline">\(y - x = - (1 / \beta) \cdot \nabla f(x)\)</span>:
+<span class="math display">\[
+    f \big( x - (1 / \beta) \cdot \nabla f(x) \big)  
+        \le  f(  x  ) - \frac{1}{2 \beta}  \| \nabla f(x ) \|^2.
+\]</span></p>
+<p>For the second inequality, we take minimum over both sides, <span
+class="math display">\[
+    \begin{aligned}
+        f( x^*)
+        &amp;= \min_{y \in \mathbb{R}^n} f(y) \\
+        &amp;\ge \min_{y \in \mathbb{R}^n} \left( f(x) + \nabla f(x)^T
+(y - x) + \frac{\alpha}{2} \| y - x \|^2\right) \\
+        &amp;= f(x) - \frac{1}{2 \alpha } \| \nabla f(x ) \|^2.
+    \end{aligned}
+\]</span></p>
+<p>Substituting <span class="math inline">\(x\)</span> with <span
+class="math inline">\(x^t\)</span>, and <span class="math inline">\(x^{t
++ 1}\)</span> with <span class="math inline">\(x^t - (1 / \beta) \nabla
+f(x)\)</span>, we see <span class="math display">\[
 \begin{aligned}
-r_n(x)
-    &amp;= \frac{1}{n!} \int_a^x f^{ (n + 1) } (t) (x - t)^{n } dt  \\
-    &amp;= f^{ (n + 1) } (c) \int_a^x  \frac{1}{n!} (x - t)^{n } dt  \\
-    &amp;= \frac{f^{ (n + 1) } (c ) }{(n + 1) ! } (x - a)^{n + 1 }  
+    f(x^{t + 1}) - f(x^t)
+        &amp;\le  - \frac{1}{2 \beta } \| \nabla f(x^t) \|^2, \\
+    f( x^t ) - f( x^* ) &amp;\le \frac{1}{2 \alpha } \| \nabla f( x^t )
+\|^2.  
 \end{aligned}
 \]</span></p>
-<p>for some <span class="math inline">\(c \in [a, x]\)</span>.</p>
-<p><strong><em>Corollary 2.</em></strong> Let <span
-class="math inline">\(f:\rightarrow \mathbb{R}^n \rightarrow
-\mathbb{R}\)</span> be a function with continuous second partial
-derivatives, then given <span class="math inline">\(a \in
-\mathbb{R}^n\)</span>, it holds that <span class="math display">\[
-f(x) = f(a) + [\nabla f(c)]^T (x - a)
-\]</span> for some <span class="math inline">\(c \in a + t(x -
-a)\)</span>, where <span class="math inline">\(t \in [0,
-1]\)</span>.</p>
-<p><em>Proof:</em> Define <span class="math inline">\(g(t) = f(a + t (x-
-a)) : [0,1] \rightarrow \mathbb{R}\)</span>. Then</p>
-<ol type="1">
-<li><span class="math inline">\(g(0) = f(a)\)</span>.</li>
-<li><span class="math inline">\(g(1) = f(x)\)</span>.</li>
-<li><span class="math inline">\(g&#39;(t) = [\nabla f(a + t (x- a) ) ]^T
-(x - a)\)</span></li>
-<li>By mean value theorem, <span class="math inline">\(\exists t \in [0,
-1]\)</span>, s.t., <span class="math display">\[
-\frac{g(1) - g(0)}{1} = f(x) - f(a) = g&#39;(t) = [\nabla f(a + t (x- a)
-) ]^T (x - a)
-\]</span></li>
-</ol>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong><em>Corollary 3.</em></strong> Let <span
-class="math inline">\(f\)</span>, <span class="math inline">\(g\)</span>
-and <span class="math inline">\(c\)</span> as defined before, then <span
-class="math display">\[
-f(x) = f(a) + [\nabla f(a)]^T (x - a) + \frac{1}{2} (x - a)^T [\nabla^2
-f(c)] (x - a)
+<p>Replacing <span class="math inline">\(f(x^{t + 1}) - f(x^t)\)</span>
+with <span class="math inline">\(\Delta_{t + 1} - \Delta_t\)</span>, and
+<span class="math inline">\(f(x^t) - f(x^*)\)</span> with <span
+class="math inline">\(\Delta_t\)</span> finishes the proof.</p>
+<p><strong>Remark:</strong> Via a similar argument, we can also prove
+that <span class="math display">\[
+    f( x^t ) - f( x^* ) \ge \frac{1}{2 \beta} \| \nabla f(x^t) \|^2.
 \]</span></p>
-<p><em>Proof:</em> <span class="math display">\[
-g&#39;&#39;(t) = (x - a)^T [\nabla^2 f(a + t (x- a) ) ] (x - a)
-\]</span></p>
-<p>Then applying Corollary 1 gives <span class="math display">\[
-g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
-\]</span></p>
-<p>for some <span class="math inline">\(t \in [0, 1]\)</span>.</p>
 <p><span class="math inline">\(\square\)</span></p>
 
       
@@ -373,7 +434,7 @@ g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/24/Eigenvalues-and-Eigenvectors/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/05/Beta-Smoothness/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -387,7 +448,7 @@ g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/02/24/Eigenvalues-and-Eigenvectors/" class="post-title-link" itemprop="url">Eigenvalues, Eigenvectors and SVD</a>
+            <a href="/2020/03/05/Beta-Smoothness/" class="post-title-link" itemprop="url">Characterizations of Beta-Smoothness</a>
         </h2>
 
         <div class="post-meta">
@@ -397,14 +458,14 @@ g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-02-24 21:57:00" itemprop="dateCreated datePublished" datetime="2020-02-24T21:57:00+11:00">2020-02-24</time>
+              <time title="Created: 2020-03-05 10:05:37" itemprop="dateCreated datePublished" datetime="2020-03-05T10:05:37+01:00">2020-03-05</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-19 11:27:33" itemprop="dateModified" datetime="2022-03-19T11:27:33+11:00">2022-03-19</time>
+                <time title="Modified: 2020-03-06 07:01:27" itemprop="dateModified" datetime="2020-03-06T07:01:27+01:00">2020-03-06</time>
               </span>
 
           
@@ -418,216 +479,132 @@ g(1) = g(0) + g&#39;(0)(1 - 0) + \frac{1}{2} g&#39;&#39;(t) (1 - 0)^2
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="eigenvector-and-eigenvalues">Eigenvector and Eigenvalues</h1>
-<blockquote>
-<p><strong>Theorem</strong>. Given a symmetric matrix <span
-class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span> that is
-positive semi-definitive, there exists an orthogonal matrix <span
-class="math inline">\(V \in \mathbb{R}^{n \times n}\)</span>, and a
-diagonal matrix <span class="math inline">\(\Sigma \in \mathbb{R}^{n
-\times n}\)</span> with all entries non-negative, such that <span
+          <h4 id="definition">Definition</h4>
+<p>A differential function <span class="math inline">\(f: \mathbb{R}^n
+\rightarrow \mathbb{R}\)</span> is <span
+class="math inline">\(\beta\)</span>-smooth if <span
 class="math display">\[
-A = V \Sigma V^T.
-\]</span></p>
-</blockquote>
-<p>We need the following fact for the proof.</p>
-<blockquote>
-<p><strong>Fact.</strong> If a function <span class="math inline">\(f: S
-\rightarrow \mathbb{R}\)</span> is continuous on a closed set <span
-class="math inline">\(S\)</span>, then it achieves maximum value at some
-point of <span class="math inline">\(S\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> Consider the maximization problem: <span
-class="math display">\[
-    \begin{aligned}
-    &amp;\max &amp; \frac{1}{2} x^T A x \\
-    &amp;s.t. &amp;  x^T x = 1
-    \end{aligned}
-\]</span></p>
-<blockquote>
-<p><em><strong>Question to ponder:</strong> Explain the geometric
-meaning of the term <span class="math inline">\(x^T A
-x\)</span>.</em></p>
-</blockquote>
-<p>The corresponding Lagrange function is given by <span
-class="math display">\[
-    L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1)
-\]</span></p>
-<p>Taking derivative with respect to <span
-class="math inline">\(x\)</span> gives <span class="math display">\[
-    \frac{\partial L}{\partial x} = Ax - \lambda x.
-\]</span></p>
-<p><strong><em>Existence of maximum solution:</em></strong> Note that
-<span class="math inline">\(\{ x : x^T x = 1 \}\)</span> is defined the
-boundary of the unit cycle, which is a closed set. Combined with the
-fact that <span class="math inline">\(f \doteq (1 / 2) \cdot x^T A
-x\)</span> is a continuous function (with respect to <span
-class="math inline">\(x\)</span>), it takes its maximum value at some
-point in <span class="math inline">\(\{ x : x^T x = 1 \}\)</span>.
-Denote this point <span class="math inline">\(v_1 \in \{ x : x^T x = 1
-\}\)</span>.</p>
-<p><strong><em>Gradient at the maximum point:</em></strong> At this
-point, it holds that <span class="math display">\[
-    \frac{\partial L}{\partial x} \mid_{x = v_1} = Av_1 - \lambda v_1 =
-0,
-\]</span></p>
-<p>which implies that <span class="math inline">\(v_1\)</span> is an
-eigenvector of <span class="math inline">\(A\)</span>. Denote its
-corresponding eigenvalue <span
-class="math inline">\(\lambda_1\)</span>.</p>
-<blockquote>
-<p><em><strong>Question to ponder:</strong> Prove that <span
-class="math inline">\(\lambda_1\)</span> is the largest
-eigenvalue.</em></p>
-</blockquote>
-<p>After finding <span class="math inline">\(v_1\)</span>, consider a
-new optimization problem: <span class="math display">\[
-    \begin{aligned}
-    &amp;\max   &amp; \frac{1}{2} x^T A x \\
-    &amp;s.t.   &amp;  x^T x = 1 \\
-    &amp;       &amp;  v_1^T x = 0
-    \end{aligned}
-\]</span></p>
-<p>That is, we want to find a new unit vector that is orthogonal to
-<span class="math inline">\(v_1\)</span> while maximizing <span
-class="math inline">\(\frac{1}{2} x^T A x\)</span>.</p>
-<p><strong><em>Existence of maximum solution.</em></strong> By the lemma
-and the facts: 1. <span class="math inline">\(\{x : x^T x = 1\} \cap \{
-x : v_1^T x = 0 \}\)</span> is closed.<br />
-2. <span class="math inline">\(\frac{1}{2} x^T A x\)</span> is
-continuous.</p>
-<p>Denote this maximum point <span class="math inline">\(v_2\)</span>.
-Now consider the new Lagrange function for the optimization <span
-class="math display">\[
-    L(x, \lambda) = \frac{1}{2} x^T A x - \lambda (x^T x  - 1) -
-\beta(v_1^T x - 0).
-\]</span></p>
-<p><strong><em>Gradient at the maximum point:</em></strong> At this
-point, it holds that <span class="math display">\[
-    \frac{\partial L}{\partial x} \mid_{x = v_2} = Av_2 - \lambda v_2 -
-\beta v_1 = 0.
-\]</span></p>
-<p>Left multiplying <span class="math inline">\(v_1^T\)</span> gives
+\|\nabla f(y) - \nabla f(x) \| \le \beta \|y - x\|
+\]</span> where <span class="math inline">\(\|\cdot \|\)</span> is <span
+class="math inline">\(\ell_2\)</span> norm.</p>
+<h4 id="theorem-1.">Theorem 1.</h4>
+<p>A twice continuously differential function <span
+class="math inline">\(f : \mathbb{R}^n \rightarrow \mathbb{R}\)</span>
+is <span class="math inline">\(\beta\)</span>-smooth if and only if
 <span class="math display">\[
-    (v_1^T A)v_2 - \lambda v_1^T v_2 - \beta v_1^T v_1 = (A v_1)^T
-v_2  - \beta = \lambda_1 v_1^T v_2 - \beta = -\beta = 0,
-\]</span> where <span class="math inline">\(v_1^T A = (A v_1)^T\)</span>
-follows from the symmetry of <span class="math inline">\(A\)</span>,
-i.e., <span class="math inline">\(A = A^T\)</span>.</p>
-<p>Therefore, <span class="math display">\[
-    Av_2 - \lambda v_2 = 0.
+v^T \nabla^2 f(z) v \le \beta \|v\|^2
+\]</span> for any <span class="math inline">\(z, v \in
+\mathbb{R}^n\)</span>.</p>
+<p><strong><em>Proof.</em></strong></p>
+<ol type="1">
+<li><p>(<strong><em>ONLY IF</em></strong>). <span
+class="math inline">\(v^T \nabla^2 f(z) v \le \beta \|v\|^2\)</span> is
+equivalent to that the maximum eigenvalue of <span
+class="math inline">\(\nabla^2 f(z)\)</span> is at most <span
+class="math inline">\(\beta\)</span>. Let <span
+class="math inline">\(v\)</span> be the eigenvector of <span
+class="math inline">\(\nabla^2 f(z)\)</span>. By mean value theorem
+<span class="math display">\[
+     \frac{\partial f}{\partial x_i} (z + v) - \frac{\partial
+f}{\partial x_i} (z) = \sum_{j = 1}^n \left( \frac{\partial f}{\partial
+x_i \partial x_j} (c) \right) v_j
 \]</span></p>
-<p>It follows that <span class="math inline">\(v_2\)</span> is an
-eigenvector of <span class="math inline">\(A\)</span>. Denote its
-associated eigenvalue <span
-class="math inline">\(\lambda_2\)</span>.</p>
-<p>In a similar manner, we can define <span class="math display">\[
-    \begin{aligned}
-    &amp;\max   &amp; \frac{1}{2} x^T A x \\
-    &amp;s.t.   &amp;  x^T x = 1 \\
-    &amp;       &amp;  v_1^T x = 0 \\
-    &amp;       &amp;  v_2^T x = 0 \\
-    \end{aligned}
-\]</span></p>
-<p>There exists an optimal point <span
-class="math inline">\(v_3\)</span>. The derivative of Lagrange function
-at this point is <span class="math display">\[
-    \frac{\partial L}{\partial x} \mid_{x = v_3} = Av_3 - \lambda v_3 -
-\beta_1 v_1 - \beta_2 v_2 = 0,
-\]</span> for some parameters <span class="math inline">\(\lambda,
-\beta_1, \beta_2\)</span>. Left multiplying <span
-class="math inline">\(v_1^T\)</span> or <span
-class="math inline">\(v_2^T\)</span> gives <span
-class="math inline">\(\beta_1 = 0\)</span> and <span
-class="math inline">\(\beta_2 = 0\)</span> so that <span
-class="math inline">\(v_3\)</span> is an eigenvector of <span
-class="math inline">\(A\)</span>.</p>
-<p>Following the procedure, we can find <span
-class="math inline">\(n\)</span> eigenvectors <span
-class="math inline">\(v_1, v_2, \ldots, v_n\)</span> of <span
-class="math inline">\(A\)</span>. Define <span class="math display">\[
-    \Sigma =
-        \begin{bmatrix}
-            \lambda_1   &amp;           &amp;   \\
-                        &amp;\lambda_2  &amp;   \\
-                        &amp;           &amp;   \ldots \\
-                        &amp;           &amp;      &amp; \lambda_n
-        \end{bmatrix},
-    \qquad
-    V =
-        \begin{bmatrix}
-            v_1, v_2, \ldots, v_n
-        \end{bmatrix}.
-\]</span></p>
-<p>Then <span class="math display">\[
-    A V = V \Sigma.
+<p>For some <span class="math inline">\(c\)</span> between <span
+class="math inline">\(z\)</span> and <span class="math inline">\(z +
+v\)</span>. As <span class="math inline">\(f\)</span> is twice
+continuously differentiable, for any given <span
+class="math inline">\(\epsilon &gt; 0\)</span>, <span
+class="math inline">\(\exists v\)</span> that is small enough, such that
+<span class="math display">\[
+\left| \frac{\partial f}{\partial x_i} (z + v) - \frac{\partial
+f}{\partial x_i} (z) \right| \in \left| \sum_{j = 1}^n \left(
+\frac{\partial f}{\partial x_i \partial x_j} (z) \right) v_j \right| \pm
+\frac{\epsilon}{n}
 \]</span></p>
 <p>Hence, <span class="math display">\[
-    A = V \Sigma V^{-1} = V \Sigma V^T.
+| \nabla f(z + v) - \nabla f(z) | \in |\nabla^2 f(z) v| + \epsilon
+\]</span></p>
+<p>By equivalence of <span class="math inline">\(\ell_1\)</span>-norm
+and <span class="math inline">\(\ell_2\)</span> norm, we get for <span
+class="math inline">\(v\)</span> small enough, <span
+class="math display">\[
+\| \nabla f(z + v) - \nabla f(z) \| \in \| \nabla^2 f(z) v \| + \epsilon
+\]</span></p>
+<p>As <span class="math inline">\(\epsilon\)</span> can be arbitrary
+small, it concludes that <span class="math display">\[
+\| \nabla^2 f(z) v \| \le \beta \|v \|
+\]</span></p>
+<p>which is equivalent to that the eigenvalues of <span
+class="math inline">\(\nabla^2 f(z)\)</span> is at most <span
+class="math inline">\(\beta\)</span>.</p></li>
+<li><p>(<strong><em>IF</em></strong>). We prove a stronger result that
+<span class="math display">\[
+     \| \nabla f(y) - \nabla f(x) \| \cdot \| \nabla f(y) - \nabla f(x)
+\| \le \beta \left( \nabla f(y) - \nabla f(x) \right)^T (y - x)
+\]</span> By Cauchy-Schwartz inequality, we have <span
+class="math display">\[
+\left( \nabla f(y) - \nabla f(x) \right)^T (y - x) \le \| \nabla f(y) -
+\nabla f(x) \| \cdot \| y - x  \|
+\]</span> which will finish our proof.</p>
+<p>By Taylor series expansion, we have <span class="math display">\[
+\begin{aligned}
+     f(y) &amp;
+         = f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} (y - x)^T \nabla^2
+f(z) (y - x)
+     \\
+         &amp;\le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \| y
+- x \|^2
+\end{aligned}
+\]</span></p>
+<p>for some <span class="math inline">\(z\)</span> between <span
+class="math inline">\(x\)</span> and <span
+class="math inline">\(y\)</span>. The inequality holds since <span
+class="math inline">\(v^T \nabla^2 f(z) v \le \beta \|v\|^2\)</span> for
+any <span class="math inline">\(v \in \mathbb{R}^n\)</span>.</p>
+<p>By symmetry, we get <span class="math display">\[
+\begin{aligned}
+     f(x) &amp;\le f(y) + \nabla f(y)^T (x - y) + \frac{1}{2} \beta \| y
+- x \|^2
+\end{aligned}
+\]</span></p>
+<p>Summing up the two inequalities, we obtain <span
+class="math display">\[
+\left( \nabla f(y) - \nabla f(x) \right)^T (y - x)^T  \le \beta \| y - x
+\|^2
+\]</span></p></li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<h4 id="theorem-2.">Theorem 2.</h4>
+<p>If <span class="math inline">\(f\)</span> is <span
+class="math inline">\(\beta\)</span>-smooth, then for <span
+class="math inline">\(x, y \in \mathbb{R}^n\)</span>, we have <span
+class="math display">\[
+f(y) \le f(x) + \nabla f(x)^T (y - x) + \frac{1}{2} \beta \| y - x \|^2
+\]</span></p>
+<p><em>Proof.</em> By fundamental theorem of calculus, <span
+class="math display">\[
+\begin{aligned}
+    f(y) - f(x) - \nabla f(x)^T (y - x)
+        &amp;=
+    \int_{0}^1 \nabla f(x + t(y - x))^T(y - x) \ dt - \nabla f(x)^T (y -
+x)
+    \\
+        &amp;=
+    \int_{0}^1 \left( \nabla f(x + t(y - x)) - \nabla f(x) \right)^T(y -
+x) \ dt
+    \\
+        &amp;\le
+    \int_{0}^1 \| \nabla f(x + t(y - x)) - \nabla f(x) \| \cdot \| y - x
+\| \ dt  
+    \\
+        &amp;\le
+    \int_{0}^1 \beta t \| y - x \|  \cdot \| y - x \| \ dt  
+    \\
+        &amp;\le
+    \frac{1}{2} \beta \| y - x \|^2
+\end{aligned}
 \]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
-<h1 id="singular-vector-decomposition">Singular Vector
-Decomposition</h1>
-<p>In general, a matrix <span class="math inline">\(A \in \mathbb{R}^{m
-\times n}\)</span> is considered a linear mapping from <span
-class="math inline">\(\mathbb{R}^n\)</span> to <span
-class="math inline">\(\mathbb{R}^m\)</span>. It takes a vector <span
-class="math inline">\(x \in \mathbb{R}^n\)</span> to a new one <span
-class="math inline">\(Ax \in \mathbb{R}^m\)</span>. We are interested in
-the following question.</p>
-<blockquote>
-<p>Is there a vector <span class="math inline">\(x\)</span>, whose
-length ratio, <span class="math display">\[
-\max_{x \in \mathbb{R}^n } \frac{ \Vert Ax  \Vert }{ \Vert x \Vert },
-\]</span> is maximized by the mapping?</p>
-</blockquote>
-<p>As <span class="math inline">\(\Vert x \Vert\)</span> is a number,
-<span class="math display">\[
-    \frac{ \Vert Ax \Vert  }{ \Vert x \Vert } = \left\Vert A
-\frac{x}{\Vert x \Vert} \right\Vert .
-\]</span></p>
-<p>Hence, it suffices to consider unit vectors, and the following
-optimization problem: <span class="math display">\[
-    \begin{aligned}
-        &amp;\max &amp; \frac{1}{2} x^T A^T Ax \\
-        &amp;s.t. &amp;  x^T x = 1
-    \end{aligned}.
-\]</span></p>
-<p>In this case, the objective function is <span
-class="math inline">\(0.5 \cdot \Vert Ax \Vert^2 = 0.5 \cdot (Ax)^T (Ax)
-= 0.5 \cdot x^T A^T A x\)</span>.</p>
-<p>Following similar process of previous section, we can find a set of
-eigenvectors <span class="math inline">\(v_1, v_2, \ldots, v_n\)</span>
-of <span class="math inline">\(A^T A\)</span>. Define <span
-class="math inline">\(U \in \mathbb{R}^{m \times n}\)</span> <span
-class="math display">\[
-    U
-        = A V { \sqrt{\Sigma^{-1} } }
-        = AV
-        \begin{bmatrix}
-        \sqrt { 1 / \lambda_1}  &amp;                       &amp; \\
-                                &amp;\sqrt { 1 / \lambda_2} &amp; \\
-                                &amp;                       &amp; \ldots
-\\
-                                &amp;                       &amp;
-&amp;\sqrt {1/\lambda_n}
-        \end{bmatrix}.
-\]</span></p>
-<p>Then <span class="math inline">\(U { \sqrt \Sigma } V^T = A\)</span>,
-which is called the <em>singular vector decomposition</em> of <span
-class="math inline">\(A\)</span>.</p>
-<p>Finally, we can verify that the columns of <span
-class="math inline">\(U\)</span> are perpendicular: <span
-class="math inline">\(\forall i \neq j, i, j \in [n]\)</span>, <span
-class="math display">\[
-    u_i^T u_j
-        = \left(\sqrt{\frac{1}{\lambda_i}} A V_i \right)^T
-            \left( \sqrt{\frac{1}{\lambda_j}} A V_j \right)
-        = \sqrt {\frac{1}{\lambda_i}} \sqrt{\frac{1}{\lambda_j}} v_i^T
-A^T A v_j  = 0,
-\]</span> as <span class="math inline">\(v_i\)</span> and <span
-class="math inline">\(v_j\)</span> are orthogonal eigenvectors of <span
-class="math inline">\(A^T A\)</span>.</p>
 
       
     </div>
@@ -647,7 +624,7 @@ class="math inline">\(A^T A\)</span>.</p>
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/20/Ellipsoid/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/03/01/Counting-Triangle/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -661,7 +638,7 @@ class="math inline">\(A^T A\)</span>.</p>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/02/20/Ellipsoid/" class="post-title-link" itemprop="url">Ellipsoid method</a>
+            <a href="/2020/03/01/Counting-Triangle/" class="post-title-link" itemprop="url">Counting Triangle</a>
         </h2>
 
         <div class="post-meta">
@@ -671,14 +648,14 @@ class="math inline">\(A^T A\)</span>.</p>
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-02-20 21:19:42" itemprop="dateCreated datePublished" datetime="2020-02-20T21:19:42+11:00">2020-02-20</time>
+              <time title="Created: 2020-03-01 12:20:20" itemprop="dateCreated datePublished" datetime="2020-03-01T12:20:20+01:00">2020-03-01</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-06-21 16:51:15" itemprop="dateModified" datetime="2022-06-21T16:51:15+10:00">2022-06-21</time>
+                <time title="Modified: 2022-02-04 11:52:23" itemprop="dateModified" datetime="2022-02-04T11:52:23+01:00">2022-02-04</time>
               </span>
 
           
@@ -692,530 +669,331 @@ class="math inline">\(A^T A\)</span>.</p>
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Ellipsoid method is a weakly polynomial algorithm for solving linear
-programming. The preliminary version was introduced by the Russian
-mathematician Shor in 1977 for general convex optimization problems.
-Then it was applied to linear programming by Khachyan in 1979 [1].
-Before interior point method, it was the first polynomial time algorithm
-for LP.</p>
-<h1 id="feasibility-implies-optimality">Feasibility implies
-Optimality</h1>
-<p>Now, consider the primal LP: <span class="math display">\[
-  \mathcal{P}:  \qquad
-  \begin{aligned}
-    &amp;\max   &amp;c^T x    &amp; \\
-    &amp;s.t.   &amp;Ax \le b &amp; \\
-    &amp;       &amp; x \ge 0 &amp;
-  \end{aligned}
-\]</span></p>
-<p>whose dual is given by <span class="math display">\[
-  \mathcal{D}:  \qquad
-  \begin{aligned}
-    &amp;\min   &amp;y^Tb    \ \  &amp; \\
-    &amp;s.t.   &amp;y^TA \ge c^T &amp; \\
-    &amp;       &amp;y \ge 0 \ \  &amp;
-  \end{aligned}
-\]</span></p>
-<p>The ellipsoid does not optimize the primal directly. Instead, it try
-to return a feasible point <span class="math inline">\((x, y)\)</span>
-that satisfies the following constraints: <span class="math display">\[
-\begin{aligned}
-         c^T x &amp;= y^Tb  &amp; \\
-         Ax    &amp;\le b   &amp; \\
-          x    &amp;\ge 0       &amp; \\
-         y^TA  &amp;\ge c^T &amp; \\
-         y     &amp;\ge 0 \ \  &amp;
-\end{aligned}
-\]</span></p>
-<p>By weak duality, if such point exists, then <span
-class="math inline">\(x\)</span> is the optimal solution for the primal
-program. (Note that, if there is no feasible point for the third
-program, the primal could be either infeasible or unbounded.)</p>
-<h1 id="ellipsoid">Ellipsoid</h1>
-<p>Ellipsoid is a unit ball that has been squashed or stretched along
-orthogonal directions. We illustrate this by an example in two
-dimension. The following picture shows an ellipse obtained by enlarging
-the unit ball by a facto of <span class="math inline">\(2\)</span> along
-the <span class="math inline">\(v_1\)</span> direction and squashing it
-ball by half along the <span class="math inline">\(v_2\)</span>
-direction, where <span class="math inline">\(v_1\)</span> and <span
-class="math inline">\(v_2\)</span> constitute an orthogonal base.</p>
-<p><img
-src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod1.jpg" /></p>
-<p>It is equivalent to first squash or stretch the ball along the
-directions of <span class="math inline">\(e_1, e_2\)</span>,</p>
-<p><img
-src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod2.jpg" /></p>
-<p>then rotate the resulting ellipsoid to corresponding orthogonal
-directions.</p>
-<p><img
-src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod3.jpg" /></p>
-<p>The rotation can be done by left multiplying an orthogonal matrix
-<span class="math display">\[
-V = [v_1, v_2]
-\]</span></p>
-<p>where <span class="math inline">\(v_1, v_2\)</span> are the
-orthogonal base for which the squash and stretch are performed.</p>
-<p>To recover the unit ball, we can first perform the reverse rotation:
-<span class="math display">\[
-x \leftarrow V^T x
-\]</span></p>
-<p>followed by a reverse scaling: <span class="math display">\[
-  x \leftarrow  
-    \begin{bmatrix}
-      1/2  &amp; \\
-      &amp;  2
-    \end{bmatrix}
-    x
-\]</span></p>
-<p>Note that the reverse rotation is represented by matrix <span
-class="math inline">\(V^T\)</span> as <span class="math inline">\(V V^T
-= I\)</span>. Therefore, the ellipsoid is denoted as <span
-class="math display">\[
-  \left(
-  \begin{bmatrix}
-    1/2  &amp; \\
-    &amp;  2
-  \end{bmatrix}
-  V^T x \right)^T
-  \left(
-  \begin{bmatrix}
-    1/2  &amp; \\
-    &amp;  2
-  \end{bmatrix}
-  V^T x \right)
-  \le 1
-\]</span></p>
-<p>That is <span class="math display">\[
-  x^T \left( V
-  \begin{bmatrix}
-    1/2  &amp; \\
-    &amp;  2
-  \end{bmatrix}^2
-  V^T \right) x  \le 1
-\]</span></p>
-<p>In general, an ellipsoid is represented by <span
-class="math display">\[
-  E(s, P) = \{ x : (x - s)^T P^{-1} (x - s) \le 1\}
-\]</span> where <span class="math inline">\(s \in \mathbb{R}^n\)</span>
-is the center of the ellipsoid and <span
-class="math inline">\(P\)</span> is a positive semi-definite matrix.</p>
-<p>Recall that a positive semi-definite matrix <span
-class="math inline">\(P\)</span> can be rewritten as <span
-class="math display">\[
-  P = V \Sigma V^T
-\]</span> and <span class="math display">\[
-  P^{-1} = V \Sigma^{-1} V^T
-\]</span></p>
-<p>where <span class="math inline">\(V\)</span> is an orthogonal matrix
-and <span class="math inline">\(\Sigma\)</span> is a diagonal matrix.
-Geometrically, <span class="math inline">\(V\)</span> are the directions
-and <span class="math inline">\(\sqrt \Sigma\)</span> are the ratios of
-the squashes or stretches. If we define <span class="math inline">\(B =
-V \sqrt \Sigma\)</span>, then <span class="math inline">\(B^T = \sqrt
-\Sigma V^T\)</span>, <span class="math inline">\(B^{-1} = \sqrt
-\Sigma^{-1} V^T\)</span> and <span class="math inline">\(P = B
-B^T\)</span>, <span class="math inline">\(P^{-1} = (B^{-1} )^T
-B^{-1}\)</span>.</p>
-<p>The representation can be viewed as merely a recipe for converting
-the ellipsoid back to the unit ball:</p>
+          <h1 id="problem">Problem</h1>
 <ol type="1">
-<li><p>First perform a translation <span class="math inline">\(x
-\leftarrow (x - s)\)</span> so that the center of the ellipsoid is now
-the center.</p></li>
-<li><p>Rotate the ellipsoid, such that its axes are aligned with <span
-class="math inline">\(e_1, e_2, ..., e_n\)</span>. This is done by
-multiplying the matrix <span class="math inline">\(V^T\)</span>: <span
-class="math inline">\(x \leftarrow V^T x\)</span>.</p></li>
-<li><p>Squash or stretch along the axes <span class="math inline">\(e_1,
-e_2, ..., e_n\)</span>: <span class="math inline">\(x \leftarrow \sqrt
-\Sigma^{-1} x\)</span>.</p></li>
-<li><p>Therefore, the linear transformation for the recovery is <span
-class="math display">\[
-  x \leftarrow B^{-1} (x - s)
-\]</span></p></li>
+<li><p>Let <span class="math inline">\(G = \left&lt; V, E
+\right&gt;\)</span> be an undirected graph with <span
+class="math inline">\(|V| = n\)</span> vertices and <span
+class="math inline">\(|E| = m\)</span> edges.</p></li>
+<li><p>The number of triangle in <span class="math inline">\(G\)</span>
+is denoted as <span class="math inline">\(\Delta\)</span>.</p></li>
+<li><p>For each <span class="math inline">\(v \in V\)</span>, let <span
+class="math inline">\(N(v) \doteq \{ u : (v, u) \in E \}\)</span> be the
+set of neighbors of <span class="math inline">\(v\)</span>.</p></li>
+<li><p>The degree of <span class="math inline">\(v\)</span> is <span
+class="math inline">\(d_v \doteq | N(v) |\)</span>.</p></li>
+<li><p>Define <span class="math inline">\(\lambda(v)\)</span> be the
+number of triangles whose vertices contains <span
+class="math inline">\(v\)</span>.</p></li>
+<li><p>Similarly, for each <span class="math inline">\(e = (u, v) \in
+E\)</span>, define <span class="math inline">\(\lambda(e)\)</span> the
+number of triangles whose edges contains <span
+class="math inline">\(e\)</span>.</p></li>
 </ol>
-<p>Conversely, <span class="math inline">\(E(s, P) = E(s, V \sqrt \Sigma
-\sqrt \Sigma V^T)\)</span> tells us how to get the ellipsoid from the
-unit ball:</p>
-<ol type="1">
-<li><p>Scale unit ball along the axes <span class="math inline">\(e_1,
-e_2, .., e_n\)</span> by factors that <span class="math inline">\(\sqrt
-\Sigma_{1, 1}, \sqrt \Sigma_{2, 2}, ..., \sqrt \Sigma_{n,
-n}\)</span>.</p></li>
-<li><p>Rotate the ellipsoid by matrix <span
-class="math inline">\(V\)</span>.</p></li>
-<li><p>Move the ellipsoid by <span
-class="math inline">\(s\)</span>.</p></li>
-</ol>
-<p>That is, <span class="math inline">\(x \leftarrow V \sqrt \Sigma y +
-s\)</span> takes the unit ball <span class="math inline">\(\{ y : y^T y
-\le 1 \}\)</span> to the corresponding ellipsoid <span
-class="math inline">\(\{ x : (x - s)^T V \Sigma^{-1} V^T (x - s) \le 1
-\}\)</span>.</p>
-<h1 id="goal">Goal</h1>
-<p>Now return to our discussion of ellipsoid method. Without lose of
-generality, we consider only the following problem:</p>
+<h1 id="exact-algorithm">Exact Algorithm</h1>
 <blockquote>
-<p>Given <span class="math inline">\(F = \{x : Ax \le b\}\)</span>,
-output any <span class="math inline">\(x \in F\)</span> or report <span
-class="math inline">\(F = \emptyset\)</span>, where <span
-class="math inline">\(A \in \mathbb{R}^{m \times n}, x \in \mathbb{R}^n,
-b \in \mathbb{R}^m\)</span>.</p>
+<p><strong>Theorem.</strong> The number of triangles in <span
+class="math inline">\(G\)</span> can be computed in <span
+class="math inline">\(O \big ( m^{1.5} \big)\)</span> time.</p>
 </blockquote>
-<p>We assume further that</p>
-<ol type="1">
-<li><p><span class="math inline">\(\exists R \in \mathbb{R}\)</span>,
-<span class="math inline">\(F \subseteq B(0, R)\)</span>. Besides, if
-<span class="math inline">\(F \neq \emptyset\)</span>, <span
-class="math inline">\(\exists r \in \mathbb{R}\)</span>, and <span
-class="math inline">\(t \in \mathbb{R}^n\)</span>, s.t., <span
-class="math inline">\(B(t, r) \subseteq F\)</span>. Here <span
-class="math inline">\(B(0, R) = \{ x : \Vert x\Vert_2 \le R \}\)</span>
-and <span class="math inline">\(B(t, r) = \{ x : \Vert x - t\Vert_2 \le
-r \}\)</span>.</p></li>
-<li><p><em>Separation Oracle:</em> Given a vertex <span
-class="math inline">\(s \in \mathbb{R}^n\)</span>, the separation oracle
-is a mechanism that asserts</p>
+<p><strong>Proof.</strong></p>
+<p>WLOG, we assume that the vertices in <span
+class="math inline">\(V\)</span> are labelled from <span
+class="math inline">\(1\)</span> to <span
+class="math inline">\(n\)</span> in increasing order according to their
+degrees, such that <span class="math display">\[
+    d_1 \le d_2 \le ... \le d_n.
+\]</span></p>
+<p>Each triangle in <span class="math inline">\(G\)</span> can be
+represented by a unique triple <span class="math inline">\((u, v, w) \in
+[n]^3\)</span> such that <span class="math inline">\(d_u \le d_v \le
+d_w\)</span>. To count the number of such triples, we can execute the
+following algorithm.</p>
+<blockquote>
+<p><strong>For</strong> each <span class="math inline">\(u \in
+[n]\)</span> <strong>do</strong><br />
+<span class="math inline">\(\quad\)</span> <strong>For</strong> <span
+class="math inline">\(v \in N(u)\)</span> of <span
+class="math inline">\(u\)</span> s.t. <span class="math inline">\(d_v
+\ge d_u\)</span> <strong>do</strong><br />
+<span class="math inline">\(\quad\quad\)</span> <strong>For</strong>
+<span class="math inline">\(w \in N(u)\)</span> of <span
+class="math inline">\(u\)</span> s.t. <span class="math inline">\(d_w
+\ge d_v\)</span> <strong>do</strong><br />
+<span class="math inline">\(\qquad\quad\)</span> Check whether <span
+class="math inline">\((u, v, w)\)</span> is a triangle.</p>
+</blockquote>
+<p>It is left to prove that the algorithm has complexity <span
+class="math inline">\(O(m^{1.5})\)</span>.</p>
+<blockquote>
+<p><strong>Lemma.</strong> For each <span class="math inline">\((u, v)
+\in E\)</span>, such that <span class="math inline">\(d_u \le
+d_v\)</span>, the number of <span class="math inline">\(w \in
+N(u)\)</span> such that <span class="math inline">\(d_w \ge d_v\)</span>
+is bounded by <span class="math inline">\(O(\sqrt{m})\)</span>.</p>
+</blockquote>
 <ul>
-<li>either <span class="math inline">\(s \in F\)</span></li>
-<li>or <span class="math inline">\(s \notin F\)</span> and returns a
-direction (which is a unit vector) <span class="math inline">\(d \in
-\mathbb{R}^n\)</span>, such that <span class="math inline">\(d^T s \ge
-d^T x\)</span> for <span class="math inline">\(\forall x \in
-F\)</span>.</li>
-</ul></li>
-</ol>
-<p>The first assumption says that <span class="math inline">\(F\)</span>
-is neither too "large" nor too "small". Note that <span
-class="math inline">\(B(t, r) \subseteq F\)</span> also implies that
-<span class="math inline">\(F\)</span> has full dimension.</p>
-<p>For LP, the separation is straightforward to implement: we just check
-whether <span class="math inline">\(As \le b\)</span>. If so, then <span
-class="math inline">\(s \in F\)</span>. Otherwise, <span
-class="math inline">\(\exists i \in [m]\)</span>, such that the <span
-class="math inline">\(i^{th}\)</span> constraint is violated: <span
-class="math inline">\((A s)_i &gt; b_i\)</span>. Just return <span
-class="math inline">\(d^T = A_{i, \cdot}\)</span>.</p>
+<li><p>The claim is trivial if <span class="math inline">\(d_u \le
+\sqrt{m}\)</span>.</p></li>
+<li><p>Otherwise, suppose that <span class="math inline">\(d_u \ge
+\sqrt{m}\)</span>. But the number of <span class="math inline">\(w \in
+V\)</span> such that <span class="math inline">\(d_w \ge d_u \ge
+\sqrt{m}\)</span> is bounded by <span class="math inline">\(O( m /
+\sqrt{ m }) = O(\sqrt{ m })\)</span>.</p></li>
+</ul>
+<p><span class="math inline">\(\square\)</span></p>
+<h1 id="sampling-algorithms">Sampling Algorithms</h1>
+<h2 id="subgraph-sampling">Subgraph Sampling</h2>
 <blockquote>
-<p>Question to ponder: the feasible region of an LP may not satisfy the
-first assumption? It is possible to reduce it to one satisfying the
-first assumption?</p>
-</blockquote>
-<h1 id="the-algorithm">The Algorithm</h1>
-<p>The algorithm begins with a special ellipsoid <span
-class="math inline">\(E_0 = B(0, R)\)</span>. At each step, it queries
-the <em>separation oracle</em> and generates a smaller ellipsoid (with
-reduced volume). If <span class="math inline">\(F\)</span> is not empty,
-the ellipsoid at each step is guaranteed to contain it. The algorithm
-stops before the volume of the ellipsoid decreases below $ (B(t,
-r))$.</p>
-<p>The algorithmic flow is shown below:</p>
-<table style="width:53%;">
-<colgroup>
-<col style="width: 52%" />
-</colgroup>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">1. <span class="math inline">\(i =
-0\)</span>.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">2. <span class="math inline">\(E_0 = B(0,
-R)\)</span>.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">3. <em>While</em> <span
-class="math inline">\(\mathtt{vol} (E_i(s_i, P_i)) \ge \mathtt{vol}
-(B(t, r))\)</span>:</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">4. <span
-class="math inline">\(\qquad\)</span> <em>if</em> <span
-class="math inline">\(s_i \in F\)</span>, output <span
-class="math inline">\(s_i\)</span>.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">5. <span
-class="math inline">\(\qquad\)</span> <em>else</em>,</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">6. <span
-class="math inline">\(\qquad\)</span> <span
-class="math inline">\(\qquad\)</span> Obtain a direction <span
-class="math inline">\(d_i\)</span>, s.t., <span
-class="math inline">\(d_i^T s_i \ge d_i^T x\)</span> for <span
-class="math inline">\(x \in F\)</span>*.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">7. <span
-class="math inline">\(\qquad\)</span> <span
-class="math inline">\(\qquad\)</span> Calculate a ellipsoid <span
-class="math inline">\(E_{i + 1} \supset E_{i} \cap \{x : d_i^T s_i \ge
-d_i^T x \}\)</span>.</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">8. <span
-class="math inline">\(\qquad\)</span> <span
-class="math inline">\(\qquad\)</span> <span class="math inline">\(i
-\leftarrow i + 1\)</span>.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">9. Output <span class="math inline">\(F =
-\emptyset\)</span>.</td>
-</tr>
-</tbody>
-</table>
-<p>For the one dimension case, it is nothing more than a variant of
-binary search.</p>
-<h2 id="bounding-the-number-of-iterations">Bounding the Number of
-Iterations</h2>
-<p>The main result that characterizes the running time is</p>
-<blockquote>
-<p><strong>Theorem.</strong> It is guaranteed that for each <span
-class="math inline">\(i\)</span>, <span class="math display">\[
-\frac{ \mathtt{vol} ( E_{i + 1} ) } { \mathtt{vol} (E_i) } \le \exp
-\left( -\frac{1}{2 (n + 1) } \right).
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Corollary.</strong> The number of iterations of the ellipsoid
-method is bounded by <span class="math display">\[
-2n(n + 1) \ln \frac{R}{r}.
-\]</span></p>
-</blockquote>
-<p>To simplify the notation further, we write <span
-class="math inline">\(E_i = E(s, P)\)</span>, <span
-class="math inline">\(d_i = d\)</span> and <span
-class="math inline">\(E_{i + 1} = E(s&#39;, P&#39;)\)</span>. The key
-lemma for the theorem is:</p>
-<blockquote>
-<p><strong>Lemma.</strong> Given an ellipsoid <span
-class="math inline">\(E(s, P) = \{ x \in \mathbb{R}^n : (x - s)^T P^{-1}
-(x - s) \le 1\}\)</span> and the half space <span
-class="math inline">\(H(s, d) = \{ x \in \mathbb{R}^n : d^T (x - s)\le 0
-\}\)</span>, we can find an ellipsoid <span
-class="math inline">\(E(s&#39;, P&#39;)\)</span>, such that</p>
 <ol type="1">
-<li><p><span class="math inline">\(E(s&#39;, P&#39;)\)</span> contains
-the intersection of <span class="math inline">\(E(s, P)\)</span> and
-<span class="math inline">\(H(s, d)\)</span> : <span
-class="math display">\[
-E(c, P) \cap H(s, d).
-\]</span></p></li>
-<li><p>The volume of <span class="math inline">\(E(s&#39;,
-P&#39;)\)</span> is at most <span class="math inline">\(\exp \left(
--\frac{1}{2 (n + 1) } \right)\)</span> times that of <span
-class="math inline">\(E(s, P)\)</span>.</p></li>
+<li>Sample each edge independently with some probability <span
+class="math inline">\(p\)</span>.<br />
+</li>
+<li>Count the number of triangles, <span class="math inline">\(\tilde
+\Delta\)</span>, in the sampled subgraph.<br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( 1 / p^3 \big) \cdot
+\tilde \Delta\)</span>.</li>
 </ol>
 </blockquote>
-<p>In particular, <span class="math inline">\(s&#39;\)</span> and <span
-class="math inline">\(P&#39;\)</span> is given by <span
-class="math display">\[
-  \begin{aligned}
-    s&#39; &amp;= s - \frac{1}{n + 1} \frac{P d}{\sqrt{d^T P d} } \\
-    P&#39; &amp;= \frac{n^2}{n^2 - 1} \left( P - \frac{2}{n + 1}
-\frac{Pd}{\sqrt{d^T P d} } \left( \frac{Pd}{\sqrt{d^T P d} } \right)^T
-\right)
-  \end{aligned}
-\]</span></p>
-<p><strong>Proof.</strong> The transformation <span
-class="math inline">\(y = B^{-1} (x - s)\)</span> maps <span
-class="math inline">\(E(s, P)\)</span> to <span
-class="math inline">\(E(0，I)\)</span>, and <span
-class="math display">\[
-  \{x \in R^n: d^T B (B^{-1} (x - s)) \le 0\}
-\]</span> to <span class="math display">\[
-  H(0, B^T d) = \{y \in R^n: d^T B y \le 0\}.
-\]</span></p>
-<p>Let <span class="math display">\[
-e&#39; = \frac{B^T d}{\sqrt{d^T B B^T d} } = \frac{B^T d}{\sqrt{d^T P d}
-}
-\]</span> so that <span class="math inline">\(H(0, B^Td)\)</span> is
-equivalent to <span class="math inline">\(H(0, e&#39;)\)</span>.</p>
-<p>It suffices to find an ellipsoid that contains <span
-class="math inline">\(E(0, I) \cap H(0, e&#39;)\)</span>. Then applying
-the reverse transformation <span class="math inline">\(x = By +
-s\)</span> will give us an ellipsoid that contains <span
-class="math inline">\(E(s, P) \cap H(s, d)\)</span>.</p>
-<p>We can further reduce the problem to finding an ellipsoid that covers
-<span class="math inline">\(E(0, I) \cap H(0, e_1)\)</span> as we can
-recover the ellipsoid by rotating <span
-class="math inline">\(e_1\)</span> to <span
-class="math inline">\(e&#39;\)</span>.</p>
+<h3 id="properties">Properties</h3>
 <blockquote>
-<p><strong>Claim.</strong> The ellipsoid that covers <span
-class="math inline">\(E(0,I) \cap H(0, e_1)\)</span> is given by <span
-class="math display">\[
-E \left( -\frac{1}{n + 1}e_1, \frac{n^2}{n^2 - 1} \left( I - \frac{2}{n
-+ 1}e_1 e_1^T \right) \right)
-\]</span> and has minimum volume <span class="math inline">\(\exp (
--\frac{1}{2(n + 1)} )\)</span>.</p>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span
+class="math inline">\(X\)</span> is an unbiased estimator of <span
+class="math inline">\(\Delta\)</span>.</p>
 </blockquote>
-<p>To under the ellipsoid, we check how it transforms the unit ball to
-an ellipsoid:</p>
+<p><strong>Proof.</strong> For each triangle in <span
+class="math inline">\(G\)</span>, define the indicator random variable
+<span class="math inline">\(Z\)</span> for its inclusion in teh sampled
+subgraph. Then <span class="math inline">\(\mathbb{E}[Z] = p^3\)</span>.
+Let <span class="math inline">\(S\)</span> be the collection of such
+random variable. By linearity of expectation. <span
+class="math display">\[
+    \mathbb{E} \left[ \sum_{Z \in S } Z \right] = \sum_{Z \in S }
+\mathbb{E} \left[  Z \right] = p^3 \cdot \Delta.
+\]</span></p>
+<p>It follows that <span class="math inline">\((1 / p^3) \sum_{Z \in S}
+Z\)</span> is an unbiased estimator of <span
+class="math inline">\(\Delta\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Let <span class="math inline">\(\Delta^N\)</span> be the number of
+triangles that share an edge.</p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span
+class="math inline">\(X\)</span> has variance <span
+class="math display">\[
+(1 / p^6) \cdot \left( \Delta \cdot \big( p^3 - p^6 \big) + 2 \cdot
+\Delta^N \cdot \big( p^5 - p^6 \big) \right).
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ \frac{1}{p^3} \sum_{Z \in S } Z \right]
+            &amp;= \frac{1}{p^6} \cdot \left(  \sum_{Z \in S }
+\mathbb{Var} \left[ Z \right] + \sum_{Z, Z&#39; \in S } \mathbb{Cov}
+\left[ Z, Z&#39; \right] \right) \\
+            &amp;= \frac{1}{p^6} \cdot \left( \sum_{Z \in S }
+\mathbb{Var} \left[ Z \right] + \sum_{Z, Z&#39; \in S \wedge Z \text{
+shares an edge with } Z&#39; } \mathbb{Cov} \left[ Z, Z&#39; \right]
+\right) \\
+            &amp;= \frac{1}{p^6} \cdot \left( \sum_{Z \in S } \big( p^3
+- p^6 \big) + \sum_{Z, Z&#39; \in S \wedge Z \text{ shares an edge with
+} Z&#39; } \big( p^5 - p^6 \big) \right) \\
+            &amp;= \frac{1}{p^6} \cdot \left( \Delta \cdot \big( p^3 -
+p^6 \big) + 2 \cdot \Delta^N \cdot \big( p^5 - p^6 \big) \right).
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<h2 id="vertex-sampling">Vertex Sampling</h2>
+<blockquote>
 <ol type="1">
-<li><p>It squashes the ball along the <span
-class="math inline">\(e_1\)</span> axis, by a factor of <span
-class="math inline">\(\sqrt{ \frac{n^2} {n^2 - 1} \frac{n - 1} {n + 1} }
-= \frac{n}{ n + 1 }\)</span>.</p></li>
-<li><p>Then it stretches all other directions <span
-class="math inline">\(e_2, e_3, ..., e_n\)</span> by a factor of <span
-class="math inline">\(\sqrt \frac{n^2}{n^2 - 1}\)</span>.</p></li>
-<li><p>Finally, move the center of the ellipsoid to <span
-class="math inline">\(-\frac{1}{n + 1}e_1\)</span>.</p></li>
-</ol>
-<p>Note that the ellipsoid has volume <span class="math display">\[
-  \begin{aligned}
-    \left(1 - \frac{1}{n + 1} \right) \left( 1 + \frac{1}{n^2 -1}
-\right)^{(n - 1) / 2}
-    &amp;\le
-    \exp \left( - \frac{1}{n + 1} + \frac{1}{n^2 -1} (n - 1) / 2 \right)
-\\
-    &amp;= \exp \left( - \frac{1}{2(n + 1)} \right).
-  \end{aligned}
-\]</span> This is also the ratio of the ellipsoid over that of the unit
-ball, whose value is 1.</p>
-<p>Before we prove the claim, we show how to transform the ellipsoid
-back to <span class="math inline">\(E(s&#39;, P&#39;)\)</span> that
-covers <span class="math inline">\(E(s, P) \cap H(s, d)\)</span>. First,
-by symmetry, the ellipsoid that covers <span class="math inline">\(E(0,
-I) \cap H(0, e&#39;)\)</span> is given by <span class="math display">\[
-  E \left( -\frac{1}{n + 1}e&#39;, \frac{n^2}{n^2 - 1} \left( I -
-\frac{2}{n + 1}e&#39; (e&#39;)^T \right) \right)
-\]</span></p>
-<p>Applying the mapping <span class="math inline">\(B y + s =
-x\)</span>: <span class="math display">\[
-  E \left( -\frac{1}{n + 1} e&#39;, \frac{n^2}{n^2 - 1} \left( I -
-\frac{2}{n + 1}e&#39; (e&#39;)^T \right) \right) \\
-  \longrightarrow
-  E \left( s - \frac{1}{n + 1} B^T e&#39;, \frac{n^2}{n^2 - 1} B \left(
-I - \frac{2}{n + 1}e&#39; (e&#39;)^T \right) B^T \right).
-\]</span></p>
-<p><em>As linear transformation preserves the ratio of volumes, the
-ratio of the volume of the final ellipsoid over that of <span
-class="math inline">\(E(s, P)\)</span> is also <span
-class="math inline">\(\exp(- \frac{1}{2 (n + 1)} )\)</span>.</em></p>
-<blockquote>
-<p><strong>Question to ponder:</strong> 1. Show that <span
-class="math inline">\(\frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1
-e_1^T)\)</span> is positive definite.</p>
-<ol start="2" type="1">
-<li><p>Show that <span class="math inline">\(\left( \frac{n^2}{n^2 - 1}
-(I - \frac{2}{n + 1}e_1 e_1^T) \right)^{-1} = \frac{n^2 - 1}{n^2} I +
-\frac{2n + 2}{n^2} e_1 e_1^T\)</span>.</p></li>
-<li><p>Show that <span class="math inline">\(\frac{n^2}{n^2 - 1} B (I -
-\frac{2}{n + 1}e&#39; (e&#39;)^T) B^T\)</span> is positive
-definite.</p></li>
+<li>Sample a vertex <span class="math inline">\(v\)</span> uniformly at
+random from <span class="math inline">\(V\)</span>.<br />
+</li>
+<li>Compute <span class="math inline">\(\lambda(v)\)</span>.<br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( n / 3 \big) \cdot
+\lambda(v)\)</span>.</li>
 </ol>
 </blockquote>
-<p><strong>Proof of the Claim.</strong> As both <span
-class="math inline">\(E(0,I)\)</span> and <span
-class="math inline">\(H(0, e_1)\)</span> are symmetric to <span
-class="math inline">\(e_1\)</span>, so should the ellipsoid covering the
-intersection of them. Therefore it should be of the form <span
+<h3 id="properties-1">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span
+class="math inline">\(X\)</span> is an unbiased estimator of <span
+class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \mathbb{E}[X] = \frac{n}{3} \cdot \sum_{v \in V} \frac{1}{n} \cdot
+\lambda(v) = \frac{1}{3} \cdot \sum_{v \in V} \lambda(v) = \Delta.
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span
+class="math inline">\(X\)</span> has variance <span
+class="math inline">\(\left( (n / 9) \cdot \sum_{v \in V} \lambda(v)^2
+\right) - \Delta^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ X \right]
+            = \mathbb{E}[X^2] - \mathbb{E}[X]^2
+            = \left( \frac{n}{9} \cdot \sum_{v \in V} \lambda(v)^2
+\right) - \Delta^2.
+    \end{aligned}
+\]</span><br />
+<span class="math inline">\(\square\)</span></p>
+<h2 id="edge-sampling">Edge Sampling</h2>
+<blockquote>
+<ol type="1">
+<li>Sample an edge <span class="math inline">\(e\)</span> uniformly at
+random from <span class="math inline">\(E\)</span>.<br />
+</li>
+<li>Compute <span class="math inline">\(\lambda(e)\)</span>.<br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( m / 3 \big) \cdot
+\lambda(e)\)</span>.</li>
+</ol>
+</blockquote>
+<h3 id="properties-2">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span
+class="math inline">\(X\)</span> is an unbiased estimator of <span
+class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \mathbb{E}[X] = \frac{m}{3} \cdot \sum_{e \in E} \frac{1}{m} \cdot
+\lambda(e) = \frac{1}{3} \cdot \sum_{e \in E} \lambda(e) = \Delta.
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span
+class="math inline">\(X\)</span> has variance <span
+class="math inline">\(\left( (m / 9) \cdot \sum_{e \in E} \lambda(v)^2
+\right) - \Delta^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ X \right]
+            = \mathbb{E}[X^2] - \mathbb{E}[X]^2
+            = \left( \frac{m}{9} \cdot \sum_{e \in E} \lambda(e)^2
+\right) - \Delta^2.
+    \end{aligned}
+\]</span><br />
+<span class="math inline">\(\square\)</span></p>
+<h2 id="triangle-sampling">Triangle Sampling</h2>
+<blockquote>
+<ol type="1">
+<li>Sample an edge <span class="math inline">\(e = (u, v)\)</span>
+uniformly at random from <span class="math inline">\(E\)</span>.<br />
+</li>
+<li>Sample a vertex uniformly at random from <span
+class="math inline">\(\begin{cases} N(u), &amp; \text{w.p.} &amp; d_u /
+(d_u + d_v) , \\ N(v), &amp; \text{w.p.} &amp; d_v / (d_u + d_v) .
+\end{cases}\)</span><br />
+</li>
+<li><span class="math inline">\(I \leftarrow \begin{cases} 1, &amp;
+\text{if} (u, v, w) \text{ constitutes a triangle}, \\ 0, &amp;
+\text{otherwise}. \end{cases}\)</span><br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( m / 6 \big) \cdot
+\big( d_u + d_v \big) \cdot I\)</span>.</li>
+</ol>
+</blockquote>
+<h3 id="properties-3">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span
+class="math inline">\(X\)</span> is an unbiased estimator of <span
+class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Conditioned on the sampled edge <span
+class="math inline">\(e = (u, v)\)</span>, <span class="math display">\[
+    \mathbb{E}[ I \mid e = (u, v) ] = \frac{ 2 \cdot |N(u) \cap N(v)
+|  }{d_u + d_v} = 2 \cdot \frac{ \lambda(e) }{d_u + d_v}.
+\]</span> Hence, <span class="math inline">\((1 / 2) \cdot (d_u + d_v)
+\cdot I\)</span> is an unbiased estimator of <span
+class="math inline">\(\lambda(e)\)</span>. It follows that <span
 class="math display">\[
-  a_1 (x_1 - \lambda) + \sum_{i = 2}^n a_i x_i^2 \le 1
+    \begin{aligned}
+        \mathbb{E}[(m / 6) \cdot (d_u + d_v) \cdot I]
+            &amp;= \frac{m}{3} \cdot \mathbb{E}[(1 / 2) \cdot (d_u +
+d_v) \cdot I] \\
+            &amp;= \frac{m}{3} \cdot \sum_{e \in E} \frac{1}{m} \cdot
+\mathbb{E}[(1 / 2) \cdot (d_u + d_v) \cdot I \mid e = (u, v) ] \\
+            &amp;= \frac{1}{3} \sum_{e \in E} \lambda(e) = \Delta.
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span
+class="math inline">\(X\)</span> has variance <span
+class="math inline">\((m / 18) \cdot \sum_{e = (u, v) \in E} (d_u + d_v)
+\cdot \lambda(e) - \Delta^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var} \left[ X \right]
+            &amp;= \mathbb{E}[X^2] - \mathbb{E}[X]^2 \\
+            &amp;= \frac{m^2}{36} \cdot \sum_{e = (u, v) \in E}
+\frac{1}{m} \cdot (d_u + d_v)^2 \cdot  \frac{ 2 \cdot \lambda(e) }{d_u +
+d_v} - \Delta^2 \\
+            &amp;= \frac{m}{18} \cdot \sum_{e = (u, v) \in E} (d_u +
+d_v) \cdot  \lambda(e) - \Delta^2.
+    \end{aligned}
+\]</span><br />
+<span class="math inline">\(\square\)</span></p>
+<h2 id="wedge-sampling">Wedge Sampling</h2>
+<p>A wedge is a triple <span class="math inline">\((u, v, w) \in
+V^3\)</span> such that <span class="math inline">\((u, v), (v, w) \in
+E\)</span>. If a wedge is closed, i.e., <span class="math inline">\((v,
+w) \in E\)</span>, then it constitutes a triangle. Note that each
+triangle contains <span class="math inline">\(3\)</span> wedges. Denote
+<span class="math inline">\(W\)</span> the number of wedges in <span
+class="math inline">\(G\)</span>.</p>
+<blockquote>
+<ol type="1">
+<li>Sample a wedge <span class="math inline">\((u, v, w)\)</span>
+uniformly at random.<br />
+</li>
+<li><span class="math inline">\(I \leftarrow \begin{cases} 1, &amp;
+\text{if} (u, v, w) \text{ constitutes a triangle}, \\ 0, &amp;
+\text{otherwise}. \end{cases}\)</span><br />
+</li>
+<li><span class="math inline">\(X \leftarrow \big( W / 3 \big) \cdot
+I\)</span>.</li>
+</ol>
+</blockquote>
+<h3 id="properties-4">Properties</h3>
+<blockquote>
+<p><strong>Theorem (Unbiased Estimator).</strong> <span
+class="math inline">\(X\)</span> is an unbiased estimator of <span
+class="math inline">\(\Delta\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \mathbb{E}[ I ] = \frac{ 3 \cdot \Delta }{ W }.
+\]</span> Therefore, <span class="math inline">\(X = (W / 3 ) \cdot
+I\)</span> is an unbiased estimator of <span
+class="math inline">\(\Delta\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem (Variance).</strong> <span
+class="math inline">\(X\)</span> has variance <span
+class="math inline">\(W \cdot \Delta / 3 - \Delta^2\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var}[ I ] = \frac{ 3 \cdot \Delta }{ W } - \left( \frac{
+3 \cdot \Delta }{ W } \right)^2
+    \end{aligned}
+\]</span> Therefore, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var}[ X ] =  W \cdot \Delta / 3  - \Delta^2
+    \end{aligned}
 \]</span></p>
-<p>where <span class="math inline">\(a_i\)</span>'s and <span
-class="math inline">\(\lambda\)</span> (<span class="math inline">\(0
-&lt; \lambda &lt; 1\)</span>) are the parameters to be determined. The
-goal is to minimize its volume: <span class="math display">\[
-  \sqrt{\frac{1}{a_1} \prod_{i = 2}^n \frac{1}{a_i} }  \mathtt{vol} [
-E(0, I) ].
-\]</span></p>
-<p>where $ [ E(0, I) ] = 1$ is the volume of unit ball in <span
-class="math inline">\(R^n\)</span>. It is equivalent to maximize <span
-class="math display">\[
-  a_1 \prod_{i = 2}^n a_i.
-\]</span></p>
-<p>As the ellipsoid covers <span class="math inline">\(E(0,I) \cap H(0,
-e_1)\)</span> and should has as small volume as possible, the points
-<span class="math inline">\(e_i\)</span> (<span class="math inline">\(i
-= 1, 2, ..., n\)</span>) should be on its boundary. Therefore, <span
-class="math display">\[
-  \begin{aligned}
-    a_1 (1 - \lambda)^2 + \sum_{i = 2}^n a_i 0^2 &amp;= 1
-&amp;\rightarrow a_1(1 - \lambda)^2 = 1 &amp;\\
-    a_1 (0 - \lambda)^2 + a_i 1^2 &amp;= 1  &amp;\rightarrow a_i = 1 -
-a_1 \lambda^2  &amp;\quad  \forall i = 2, 3, ..., n  \\
-  \end{aligned}
-\]</span></p>
-<p>Replacing <span class="math inline">\(a_i\)</span> with <span
-class="math inline">\(1 - a_1 \lambda^2\)</span> and then <span
-class="math inline">\(a_1\)</span> with <span
-class="math inline">\(\frac{1}{(1 - \lambda)^2}\)</span>, the goal
-becomes <span class="math display">\[
-  \max \quad \frac{1}{(1 - \lambda)^2} \left[ 1 - \frac{\lambda^2}{(1 -
-\lambda)^2} \right]^{n - 1}
-\]</span></p>
-<p>Substitute <span class="math inline">\(\frac{1}{1 - \lambda}\)</span>
-by a variable <span class="math inline">\(x &gt; 1\)</span>, and let
-<span class="math display">\[
-  f \doteq x^2 [1 - (x - 1)^2]^{n - 1}
-\]</span></p>
-<p>Its derivative is <span class="math display">\[
-  f&#39; = 2x [1 - (x - 1)^2]^{n - 1} - 2 (n - 1)(x - 1) x^2 [1 - (x -
-1)^2]^{n - 2}
-\]</span></p>
-<p>Setting the derivative to zero, we obtain <span
-class="math display">\[
-  \begin{aligned}
-    &amp;[1 - (x - 1)^2] - (n - 1)(x - 1)x = 0 \\
-    &amp;\Rightarrow 1 - x^2 + 2x - 1- (n -1 )x^2 + (n -1 )x = 0 \\
-    &amp;\Rightarrow - n x^2 + (n + 1) x = 0 \\
-    &amp;\Rightarrow x = \frac{n + 1}{n}
-  \end{aligned}
-\]</span> It follows that <span class="math inline">\(a_1 = (\frac{n +
-1}{n})^2\)</span>, <span class="math inline">\(\lambda = \frac{1}{n +
-1}\)</span> and <span class="math inline">\(a_i = \frac{n^2 -
-1}{n^2}\)</span> for <span class="math inline">\(\forall i = 2, 3, ...,
-n\)</span>.</p>
-<!-- Therefore, 
-$$
-c_1 = \left[ 
-    \begin{matrix}
-\frac{1}{n + 1} \\
- 0 \\
-  ...\\
-0
-\end{matrix}
-\right] 
-= \frac{1}{n + 1} e_1
-$$
-and 
-$$
-P_1^{-1} = \left[ 
-\begin{matrix}
-(\frac{n + 1}{n} )^2 &                       &   ...     \\
-                    &   \frac{n^2 - 1}{n^2}  &   ...     \\
-                    &                        &   ...     \\
-                    &                        &   &\frac{n^2 - 1}{n^2}
-\end{matrix}
-\right] = \frac{n^2 - 1}{n^2} I + 2\frac{n + 1}{n^2} e_1 e_1^T \\
-P_1 = \left[ 
-\begin{matrix}
-(\frac{n}{n + 1} )^2 &                       &   ...     \\
-                    &   \frac{n^2}{n^2 - 1}  &   ...     \\
-                    &                        &   ...     \\
-                    &                        &   &\frac{n^2}{n^2 - 1}
-\end{matrix}
-\right] = \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T)
-$$
-
-The volume ratio between $E(c_1, P_1)$ and $E(0, I)$ is 
-
-$$
-\begin{aligned}
-\sqrt{\frac{1}{a_1} \prod_{i = 2}^n \frac{1}{a_i} } 
-&= \frac{n}{n + 1} \left[ \frac{n^2 }{n^2 - 1} \right]^{(n - 1) / 2} \\
-&\le \exp \left( -\frac{1}{n + 1} + \frac{1}{2}\frac{n - 1}{n^2 - 1} \right) \\
-&= \exp \left( -\frac{1}{2} \frac{1}{n + 1} \right)
-\end{aligned}
-$$ -->
+<p><span class="math inline">\(\square\)</span></p>
 <h1 id="reference">Reference</h1>
-<p>[1]. <em>Michel X. Goemans, 7. Lecture notes on the ellipsoid
-algorithm, 18.433: Combinatorial Optimization, MIT</em></p>
+<p>[1]. <a
+target="_blank" rel="noopener" href="https://cs.stanford.edu/~rishig/courses/ref/l1.pdf">CS167: Reading
+in Algorithms Counting Triangles<span class="math inline">\(^∗\)</span>
+Tim Roughgarden<span class="math inline">\(^\dagger\)</span></a><br />
+[1] B. Wu, K. Yi, and Z. Li, “Counting Triangles in Large Graphs by
+Random Sampling,” IEEE Transactions on Knowledge and Data Engineering,
+2016.</p>
 
       
     </div>
@@ -1234,7 +1012,7 @@ algorithm, 18.433: Combinatorial Optimization, MIT</em></p>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/37/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/37/">37</a><span class="page-number current">38</span><a class="page-number" href="/page/39/">39</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/39/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/37/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/37/">37</a><span class="page-number current">38</span><a class="page-number" href="/page/39/">39</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/39/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1300,12 +1078,12 @@ algorithm, 18.433: Combinatorial Optimization, MIT</em></p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -1332,7 +1110,7 @@ algorithm, 18.433: Combinatorial Optimization, MIT</em></p>
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

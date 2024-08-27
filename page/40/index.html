@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/14/Sparse-Recovery-with-Count-Sketch/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/20/Ellipsoid/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/01/14/Sparse-Recovery-with-Count-Sketch/" class="post-title-link" itemprop="url">Sparse Recovery with Count-Sketch</a>
+            <a href="/2020/02/20/Ellipsoid/" class="post-title-link" itemprop="url">Ellipsoid method</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-01-14 22:51:28" itemprop="dateCreated datePublished" datetime="2020-01-14T22:51:28+11:00">2020-01-14</time>
+              <time title="Created: 2020-02-20 11:19:42" itemprop="dateCreated datePublished" datetime="2020-02-20T11:19:42+01:00">2020-02-20</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-09 13:40:52" itemprop="dateModified" datetime="2021-04-09T13:40:52+10:00">2021-04-09</time>
+                <time title="Modified: 2022-06-21 08:51:15" itemprop="dateModified" datetime="2022-06-21T08:51:15+02:00">2022-06-21</time>
               </span>
 
           
@@ -191,205 +191,886 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="background">Background</h1>
-<p>A stream of items <span class="math inline">\(S = \{ a_1, a_2, ...,
-a_m \}\)</span> where <span class="math inline">\(a_i \in [n]\)</span>.
-Let the frequencies of elements in <span
-class="math inline">\([n]\)</span> be <span class="math inline">\(f =
-\left&lt; f_1, f_2, ..., f_n \right&gt;\)</span>, where <span
-class="math inline">\(f_j = |\{ a_i \in S : a_i = j \}|\)</span>.</p>
-<h2 id="count-sketch">Count-Sketch</h2>
-<p>It returns an estimation <span class="math inline">\(\hat f\)</span>
-of <span class="math inline">\(f\)</span> with space <span
-class="math inline">\(O(\frac{1}{\epsilon^2} \log n)\)</span> words,
-such that with probability at least <span class="math inline">\(1 - 1 /
-n\)</span>, for every <span class="math inline">\(i \in [n]\)</span>,
+          <p>Ellipsoid method is a weakly polynomial algorithm for solving linear
+programming. The preliminary version was introduced by the Russian
+mathematician Shor in 1977 for general convex optimization problems.
+Then it was applied to linear programming by Khachyan in 1979 [1].
+Before interior point method, it was the first polynomial time algorithm
+for LP.</p>
+<h1 id="feasibility-implies-optimality">Feasibility implies
+Optimality</h1>
+<p>Now, consider the primal LP: <span class="math display">\[
+  \mathcal{P}:  \qquad
+  \begin{aligned}
+    &amp;\max   &amp;c^T x    &amp; \\
+    &amp;s.t.   &amp;Ax \le b &amp; \\
+    &amp;       &amp; x \ge 0 &amp;
+  \end{aligned}
+\]</span></p>
+<p>whose dual is given by <span class="math display">\[
+  \mathcal{D}:  \qquad
+  \begin{aligned}
+    &amp;\min   &amp;y^Tb    \ \  &amp; \\
+    &amp;s.t.   &amp;y^TA \ge c^T &amp; \\
+    &amp;       &amp;y \ge 0 \ \  &amp;
+  \end{aligned}
+\]</span></p>
+<p>The ellipsoid does not optimize the primal directly. Instead, it try
+to return a feasible point <span class="math inline">\((x, y)\)</span>
+that satisfies the following constraints: <span class="math display">\[
+\begin{aligned}
+         c^T x &amp;= y^Tb  &amp; \\
+         Ax    &amp;\le b   &amp; \\
+          x    &amp;\ge 0       &amp; \\
+         y^TA  &amp;\ge c^T &amp; \\
+         y     &amp;\ge 0 \ \  &amp;
+\end{aligned}
+\]</span></p>
+<p>By weak duality, if such point exists, then <span
+class="math inline">\(x\)</span> is the optimal solution for the primal
+program. (Note that, if there is no feasible point for the third
+program, the primal could be either infeasible or unbounded.)</p>
+<h1 id="ellipsoid">Ellipsoid</h1>
+<p>Ellipsoid is a unit ball that has been squashed or stretched along
+orthogonal directions. We illustrate this by an example in two
+dimension. The following picture shows an ellipse obtained by enlarging
+the unit ball by a facto of <span class="math inline">\(2\)</span> along
+the <span class="math inline">\(v_1\)</span> direction and squashing it
+ball by half along the <span class="math inline">\(v_2\)</span>
+direction, where <span class="math inline">\(v_1\)</span> and <span
+class="math inline">\(v_2\)</span> constitute an orthogonal base.</p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod1.jpg" /></p>
+<p>It is equivalent to first squash or stretch the ball along the
+directions of <span class="math inline">\(e_1, e_2\)</span>,</p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod2.jpg" /></p>
+<p>then rotate the resulting ellipsoid to corresponding orthogonal
+directions.</p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Ellipsoid/EllipsoidMethod3.jpg" /></p>
+<p>The rotation can be done by left multiplying an orthogonal matrix
 <span class="math display">\[
-    |\hat f_i - f_i| \le \epsilon \Vert f \Vert_2,
-\]</span> where <span class="math inline">\(\Vert f \Vert_2 = \sqrt
-{\sum_{i = 1}^n f_i^2 }\)</span>.</p>
-<h1 id="problem">Problem</h1>
-<p>In general, a sketch is a concise representation of <span
-class="math inline">\(f\)</span>. Suppose that we limit our space usage
-to <span class="math inline">\(k\)</span> words (i.e., <span
-class="math inline">\(\Vert \hat f \Vert_0 = k\)</span>). Then the
-sketch <span class="math inline">\(\hat f\)</span> that minimizes the
-<span class="math inline">\(\ell_2\)</span> error <span
+V = [v_1, v_2]
+\]</span></p>
+<p>where <span class="math inline">\(v_1, v_2\)</span> are the
+orthogonal base for which the squash and stretch are performed.</p>
+<p>To recover the unit ball, we can first perform the reverse rotation:
+<span class="math display">\[
+x \leftarrow V^T x
+\]</span></p>
+<p>followed by a reverse scaling: <span class="math display">\[
+  x \leftarrow  
+    \begin{bmatrix}
+      1/2  &amp; \\
+      &amp;  2
+    \end{bmatrix}
+    x
+\]</span></p>
+<p>Note that the reverse rotation is represented by matrix <span
+class="math inline">\(V^T\)</span> as <span class="math inline">\(V V^T
+= I\)</span>. Therefore, the ellipsoid is denoted as <span
 class="math display">\[
-    err_2^k (f) \doteq \Vert f - \hat f \Vert_2
+  \left(
+  \begin{bmatrix}
+    1/2  &amp; \\
+    &amp;  2
+  \end{bmatrix}
+  V^T x \right)^T
+  \left(
+  \begin{bmatrix}
+    1/2  &amp; \\
+    &amp;  2
+  \end{bmatrix}
+  V^T x \right)
+  \le 1
 \]</span></p>
-<p>keeps the set <span class="math inline">\(H\)</span> of <span
-class="math inline">\(k\)</span> items with highest frequencies. In such
-case, the error is given by <span class="math display">\[
-    err_2^k (f) = \sqrt {\sum_{i \notin H} f_i^2}
+<p>That is <span class="math display">\[
+  x^T \left( V
+  \begin{bmatrix}
+    1/2  &amp; \\
+    &amp;  2
+  \end{bmatrix}^2
+  V^T \right) x  \le 1
 \]</span></p>
-<p>In practice, however, <span class="math inline">\(S\)</span> is not
-given offline. As we don't know <span class="math inline">\(H\)</span>,
-we can only compute an <span class="math inline">\(\hat f\)</span> with
-<span class="math inline">\(k\)</span> words that is as good as
-possible. The question is, how far <span class="math inline">\(\Vert f -
-\hat f \Vert_2\)</span> can be from the minimum possible value, namely
-<span class="math inline">\(err_2^k(f)\)</span>?</p>
-<h1 id="algorithm">Algorithm</h1>
-<p>One possible solution, proposed by Cormode and Muthukrishnan [1], is
-to construct <span class="math inline">\(\hat f\)</span> vis
-Count-Sketch. In particular,</p>
+<p>In general, an ellipsoid is represented by <span
+class="math display">\[
+  E(s, P) = \{ x : (x - s)^T P^{-1} (x - s) \le 1\}
+\]</span> where <span class="math inline">\(s \in \mathbb{R}^n\)</span>
+is the center of the ellipsoid and <span
+class="math inline">\(P\)</span> is a positive semi-definite matrix.</p>
+<p>Recall that a positive semi-definite matrix <span
+class="math inline">\(P\)</span> can be rewritten as <span
+class="math display">\[
+  P = V \Sigma V^T
+\]</span> and <span class="math display">\[
+  P^{-1} = V \Sigma^{-1} V^T
+\]</span></p>
+<p>where <span class="math inline">\(V\)</span> is an orthogonal matrix
+and <span class="math inline">\(\Sigma\)</span> is a diagonal matrix.
+Geometrically, <span class="math inline">\(V\)</span> are the directions
+and <span class="math inline">\(\sqrt \Sigma\)</span> are the ratios of
+the squashes or stretches. If we define <span class="math inline">\(B =
+V \sqrt \Sigma\)</span>, then <span class="math inline">\(B^T = \sqrt
+\Sigma V^T\)</span>, <span class="math inline">\(B^{-1} = \sqrt
+\Sigma^{-1} V^T\)</span> and <span class="math inline">\(P = B
+B^T\)</span>, <span class="math inline">\(P^{-1} = (B^{-1} )^T
+B^{-1}\)</span>.</p>
+<p>The representation can be viewed as merely a recipe for converting
+the ellipsoid back to the unit ball:</p>
 <ol type="1">
-<li>It uses <span class="math inline">\(d = O(\log n)\)</span> hash
-tables.<br />
-</li>
-<li>Each hash table has size <span class="math inline">\(w =
-\frac{3k}{\epsilon^2}\)</span>.</li>
+<li><p>First perform a translation <span class="math inline">\(x
+\leftarrow (x - s)\)</span> so that the center of the ellipsoid is now
+the center.</p></li>
+<li><p>Rotate the ellipsoid, such that its axes are aligned with <span
+class="math inline">\(e_1, e_2, ..., e_n\)</span>. This is done by
+multiplying the matrix <span class="math inline">\(V^T\)</span>: <span
+class="math inline">\(x \leftarrow V^T x\)</span>.</p></li>
+<li><p>Squash or stretch along the axes <span class="math inline">\(e_1,
+e_2, ..., e_n\)</span>: <span class="math inline">\(x \leftarrow \sqrt
+\Sigma^{-1} x\)</span>.</p></li>
+<li><p>Therefore, the linear transformation for the recovery is <span
+class="math display">\[
+  x \leftarrow B^{-1} (x - s)
+\]</span></p></li>
 </ol>
-<h2 id="frequency-oracle-error">Frequency Oracle Error</h2>
+<p>Conversely, <span class="math inline">\(E(s, P) = E(s, V \sqrt \Sigma
+\sqrt \Sigma V^T)\)</span> tells us how to get the ellipsoid from the
+unit ball:</p>
+<ol type="1">
+<li><p>Scale unit ball along the axes <span class="math inline">\(e_1,
+e_2, .., e_n\)</span> by factors that <span class="math inline">\(\sqrt
+\Sigma_{1, 1}, \sqrt \Sigma_{2, 2}, ..., \sqrt \Sigma_{n,
+n}\)</span>.</p></li>
+<li><p>Rotate the ellipsoid by matrix <span
+class="math inline">\(V\)</span>.</p></li>
+<li><p>Move the ellipsoid by <span
+class="math inline">\(s\)</span>.</p></li>
+</ol>
+<p>That is, <span class="math inline">\(x \leftarrow V \sqrt \Sigma y +
+s\)</span> takes the unit ball <span class="math inline">\(\{ y : y^T y
+\le 1 \}\)</span> to the corresponding ellipsoid <span
+class="math inline">\(\{ x : (x - s)^T V \Sigma^{-1} V^T (x - s) \le 1
+\}\)</span>.</p>
+<h1 id="goal">Goal</h1>
+<p>Now return to our discussion of ellipsoid method. Without lose of
+generality, we consider only the following problem:</p>
 <blockquote>
-<p><strong>Lemma 1.</strong> For every <span class="math inline">\(i \in
-[n]\)</span>, with probability <span class="math inline">\(1 - 1
-/n^2\)</span>, <span class="math display">\[
-|f_i - \hat f_i| \le \frac{\epsilon}{\sqrt k } err_2^k(f).
+<p>Given <span class="math inline">\(F = \{x : Ax \le b\}\)</span>,
+output any <span class="math inline">\(x \in F\)</span> or report <span
+class="math inline">\(F = \emptyset\)</span>, where <span
+class="math inline">\(A \in \mathbb{R}^{m \times n}, x \in \mathbb{R}^n,
+b \in \mathbb{R}^m\)</span>.</p>
+</blockquote>
+<p>We assume further that</p>
+<ol type="1">
+<li><p><span class="math inline">\(\exists R \in \mathbb{R}\)</span>,
+<span class="math inline">\(F \subseteq B(0, R)\)</span>. Besides, if
+<span class="math inline">\(F \neq \emptyset\)</span>, <span
+class="math inline">\(\exists r \in \mathbb{R}\)</span>, and <span
+class="math inline">\(t \in \mathbb{R}^n\)</span>, s.t., <span
+class="math inline">\(B(t, r) \subseteq F\)</span>. Here <span
+class="math inline">\(B(0, R) = \{ x : \Vert x\Vert_2 \le R \}\)</span>
+and <span class="math inline">\(B(t, r) = \{ x : \Vert x - t\Vert_2 \le
+r \}\)</span>.</p></li>
+<li><p><em>Separation Oracle:</em> Given a vertex <span
+class="math inline">\(s \in \mathbb{R}^n\)</span>, the separation oracle
+is a mechanism that asserts</p>
+<ul>
+<li>either <span class="math inline">\(s \in F\)</span></li>
+<li>or <span class="math inline">\(s \notin F\)</span> and returns a
+direction (which is a unit vector) <span class="math inline">\(d \in
+\mathbb{R}^n\)</span>, such that <span class="math inline">\(d^T s \ge
+d^T x\)</span> for <span class="math inline">\(\forall x \in
+F\)</span>.</li>
+</ul></li>
+</ol>
+<p>The first assumption says that <span class="math inline">\(F\)</span>
+is neither too "large" nor too "small". Note that <span
+class="math inline">\(B(t, r) \subseteq F\)</span> also implies that
+<span class="math inline">\(F\)</span> has full dimension.</p>
+<p>For LP, the separation is straightforward to implement: we just check
+whether <span class="math inline">\(As \le b\)</span>. If so, then <span
+class="math inline">\(s \in F\)</span>. Otherwise, <span
+class="math inline">\(\exists i \in [m]\)</span>, such that the <span
+class="math inline">\(i^{th}\)</span> constraint is violated: <span
+class="math inline">\((A s)_i &gt; b_i\)</span>. Just return <span
+class="math inline">\(d^T = A_{i, \cdot}\)</span>.</p>
+<blockquote>
+<p>Question to ponder: the feasible region of an LP may not satisfy the
+first assumption? It is possible to reduce it to one satisfying the
+first assumption?</p>
+</blockquote>
+<h1 id="the-algorithm">The Algorithm</h1>
+<p>The algorithm begins with a special ellipsoid <span
+class="math inline">\(E_0 = B(0, R)\)</span>. At each step, it queries
+the <em>separation oracle</em> and generates a smaller ellipsoid (with
+reduced volume). If <span class="math inline">\(F\)</span> is not empty,
+the ellipsoid at each step is guaranteed to contain it. The algorithm
+stops before the volume of the ellipsoid decreases below $ (B(t,
+r))$.</p>
+<p>The algorithmic flow is shown below:</p>
+<table style="width:53%;">
+<colgroup>
+<col style="width: 52%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1. <span class="math inline">\(i =
+0\)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2. <span class="math inline">\(E_0 = B(0,
+R)\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3. <em>While</em> <span
+class="math inline">\(\mathtt{vol} (E_i(s_i, P_i)) \ge \mathtt{vol}
+(B(t, r))\)</span>:</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">4. <span
+class="math inline">\(\qquad\)</span> <em>if</em> <span
+class="math inline">\(s_i \in F\)</span>, output <span
+class="math inline">\(s_i\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">5. <span
+class="math inline">\(\qquad\)</span> <em>else</em>,</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6. <span
+class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> Obtain a direction <span
+class="math inline">\(d_i\)</span>, s.t., <span
+class="math inline">\(d_i^T s_i \ge d_i^T x\)</span> for <span
+class="math inline">\(x \in F\)</span>*.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">7. <span
+class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> Calculate a ellipsoid <span
+class="math inline">\(E_{i + 1} \supset E_{i} \cap \{x : d_i^T s_i \ge
+d_i^T x \}\)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">8. <span
+class="math inline">\(\qquad\)</span> <span
+class="math inline">\(\qquad\)</span> <span class="math inline">\(i
+\leftarrow i + 1\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">9. Output <span class="math inline">\(F =
+\emptyset\)</span>.</td>
+</tr>
+</tbody>
+</table>
+<p>For the one dimension case, it is nothing more than a variant of
+binary search.</p>
+<h2 id="bounding-the-number-of-iterations">Bounding the Number of
+Iterations</h2>
+<p>The main result that characterizes the running time is</p>
+<blockquote>
+<p><strong>Theorem.</strong> It is guaranteed that for each <span
+class="math inline">\(i\)</span>, <span class="math display">\[
+\frac{ \mathtt{vol} ( E_{i + 1} ) } { \mathtt{vol} (E_i) } \le \exp
+\left( -\frac{1}{2 (n + 1) } \right).
 \]</span></p>
 </blockquote>
-<p><strong>Remark:</strong> <em>If <span
-class="math inline">\(f\)</span> is <span
-class="math inline">\(k\)</span> sparse, i.e., the number of non-zero
-elements of <span class="math inline">\(f\)</span> is at most <span
-class="math inline">\(k\)</span>, then <span
-class="math inline">\(err_2^k(f) = 0\)</span> and the algorithm recovers
-<span class="math inline">\(f\)</span> exactly.</em></p>
-<p><strong>Proof:</strong> Consider a fixed <span
-class="math inline">\(t \in [k]\)</span>. For <span
-class="math inline">\(i \in [n]\)</span>, let <span
-class="math inline">\(h_t(i)\)</span> the bucket of item <span
-class="math inline">\(i\)</span> in the <span
-class="math inline">\(t\)</span>-th hash table. Define <span
-class="math display">\[
-    A_i : \exist x \in H, \text{ s.t. } h_j(x) = h_j(i),
-\]</span> be the event such that some heavy item collides with <span
-class="math inline">\(i\)</span> in the <span
-class="math inline">\(t\)</span>-th table. Then by union bound, <span
-class="math display">\[
-    \Pr[A_i] \le \frac{k}{w} = \frac{\epsilon^2}{3}.
-\]</span></p>
-<p>Therefore, by the law of total probability and monotonicity of
-probability, we have <span class="math display">\[
-\begin{aligned}
-    \Pr \left[ |f_i - h_i(j)| \ge \frac{\epsilon}{\sqrt k } err_2^k(f)
-\right]
-        &amp;\le \Pr[A_i] + \Pr \left[ |f_i - h_i(j) |
-\ge  \frac{\epsilon}{\sqrt k } err_2^k(f) \mid \bar A_i \right] \\
-        &amp;\le \Pr[A_i] + \frac{ \mathbb{Var} [ f_i - h_i(j)  \mid
-\bar A_i ] }{ (\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
-        &amp;\le \frac{\epsilon^2}{3} + \frac{(err_2^k(f))^2 / w }{
-(\frac{\epsilon}{\sqrt k } err_2^k(f) )^2 } \\
-        &amp;\le \frac{\epsilon^2}{3} + \frac{1}{3}
-\end{aligned}
-\]</span></p>
-<p>As long as <span class="math inline">\(\epsilon^2 / 3 &lt; 1 /
-6\)</span>, this probability is smaller than <span
-class="math inline">\(1 / 2\)</span>. We can boost the failure
-probability to <span class="math inline">\(1/ n^2\)</span> by repeating
-the hash tables <span class="math inline">\(d = O(\log n)\)</span> times
-and taking the median as estimation.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h2 id="sparse-vector-construction">Sparse Vector Construction</h2>
-<p>The next step is keep only set <span class="math inline">\(\hat
-H\)</span> of the <span class="math inline">\(k\)</span> largest items
-in <span class="math inline">\(\hat f\)</span>. Note that <span
-class="math inline">\(\hat H\)</span> might not equals to <span
-class="math inline">\(H\)</span>. To bound the value <span
-class="math inline">\(\Vert f - \hat f \Vert_2\)</span>, we partition
-<span class="math inline">\([n]\)</span> into three parts: <span
-class="math display">\[
-    \hat H, \quad H \setminus \hat H, \quad [n] \setminus (H \cup \hat
-H).
-\]</span></p>
 <blockquote>
-<p><strong>Lemma 2</strong>. <span class="math inline">\(\sum_{i \in
-\hat H} (f_i - \hat f_i)^2 \le \epsilon^2 (err_2^k(f))^2\)</span>.</p>
+<p><strong>Corollary.</strong> The number of iterations of the ellipsoid
+method is bounded by <span class="math display">\[
+2n(n + 1) \ln \frac{R}{r}.
+\]</span></p>
 </blockquote>
-<p><strong>Proof.</strong> By lemma 1, each term <span
-class="math inline">\((f_i - \hat f_i)^2\)</span> has error at most
-<span class="math inline">\(\frac{\epsilon^2}{k}
-(err_2^k(f))^2\)</span>. The claim then follows from that <span
-class="math inline">\(|\hat H| = k\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>To simplify the notation further, we write <span
+class="math inline">\(E_i = E(s, P)\)</span>, <span
+class="math inline">\(d_i = d\)</span> and <span
+class="math inline">\(E_{i + 1} = E(s&#39;, P&#39;)\)</span>. The key
+lemma for the theorem is:</p>
 <blockquote>
-<p><strong>Lemma 3</strong>. <span class="math inline">\(\sum_{i \in H
-\setminus \hat H} f_i ^2 \le \sum_{j \in \hat H \setminus H} \hat f_j^2
-+ (2 \epsilon + \epsilon^2) ( err_2^k(f))^2\)</span></p>
+<p><strong>Lemma.</strong> Given an ellipsoid <span
+class="math inline">\(E(s, P) = \{ x \in \mathbb{R}^n : (x - s)^T P^{-1}
+(x - s) \le 1\}\)</span> and the half space <span
+class="math inline">\(H(s, d) = \{ x \in \mathbb{R}^n : d^T (x - s)\le 0
+\}\)</span>, we can find an ellipsoid <span
+class="math inline">\(E(s&#39;, P&#39;)\)</span>, such that</p>
+<ol type="1">
+<li><p><span class="math inline">\(E(s&#39;, P&#39;)\)</span> contains
+the intersection of <span class="math inline">\(E(s, P)\)</span> and
+<span class="math inline">\(H(s, d)\)</span> : <span
+class="math display">\[
+E(c, P) \cap H(s, d).
+\]</span></p></li>
+<li><p>The volume of <span class="math inline">\(E(s&#39;,
+P&#39;)\)</span> is at most <span class="math inline">\(\exp \left(
+-\frac{1}{2 (n + 1) } \right)\)</span> times that of <span
+class="math inline">\(E(s, P)\)</span>.</p></li>
+</ol>
 </blockquote>
-<p><strong>Proof.</strong> <span class="math inline">\(|H| = |\hat
-H|\)</span>, we have <span class="math inline">\(|H \setminus \hat H| =
-|\hat H \setminus H|\)</span>.</p>
-<p>If <span class="math inline">\(H \setminus \hat H =
-\emptyset\)</span>, the claim is trivial. Otherwise, we can construct a
-bijection between <span class="math inline">\(H \setminus \hat
-H\)</span> and <span class="math inline">\(\hat H \setminus H\)</span>.
-Then for <span class="math inline">\(i \in H \setminus \hat H\)</span>,
-let <span class="math inline">\(j\)</span> be its corresponding index in
-<span class="math inline">\(\hat H \setminus H\)</span>. Then</p>
-<p><span class="math display">\[
+<p>In particular, <span class="math inline">\(s&#39;\)</span> and <span
+class="math inline">\(P&#39;\)</span> is given by <span
+class="math display">\[
+  \begin{aligned}
+    s&#39; &amp;= s - \frac{1}{n + 1} \frac{P d}{\sqrt{d^T P d} } \\
+    P&#39; &amp;= \frac{n^2}{n^2 - 1} \left( P - \frac{2}{n + 1}
+\frac{Pd}{\sqrt{d^T P d} } \left( \frac{Pd}{\sqrt{d^T P d} } \right)^T
+\right)
+  \end{aligned}
+\]</span></p>
+<p><strong>Proof.</strong> The transformation <span
+class="math inline">\(y = B^{-1} (x - s)\)</span> maps <span
+class="math inline">\(E(s, P)\)</span> to <span
+class="math inline">\(E(0，I)\)</span>, and <span
+class="math display">\[
+  \{x \in R^n: d^T B (B^{-1} (x - s)) \le 0\}
+\]</span> to <span class="math display">\[
+  H(0, B^T d) = \{y \in R^n: d^T B y \le 0\}.
+\]</span></p>
+<p>Let <span class="math display">\[
+e&#39; = \frac{B^T d}{\sqrt{d^T B B^T d} } = \frac{B^T d}{\sqrt{d^T P d}
+}
+\]</span> so that <span class="math inline">\(H(0, B^Td)\)</span> is
+equivalent to <span class="math inline">\(H(0, e&#39;)\)</span>.</p>
+<p>It suffices to find an ellipsoid that contains <span
+class="math inline">\(E(0, I) \cap H(0, e&#39;)\)</span>. Then applying
+the reverse transformation <span class="math inline">\(x = By +
+s\)</span> will give us an ellipsoid that contains <span
+class="math inline">\(E(s, P) \cap H(s, d)\)</span>.</p>
+<p>We can further reduce the problem to finding an ellipsoid that covers
+<span class="math inline">\(E(0, I) \cap H(0, e_1)\)</span> as we can
+recover the ellipsoid by rotating <span
+class="math inline">\(e_1\)</span> to <span
+class="math inline">\(e&#39;\)</span>.</p>
+<blockquote>
+<p><strong>Claim.</strong> The ellipsoid that covers <span
+class="math inline">\(E(0,I) \cap H(0, e_1)\)</span> is given by <span
+class="math display">\[
+E \left( -\frac{1}{n + 1}e_1, \frac{n^2}{n^2 - 1} \left( I - \frac{2}{n
++ 1}e_1 e_1^T \right) \right)
+\]</span> and has minimum volume <span class="math inline">\(\exp (
+-\frac{1}{2(n + 1)} )\)</span>.</p>
+</blockquote>
+<p>To under the ellipsoid, we check how it transforms the unit ball to
+an ellipsoid:</p>
+<ol type="1">
+<li><p>It squashes the ball along the <span
+class="math inline">\(e_1\)</span> axis, by a factor of <span
+class="math inline">\(\sqrt{ \frac{n^2} {n^2 - 1} \frac{n - 1} {n + 1} }
+= \frac{n}{ n + 1 }\)</span>.</p></li>
+<li><p>Then it stretches all other directions <span
+class="math inline">\(e_2, e_3, ..., e_n\)</span> by a factor of <span
+class="math inline">\(\sqrt \frac{n^2}{n^2 - 1}\)</span>.</p></li>
+<li><p>Finally, move the center of the ellipsoid to <span
+class="math inline">\(-\frac{1}{n + 1}e_1\)</span>.</p></li>
+</ol>
+<p>Note that the ellipsoid has volume <span class="math display">\[
+  \begin{aligned}
+    \left(1 - \frac{1}{n + 1} \right) \left( 1 + \frac{1}{n^2 -1}
+\right)^{(n - 1) / 2}
+    &amp;\le
+    \exp \left( - \frac{1}{n + 1} + \frac{1}{n^2 -1} (n - 1) / 2 \right)
+\\
+    &amp;= \exp \left( - \frac{1}{2(n + 1)} \right).
+  \end{aligned}
+\]</span> This is also the ratio of the ellipsoid over that of the unit
+ball, whose value is 1.</p>
+<p>Before we prove the claim, we show how to transform the ellipsoid
+back to <span class="math inline">\(E(s&#39;, P&#39;)\)</span> that
+covers <span class="math inline">\(E(s, P) \cap H(s, d)\)</span>. First,
+by symmetry, the ellipsoid that covers <span class="math inline">\(E(0,
+I) \cap H(0, e&#39;)\)</span> is given by <span class="math display">\[
+  E \left( -\frac{1}{n + 1}e&#39;, \frac{n^2}{n^2 - 1} \left( I -
+\frac{2}{n + 1}e&#39; (e&#39;)^T \right) \right)
+\]</span></p>
+<p>Applying the mapping <span class="math inline">\(B y + s =
+x\)</span>: <span class="math display">\[
+  E \left( -\frac{1}{n + 1} e&#39;, \frac{n^2}{n^2 - 1} \left( I -
+\frac{2}{n + 1}e&#39; (e&#39;)^T \right) \right) \\
+  \longrightarrow
+  E \left( s - \frac{1}{n + 1} B^T e&#39;, \frac{n^2}{n^2 - 1} B \left(
+I - \frac{2}{n + 1}e&#39; (e&#39;)^T \right) B^T \right).
+\]</span></p>
+<p><em>As linear transformation preserves the ratio of volumes, the
+ratio of the volume of the final ellipsoid over that of <span
+class="math inline">\(E(s, P)\)</span> is also <span
+class="math inline">\(\exp(- \frac{1}{2 (n + 1)} )\)</span>.</em></p>
+<blockquote>
+<p><strong>Question to ponder:</strong> 1. Show that <span
+class="math inline">\(\frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1
+e_1^T)\)</span> is positive definite.</p>
+<ol start="2" type="1">
+<li><p>Show that <span class="math inline">\(\left( \frac{n^2}{n^2 - 1}
+(I - \frac{2}{n + 1}e_1 e_1^T) \right)^{-1} = \frac{n^2 - 1}{n^2} I +
+\frac{2n + 2}{n^2} e_1 e_1^T\)</span>.</p></li>
+<li><p>Show that <span class="math inline">\(\frac{n^2}{n^2 - 1} B (I -
+\frac{2}{n + 1}e&#39; (e&#39;)^T) B^T\)</span> is positive
+definite.</p></li>
+</ol>
+</blockquote>
+<p><strong>Proof of the Claim.</strong> As both <span
+class="math inline">\(E(0,I)\)</span> and <span
+class="math inline">\(H(0, e_1)\)</span> are symmetric to <span
+class="math inline">\(e_1\)</span>, so should the ellipsoid covering the
+intersection of them. Therefore it should be of the form <span
+class="math display">\[
+  a_1 (x_1 - \lambda) + \sum_{i = 2}^n a_i x_i^2 \le 1
+\]</span></p>
+<p>where <span class="math inline">\(a_i\)</span>'s and <span
+class="math inline">\(\lambda\)</span> (<span class="math inline">\(0
+&lt; \lambda &lt; 1\)</span>) are the parameters to be determined. The
+goal is to minimize its volume: <span class="math display">\[
+  \sqrt{\frac{1}{a_1} \prod_{i = 2}^n \frac{1}{a_i} }  \mathtt{vol} [
+E(0, I) ].
+\]</span></p>
+<p>where $ [ E(0, I) ] = 1$ is the volume of unit ball in <span
+class="math inline">\(R^n\)</span>. It is equivalent to maximize <span
+class="math display">\[
+  a_1 \prod_{i = 2}^n a_i.
+\]</span></p>
+<p>As the ellipsoid covers <span class="math inline">\(E(0,I) \cap H(0,
+e_1)\)</span> and should has as small volume as possible, the points
+<span class="math inline">\(e_i\)</span> (<span class="math inline">\(i
+= 1, 2, ..., n\)</span>) should be on its boundary. Therefore, <span
+class="math display">\[
+  \begin{aligned}
+    a_1 (1 - \lambda)^2 + \sum_{i = 2}^n a_i 0^2 &amp;= 1
+&amp;\rightarrow a_1(1 - \lambda)^2 = 1 &amp;\\
+    a_1 (0 - \lambda)^2 + a_i 1^2 &amp;= 1  &amp;\rightarrow a_i = 1 -
+a_1 \lambda^2  &amp;\quad  \forall i = 2, 3, ..., n  \\
+  \end{aligned}
+\]</span></p>
+<p>Replacing <span class="math inline">\(a_i\)</span> with <span
+class="math inline">\(1 - a_1 \lambda^2\)</span> and then <span
+class="math inline">\(a_1\)</span> with <span
+class="math inline">\(\frac{1}{(1 - \lambda)^2}\)</span>, the goal
+becomes <span class="math display">\[
+  \max \quad \frac{1}{(1 - \lambda)^2} \left[ 1 - \frac{\lambda^2}{(1 -
+\lambda)^2} \right]^{n - 1}
+\]</span></p>
+<p>Substitute <span class="math inline">\(\frac{1}{1 - \lambda}\)</span>
+by a variable <span class="math inline">\(x &gt; 1\)</span>, and let
+<span class="math display">\[
+  f \doteq x^2 [1 - (x - 1)^2]^{n - 1}
+\]</span></p>
+<p>Its derivative is <span class="math display">\[
+  f&#39; = 2x [1 - (x - 1)^2]^{n - 1} - 2 (n - 1)(x - 1) x^2 [1 - (x -
+1)^2]^{n - 2}
+\]</span></p>
+<p>Setting the derivative to zero, we obtain <span
+class="math display">\[
+  \begin{aligned}
+    &amp;[1 - (x - 1)^2] - (n - 1)(x - 1)x = 0 \\
+    &amp;\Rightarrow 1 - x^2 + 2x - 1- (n -1 )x^2 + (n -1 )x = 0 \\
+    &amp;\Rightarrow - n x^2 + (n + 1) x = 0 \\
+    &amp;\Rightarrow x = \frac{n + 1}{n}
+  \end{aligned}
+\]</span> It follows that <span class="math inline">\(a_1 = (\frac{n +
+1}{n})^2\)</span>, <span class="math inline">\(\lambda = \frac{1}{n +
+1}\)</span> and <span class="math inline">\(a_i = \frac{n^2 -
+1}{n^2}\)</span> for <span class="math inline">\(\forall i = 2, 3, ...,
+n\)</span>.</p>
+<!-- Therefore, 
+$$
+c_1 = \left[ 
+    \begin{matrix}
+\frac{1}{n + 1} \\
+ 0 \\
+  ...\\
+0
+\end{matrix}
+\right] 
+= \frac{1}{n + 1} e_1
+$$
+and 
+$$
+P_1^{-1} = \left[ 
+\begin{matrix}
+(\frac{n + 1}{n} )^2 &                       &   ...     \\
+                    &   \frac{n^2 - 1}{n^2}  &   ...     \\
+                    &                        &   ...     \\
+                    &                        &   &\frac{n^2 - 1}{n^2}
+\end{matrix}
+\right] = \frac{n^2 - 1}{n^2} I + 2\frac{n + 1}{n^2} e_1 e_1^T \\
+P_1 = \left[ 
+\begin{matrix}
+(\frac{n}{n + 1} )^2 &                       &   ...     \\
+                    &   \frac{n^2}{n^2 - 1}  &   ...     \\
+                    &                        &   ...     \\
+                    &                        &   &\frac{n^2}{n^2 - 1}
+\end{matrix}
+\right] = \frac{n^2}{n^2 - 1} (I - \frac{2}{n + 1}e_1 e_1^T)
+$$
+
+The volume ratio between $E(c_1, P_1)$ and $E(0, I)$ is 
+
+$$
 \begin{aligned}
-    f_j &amp;= (f_j - \hat f_j) + (\hat f_j - \hat f_i) + (\hat f_i -
-f_i) + f_i \\
-        &amp;\ge - \frac{\epsilon}{\sqrt k } err_2^k(f) + 0 -
-\frac{\epsilon}{\sqrt k } err_2^k(f) + f_i
+\sqrt{\frac{1}{a_1} \prod_{i = 2}^n \frac{1}{a_i} } 
+&= \frac{n}{n + 1} \left[ \frac{n^2 }{n^2 - 1} \right]^{(n - 1) / 2} \\
+&\le \exp \left( -\frac{1}{n + 1} + \frac{1}{2}\frac{n - 1}{n^2 - 1} \right) \\
+&= \exp \left( -\frac{1}{2} \frac{1}{n + 1} \right)
 \end{aligned}
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    f_i \le f_j + \frac{2\epsilon}{\sqrt k } err_2^k(f)
-\]</span></p>
-<p>and <span class="math display">\[
-\begin{aligned}
-    \sum_{i \in H \setminus \hat H} f_i^2       
-        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4
-\epsilon}{\sqrt k } \left( \sum_{j \in \hat H \setminus H} f_j\right) +
-4 \epsilon^2 (err_2^k(f))^2 \\
-        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4
-\epsilon}{\sqrt k } err_2^k(f) \left( \sum_{j \in \hat H \setminus H}
-f_j\right) + 4 \epsilon^2 (err_2^k(f))^2 \\
-        &amp;\le \sum_{j \in \hat H \setminus H} f_j^2 + \frac{4
-\epsilon}{\sqrt k } err_2^k(f) \left( k \sqrt{ \frac{1}{k} \sum_{j \in
-\hat H \setminus H} f_j^2 } \right) + 4 \epsilon^2 (err_2^k(f))^2 \\
-        &amp;= \sum_{j \in \hat H \setminus H} f_j^2 + 4 \epsilon
-(err_2^k(f))^2 + 4 \epsilon^2 (err_2^k(f))^2 \\
-        &amp;= \sum_{j \in \hat H \setminus H} f_j^2 + (4 \epsilon + 4
-\epsilon^2) (err_2^k(f))^2
-\end{aligned}
-\]</span></p>
-<!-- $$
-    f_i = f_i - \hat f_i + \hat f_i - \hat f_j + \hat f_j
 $$ -->
-<!-- As $\hat H$ contains the largest $k$ items in $\hat f$, it must be that $\hat f_i - \hat f_j \le 0$. Therefore, 
+<h1 id="reference">Reference</h1>
+<p>[1]. <em>Michel X. Goemans, 7. Lecture notes on the ellipsoid
+algorithm, 18.433: Combinatorial Optimization, MIT</em></p>
 
-$$
-f_i \le f_i - \hat f_i + \hat f_j
-$$
+      
+    </div>
 
-By lemma 1, we have $f_i - \hat f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f)$, we have 
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
 
-$$
-f_i \le \frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j
-$$
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/18/Determinant,%20Cross%20Product%20and%20Cramer's-Rule/">
 
-Summing over all possible $i$, 
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
 
-$$
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/18/Determinant,%20Cross%20Product%20and%20Cramer's-Rule/" class="post-title-link" itemprop="url">Determinant, Cross Product and Cramer's-Rule</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-02-18 13:36:52" itemprop="dateCreated datePublished" datetime="2020-02-18T13:36:52+01:00">2020-02-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-21 11:01:14" itemprop="dateModified" datetime="2020-04-21T11:01:14+02:00">2020-04-21</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="determinant"><strong><em>Determinant</em></strong></h3>
+<p>When studying linear algebra, the determinant function <span
+class="math inline">\(\det(\cdot)\)</span> is a horrifying subject. We
+try to give a friendly approach to it in this article.</p>
+<p>I think it is the study of the volume of the parallelotope specified
+by <span class="math inline">\(v_1, v_2, ... ,v_n \in
+\mathbb{R}^n\)</span> that gives it away. The parallelotope is defined
+as the set <span class="math display">\[
+\left\{ \sum_{i \in [n]} \lambda_i v_i :  \lambda_i \in [0, 1], \forall
+i \in [n] \right\}
+\]</span></p>
+<p>Let's denote <span class="math inline">\(f(v_1, v_2, ... ,v_n) :
+\mathbb{R}^{n \times n} \rightarrow \mathbb{R}\)</span> the singed
+volume function, i.e., <span class="math inline">\(|f(v_1, v_2, ...
+,v_n)|\)</span> gives the volume of the parallelotope. We will show how
+to determine the sign of <span class="math inline">\(f\)</span> later.
+At this point, we do not know how <span
+class="math inline">\(\det(\cdot)\)</span> is related to the volume.
+Therefore, we use the notation <span class="math inline">\(f\)</span>
+instead.</p>
+<p>We show how to derive the formula of <span
+class="math inline">\(f\)</span> by its properties. The two key
+properties associated with volume are</p>
+<ol type="1">
+<li><p><span class="math inline">\(f\)</span> is multi-linear.
+Specially, it is a linear function in any dimension when other
+dimensions are fixed:</p>
+<ul>
+<li><p><span class="math inline">\(f(v_1, v_2, ..., cv_i, ...
+,v_n)=cf(v_1, v_2, ... ,v_n)\)</span> for <span
+class="math inline">\(\forall i \in [n]\)</span> and <span
+class="math inline">\(c \in \mathbb{R}\)</span>. Geometrically, if we
+scale the <span class="math inline">\(i\)</span>-th vector <span
+class="math inline">\(v_i\)</span> by a factor <span
+class="math inline">\(c\)</span>, then the volume of the parallelotope
+should change by the same factor. <img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity1.jpg" />
+In the above example, when <span class="math inline">\(v_2\)</span> is
+fixed, the area of the parallelogram is determined by its height, i.e.,
+the projection of <span class="math inline">\(v_1\)</span> to the
+orthogonal direction of <span class="math inline">\(v_2\)</span>. When
+<span class="math inline">\(v_1\)</span> doubles, the length of its
+projection doubles.</p></li>
+<li><p><span class="math inline">\(f(v_1, v_2, ..., v_i + u_i, ...
+,v_n)= f(v_1, v_2, ..., v_i, ... ,v_n) + f(v_1, v_2, ..., u_i, ...
+,v_n)\)</span>. <img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity2.jpg" />
+In the above example, when <span class="math inline">\(v_2\)</span> is
+fixed, the projection to the orthogonal direction of <span
+class="math inline">\(v_2\)</span> are additive. In particular, denote
+<span class="math inline">\(\mathcal{P}(v_1)\)</span> the length of the
+projection of <span class="math inline">\(v_1\)</span> to the orthogonal
+direction of <span class="math inline">\(v_2\)</span>. Similarly we
+define <span class="math inline">\(\mathcal{P}(v_2)\)</span> and <span
+class="math inline">\(\mathcal{P}(v_1 + v_2)\)</span>. Then<br />
+<span class="math display">\[
+\mathcal{P}(v_1 + v_2) = \mathcal{P}(v_1) + \mathcal{P}(v_2)
+\]</span></p></li>
+<li><p>Note that the projection of two vector can cancel each other in
+some cases, in the sense that they points to different direction. <img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/Linearity4.jpg" />
+In the above example, if we write <span class="math inline">\(v_1 =
+v_{1, 1} e_1 + v_{1, 2} e_2\)</span>, then <span
+class="math inline">\(\mathcal{P} (v_{1, 1} e_1)\)</span> and <span
+class="math inline">\(\mathcal{P} (v_{1,2} e_2)\)</span> points to
+opposite directions. This implies that we should give volume a sign. For
+example, we can define the direction pointed by purple vector points to
+be positive. The volume of the parallelogram increases if a vector's
+projection moves along this direction and decrease otherwise.</p></li>
+</ul></li>
+<li><p>If <span class="math inline">\(v_1, v_2, ..., v_n\)</span> are
+linearly independent, then the parallelotope is contained in a subspace
+with dimension smaller than <span class="math inline">\(n\)</span> and
+should have volume zero. <img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Determinant/NonIndependent.jpg" />
+Intuitively, the parallelotope collapses to a lower dimension space.
+Examples include colinear vectors in two dimension case and the third
+vector lying in the hyperplane spanned by the other two in the three
+dimension case.<br />
+Finally, we emphases an important case here: <span
+class="math display">\[
+f(..., v_i,..., v_j, ... , ) = 0, \textbf{ if } v_i = v_j, \forall i, j
+\in [n], i \neq j
+\]</span></p></li>
+</ol>
+<p>If we write <span class="math display">\[
+v_i = v_{i, 1} e_1 + v_{i, 2} e_2 + ... + v_{i, n} e_n
+\]</span></p>
+<p>for all <span class="math inline">\(i \in [n]\)</span>, then by
+linearity <span class="math display">\[
 \begin{aligned}
-    \sum_{i \in H \setminus \hat H} f_i ^2 
-    &\le \sum_{j \in \hat H \setminus H} (\frac{\epsilon}{\sqrt k } err_2^k(f) + \hat f_j)^2 \\
-    &= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \left( \sum_{j \in \hat H \setminus H} \hat f_j \right) \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
-    &\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 k \sqrt{ \sum_{j \in \hat H \setminus H} \frac{1}{k} \hat f_j^2} \frac{\epsilon}{\sqrt k } err_2^k(f) +  \epsilon^2 ( err_2^k(f))^2 \\
-    &= \sum_{j \in \hat H \setminus H} \hat f_j^2  + 2 \epsilon (err_2^k(f)) \sqrt{ \sum_{j \in \hat H \setminus H} \hat f_j^2} +  \epsilon^2 ( err_2^k(f))^2 \\
-    &\le \sum_{j \in \hat H \setminus H} \hat f_j^2  + (2 \epsilon +  \epsilon^2) ( err_2^k(f))^2. 
+f(v_1, v_2, ..., v_n)
+    &amp;= f( v_{1, 1} e_1 + v_{1, 2} e_2 + ... + v_{1, n} e_n, \\
+    &amp;\qquad v_{2, 1} e_1 + v_{2, 2} e_2 + ... + v_{2, n} e_n, \\
+    &amp;\qquad ...\\
+    &amp;\qquad v_{n, 1} e_1 + v_{n, 2} e_2 + ... + v_{n, n} e_n) \\
+    &amp;= \sum_{k_1, k_2, ..., k_n \in [n]} v_{1, k_1} v_{2, k_2} ...
+v_{n, k_n} f(e_{k_1}, e_{k_2}, ..., e_{k_n})
 \end{aligned}
-$$ -->
+\]</span></p>
+<p>Note that if <span class="math inline">\(k_i = k_j\)</span> for <span
+class="math inline">\(i \neq j\)</span>, then <span
+class="math inline">\(f(e_{k_1}, e_{k_2}, ..., e_{k_n}) = 0\)</span>.
+Therefore, <span class="math display">\[
+f(v_1, v_2, ..., v_n)  = \sum_{ k  \text{ is a permutation} } v_{1, k_1}
+v_{2, k_2} ... v_{n, k_n} f(e_{k_1}, e_{k_2}, ..., e_{k_n})
+\]</span></p>
+<p>We are almost done. It is left to determined the value of <span
+class="math inline">\(f(e_{k_1}, e_{k_2}, ..., e_{k_n})\)</span>, where
+<span class="math inline">\(k = (k_1, k_2, ..., k_n)\)</span> is a
+permutation of <span class="math inline">\((1, 2, ...., n)\)</span>.
+Here we claim that is purely determined by the value of <span
+class="math inline">\(f(e_1, e_2, ..., e_n)\)</span>. By conversion, we
+define <span class="math display">\[
+f(e_1, e_2, ..., e_n) = 1
+\]</span> Then we have the key lemma:</p>
+<p><strong><em>Lemma</em></strong> <span class="math display">\[
+f(e_{k_1}, e_{k_2}, ..., e_{k_n}) = -1
+\]</span></p>
+<p>if <span class="math inline">\({k_1}, {k_2}, ..., {k_n}\)</span> can
+be recovered to <span class="math inline">\(1, 2, ..., n\)</span> by odd
+number of neighboring swaps and <span class="math display">\[
+f(e_{k_1}, e_{k_2}, ..., e_{k_n}) = 1
+\]</span> if <span class="math inline">\({k_1}, {k_2}, ...,
+{k_n}\)</span> can be recovered to <span class="math inline">\(1, 2,
+..., n\)</span> by even number of neighboring swaps.</p>
+<p><em>Proof.</em> The key is to prove that we swap two neighboring
+vectors, then the sign of the volume change: <span
+class="math display">\[
+f(e_{k_1}, e_{k_2}, ..., e_{k_{i } }, e_{k_{i + 1} }, ..., e_{k_n}) =
+-f(e_{k_1}, e_{k_2}, ..., e_{k_{i + 1 } }, e_{k_{i } }, ..., e_{k_n})
+\]</span></p>
+<p>This is because <span class="math display">\[
+\begin{aligned}
+    f(e_{k_1}, e_{k_2}, ..., e_{k_{i } } + e_{k_{i + 1} }, e_{k_{i } } +
+e_{k_{i + 1} }, ..., e_{k_n})  
+        &amp;=
+        f(e_{k_1}, e_{k_2}, ..., e_{k_{i } }, e_{k_{i + 1} }, ...,
+e_{k_n})\\
+        &amp;\quad +
+        f(e_{k_1}, e_{k_2}, ..., e_{k_{i + 1 } }, e_{k_{i } }, ...,
+e_{k_n})
+        \\
+        &amp;= 0
+\end{aligned}
+\]</span></p>
 <p><span class="math inline">\(\square\)</span></p>
-<h2 id="reference">Reference</h2>
-<p>[1] G. Cormode and S. Muthukrishnan. Combinatorial algorithms for
-Compressed Sensing.<br />
-[2] Moses Charikar, Lecture 9, CS 369G: Algorithmic Techniques for Big
-Data</p>
+<h3 id="cross-product"><strong><em>Cross Product</em></strong></h3>
+<p>If we fix <span class="math inline">\(v_2, v_3, ..., v_n\)</span>,
+then <span class="math inline">\(\det(x, v_2, ..., v_n): \R^n
+\rightarrow \R\)</span> is a linear function. Then <span
+class="math display">\[
+\begin{aligned}
+    \det(x, v_2, ..., v_n) &amp;= \sum_{i = 1}^n \det(x_i e_i, v_2, ...,
+v_n) \\
+    &amp;= \sum_{i = 1}^n x_i \det(e_i, v_2, ..., v_n)
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(x_i\)</span> is the i-th
+coordinator of <span class="math inline">\(x\)</span>. If we write <span
+class="math display">\[
+d = \left&lt; det(e_1, v_2, ..., v_n), det(e_2, v_2, ..., v_n), ...,
+det(e_n, v_2, ..., v_n)\right&gt;
+\]</span></p>
+<p>Then <span class="math display">\[
+\det(x, v_2, ..., v_n) = d \cdot x
+\]</span></p>
+<p>Indeed, in a similar manner, we can prove that for any <span
+class="math inline">\(h: \R^{n \times n} \rightarrow \R^n\)</span>
+linear function, there exists a vector <span class="math inline">\(\vec
+h\)</span>, such that <span class="math display">\[
+h(x) = \vec h \cdot x
+\]</span></p>
+<p>Conventionally, <span class="math inline">\(d\)</span> is called the
+cross product of <span class="math inline">\(v_2, ..., v_n\)</span> is
+written as <span class="math display">\[
+d = v_2 \times v_3 \times ... \times v_n
+\]</span></p>
+<p>It has some interesting properties:</p>
+<ol type="1">
+<li><p><span class="math inline">\(d\)</span> is perpendicular to the
+subspace spanned by <span class="math inline">\(v_2, ..., v_n\)</span>,
+as <span class="math inline">\(d \cdot v_i = \det(v_i, v_2, ..., v_n) =
+0\)</span> for <span class="math inline">\(2 \le i \le
+n\)</span>.</p></li>
+<li><p>For any <span class="math inline">\(x \in \R^n\)</span>, <span
+class="math inline">\(d \cdot x\)</span> gives the signed volume of the
+parallelotope spanned by <span class="math inline">\(x, v_2, ...,
+v_n\)</span>.</p>
+<ul>
+<li>When <span class="math inline">\(n = 2\)</span>, the length of <span
+class="math inline">\(d\)</span> equals to that of <span
+class="math inline">\(v_2\)</span>.</li>
+<li>When <span class="math inline">\(n = 3\)</span>, the length of <span
+class="math inline">\(d\)</span> equals to the area of the parallelogram
+spanned by <span class="math inline">\(v_2, v_3\)</span>. Combined with
+the fact that <span class="math inline">\(d\)</span> is perpendicular to
+<span class="math inline">\(v_2, v_3\)</span>, we see why <span
+class="math inline">\(d \cdot x\)</span> gives the volume of the
+parallelotope spanned by <span class="math inline">\(x, v_2,
+v_3\)</span>: it takes the projection of <span
+class="math inline">\(x\)</span> to the direction that is perpendicular
+to <span class="math inline">\(v_2\)</span> and <span
+class="math inline">\(v_3\)</span>, scaled by a factor of the area
+spanned by <span class="math inline">\(v_2\)</span> and <span
+class="math inline">\(v_3\)</span>.<br />
+</li>
+</ul></li>
+<li><p>The direction given of <span class="math inline">\(d\)</span> is
+given by right hand rule, when <span class="math inline">\(n =
+2\)</span> or <span class="math inline">\(n = 3\)</span>.</p></li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<h3 id="cramers-rule"><strong><em>Cramer's Rule</em></strong></h3>
+<p>Cramer's rule is a formula for solving linear equations. In
+particular, given an invertible matrix <span class="math inline">\(A \in
+\R^{n \times n}\)</span>, and vector <span class="math inline">\(b \in
+\R^n\)</span>, then the solution for the equation <span
+class="math display">\[
+Ax = b
+\]</span></p>
+<p>is given by (<span class="math inline">\(\forall i \in [n]\)</span>),
+<span class="math display">\[
+x_i = \frac{\det(A_i) }{\det (A)}
+\]</span></p>
+<p>where <span class="math inline">\(x_i\)</span> is the i-th coordinate
+of <span class="math inline">\(x\)</span> and <span
+class="math inline">\(A_i\)</span> is the matrix formed by replacing
+<span class="math inline">\(A\)</span>'s the <span
+class="math inline">\(i\)</span>-th column by column vector <span
+class="math inline">\(b\)</span>.</p>
+<p>To understand the formula, we view <span
+class="math inline">\(A\)</span> as a mapping <span
+class="math inline">\(T: \R^n \rightarrow \R^n\)</span> that takes <span
+class="math inline">\(e_i (i \in [n])\)</span> to <span
+class="math inline">\(A[:,i]\)</span>, i.e., <span
+class="math display">\[
+T(e_i) = A[:, i]
+\]</span></p>
+<p>where <span class="math inline">\(A[:, i]\)</span> is the i-th column
+of <span class="math inline">\(A\)</span>. The image of the hypercube
+<span class="math display">\[
+\left\{ \sum_{i \in [n]} \lambda_i e_i :  \lambda_i \in [0, 1], \forall
+i \in [n] \right\}
+\]</span></p>
+<p>is given as <span class="math display">\[
+\left\{ \sum_{i \in [n]} \lambda_i A[:, i] :  \lambda_i \in [0, 1],
+\forall i \in [n] \right\}
+\]</span></p>
+<p>Original the hypercube has volume 1. After the transformation it has
+volume <span class="math inline">\(\det(A)\)</span>. One interesting
+fact about linear transformation is that it preserves volumes ratio.
+Define <span class="math inline">\(\mathbb{V}(\cdot)\)</span> the volume
+of a parallelotope.</p>
+<p><em>Fact.</em> For any parallelotope <span
+class="math inline">\(P\)</span>, its volume under transformation <span
+class="math inline">\(T\)</span> is given by <span
+class="math display">\[
+\det(A) \mathbb{V}(P) = \mathbb{V}(T(P))
+\]</span></p>
+<p>Now, we rewrite the Cramer's rule as <span class="math display">\[
+\det(A) x_i = \det(A_i)
+\]</span></p>
+<p>Its meaning is clear: there is a parallelotope <span
+class="math inline">\(P\)</span> whose volume is <span
+class="math inline">\(x_i\)</span> and after the transformation it has
+volume <span class="math inline">\(\det(A_i)\)</span>.</p>
+<p>It is left to verify that the parallelotope indeed exists. We observe
+that <span class="math inline">\(\det(A_i)\)</span> can be viewed as the
+volume of the following parallelotope formed by <span
+class="math display">\[
+\left\{ \sum_{j \in [n], j \neq i} \lambda_j A[:, j] +\lambda_i
+b_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right\}
+\]</span></p>
+<p>But this parallel0tope is the image of <span class="math display">\[
+\left\{ \sum_{j \in [n], j \neq i} \lambda_j e_j +\lambda_i
+x_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1] \right\}
+\]</span></p>
+<p>as <span class="math display">\[
+\begin{aligned}
+    &amp; T \left( \left\{ \sum_{j \in [n], j \neq i} \lambda_j e_j
++\lambda_i x_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1]
+\right\} \right) \\
+    &amp;= \left\{ \sum_{j \in [n], j \neq i} \lambda_j T(e_j)
++\lambda_i T(x_i):  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0,
+1] \right\} \\
+    &amp;= \left\{ \sum_{j \in [n], j \neq i} \lambda_j A[:, j]
++\lambda_i b_i:  \lambda_j \in [0, 1], \forall j, \lambda_i \in [0, 1]
+\right\}
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
 
       
     </div>
@@ -409,7 +1090,7 @@ Data</p>
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/12/Priority-Sampling/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/02/07/Simplex/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -423,7 +1104,7 @@ Data</p>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/01/12/Priority-Sampling/" class="post-title-link" itemprop="url">Priority Sampling</a>
+            <a href="/2020/02/07/Simplex/" class="post-title-link" itemprop="url">Simplex</a>
         </h2>
 
         <div class="post-meta">
@@ -433,14 +1114,14 @@ Data</p>
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-01-12 14:32:57" itemprop="dateCreated datePublished" datetime="2020-01-12T14:32:57+11:00">2020-01-12</time>
+              <time title="Created: 2020-02-07 00:03:19" itemprop="dateCreated datePublished" datetime="2020-02-07T00:03:19+01:00">2020-02-07</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-02-24 17:07:43" itemprop="dateModified" datetime="2021-02-24T17:07:43+11:00">2021-02-24</time>
+                <time title="Modified: 2021-07-17 09:41:28" itemprop="dateModified" datetime="2021-07-17T09:41:28+02:00">2021-07-17</time>
               </span>
 
           
@@ -454,384 +1135,620 @@ Data</p>
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Suppose there are a set of <span class="math inline">\(n\)</span>
-items with nonnegative weights <span class="math inline">\(w_1, w_2,
-..., w_n\)</span>. We want to maintain a subset of samples <span
-class="math inline">\(S \subset [n]\)</span> in order to answer queries
-like given arbitrary <span class="math inline">\(I \subset [n]\)</span>
-, what is <span class="math inline">\(\sum_{i \in I} w_i\)</span>?</p>
-<p>A trivial solution is to set <span class="math inline">\(S =
-[n]\)</span> and we can answer the query exactly. This is an overkill if
-our goal is to only answer the query approximately.</p>
-<p>Alternatively, we can sample each item <span class="math inline">\(i
-\in [n]\)</span> independently with probability <span
-class="math inline">\(p_i\)</span> (to be determined), and maintain a
-random variable <span class="math display">\[
+          <p>Simplex is the first systematically method for solving linear program
+via a sequence of Gaussian eliminations. It was invented by George
+Dantzig in 1947 [1]. Algebraically, it converts the linear program from
+one slack form into to an equivalent one whose objective value does not
+decrease and possibly increase. It keeps going until the optimal is
+reached. Geometrically, it is a greedy search strategy that moves from a
+vertex of the feasible region to another one, with the objective value
+at the new vertex as least as good as or possibly improved over the
+previous one. It is an exponential algorithm, although most of time it
+does a lot better. In this blog we walk through a simple example to
+illustrate this.</p>
+<p>In this case we are operating a factory with two products. Both
+product have 1 unit of profit. Making the products needs to use two kind
+of machine. Product one uses 1 hour of machine one and product two uses
+2 hours of machine one. Further, product one uses 2 hours of machine two
+and product two uses 1 hour of machine two. Both machines operate at
+most 6 hours each day. We want to maximize our profit: <span
+class="math display">\[
 \begin{aligned}
-X_i =
-    \begin{cases}
-        \frac{w_i}{p_i} &amp; i \text{ is chosen} \\
-        0               &amp;   \text{ else }
-    \end{cases}
+&amp;\max   &amp; x_1 + x_2 \\
+&amp;s.t.   &amp; x_1 + 2x_2 \le 6 \\
+&amp;       &amp; 2x_1 + x_2 \le 6 \\
+&amp;       &amp;   x_1, x_2 \ge 0
 \end{aligned}
 \]</span></p>
-<p>Note that <span class="math display">\[
-\mathbb{E} \left[ X_i \right] = w_i
+<p>It can be represented concisely in matrix form: <span
+class="math display">\[
+\begin{aligned}
+&amp;\max   &amp; c^T x \\
+&amp;s.t.   &amp; A x \le b \\
+&amp;       &amp; x \ge 0
+\end{aligned}
 \]</span></p>
-<p>And therefore, <span class="math display">\[
-\mathbb{E} \left[\sum_{i \in I} X_i \right] = \sum_{i \in I}
-\mathbb{E}[X_i] = \sum_{i \in I} w_i
+<p>where <span class="math display">\[
+\begin{aligned}
+A = \left[
+    \begin{matrix}
+        1 &amp; 2 \\
+        2 &amp;  1
+    \end{matrix}
+    \right],
+\quad
+b = \left[
+    \begin{matrix}
+        6 \\
+        6
+    \end{matrix}
+    \right],
+\quad
+c = \left[
+    \begin{matrix}
+        1 \\
+        1
+    \end{matrix}
+    \right],
+\quad
+x = \left[
+    \begin{matrix}
+        x_1 \\
+        x_2
+    \end{matrix}
+    \right],
+\end{aligned}
 \]</span></p>
-<h1 id="threshold-sampling">Threshold Sampling</h1>
-<p>One possible implementation of this sampling scheme is called
-<em>threshold sampling</em>.</p>
-<p>First, a threshold <span class="math inline">\(T\)</span> is chosen.
-Then, for each item <span class="math inline">\(i \in [n]\)</span>, if
-<span class="math inline">\(w_i \ge T\)</span>, then the algorithm
-record a value <span class="math inline">\(X_i = w_i\)</span>
-deterministically. Otherwise, the algorithm record a value <span
-class="math inline">\(X_i = T\)</span> with probability <span
-class="math inline">\(\frac{w_i}{T}\)</span>. If <span
-class="math inline">\(X_i\)</span> is not recorded, it has default value
-<span class="math inline">\(0\)</span>. In both cases, <span
-class="math inline">\(\mathbb{E} [ X_i ] = w_i\)</span>.</p>
-<!-- $\forall i \in [n]$, $w_i$ is kept with probability with $p_i = \min \{ 1 , \frac{w_i}{T} \}$. In particular, for each $i \in [n]$, we sample a uniform random variable $u_i \in [0, 1]$, and set  -->
-<p>Mathematically, the two cases can be combined into one. Let <span
-class="math inline">\(u_i\)</span> be a random number generated between
-<span class="math inline">\((0, 1)\)</span>. Then</p>
+<p><em>We call the set of points that satisfy the constraints of the
+optimization problem the feasible region</em> <span
+class="math display">\[
+P = \{x : Ax \le b, x \ge 0\}
+\]</span></p>
+<p>It is obvious that the optimal is obtained at <span
+class="math inline">\((2, 2)\)</span>, which gives the objective value
+<span class="math inline">\(4\)</span>. It is a <em>vertex</em> of the
+feasible region.</p>
+<h4 id="slack-form">Slack Form</h4>
+<p>In general, it might not be obvious what the optimal point is. But if
+the elements of <span class="math inline">\(b\)</span> are non-negative,
+the origin is a feasible point, from which we can begin our search. To
+make the search easier, we are going to introduce an additional number
+of variables, the slack variables <span class="math inline">\(s_1,
+s_2\)</span> and <span class="math inline">\(z\)</span> that correspond
+to the constraints and objective value. <span class="math display">\[
+\begin{aligned}
+z =     &amp;   &amp; x_1       &amp;+x_2   \\
+s_1 =   &amp;6  &amp; -x_1      &amp;-2x_2  \\
+s_2 =   &amp;6  &amp; -2x_1     &amp;-x_2   \\
+\end{aligned}
+\]</span></p>
+<p>rewrite the optimization into <em>slack form</em>: <span
+class="math display">\[
+\begin{aligned}
+&amp;\max   &amp;
+x_1   &amp;+x_2       &amp;       &amp;           &amp;= z\\
+&amp;s.t.   &amp;
+x_1   &amp;+2x_2      &amp;+s_1   &amp;           &amp;= 6 \\
+&amp;       &amp;
+2x_1  &amp;+x_2       &amp;       &amp;+s_2       &amp;= 6 \\
+&amp;       &amp;
+x_1,  &amp;x_2,       &amp;s_1    &amp;,s_2       &amp;\ge 0
+\end{aligned}
+\]</span></p>
+<p>They are called slacks variables because they correspond how much
+slack you have in the inequalities in the original problem. For this
+slack form, we also call <span class="math inline">\(s_1\)</span> and
+<span class="math inline">\(s_2\)</span> basic variables, and the
+original variables non-basic variables.</p>
+<p>Now the feasible region <span class="math inline">\(F\)</span> is
+considered as the intersection of the two subspaces <span
+class="math display">\[
+F = \{x : Ax = b \} \cap \{ x \ge 0 \}
+\]</span></p>
+<p>We can represent the LP in <em>slack form</em> even more concisely in
+a table: <span class="math display">\[
+\begin{aligned}
+    1   &amp;&amp;  2   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp; \mid
+6 \\
+    2   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp;  1   &amp;&amp; \mid
+6 \\
+    \hline
+    1   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp;  0   &amp;&amp; \mid
+0 \\
+\end{aligned}
+\]</span></p>
+<p>where the last column denotes the objective function. This example
+has a trivial starting point : <span class="math inline">\((0, 0, 6,
+6)\)</span>. It is called a basic solution in which all non-basic
+variables are set to zero. It can be read from the tabular form: the
+identity matrix correspond to basic variables, and <span
+class="math inline">\((s_1, s_2) = b\)</span>.</p>
+<h4 id="pivoting">Pivoting</h4>
+<p>Look at the original LP: <span class="math display">\[
+\begin{aligned}
+&amp;\max   &amp;
+x_1   &amp;+x_2       &amp;       &amp;           &amp;= z\\
+&amp;s.t.   &amp;
+x_1   &amp;+2x_2      &amp;+s_1   &amp;           &amp;= 6 \\
+&amp;       &amp;
+2x_1  &amp;+x_2       &amp;       &amp;+s_2       &amp;= 6 \\
+&amp;       &amp;
+x_1,  &amp;x_2,       &amp;s_1    &amp;,s_2       &amp;\ge 0
+\end{aligned}
+\]</span></p>
+<p>As we would like to maximize the objective, we would like to increase
+the value of <span class="math inline">\(x_1\)</span> or <span
+class="math inline">\(x_2\)</span> as much as possible. Suppose we just
+increase one variable at a time. For example, we can increase variable
+<span class="math inline">\(x_1\)</span> and keep the value of <span
+class="math inline">\(x_2\)</span> to be <span
+class="math inline">\(0\)</span>.</p>
+<p>How much can we increase <span class="math inline">\(x_1\)</span>?
+After increasing <span class="math inline">\(x_1\)</span>, we need to
+maintain the inequality constraints: <span class="math display">\[
+x_1 + s_1 = 6 \\
+2 x_1 + s_2 = 6
+\]</span></p>
+<p>The values of <span class="math inline">\(s_1\)</span> and <span
+class="math inline">\(s_2\)</span> decrease as <span
+class="math inline">\(x_1\)</span> increases. By they can be drop below
+<span class="math inline">\(0\)</span>. The maximum possible increases
+of <span class="math inline">\(x_1\)</span> is bounded by <span
+class="math inline">\(6 / 2 = 3\)</span>. If we set <span
+class="math inline">\(x_1 = 3\)</span>, <span class="math inline">\(s_1
+= 6 - x_1 = 3\)</span> and <span class="math inline">\(s_2 = 6 - 2x_1 =
+0\)</span>.</p>
+<p>Note that <span class="math inline">\(x_1\)</span> increases from
+<span class="math inline">\(0\)</span> to <span
+class="math inline">\(3\)</span> and <span
+class="math inline">\(s_2\)</span> decreases from <span
+class="math inline">\(6\)</span> to <span
+class="math inline">\(0\)</span>. This process is called
+<em>pivoting</em>.</p>
+<p>How do we perform pivoting in the tabular form? By the replacement we
+have just performed -- normalizing the second row, and using it to
+eliminate all other elements in the first column.</p>
+<p>Recall the original table: <span class="math display">\[
+\begin{aligned}
+    1   &amp;&amp;  2   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp; \mid
+6 \\
+    2   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp;  1   &amp;&amp; \mid
+6 \\
+    \hline
+    1   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp;  0   &amp;&amp; \mid
+0 \\
+\end{aligned}
+\]</span></p>
+<p>We divide the second row by a factor of 2 to normalize it, and
+subtract the first and third row by the second row <span
+class="math display">\[
+\begin{aligned}
+    0   &amp;&amp;  3/2 &amp;&amp;  1   &amp;&amp; -1/2 &amp;&amp; \mid
+3 \\
+    1   &amp;&amp;  1/2 &amp;&amp;  0   &amp;&amp;  1/2 &amp;&amp; \mid
+3 \\
+    \hline
+    0   &amp;&amp;  1/2 &amp;&amp;  0   &amp;&amp; -1/2 &amp;&amp; \mid
+-3 \\
+\end{aligned}
+\]</span></p>
+<p>Observe the first two rows of the tabular form: <span
+class="math display">\[
+\begin{aligned}
+    0   &amp;&amp;  3/2 &amp;&amp;  1   &amp;&amp; -1/2 &amp;&amp; \mid
+3 \\
+    1   &amp;&amp;  1/2 &amp;&amp;  0   &amp;&amp;  1/2 &amp;&amp; \mid
+3 \\
+\end{aligned}
+\]</span> If we set <span class="math inline">\(x_2 = 0\)</span> and
+<span class="math inline">\(s_2 = 0\)</span>, the constraints they
+implies becomes <span class="math display">\[
+s_1 = 3 \\
+x_1 = 3
+\]</span> Again the unity columns correspond to non-zero elements and we
+can read the solution from the tabular form.</p>
+<h4 id="correctness-of-pivoting">Correctness of Pivoting</h4>
+<p>Before we continue our search on the tabular form, we need to show
+that pivoting is correct in the sense that, after pivoting, the tabular
+form represents the same optimization.</p>
+<p>In particular, we need to guarantee that the feasible regions are the
+same and the objective function are equivalent defined on the feasible
+regions.</p>
+<p>We focus on the extended matrix that represents the constraints:
+<span class="math display">\[
+\bar A = [A, b] =
+\left[\begin{aligned}
+    1   &amp;&amp;  2   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp; \mid
+6 \\
+    2   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp;  1   &amp;&amp; \mid
+6 \\
+\end{aligned}\right]
+\]</span> <em>FACT 1.</em> Doing a row replacement on <span
+class="math inline">\(\bar A\)</span> does not change <span
+class="math inline">\(F\)</span>, where row replacement is defined as
+<span class="math display">\[
+\bar A[i: ] \leftarrow \bar A[i: ] + k \cdot \bar A[j: ]
+\]</span> i.e., adding <span class="math inline">\(k\)</span> times the
+<span class="math inline">\(j\)</span>-th row to the <span
+class="math inline">\(i\)</span>-th row, for <span
+class="math inline">\(i \neq j, k \in R\)</span>.</p>
+<p>To see this, denote <span class="math inline">\(F\)</span> and <span
+class="math inline">\(F&#39;\)</span> the sets before and after the
+replacement respectively. <span class="math inline">\(F =
+F&#39;\)</span> implies that each point <span
+class="math inline">\(x\)</span> belonging to <span
+class="math inline">\(F\)</span> belongs to <span
+class="math inline">\(F&#39;\)</span>, and vice-versa. Specifically, the
+row replacement corresponds to left multiplying <span
+class="math inline">\(\bar A\)</span> by a matrix</p>
 <p><span class="math display">\[
 \begin{aligned}
-X_i =
-    \begin{cases}
-        \max \{ w_i, T \} &amp; u_i &lt; \frac{w_i}{T} \\
-        0               &amp;   \text{ else }
-    \end{cases}
+E_{(i,j), k} \doteq
+    \left[ \begin{matrix}
+        1 &amp; \\
+          &amp; 1 \\
+          &amp;     &amp; \quad...      \\
+          &amp;     &amp; k     &amp; 1     \\
+          &amp;     &amp;       &amp;       &amp;    ...  \\
+          &amp;     &amp;       &amp;       &amp;           &amp;    1
+    \end{matrix} \right]
 \end{aligned}
 \]</span></p>
-<p>Observe that if <span class="math inline">\(w_i \ge T\)</span>, then
-<span class="math inline">\(w_i / T \ge 1\)</span> and <span
-class="math inline">\(X_i \equiv \max \{ w_i, T \} = w_i\)</span>. The
-expectation of <span class="math inline">\(X_i\)</span> is given
-algebraically by <span class="math display">\[
+<p>which is a diagonal matrix with an additional <span
+class="math inline">\(k\)</span> in the <span class="math inline">\((i,
+j)\)</span> position. It is invertible with inverse matrix <span
+class="math display">\[
 \begin{aligned}
-    \mathbb{E} [ X_i ] = \max \{ w_i, T \} \cdot \Pr \left[ u_i \le
-\frac{w_i}{T} \right] = \max \{ w_i, T \} \cdot \min \{ 1, w_i / T \} =
-w_i.
+E_{(i,j), -k} \doteq
+    \left[ \begin{matrix}
+        1 &amp; \\
+          &amp; 1 \\
+          &amp;     &amp; \quad...      \\
+          &amp;     &amp; -k    &amp; 1     \\
+          &amp;     &amp;       &amp;       &amp;    ...  \\
+          &amp;     &amp;       &amp;       &amp;           &amp;    1
+    \end{matrix} \right]
 \end{aligned}
 \]</span></p>
-<p>It follows by linearity of expectation that <span
-class="math display">\[
-    \mathbb{E} \left[ \sum_{i \in I} X_i \right] = \sum_{i \in I} w_i.
-\]</span></p>
-<h2 id="space-usage">Space Usage</h2>
-<p>Denote <span class="math inline">\(S\)</span> the set of items with
-<span class="math inline">\(X_i \neq 0\)</span> and let <span
-class="math inline">\(p_i\)</span> be the probability of <span
-class="math inline">\(i\)</span> being sampled. Then the expected size
-of <span class="math inline">\(S\)</span> is given by <span
-class="math display">\[
-\sum_{i = 1}^n p_i = \sum_{i = 1}^n \min \left\{ 1 , \frac{w_i}{T}
-\right\}
-\]</span></p>
-<p>The problem with threshold sampling is that it is hard to control the
-memory usage of the sample set <span class="math inline">\(S\)</span>.
-If the <span class="math inline">\(n\)</span> items are known offline,
-and we would like <span class="math inline">\(|S| \approx k\)</span> for
-some integer <span class="math inline">\(k \le n\)</span>, then we can
-search for some <span class="math inline">\(T\)</span> such that <span
-class="math display">\[
-\sum_{i = 1}^n p_i = k
-\]</span></p>
-<p>Then <span class="math inline">\(|S| = k\)</span> in expectation.</p>
-<p>The question is, is it possible to force <span
-class="math inline">\(|S|= k\)</span> exactly? Further, what if the
-items come online (one by one)?</p>
-<h1 id="priority-sampling">Priority Sampling</h1>
-<p><em>Priority sampling</em> achieves this. First recall that in
-<em>threshold sampling</em> we decide whether to keep <span
-class="math inline">\(i\)</span> by checking whether a uniform sampled
-real number <span class="math inline">\(u_i\)</span> is less than <span
-class="math inline">\(\frac{w_i}{T}\)</span>: <span
-class="math display">\[
-u_i &lt; \frac{w_i}{T}
-\]</span></p>
-<p>This is equivalent to <span class="math display">\[
-T &lt; \frac{w_i}{u_i}
-\]</span></p>
-<p>Define the <em>priority</em> of an item <span class="math inline">\(i
-\in [n]\)</span> as <span class="math inline">\(q_i =
-\frac{w_i}{u_i}\)</span>. Note that <span
-class="math inline">\(q_i\)</span> is a random variable. In
-<em>threshold sampling</em>, item <span class="math inline">\(i\)</span>
-is kept with weight <span class="math inline">\(\max \{ w_i, T
-\}\)</span> if <span class="math display">\[
-T &lt; q_i
-\]</span></p>
-<p>Now, instead of using a fixed value of <span
-class="math inline">\(T\)</span>, the <em>Priority sampling</em> sets
+<p>The previous claim becomes <span class="math inline">\(\{ x : E_{(i,
+j), k} A x = E_{(i, j), k} b \} = \{ x : A x = b \}\)</span>.</p>
+<p>But wait. Why do we subtract the last row from the second one?
+<em>Fact 1</em> has justified the replacement operation on <span
+class="math inline">\(\bar A\)</span>, but not on the objective
+coefficients <span class="math inline">\(c\)</span> (the last row in the
+tabular form). To illustrate the meaning of the operation, recall that
 <span class="math display">\[
-T = (k + 1) \text{-th largest } \{ q_i \}
+x_1 + x_2 + 0 \cdot s_1 + 0 \cdot s_2 = z
+\]</span> Hence <span class="math inline">\(z\)</span> is the value of
+the objective function. After normalizing the second row, it becomes
+<span class="math display">\[
+x_1 + 1 / 2 x_2 +  0 s_1 + 1/2 s_2 = 3 \\
 \]</span></p>
-<p>By the definition of <span class="math inline">\(T\)</span>, only the
-<span class="math inline">\(k\)</span> items with largest priorities
-<span class="math inline">\(q_i\)</span>'s are kept in the sample set
-<span class="math inline">\(S\)</span>: <span class="math display">\[
-S = \{ k \text{ items with largest } q_i \text{ &#39;s } \}
-\]</span></p>
-<p>It can be seen that <span class="math inline">\(S\)</span> and <span
-class="math inline">\(T\)</span> can be easily maintained by a binary
-heap when the items come in stream fashion.</p>
-<p>The challenge is not to analyze the behaviors of the r.v.'s: <span
-class="math display">\[
+<p>The constraint holds for any feasible point of the linear
+programming. Therefore, <span class="math display">\[
 \begin{aligned}
-X_i =
-    \begin{cases}
-        \max \{ w_i, T \} &amp; T &lt; \frac{w_i}{u_i} \equiv u_i &lt;
-\frac{w_i}{T} \\
-        0               &amp;   \text{ else }
-    \end{cases}
+z - 3
+    &amp;= (x_1 + x_2 + 0 s_1 + 0 s_2)  - (x_1 + 1 / 2 x_2 +  0 s_1 +
+1/2 s_2) \\
+    &amp;= 0x_1 + 1/2x_2 + 0s_1 - 1/2 s_2 \\
+    &amp;\Leftrightarrow \\
+    z
+    &amp;= 0x_1 + 1/2x_2 + 0s_1 - 1/2 s_2 + 3
 \end{aligned}
 \]</span></p>
-<p>since now <span class="math inline">\(T\)</span> is itself a random
+<p>The last <span class="math inline">\(-3\)</span> in the table is the
+inverse constant in the objective functions after the replacement of
 variable.</p>
-<h2 id="theorem">Theorem</h2>
-<p><span class="math display">\[
-    \mathbb{E}[X_i] = w_i.
-\]</span></p>
-<p><em>Proof.</em> There is an elegant proof based on conditional
-expectation. For <span class="math inline">\(i \in [n]\)</span>, define
-the random variable <span class="math inline">\(T_i\)</span> as the
-<span class="math inline">\(k\)</span>-th largest priority of elements
-other than <span class="math inline">\(i\)</span>. If <span
-class="math inline">\(i\)</span>-th is sampled, then <span
-class="math inline">\(q_i \ge T_i\)</span> and <span
-class="math inline">\(T_i\)</span> becomes the <span
-class="math inline">\(k+1\)</span>-th largest priority. Therefore, <span
-class="math display">\[
-    \mathbb{E}_{X_i} [ X_i \mid T_i ] = \max \{ X_i, T_i \} \cdot \min
-\{1, w_i / T_i \} = w_i.
-\]</span></p>
-<p>Finally, <span class="math inline">\(\mathbb{E}_{X_i} [X_i ] =
-\mathbb{E}_{T_i} [ \mathbb{E}_{X_i} [ X_i \mid T_i] ] =
-w_i\)</span>.</p>
-<!-- The trick is to condition $X_i$ on the $k$-th and $k+1$-th largest priority of the rest items. Define the random variables 
-$$
-L = (k + 1) \text{-th largest } \{ q_j \}_{j \neq i} \\
-U = (k) \text{-th largest } \{ q_j \}_{j \neq i}
-$$
-
-Consider the case $L = a$ and $U = b$, where $a \le b$. There two possible cases
-
-1. If $w_i > b$, then $T = b$ and surely $\frac{w_i}{u_i} > T$ holds. In this case  $X_i = w_i$ and 
-    $$
-        \mathbb{E}[X_i | U = b] = w_i
-    $$
-
-2. If $w_i < b$, then there are four sub-cases:
-   * $\frac{w_i}{u_i} \le a$, then $T = b$ and $i$ is not selected into $S$. Therefore $X_i = 0$.   
-  
-   * $a < \frac{w_i}{u_i} < b$, now $\frac{w_i}{u_i}$ becomes the $k+1$-th largest priority of all items and $T = \frac{w_i}{u_i}$. In this case $i$ is not selected into $S$, and $X_i = 0$ (since $\frac{w_i}{u_i} < T$ does not hold). 
-  
-   * $\frac{w_i}{u_i} = b$, then there is a tie and $T = b$ in this case. Depending on how the tie is broken, either $i$ is put into $S$ or not. But in both cases, $X_i = 0$ since $\frac{w_i}{u_i} < T$ does not hold. 
-  
-   * $\frac{w_i}{u_i} > b$, then $T = b$ and $i$ is put into $S$. As $w_i < T$, we have $X_i = T = b$. 
-
-    Therefore, 
-    $$
-        \mathbb{E}[X_i | U = b] = b \cdot \Pr\left[ \frac{w_i}{u_i} > b \mid w_i < b \wedge U = b \right] = b \cdot \frac{w_i}{b} = w_i
-    $$
-
-In conclusion, 
-$$
-\mathbb{E}[X_i] = \mathbb{E}[\mathbb{E}[X_i | U]]  = w_i
-$$ -->
-<h2 id="theorem-1">Theorem</h2>
-<p>For <span class="math inline">\(I \subset [n]\)</span>, <span
+<h4 id="back-to-our-search">Back to our search</h4>
+<p>To improve the current solution further, we note that the coefficient
+of <span class="math inline">\(x_2\)</span> is positive. We can increase
+the value of <span class="math inline">\(x_2\)</span>. The maximum
+increase is given by <span class="math inline">\(\min \{ 3 / (1 / 2), 3
+/ (3/ 2) \} = 2\)</span>, determined by the first row: <span
 class="math display">\[
 \begin{aligned}
-    \mathbb{E}\left[ \prod_{i \in I} X_i \right] =
-    \begin{cases}
-         \prod_{i \in I} w_i     &amp; \text{ if } |I| \le k \\
-         0                      &amp; else
-    \end{cases}
+    0   &amp;&amp;  3/2 &amp;&amp;  1   &amp;&amp; -1/2 &amp;&amp; \mid
+3 \\
+    1   &amp;&amp;  1/2 &amp;&amp;  0   &amp;&amp;  1/2 &amp;&amp; \mid
+3 \\
+    \hline
+    0   &amp;&amp;  1/2 &amp;&amp;  0   &amp;&amp; -1/2 &amp;&amp; \mid
+-3 \\
 \end{aligned}
-\]</span></p>
-<p><em>Proof:</em> Clearly, when <span class="math inline">\(|I| &gt;
-k\)</span>, then <span class="math inline">\(\exists i \in I\)</span>,
-such that <span class="math inline">\(q_i\)</span> is not one of the
-<span class="math inline">\(k\)</span> largest priorities. Hence <span
-class="math inline">\(\prod_{i \in I} X_i = 0\)</span> for sure.</p>
-<p>If <span class="math inline">\(|I| \le k\)</span>, define <span
-class="math inline">\(T_I\)</span> to be the <span
-class="math inline">\(k - |I| + 1\)</span>-th largest priority of
-elements in <span class="math inline">\([n] \setminus I\)</span>.
-Observe that <span class="math inline">\(\prod_{i \in I} X_i \neq
-0\)</span>, if only the priorities of all <span class="math inline">\(i
-\in I\)</span> are among the <span class="math inline">\(k\)</span>
-largest ones. In such case, <span class="math inline">\(T_I\)</span>
-becomes the <span class="math inline">\(k+1\)</span>-th largest
-priority. Therefore, <span class="math display">\[
-    \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] = \prod_{i
-\in I} \mathbb{E} [ X_i \mid T_I ] = \prod_{i \in I} w_i,
-\]</span></p>
-<p>and <span class="math inline">\(\mathbb{E}[ \prod_{i \in I} X_i ] =
-\mathbb{E} [ \mathbb{E} \left[ \prod_{i \in I} X_i \mid T_I \right] ] =
-\prod_{i \in I} w_i\)</span>.</p>
-<!-- If $|I| \le k$, we show the claims holds by induction. The base case of $|I| = 1$ reduces to *Theorem 1*. Suppose that the claim hold for $|I| \le t < k$, we show it holds for $|I| = t + 1$. 
-
-Similarly to *Theorem 1*, define $U$ to be the $k + 1 - |I|$-th largest priority in $[n] \setminus I$. Conditioning on $U = b$, then we can divide $I$ into two sets: $I_1 = \{ i \in I :   w_i > b\}$ and $I_2 = I \setminus I_1$.  For $i \in I_1$, we have $X_i = w_i$ by definition. Now consider $I_2$. Let $j = \arg \min_{i \in I_2} q_i$. 
-If $q_j \le b$, then it holds that $b \ge T \ge q_j$ and $X_j = 0$. In this case it does not contribute to $\prod_{i \in I} X_i$. Hence
-$$
+\]</span> To make the change explicitly, we perform elimination by the
+first row <span class="math display">\[
 \begin{aligned}
-\mathbb{E} \left[ \prod_{i \in I} X_i \mid U = b \right] 
-    &= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \Pr \left[ \frac{w_i}{u_i} > b \right] ) \\
-    &= \prod_{i \in I_1} w_i ( b^{|I_2| } \cdot \prod_{i \in I_2} \frac{w_i}{b} ) \\
-    &= \prod_{i \in I} w_i
+    0   &amp;&amp;  1   &amp;&amp;  2/3 &amp;&amp; -1/3 &amp;&amp; \mid
+2 \\
+    1   &amp;&amp;  0   &amp;&amp; -1/3 &amp;&amp;  2/3 &amp;&amp; \mid
+2 \\
+    \hline
+    0   &amp;&amp;  0   &amp;&amp; -1/3 &amp;&amp; -1/3 &amp;&amp; \mid
+-4 \\
 \end{aligned}
-$$ -->
-<h3 id="reference">Reference</h3>
-<ol type="1">
-<li>Nick Duffield, Carsten Lund, and Mikkel Thorup. Priority sampling
-for estimation fo arbitrary subset sums. Journal of ACM, 2007</li>
-<li>Chandra Chekuri, Lecture note, CS 598: Algorithms for Big Data</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/02/Newton-s-Method/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/02/Newton-s-Method/" class="post-title-link" itemprop="url">Newton's Method</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-01-02 16:25:30 / Modified: 16:54:02" itemprop="dateCreated datePublished" datetime="2020-01-02T16:25:30+11:00">2020-01-02</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Newton's method is an algorithm for finding root of a function <span
-class="math inline">\(f(x)\)</span> numerically. If <span
-class="math inline">\(f\)</span> is differentially at a point <span
-class="math inline">\(x\)</span>, then we can use this local information
-at <span class="math inline">\(x\)</span> to approximate <span
-class="math inline">\(f\)</span>: <span class="math display">\[
-\bar f(y) = f(x) + f&#39;(x) (y - x)
-\]</span></p>
-<p>This is the tangent line at <span class="math inline">\(x\)</span>.
-We use its intersection with the <span
-class="math inline">\(x\)</span>-axis as the guess of root: <span
+\]</span> which give solution <span class="math inline">\(x = (2, 2, 0,
+0)\)</span> and objective value <span class="math inline">\(4\)</span>.
+It is indeed optimal solution for the problem, as all coefficients of
+the optimization are non-positive.</p>
+<h4 id="optimality-condition-and-strong-duality">Optimality Condition
+and Strong Duality</h4>
+<p>We investigate the result deeper by viewing the initial tabular form
+in abbreviation as <span class="math display">\[
+\left[ \begin{matrix}
+A \quad I \mid b \\ c^T  \quad 0 \mid 0
+\end{matrix} \right]
+\]</span> The series of <span class="math inline">\(m\)</span> Gaussian
+elimination can be interpreted as left multiplying a matrix: <span
 class="math display">\[
-\bar f(y) = 0 = f(x) + f&#39;(x) (y - x)
-\]</span></p>
-<p>If <span class="math inline">\(f&#39;(x) \neq 0\)</span>, then <span
-class="math inline">\(y = x - \frac{f(x)}{f&#39;(x)}\)</span>.
-Intuitively, <span class="math inline">\(f(x)\)</span> is the height and
-<span class="math inline">\(f&#39;(x)\)</span> is the slope, hence <span
-class="math inline">\(\frac{f(x)}{f&#39;(x)} = x - y\)</span> gives the
-distance between <span class="math inline">\(x\)</span> and <span
-class="math inline">\(y\)</span>. Note that if <span
-class="math inline">\(f&#39;(x) = 0\)</span>, the tangent line does not
-intersect with <span class="math inline">\(x\)</span>-axis.</p>
-<p>With a starting point <span class="math inline">\(x_1\)</span>, the
-Newton's Method updates its value iteratively: <span
+\begin{aligned}
+\left[ \begin{matrix}
+    &amp; R     &amp; 0 \\
+    &amp; -y^T  &amp; 1 \\
+\end{matrix} \right] \doteq E_m...E_3 E_2 E_1
+\end{aligned}
+\]</span> where each <span class="math inline">\(E_j\)</span> ( <span
+class="math inline">\(1 \le j \le m\)</span>) matrix is invertible and
+represents a Gaussian elimination, i.e., if we left multiple a matrix by
+<span class="math inline">\(E_j\)</span>, it is equivalent to perform
+Gaussian elimination on the matrix. The matrix product <span
+class="math inline">\(E_m...E_3 E_2 E_1\)</span> has the form <span
 class="math display">\[
-x_{n + 1} = x_n - \frac{f(x_n)  }{ f&#39;(x_n) }
+\begin{aligned}
+\left[ \begin{matrix}
+    &amp; R     &amp; 0 \\
+    &amp; -y^T  &amp; 1 \\
+\end{matrix} \right]
+\end{aligned}
+\]</span> because we never use the last row to eliminate the other
+rows.</p>
+<p>Now: <span class="math display">\[
+\begin{aligned}
+\left[ \begin{matrix}
+    &amp; R     &amp; 0 \\
+    &amp; -y^T  &amp; 1 \\
+\end{matrix} \right]
+\left[ \begin{matrix}
+    &amp; A &amp; I \mid    b \\
+    &amp; c^T  &amp; 0 \mid 0
+\end{matrix} \right]
+=
+\left[ \begin{matrix}
+    &amp; RA            &amp; R     &amp; \mid &amp; Rb \\
+    &amp; -y^TA+c^T     &amp; -y^T  &amp;\mid &amp; -y^T b
+\end{matrix} \right]
+\end{aligned}
+\]</span> In our example, <span class="math display">\[
+\begin{aligned}
+    1   &amp;&amp;  2   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp; \mid
+6 \\
+    2   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp;  1   &amp;&amp; \mid
+6 \\
+    \hline
+    1   &amp;&amp;  1   &amp;&amp;  0   &amp;&amp;  0   &amp;&amp; \mid
+0 \\
+\end{aligned}
+\Rightarrow ... \Rightarrow
+\begin{aligned}
+    0   &amp;&amp;  1   &amp;&amp;  2/3 &amp;&amp; -1/3 &amp;&amp; \mid
+2 \\
+    1   &amp;&amp;  0   &amp;&amp; -1/3 &amp;&amp;  2/3 &amp;&amp; \mid
+2 \\
+    \hline
+    0   &amp;&amp;  0   &amp;&amp; -1/3 &amp;&amp; -1/3 &amp;&amp; \mid
+-4 \\
+\end{aligned}
+\]</span> we have <span class="math display">\[
+R = \begin{aligned}
+\left[ \begin{matrix}
+    2 / 3 &amp; -1 / 3 \\
+    -1 / 3 &amp; 2 /3
+\end{matrix} \right]
+\end{aligned}
+\qquad
+y^T = [ -1 / 3, -1  / 3]
 \]</span></p>
-<p>Let <span class="math inline">\(z\)</span> be the root of <span
-class="math inline">\(f\)</span> (<span class="math inline">\(f(z) =
-0\)</span>). Then under proper condition, <span
-class="math inline">\(x_n\)</span> converges to <span
-class="math inline">\(z\)</span> quadratically, that is, <span
-class="math inline">\(|x_n - z| \le O(2^{-n})\)</span>.</p>
-<h3 id="theorem.">Theorem.</h3>
-<p>Let <span class="math inline">\(f \in C^2\)</span> in some interval
-<span class="math inline">\([z \pm c]\)</span> and <span
-class="math inline">\(f&#39;(x) \neq 0\)</span>, <span
-class="math inline">\(f&#39;&#39;(x)\)</span> is bounded for <span
-class="math inline">\(x \in [z \pm c]\)</span>. If <span
-class="math inline">\(x_0 \in [z \pm c]\)</span>, then Newton's Method
-achieves quadratic convergence.</p>
-<p><em>Proof:</em> By Taylor expansion, <span
-class="math inline">\(\forall x \in [z \pm c]\)</span>, <span
-class="math inline">\(\exists y\)</span> that lies between <span
-class="math inline">\(x\)</span> and <span
-class="math inline">\(z\)</span>, such that <span
+<p>The optimality condition of simplex algorithm implies that <span
 class="math display">\[
-0 = f(z) = f(x) + f&#39;(x) (x - z) + \frac{f&#39;&#39;(y)}{2} (z - x)^2
+\begin{aligned}
+-y^T A + c^T &amp;\le 0 \\
+y^T &amp;\le 0 \\
+y^T b &amp;= c^T x
+\end{aligned}
 \]</span></p>
-<p>Hence <span class="math display">\[
-x - \frac{f(x)}{f&#39;(x)} - z = \frac{f&#39;&#39;(y)}{2 f&#39;(x)} (z -
-x)^2
-\]</span></p>
-<p>Define <span class="math inline">\(\epsilon_n = (z - x_n)\)</span>,
-and replacing <span class="math inline">\(x\)</span> with <span
-class="math inline">\(x_n\)</span>, we have <span
-class="math display">\[
-|\epsilon_{n + 1}| = |x_{n + 1} - z| = |x_n - \frac{f(x_n)}{f&#39;(x_n)}
-- z| = |\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}| (z - x_n)^2 =
-|\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}| \epsilon_n^2
-\]</span></p>
-<p>Since <span class="math inline">\(f\)</span>'s second derivative is
-continuous, <span class="math inline">\(f&#39;&#39;(y)\)</span> is
-bounded on the closed interval <span class="math inline">\([z \pm
-c]\)</span>. Further, as <span class="math inline">\(f&#39;(x) \neq
-0\)</span>, then <span class="math inline">\(\min_{x [z \pm c]}
-f&#39;(x) &gt; 0\)</span> as <span
-class="math inline">\(f&#39;(x)\)</span> is continuous on the closed
-interval <span class="math inline">\([z \pm c]\)</span>. Therefore,
+<p>This is the optimal solution for the dual program of the primal:
 <span class="math display">\[
-C \doteq \max |\frac{f&#39;&#39;(y)}{2 f&#39;(x_n)}|
-\]</span> is bounded. Now <span class="math display">\[
-|\epsilon_{n + 1}| \le |C| \epsilon_n^2
+\min \ b^T y, \qquad s.t.,  A^T y \ge c, \quad y^T \ge 0
 \]</span></p>
-<p>If for some <span class="math inline">\(n\)</span> such that <span
-class="math inline">\(\epsilon_n &lt; 1\)</span>, then the number of
-precise digits doubles for <span class="math inline">\(\epsilon_{n +
-1}\)</span>.</p>
+<p>If simplex algorithm stops, it implies strong duality holds:</p>
+<ul>
+<li>The optimal value of the primal program equals to the optimal one of
+the dual program, assuming that both values exist and are bounded.</li>
+</ul>
+<h4 id="geometric-interpretation">Geometric Interpretation</h4>
+<p>In the beginning we claim that the simplex algorithm move from one
+vertex to another. We prove it rigorously in this section. First we need
+a few definitions:</p>
+<h5 id="vertex">Vertex</h5>
+<p><em>A vertex is a point <span class="math inline">\(v \in F\)</span>,
+such that <span class="math inline">\(\nexists v_1, v_2 \in F, v_1 \neq
+v_2\)</span> and <span class="math inline">\(\lambda \in (0,
+1)\)</span>, s.t., <span class="math inline">\(v = \lambda v_1 + (1 -
+\lambda) v_2\)</span>.</em></p>
+<p>In other words, <span class="math inline">\(v\)</span> is a vertex of
+<span class="math inline">\(F\)</span> if it is not contained in a line
+segment of <span class="math inline">\(P\)</span>.</p>
+<p><strong>Theorem.</strong> If LP has an optimal solution, then it has
+an optimal solution that is a vertex of its feasible set.</p>
+<p><em>Proof.</em> Denote <span class="math inline">\(v\)</span> the
+optimal solution of the LP with maximum number of zero components. If
+<span class="math inline">\(v\)</span> is not a vertex, then <span
+class="math inline">\(\exists v_1, v_2 \neq v, v_1, v_2 \in F\)</span>
+and <span class="math inline">\(\lambda &gt; 0\)</span>, such that <span
+class="math inline">\(\lambda v_1 + (1 - \lambda) v_2 = v\)</span>.</p>
+<p>As <span class="math inline">\(v\)</span> is optimal, we have <span
+class="math inline">\(c^T v \ge c^T v_1\)</span> and <span
+class="math inline">\(c^T v \ge c^T v_2\)</span>. By <span
+class="math inline">\(\lambda v_1 + (1 - \lambda) v_2 = v\)</span>, it
+concludes that <span class="math inline">\(c_T v = c^T v_1 = c^T
+v_2\)</span>.</p>
+<p>Define <span class="math inline">\(I = \{ i : v[i] &gt; 0
+\}\)</span>. As <span class="math inline">\(v_1 \ge 0, v_2 \ge
+0\)</span> and <span class="math inline">\(\lambda v_1 + (1 - \lambda)
+v_2 = v\)</span> so that for <span class="math inline">\(i \neq
+I\)</span>, <span class="math inline">\(v_1[i] = v_2[i] = v[i] =
+0\)</span>.</p>
+<p>But <span class="math inline">\(A_I v_1[I] = A_I v_2[I] = b\)</span>.
+Let <span class="math inline">\(x = \epsilon (v_1 - v_2) +
+v\)</span>.</p>
+<ol type="1">
+<li><span class="math inline">\(x\)</span> is feasible, for small enough
+<span class="math inline">\(\epsilon\)</span>.</li>
+<li><span class="math inline">\(x\)</span> is optimal, since <span
+class="math inline">\(c^T x= \epsilon c^T (v_1 - v_2) + c^T v = c^T
+v\)</span>.</li>
+<li><span class="math inline">\(x_i = 0\)</span> for <span
+class="math inline">\(i \notin I\)</span>.</li>
+</ol>
+<p>We can find some <span class="math inline">\(\epsilon\)</span>
+(either positive or false) to make <span class="math inline">\(x_i =
+0\)</span> for some <span class="math inline">\(i \in I\)</span>. Now
+<span class="math inline">\(x\)</span> contains more zeros than <span
+class="math inline">\(v\)</span>, a contradiction. <span
+class="math inline">\(\square\)</span></p>
+<h5 id="basic-solution">Basic Solution</h5>
+<p><em>A solution <span class="math inline">\(x\)</span> of <span
+class="math inline">\(Ax = b\)</span> is called a basic solution if
+<span class="math inline">\(\{A_i : x_i \neq 0 \}\)</span> (columns in
+<span class="math inline">\(A\)</span> that correspond to non-zero
+components in <span class="math inline">\(x\)</span> ) are linearly
+independent.</em></p>
+<h5 id="basic-feasible-solution">Basic Feasible Solution</h5>
+<p><em>A basic solution <span class="math inline">\(x\)</span> is called
+basic feasible solution if <span class="math inline">\(x \ge 0\)</span>,
+i.e., <span class="math inline">\(x \in \{ x : Ax = b\} \cap \{ x \ge 0
+\}\)</span>.</em></p>
+<p>With respect to the feasible region of LP in slack form, the
+<em>vertices</em> have have following property:</p>
+<p><em>Lemma:</em>. A point <span class="math inline">\(v \in F = \{x :
+Ax = b\} \cap \{ x: x \ge 0\}\)</span> is a vertex of <span
+class="math inline">\(F\)</span> if and only if it is a basic feasible
+solution. Here <span class="math inline">\(A \in R^{m \times n}, x \in
+R^n, b \in R^{m}\)</span> and <span class="math inline">\(rank(A) =
+m\)</span> (otherwise some row constraints of the <span
+class="math inline">\(Ax = b\)</span> are redundant).</p>
+<p><em>Proof</em>: Denote <span class="math inline">\(S\)</span> the set
+of indices of positive components in <span
+class="math inline">\(v\)</span> and <span
+class="math inline">\(A_S\)</span> the set of</p>
+<p><em>Only if:</em> If <span class="math inline">\(A_S\)</span> does
+not have full column rank, then <span class="math inline">\(\exists u
+\in R^{|S|}\)</span>, such that <span class="math inline">\(A_S u =
+0\)</span>. Then for small enough <span class="math inline">\(\epsilon
+\in R, \epsilon &gt; 0\)</span>, both <span class="math inline">\(v +
+\epsilon u\)</span> and <span class="math inline">\(v - \epsilon
+u\)</span> are feasible point in <span class="math inline">\(F\)</span>.
+Now <span class="math inline">\(v = 0.5(v + \epsilon u) + 0.5(v -
+\epsilon u)\)</span>, a contradiction.</p>
+<p><em>If:</em> As columns of <span class="math inline">\(A_S\)</span>
+are linearly independent, the only solution of to <span
+class="math inline">\(A_S x_S = 0\)</span> is given by <span
+class="math inline">\(x_S = 0\)</span>. Hence, <span
+class="math inline">\(v_S\)</span> is now the unique solution to <span
+class="math inline">\(A_S v_S = b\)</span>. If <span
+class="math inline">\(v\)</span> is not a vertex, <span
+class="math inline">\(\exists v_1, v_2, \lambda\)</span>, such that
+<span class="math inline">\(v = \lambda v_1 + (1 - \lambda)
+v_2\)</span>. But in this case we must have <span
+class="math inline">\(v_1 = v_2 = v\)</span>, as <span
+class="math inline">\((v_1)_S = (v_2)_S = v_S\)</span> and <span
+class="math inline">\((v_1)_{\bar S} = (v_2)_{\bar S} = v_{\bar S} =
+0\)</span>. A contradiction.</p>
+<p><span class="math inline">\(\blacksquare\)</span>.</p>
+<p><em>Corollary:</em> The simplex algorithm moves from vertex to
+vertex.</p>
+<p><em>Proof:</em> The positive components in the solution correspond to
+the columns in the identity matrix in the tabular form of simplex, which
+are linearly independent.</p>
+<h4 id="correctness-of-simplex-to-finish">Correctness of Simplex (TO
+FINISH)</h4>
+<p>Though not shown in the example, there are two issue associated with
+simplex algorithm.</p>
+<ol type="1">
+<li>How do we find an initial solution? If there are negative component
+in <span class="math inline">\(b\)</span>, then <span
+class="math inline">\(x = 0 \wedge s = b\)</span> is not a feasible
+solution.</li>
+<li>How do we guarantee that simplex terminates?</li>
+</ol>
+<p>In the previous example, at each step we choose to increase the
+variable with largest coefficient. In some rare cases, this results in a
+loop of the algorithm.</p>
+<p>One method for avoiding looping is called Bland's rule:</p>
+<ol type="1">
+<li>If there is a positive coefficient in the objective function, choose
+the one with largest coefficient.</li>
+<li>If there are multiple rows with tight constraints, choose the one
+with largest coefficient.</li>
+</ol>
+<p><em>Theorem.</em> Blands' rule guarantees that the algorithm
+stops.</p>
+<p><em>Proof.</em> Suppose that on the contrary, the algorithm loops.
+Denote <span class="math inline">\(B_1, B_2, ..., B_k\)</span> the set
+of basis in the loop. In each base, there is entering variable and one
+leaving variable. Every variable that leaves the base must enter another
+base later. We called these variable <em>fickle variables</em>. Denote
+<span class="math inline">\(x_t\)</span> the fickle variable with the
+largest index.</p>
+<ol type="1">
+<li><p><span class="math inline">\(D\)</span> the dictionary that <span
+class="math inline">\(x_t\)</span> leaves the base, and <span
+class="math inline">\(x_e\)</span> the variable that enters the
+base.</p></li>
+<li><p><span class="math inline">\(D&#39;\)</span> the dictionary that
+<span class="math inline">\(x_t\)</span> enters the base again. <span
+class="math display">\[
+D =
+\begin{aligned}
+I   &amp;&amp;  A_N &amp;&amp; \mid b \\
+\hline
+0   &amp;&amp;  c_N &amp;&amp; \mid \alpha \\
+\end{aligned}
+\Rightarrow ... \Rightarrow
+D&#39; =
+\begin{aligned}
+R   &amp;&amp;  R A_N   &amp;&amp; \mid R b \\
+\hline
+y^T &amp;&amp;  y^T A_N + c_N   &amp;&amp; \mid y^T b + \alpha \\
+\end{aligned}
+\]</span> We have <span class="math display">\[
+c_e&#39; = c_e + y^T A_N[:, e]
+\]</span></p></li>
+<li><p><span class="math inline">\(x_e\)</span> is the entering variable
+in <span class="math inline">\(D\)</span>, therefore <span
+class="math inline">\(c_e &gt; 0\)</span>.</p></li>
+<li><p><span class="math inline">\(x_t\)</span> is the entering variable
+in <span class="math inline">\(D&#39;\)</span>, and <span
+class="math inline">\(e &lt; t\)</span>, by the definition of <span
+class="math inline">\(x_t\)</span>, we have <span
+class="math inline">\(x_e&#39; \le 0\)</span>.</p></li>
+<li><p>Hence, <span class="math inline">\(y^T A_N[:, e] = c_e&#39; - c_e
+&lt; 0\)</span>.</p></li>
+<li><p><span class="math inline">\(\exists i, s.t., y_i A_{i, e} &lt;
+0\)</span>. Then <span class="math inline">\(y_i \neq 0\)</span>, and
+<span class="math inline">\(x_i\)</span> is fickle. By definition, <span
+class="math inline">\(i &lt; t\)</span>. But <span
+class="math inline">\(x_i\)</span> is not entering <span
+class="math inline">\(D&#39;\)</span>, we know that <span
+class="math inline">\(y_i &lt; 0\)</span>.</p></li>
+<li><p><span class="math inline">\(A_{i, e} &gt; 0\)</span>. But since
+<span class="math inline">\(x_i\)</span> is fickle, we have <span
+class="math inline">\(b_i = 0\)</span>. In this case, <span
+class="math inline">\(x_i\)</span> is chosen in preference to <span
+class="math inline">\(x_t\)</span>. A contradiction.</p></li>
+</ol>
+<h1 id="reference">Reference</h1>
+<p>[1]. Dantzig, George B. "Origins of the simplex method." A history of
+scientific computing. 1990. 141-151.</p>
 
       
     </div>
@@ -850,7 +1767,7 @@ precise digits doubles for <span class="math inline">\(\epsilon_{n +
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/39/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/39/">39</a><span class="page-number current">40</span><a class="page-number" href="/page/41/">41</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/41/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/39/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/39/">39</a><span class="page-number current">40</span><a class="page-number" href="/page/41/">41</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/41/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -916,12 +1833,12 @@ precise digits doubles for <span class="math inline">\(\epsilon_{n +
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -948,7 +1865,7 @@ precise digits doubles for <span class="math inline">\(\epsilon_{n +
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

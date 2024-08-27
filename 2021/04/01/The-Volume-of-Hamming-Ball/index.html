@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Given a finite set \(\Sigma\) with size \(q &#x3D; |\Sigma|\), and a integer \(n \in \mathbb{N}_+\), a code \(C \subseteq \Sigma^n\) is a set of strings that are far apart. The set \(\Sigma\) is called">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Volume of Hamming Ball">
+<meta property="og:url" content="http://example.com/2021/04/01/The-Volume-of-Hamming-Ball/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Given a finite set \(\Sigma\) with size \(q &#x3D; |\Sigma|\), and a integer \(n \in \mathbb{N}_+\), a code \(C \subseteq \Sigma^n\) is a set of strings that are far apart. The set \(\Sigma\) is called">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-01T13:19:23.000Z">
+<meta property="article:modified_time" content="2022-12-22T09:24:54.000Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/04/01/The-Volume-of-Hamming-Ball/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>The Volume of Hamming Ball | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/01/The-Volume-of-Hamming-Ball/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          The Volume of Hamming Ball
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-04-01 15:19:23" itemprop="dateCreated datePublished" datetime="2021-04-01T15:19:23+02:00">2021-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-22 10:24:54" itemprop="dateModified" datetime="2022-12-22T10:24:54+01:00">2022-12-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Given a finite set <span class="math inline">\(\Sigma\)</span> with
+size <span class="math inline">\(q = |\Sigma|\)</span>, and a integer
+<span class="math inline">\(n \in \mathbb{N}_+\)</span>, a <em>code</em>
+<span class="math inline">\(C \subseteq \Sigma^n\)</span> is a set of
+strings that are far apart. The set <span
+class="math inline">\(\Sigma\)</span> is called the <em>alphabet</em> of
+the code, and <span class="math inline">\(n\)</span> is called the
+<em>block length</em> of the code. Strings in <span
+class="math inline">\(C\)</span> are called <em>codewords</em>.</p>
+<p>For <span class="math inline">\(x, y \in \Sigma^n\)</span>, define
+their Hamming distance as <span class="math display">\[
+    \Delta(x, y) \doteq | \{ i \in [n] : x_i \neq y_i \} |.
+\]</span></p>
+<p>The distance <span class="math inline">\(\Delta(C)\)</span> (or <span
+class="math inline">\(d\)</span> for a shorthand) of <span
+class="math inline">\(C\)</span>, is defined as the minimum distance
+between two different codes words in <span
+class="math inline">\(C\)</span>: <span class="math display">\[
+    \Delta(C)  = d \doteq \min_{x \neq  y \in C} \Delta(x, y).
+\]</span></p>
+<!-- Suppose that we have a code $C$ with distance $d$.  -->
+<p>If we store a code <span class="math inline">\(x \in C\)</span>, and
+up to <span class="math inline">\((d - 1) / 2\)</span> bits of <span
+class="math inline">\(x\)</span> are corrupted, then we can still
+recover <span class="math inline">\(x\)</span>. Denote the ball centered
+at <span class="math inline">\(x\)</span> with radius <span
+class="math inline">\(r \in \mathbb{R}_+\)</span> as <span
+class="math display">\[
+    \mathcal{B}(x, r) \doteq \{ y \in \Sigma^n : \Delta(y, x) \le r \}.
+\]</span></p>
+<blockquote>
+<p><strong>Fact.</strong> For <span class="math inline">\(x \in
+\Sigma^n\)</span>, <span class="math inline">\(r \in
+\mathbb{R}_+\)</span>, the size (volume) of the ball <span
+class="math inline">\(\mathcal{B}(x, r)\)</span> is independent of <span
+class="math inline">\(x\)</span> and is given by <span
+class="math display">\[
+\mathbb{Vol}(r) \doteq | \mathcal{B}(x, r) |
+=  \sum_{i = 0}^{ \lfloor r \rfloor } \binom{n}{i} (q - 1)^i.
+\]</span></p>
+</blockquote>
+<p>If the code <span class="math inline">\(C\)</span> has distance <span
+class="math inline">\(\Delta(C) = d\)</span>, then the balls <span
+class="math inline">\(\{ \mathcal{B}(x, (d - 1) / 2) : x \in C
+\}\)</span> should be disjoint. Therefore, we can upper bound the size
+<span class="math inline">\(|C|\)</span> in terms of the size of <span
+class="math inline">\(\Sigma^n\)</span>, and the volume of the
+balls.</p>
+<blockquote>
+<p><strong>Theorem (Hamming Bound).</strong> Let <span
+class="math inline">\(C\)</span> be a code with distance <span
+class="math inline">\(d \ge 3\)</span>. Then <span
+class="math display">\[
+|C| \le \frac{q^n }{ \mathbb{Vol} \Big( (d - 1) / 2 \Big) }.
+\]</span></p>
+</blockquote>
+<p>We are going to prove an estimate of the volume.</p>
+<blockquote>
+<p><strong>Theorem (Estimate of Volume).</strong> Let <span
+class="math inline">\(r \in \mathbb{R}_+\)</span>. When <span
+class="math inline">\(r \le n - n / q\)</span>, <span
+class="math display">\[
+q^{ n h_q ( r  / n) - O( \log n) } \le \mathbb{Vol} (r) \le q^{ n h_q (
+\lfloor r \rfloor / n)},
+\]</span> where <span class="math display">\[
+\begin{aligned}
+h_q (\epsilon)
+&amp;\doteq (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right)
++ (q - 1) \frac{\epsilon}{q - 1} \log_q \left( \frac{q - 1}{ \epsilon }
+\right) \\
+&amp;= (1 - \epsilon) \log_q \left( \frac{1}{1 - \epsilon} \right) +
+\epsilon \log_q \left( \frac{q - 1}{ \epsilon } \right).
+\end{aligned}
+\]</span></p>
+</blockquote>
+<p>When <span class="math inline">\(q = 2\)</span>, we have the
+following corollary.</p>
+<blockquote>
+<p><strong>Corollary.</strong> Let <span class="math inline">\(r \in
+\mathbb{R}_+\)</span>. When <span class="math inline">\(r \le n /
+2\)</span>, <span class="math display">\[
+2^{ n \cdot h_2 ( r / n) - O( \log n) }
+\le \sum_{i = 0}^{ \lfloor r \rfloor } \binom{n}{i}  
+\le 2^{ n \cdot h_2 ( \lfloor r \rfloor / n)},
+\]</span> where <span class="math inline">\(h_2( \cdot )\)</span> is the
+Shannon's entropy function.</p>
+</blockquote>
+<p>Observe that by concavity of <span class="math inline">\(\log_q
+(\cdot)\)</span>, we have <span class="math display">\[
+    h_q (\epsilon) \le \log_q \left( (1 - \epsilon)  \frac{1}{1 -
+\epsilon}  + \epsilon \frac{q - 1}{ \epsilon } \right) = 1.
+\]</span></p>
+<p>The inequality holds with equality when <span
+class="math inline">\(h_q(\epsilon)\)</span> is maximized, i.e., when
+<span class="math inline">\(1 - \epsilon = \epsilon / (q - 1)\)</span>,
+i.e., <span class="math inline">\(1 - \epsilon = 1 / q\)</span>.</p>
+<h1 id="rate-of-the-code">Rate of the Code</h1>
+<p>Based on the theorems of Hamming bound, and the estimate of the
+volume, we have <span class="math display">\[
+    \begin{aligned}
+        |C| \le \frac{q^n }{ \mathbb{Vol} \Big( (d - 1) / 2 \Big) }
+            &amp;\Longrightarrow
+            n h_q( \lparen d / 2 - 1 / 2 \rparen / n) + \log_q |C| \le n
++ O(\log n) \\
+            &amp;\Longleftrightarrow  h_q( \lparen d / 2 - 1 / 2 \rparen
+/ n) + \frac{ \log_q |C| }{ n } \le 1 + O\left(\frac{ \log_q n }{ n }
+\right) \\
+            &amp;\Longrightarrow  h_q(  d / 2 n) + \frac{ \log_q |C| }{
+n } \le 1 + O\left(\frac{ \log_q n }{ n } \right).
+    \end{aligned}
+\]</span></p>
+<p>The last <span class="math inline">\(\Longleftrightarrow\)</span>
+holds, since <span class="math display">\[
+    \begin{aligned}
+        q^{ n \cdot h_q( \lparen d - 1 \rparen / (2n) ) }
+            &amp;= (q - 1)^r \left(\frac{n}{r} \right)^r
+\left(\frac{n}{n - r} \right)^{n - r} &amp; \quad r \doteq (d - 1) / (2)
+\\
+            &amp;\ge (q - 1)^{r&#39;} \left(\frac{n}{r&#39;}
+\right)^{r&#39;} \left(\frac{n}{n - r&#39;} \right)^{n - r&#39;}  q^{ -
+1 / (2) } \left(\frac{n}{r&#39;} \right)^{-1 / (2) } \left(\frac{n -
+r&#39;}{n - r} \right)^{n - r&#39;}
+            &amp; \quad r&#39; \doteq d / 2 \\
+            &amp;= q^{ n \cdot h_q( d / (2n) ) } \left(\frac{n}{n -
+r&#39;} \right)^{n - r&#39;}  q^{ - 1 / 2 } \left(\frac{n}{r&#39;}
+\right)^{-1 / 2 } \left(\frac{n - r&#39;}{n - r} \right)^{n - r&#39;} \\
+    \Longrightarrow
+        n \cdot h_q( d / (2n) )
+            &amp;\le n \cdot h_q( \lparen d - 1 \rparen / (2n) )
+            + \log_q \left(
+                q^{ 1 / 2 } \left(\frac{n}{r&#39;} \right)^{ 1 / 2 }
+\left(\frac{n - r}{n - r&#39;} \right)^{n - r&#39;}
+            \right),
+    \end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+    \log_q \left(
+         q^{ 1 / 2 } \left(\frac{n}{r&#39;} \right)^{ 1 / 2 }
+\left(\frac{n - r}{n - r&#39;} \right)^{n - r&#39;}
+    \right)
+    = O \left(  1  + \log_q n + \log_q \left( 1 + \frac{1 / 2}{n -
+r&#39;} \right)^{n - r&#39;} \right)
+    = O \left(  \log_q n  \right) .
+\]</span></p>
+<!-- 
+On the other hand, 
+$$
+    \begin{aligned}
+        h_q'(\epsilon) 
+            &= \frac{1}{\ln q} \left( \ln(1 - \epsilon) + (1 - \epsilon) \frac{1}{1 - \epsilon}  + \ln (q - 1) + \ln \left( \frac{1}{\epsilon} \right) - \epsilon \frac{1}{\epsilon}  \right) \\
+            &= \frac{1}{\ln q} \left( \ln \left( \frac{1 - \epsilon}{\epsilon} \right) + \ln (q - 1)   \right).
+    \end{aligned}
+$$
+
+When $\frac{1 - \epsilon}{\epsilon}  = \frac{1}{\epsilon} - 1 \ge \frac{1}{q - 1}$, i.e., $\epsilon \le 1 - 1 / q$, it holds that $h_q' \ge 0$. Conditioned on that $\lfloor d / 2 - 1 / 2 \rfloor \ge 1$, i.e., $d \ge 3$, we have $d / 2 \le \lfloor d / 2 - 1 / 2 \rfloor + 1$ and 
+$$
+    \begin{aligned}
+        h_q( \lfloor d / 2 - 1 / 2 \rfloor / n) 
+        &\ge h_q( d / (2n) ) + h'_q(1 / n ) (1 / n) \\
+        &= h_q( d / (2n) ) + O( (\log_q n) / n).
+    \end{aligned}
+$$
+ -->
+<p>Define the <em>rate</em> of the code <span class="math inline">\(R =
+\frac{ \log_q |C| }{ n }\)</span>, and <em>relative distance</em> of the
+code as <span class="math inline">\(\delta = \frac{d}{n}\)</span>, we
+get</p>
+<blockquote>
+<p><span class="math display">\[
+R + h_q( \delta / 2) \le 1 + O\left( \frac{\log_q n }{n} \right).
+\]</span></p>
+</blockquote>
+<p>In what's follows, we prove the inequalities for volume estimation.
+WLOG, we assume that <span class="math inline">\(r\)</span> is an
+integer.</p>
+<h1 id="upper-bound">Upper Bound</h1>
+<blockquote>
+<p><strong>Theorem.</strong> For <span class="math inline">\(0 \le r \le
+n \cdot (1 - 1 / q)\)</span>, it holds that <span
+class="math inline">\(\mathbb{Vol} (r) \le q^{n h_q(r /
+n)}\)</span>.</p>
+</blockquote>
+<h2 id="algebraic-approach">Algebraic Approach</h2>
+<p><span class="math display">\[
+    \begin{aligned}
+        (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left( \frac{  n
+}{ n - r } \right)^{n - r }   
+            &amp;= (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r } \left(
+\frac{  n }{ n - r } \right)^{n - r } \left( \frac{r}{n} + \frac{n -
+r}{n}  \right)^n \\
+            &amp;\ge (q - 1)^{ r } \left( \frac{n}{r} \right)^{ r }
+\left( \frac{  n }{ n - r } \right)^{n - r } \sum_{i = 0}^{ r} \binom{ n
+}{i} \left( \frac{r}{n} \right)^i  \left( \frac{n - r }{n } \right)^{n -
+i}    \\
+            &amp;\ge \sum_{i = 0}^{ r} \binom{ n }{i} (q - 1)^{ i
+}  \left( \left( \frac{n}{r} \right)^{ r  - i}  \left( \frac{n - r }{n }
+\right)^{r - i}  (q - 1)^{r - i}  \right) \\
+            &amp;\ge \sum_{i = 0}^{ r} \binom{ n }{i} (q - 1)^{ i } \\
+            &amp;= \mathbb{Vol}(r),
+    \end{aligned}
+\]</span></p>
+<p>where the last inequality follows from that <span
+class="math display">\[
+    \frac{n}{r} \cdot \frac{n - r}{ n } \cdot (q - 1) = \Big(
+\frac{n}{r} - 1 \Big) \cdot (q - 1)\ge 1,
+\]</span> as <span class="math inline">\(r / n \le 1 - 1 / q = q / (q -
+1)\)</span>.</p>
+<p>Finally, let <span class="math inline">\(\epsilon \doteq
+\frac{r}{n}\)</span>, we have <span class="math display">\[
+    \begin{aligned}
+        \log \mathbb{Vol}(r)
+            &amp;\le r \cdot \log (q - 1) + r \cdot \log
+\frac{1}{\epsilon} + (n - r) \cdot \log \frac{1}{1 - \epsilon} \\
+            &amp;= n \left( \epsilon \cdot \log (q - 1) + \epsilon \cdot
+\log \frac{1}{\epsilon} + (1 - \epsilon) \cdot \log \frac{1}{1 -
+\epsilon} \right) \\
+            &amp;= n \Big( \epsilon \cdot \log (q - 1) +
+\mathbb{H}_2(\epsilon) \Big) \\
+            &amp;= (\log q) \cdot  n \cdot h_q (\epsilon),
+    \end{aligned}
+\]</span> which proves the claim.</p>
+<h2 id="entropy">Entropy</h2>
+<p>We rely on sub-additivity of entropy.</p>
+<blockquote>
+<p>Let <span class="math inline">\(X\)</span> and <span
+class="math inline">\(Y\)</span> be discrete random variables,
+then<br />
+1. <span class="math inline">\(H( X, Y ) \le H(X) + H(Y)\)</span>.<br />
+2. <span class="math inline">\(H(X | Y) \le H(X)\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Consider the ball <span
+class="math inline">\(\mathcal{B}(1^n, r)\)</span>, and a uniform random
+point <span class="math inline">\(X = (X_1, ..., X_n)\)</span> in the
+ball <span class="math inline">\(\mathcal{B}(1^n, r)\)</span>. Its
+entropy is <span class="math display">\[
+    H(X) = \log \mathbb{Vol}(r).
+\]</span></p>
+<!-- Let $I$ be a uniform integer in $n$ and let $Y = X_I$ be the coordinate of $X$.  -->
+<p>We write <span class="math inline">\(Y = X_1\)</span>. By
+sub-additivity of entropy and by symmetry, <span class="math display">\[
+    \begin{aligned}
+        H(X)
+            &amp;\le H(X_1) + H(X_2) + ... + H(X_n)
+            &amp;= n H(Y).
+    \end{aligned}
+\]</span></p>
+<p>Let <span class="math inline">\(\epsilon \doteq \Pr[ Y \neq
+1]\)</span> be the probability that <span
+class="math inline">\(Y\)</span> is not <span
+class="math inline">\(1\)</span>. Further, by symmetry, <span
+class="math inline">\(\Pr[Y = i]\)</span> has equal probability for each
+<span class="math inline">\(i \neq 1\)</span>. Hence,
+<!-- Then by concavity of $\log (\cdot)$, --> <span
+class="math display">\[
+    \begin{aligned}
+        H(Y)
+            &amp;= \Pr[ Y = 1] \cdot \log \left( \frac{1}{\Pr[ Y =
+1]}\right) + \sum_{i \neq 1} \Pr[ Y = i ] \cdot \log \left(
+\frac{1}{\Pr[ Y = i]}\right) \\
+            % &amp;= (1 - \epsilon) \cdot \log \left( \frac{1}{1 -
+\epsilon} \right) + \epsilon \cdot \sum_{i \neq 1} \frac{ \Pr[ Y = i ]
+}{ \epsilon } \cdot \log \left( \frac{1}{\Pr[ Y = i]}\right) \\
+            % &amp;\le (1 - \epsilon) \cdot \log \left( \frac{1}{1 -
+\epsilon} \right) + \epsilon \cdot \log \left( \sum_{i \neq 1} \frac{
+\Pr[ Y = i ] }{ \epsilon } \frac{1}{\Pr[ Y = i]}\right) \\
+            &amp;= (1 - \epsilon) \cdot \log \left( \frac{1}{1 -
+\epsilon} \right) + \epsilon \cdot \log \left( \frac{ q - 1 }{ \epsilon
+} \right) \\
+    \end{aligned}
+\]</span> where then entropy of <span class="math inline">\(Y\)</span>
+is maximized when <span class="math inline">\(Y\)</span> is uniform of
+the elements that are not 1. Further, it can be verified that <span
+class="math inline">\(\epsilon &lt; r / n\)</span>. As <span
+class="math inline">\(h_q (\epsilon)\)</span> increases for <span
+class="math inline">\(\epsilon &lt; 1 - 1 / q\)</span>, hence <span
+class="math display">\[
+    H(Y) \le (1 - r / n) \cdot \log \left( \frac{1}{1 - r / n} \right) +
+\frac{r}{n} \cdot \log \left( \frac{ q - 1 }{ r / n } \right).
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<!-- ### Supplementary Material
+
+> **Definition.** Let $X$ be a discrete r.v., the entropy of $X$ is given by 
+> $$
+    H(X) = \sum_{a} \Pr[ X = a ] \log \frac{1}{ \Pr[ X = a] }
+> $$
+
+> **Definition.** Let $X, Y$ be discrete r.v., the entropy of $X$ conditioned $Y$ is given by 
+> $$
+    \begin{aligned}
+        H(X \mid Y) 
+            &= \mathbb{E}_{b \leftarrow Y} [ H(X \mid Y = b) ] \\
+            &= \sum_{b} \Pr[ Y = b] \sum_{a } \Pr[ X = a \mid Y = b] \log \frac{1}{ \Pr[ X = a \mid y = b] } \\
+            &= \sum_{b, a} \Pr[ Y = b,  X = a] \log \frac{1}{ \Pr[ X = a \mid y = b] } \\
+    \end{aligned}
+> $$
+
+> **Chain Rule.**
+> $$
+    \begin{aligned}
+        H(X \mid Y) + H(Y) 
+        &= \sum_{b, a} \Pr[ Y = b,  X = a] \log \left( \frac{1}{ \Pr[ X = a \mid y = b] } \cdot \frac{1}{ \Pr[ Y = b ] } \right) \\
+        &= \sum_{b, a} \Pr[ Y = b,  X = a] \log \left( \frac{1}{ \Pr[ X = a \mid y = b] } \cdot \frac{1}{ \Pr[ Y = b ] } \right) \\
+        &= H(X, Y)
+    \end{aligned}
+> $$
+
+> **Sub-additivity.** For convenience, we rewrite $p(a, b) = \Pr[X = a, Y = a]$, $p(a) = \Pr[ X = a]$, and $p(b) = \Pr[ Y = b]$. First, 
+> $$
+    \begin{aligned}
+        H(X, Y) - H(X) - H(Y) 
+            &= \sum_{a, b} p(a, b) \log \frac{1}{ p(a, b) } - \sum_{a, b} p(a, b) \log \frac{1}{ p(a)} - \sum_{a, b} \log \frac{1}{p(b)} \\
+            &= \sum_{a, b} p(a, b) \log \frac{ p(a) p(b) }{ p(a, b) } \\
+            &\le \log \sum_{a, b} p(a, b)  \frac{ p(a) p(b) }{ p(a, b) } \\
+            &= \log \sum_{a, b} p(a) p(b) \\
+            &= 0. 
+    \end{aligned}
+> $$
+> Second, we have 
+> $$
+    H(X \mid Y) = H(X, Y) - H(Y) \le H(X). 
+> $$ -->
+<h1 id="lower-bound">Lower Bound</h1>
+<blockquote>
+<p><strong>Theorem.</strong> For <span class="math inline">\(r \in
+\mathbb{R}_+\)</span>, it holds that <span
+class="math inline">\(\mathbb{Vol} (r) \ge q^{ n h_q ( r / n) - O( \log
+n) }\)</span>.</p>
+</blockquote>
+<p>We rely on the Stirling's approximation.</p>
+<blockquote>
+<p><strong>Fact.</strong> For <span class="math inline">\(n \in
+\mathbb{N}_+\)</span>, <span class="math inline">\(\sqrt{2 \pi n}
+\left(\frac{n}{e} \right)^n \le n! \le e \sqrt{n} \left(\frac{n}{e}
+\right)^n\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> First, assume that <span
+class="math inline">\(r \in \mathbb{N}_+\)</span>. It holds that <span
+class="math display">\[
+    \begin{aligned}
+        \mathbb{Vol} (r)
+            &amp;\ge \binom{n}{r} (q - 1)^r \\
+            &amp;\ge \frac{ \sqrt{2 \pi n } \left(\frac{n}{e} \right)^n
+}{ e \sqrt{r} \left(\frac{r}{e} \right)^r e \sqrt{n - r} \left(\frac{n -
+r}{e} \right)^{n - r} } (q - 1)^r \\
+            &amp;= (q - 1)^r \left(\frac{n}{r} \right)^r
+\left(\frac{n}{n - r} \right)^{n - r} \sqrt{ \frac{2 \pi n }{e^4 r (n -
+r)} } \\
+            &amp;= q^{n h_q ( r / n) - O(\log n) }
+    \end{aligned}
+\]</span> Assume that <span class="math inline">\(r \in
+\mathbb{R}_+\)</span>. Let <span class="math inline">\(r&#39; = \lfloor
+r \rfloor\)</span>. Then <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Vol} (r)
+            \ge \mathbb{Vol} ( r&#39; )  
+            \ge q^{n h_q ( r&#39; / n) - O(\log n) }.
+    \end{aligned}
+\]</span> But <span class="math display">\[
+    \begin{aligned}
+        \frac{
+            q^{n h_q ( r / n)}
+        }{
+            q^{n h_q ( r&#39; / n)}
+        }
+            \le (q - 1) \cdot \left(\frac{n}{r&#39;} \right) \cdot
+\left(\frac{n - r}{n - r&#39;} \right)^{n - r&#39;}
+            \in  q^{ O \left( \log_q n \right) } .
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Hence, the upper bound is rather tight.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] Anup Rao, <a
+target="_blank" rel="noopener" href="https://homes.cs.washington.edu/~anuprao/pubs/codingtheory/lecture3.pdf">Coding
+Theory Lecture 3: The Volume Bound and Finite Fields</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/31/Sparse-Recovery/" rel="prev" title="Sparse Recovery">
+      <i class="fa fa-chevron-left"></i> Sparse Recovery
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/14/AMS-Sketch/" rel="next" title="AMS Sketch">
+      AMS Sketch <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#rate-of-the-code"><span class="nav-number">1.</span> <span class="nav-text">Rate of the Code</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#upper-bound"><span class="nav-number">2.</span> <span class="nav-text">Upper Bound</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#algebraic-approach"><span class="nav-number">2.1.</span> <span class="nav-text">Algebraic Approach</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#entropy"><span class="nav-number">2.2.</span> <span class="nav-text">Entropy</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lower-bound"><span class="nav-number">3.</span> <span class="nav-text">Lower Bound</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

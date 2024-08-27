@@ -146,7 +146,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/18/Fundamental-Theorem-of-Calculus/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/04/05/Multiplicative-Weight-Updates/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -160,7 +160,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/18/Fundamental-Theorem-of-Calculus/" class="post-title-link" itemprop="url">Fundamental Theorem of Calculus</a>
+            <a href="/2019/04/05/Multiplicative-Weight-Updates/" class="post-title-link" itemprop="url">Multiplicative Weight Updates</a>
         </h2>
 
         <div class="post-meta">
@@ -170,14 +170,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-03-18 20:03:31" itemprop="dateCreated datePublished" datetime="2019-03-18T20:03:31+11:00">2019-03-18</time>
+              <time title="Created: 2019-04-05 09:05:10" itemprop="dateCreated datePublished" datetime="2019-04-05T09:05:10+02:00">2019-04-05</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-03-22 19:45:50" itemprop="dateModified" datetime="2019-03-22T19:45:50+11:00">2019-03-22</time>
+                <time title="Modified: 2022-03-18 00:10:12" itemprop="dateModified" datetime="2022-03-18T00:10:12+01:00">2022-03-18</time>
               </span>
 
           
@@ -191,90 +191,582 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>The relation between integration and differentiation constitutes the
-key study of calculus.</p>
-<h1 id="fundamental-theorem-of-calculus">Fundamental Theorem of
-Calculus</h1>
+          <h1 id="problem">Problem</h1>
+<p>Let <span class="math inline">\(X_1, X_2, ..., X_T\)</span> be a
+sequence of <span class="math inline">\(T\)</span> binary values. We
+predict at each <span class="math inline">\(t \in [T]\)</span>, the
+value of <span class="math inline">\(X_t\)</span>. Our predictions are
+based on the ones from a set of <span class="math inline">\(n\)</span>
+experts. At each time <span class="math inline">\(t \in [T]\)</span>,
+each expert <span class="math inline">\(i \in [n]\)</span> generates a
+prediction <span class="math inline">\(p_i^t\)</span> of <span
+class="math inline">\(X_t\)</span>. Based on the experts' predictions,
+we make our own <span class="math inline">\(p_A^t\)</span>. The goal to
+minimize the number of wrong predictions/mistakes.</p>
+<h1 id="measurement-of-error">Measurement of Error</h1>
+<p>The first question is how good can we do?</p>
+<p>Define</p>
 <ol type="1">
-<li>If <span class="math inline">\(f : [a, b] \rightarrow\)</span> is
-bounded and Riemann integrable, and <span class="math inline">\(F(x) =
-\int_a^x f(t) \ dt\)</span> for <span class="math inline">\(x \in [a,
-b]\)</span>, then <span class="math inline">\(F(x)\)</span> is uniformly
-continuous and <span class="math inline">\(F&#39;(x)\)</span> exists for
-all <span class="math inline">\(x\)</span> where <span
-class="math inline">\(f(x)\)</span> is continuous and <span
-class="math inline">\(F&#39;(x) = f(x)\)</span>.<br />
-</li>
-<li>If <span class="math inline">\(F: [a, b] \rightarrow R\)</span> is
-differentiable and <span class="math inline">\(f: [a, b] \rightarrow
-R\)</span> is integrable. Suppose <span class="math inline">\(F&#39;(x)
-= f(x)\)</span> for all <span class="math inline">\(x \in [a,
-b]\)</span>, then</li>
+<li><span class="math inline">\(L_i^t:\)</span> the indicator for the
+expert <span class="math inline">\(i\)</span> making a mistake at round
+<span class="math inline">\(t\)</span>.</li>
+<li><span class="math inline">\(L_i = \sum_{t \in [T] } L_i^t:\)</span>
+the total number of mistakes expert <span
+class="math inline">\(i\)</span> makes.</li>
+<li><span class="math inline">\(L_A:\)</span> the mistakes by our
+algorithm (denoted as <span class="math inline">\(A\)</span>).</li>
 </ol>
-<p><span class="math display">\[
-F(b) - F(a) = \int_a^b f(t) \ dt
+<p>Ideally, we would like achieve as few mistakes as<br />
+<span class="math display">\[
+    \sum_{t \in [T] } \min_{i \in [n]} L_i^t.
 \]</span></p>
-<p><strong>Remark:</strong></p>
+<p>However, this is impossible. To see this, let <span
+class="math inline">\(\{ X_t , t \in [T] \}\)</span> be independent
+Bernoulli random variables with equal probability taking <span
+class="math inline">\(1\)</span> and <span
+class="math inline">\(0\)</span>. Whatever our strategy is, the expected
+number of mistakes is <span class="math inline">\(T / 2\)</span>. On the
+other hand, it is possible that <span class="math inline">\(\sum_{t \in
+[T] } \min_{i \in [n]} L_i^t = 0\)</span>.</p>
+<p>Despite this negative result, there is hope to achieve as few
+mistakes as the best expert (up to some constant), that is<br />
+<span class="math display">\[
+    L_A \in O \left( \min_{i \in [n]} \sum_{t \in [T] } L_i^t \right) =
+O \left( \min_{i \in [n] } L_i \right).
+\]</span></p>
+<h1 id="algorithms">Algorithms</h1>
+<h2 id="follow-the-majority">Follow the Majority</h2>
+<p>We start with an easy case where an expert who always predicts
+correctly. In such case, we can maintain a set of experts who do not
+make any mistake so far. Each time we make a decision, we follow the
+majority of the set.</p>
+<blockquote>
+<p><strong>Theorem.</strong> If there is a perfect expert, the algorithm
+<em>Follow the Majority</em> achieves <span class="math display">\[
+L_A \le \min_{i \in [n] } L_i + \log n.
+\]</span></p>
+</blockquote>
+<blockquote>
+<p><strong>Algorithm 1. Follow the Majority</strong></p>
 <ol type="1">
-<li><p>Claim one require the condition that <span
-class="math inline">\(f\)</span> is bounded. Can we omit the
-condition?</p></li>
-<li><p>The condition <span class="math inline">\(f\)</span> is
-integrable is necessary.</p></li>
+<li>Let <span class="math inline">\(E_0 \leftarrow [n]\)</span> be the
+set of all experts.<br />
+</li>
+<li><strong>For</strong> <span class="math inline">\(t \leftarrow
+1\)</span> to <span class="math inline">\(T\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span
+class="math inline">\(S\)</span> be the subset of <span
+class="math inline">\(E_{t - 1}\)</span> that predicts 0 at time <span
+class="math inline">\(t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span
+class="math inline">\(\bar S\)</span> be the subset of <span
+class="math inline">\(E_{t - 1}\)</span> that predicts 1 at time <span
+class="math inline">\(t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <strong>If</strong>
+<span class="math inline">\(|S| &gt; |\bar S|\)</span>,
+<strong>then</strong> predict <span class="math inline">\(0\)</span>
+(<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\qquad\quad\,\)</span>
+<strong>else</strong> predict <span class="math inline">\(1\)</span>
+(<span class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Reveal <span
+class="math inline">\(X_t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> <strong>If</strong>
+<span class="math inline">\(X_t = 0\)</span>, <strong>then</strong>
+<span class="math inline">\(E_t \leftarrow S\)</span>;<br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\qquad\,\)</span>
+<strong>else</strong> <span class="math inline">\(\,E_t \leftarrow \bar
+S\)</span>.</li>
 </ol>
+</blockquote>
+<p>The key observation is that the set we maintain halves each time we
+make a mistake. Halving the set can happen at most <span
+class="math inline">\(\log n\)</span> times, as there are only <span
+class="math inline">\(n\)</span> experts.</p>
+<!-- 
+> **Theorem** If there is a perfect expert, the algorithm **Follow the Majority** makes at most $\log n$ mistakes.    
+-->
+<p><strong>Proof.</strong> Let <span class="math inline">\(M\)</span> be
+the number of mistakes the algorithm makes. Each time it makes a
+mistake, the size of <span class="math inline">\(E_{t}\)</span> shrink
+by half. Hence, <span class="math display">\[
+    1 \le |E_T| \le |E_1| \frac{1}{2^M}  = \frac{n}{2^M}.
+\]</span></p>
+<p>The first inequality follows from the existence of perfect expert. It
+concludes that <span class="math display">\[
+    M \le \log n.  
+\]</span> <span class="math inline">\(\square\)</span></p>
+<h2 id="follow-the-majority-with-reset">Follow the Majority With
+Reset</h2>
+<p>Without the assumption of perfect expert, one simple modification we
+can make to <em>Follow the Majority</em> is resetting <span
+class="math inline">\(E_t = [n]\)</span>, if it is assigned an empty
+set. We call such an algorithm <em>Follow the Majority With
+Reset</em>.</p>
+<!-- 
+As before, we maintain a set of experts who do not make any mistake so far and we follow the majority of the set to make decisions. 
+> Algorithm 2. **Follow the Majority With Reset**  
+> 
+> 1. Let $E_0 \leftarrow [n]$ be the set of all experts.    
+> 2. For $t \leftarrow 1$ to $T$   
+> 3. $\qquad$ Let $S$ be the subset of $E_{t - 1}$ that predicts 0 at time $t$.   
+> 4. $\qquad$ Let $\bar S$ be the subset of $E_{t - 1}$ that predicts 1 at time $t$.   
+> 5. $\qquad$ If $|S| > |\bar S|$,  then predict 0 ($p_A^t \leftarrow 0$);   
+> 6. $\qquad\qquad\qquad\quad$      else predict 1 ($p_A^t \leftarrow 1$).  
+> 7. $\qquad$ Reveal $X_t$.  
+> 8. $\qquad$ If $X_t = 0$, then $E_t \leftarrow S$;   
+> 9. $\qquad\qquad\qquad$   else $E_t \leftarrow \bar S$.   
+> 10. $\qquad$ If $E_t = \emptyset$, then reset $E_t \leftarrow [n]$.  
+-->
+<blockquote>
+<p><strong>Theorem.</strong> If there isn't a perfect expert, the
+algorithm <em>Follow the Majority With Reset</em> achieves <span
+class="math display">\[
+L_A \le \left( \min_{i \in [n] } L_i + 1 \right) \cdot \log n.
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> As analysed before, between two consecutive
+resets of <span class="math inline">\(E_t\)</span>, the algorithm makes
+at most <span class="math inline">\(\log n\)</span> mistakes while the
+best expert makes at least one mistake. Therefore, <span
+class="math display">\[
+    \frac{L_A}{ \log n } \le \min_{i \in [n] } L_i + 1
+        \implies
+    L_A \le \left( \min_{i \in [n]}  L_i  + 1\right) \cdot \log n.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="follow-the-weighted-majority">Follow the Weighted Majority</h2>
+<p>The previous algorithm forgets the historical performance of the
+experts each time it resets <span class="math inline">\(E_t\)</span>,
+which might contain helpful information. To fix this, we assign each
+expert <span class="math inline">\(i\)</span> a weight <span
+class="math inline">\(w_i^t\)</span>, follow the weighted majority at
+time <span class="math inline">\(t\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> The algorithm <em>Follow the Weighted
+Majority</em> achieves <span class="math display">\[
+L_A \le 2.41 \cdot \left( \min_{i \in [n]} L_i + \log n \right).
+\]</span></p>
+</blockquote>
+<blockquote>
+<p><strong>Algorithm 3. Follow the Weighted Majority</strong></p>
+<ol type="1">
+<li>Set <span class="math inline">\(w_i^1 \leftarrow 1, \forall i \in
+[n].\)</span><br />
+</li>
+<li>For <span class="math inline">\(t \leftarrow 1\)</span> to <span
+class="math inline">\(T\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span
+class="math inline">\(S\)</span> be the set of experts who predict <span
+class="math inline">\(0\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Let <span
+class="math inline">\(\bar S\)</span> be the set of experts who predict
+<span class="math inline">\(1\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> If <span
+class="math inline">\(\sum_{i \in S} w_i^t &gt; \sum_{i \in \bar S}
+w_i^t\)</span>, then predict <span class="math inline">\(0\)</span>
+(<span class="math inline">\(p_A^t \leftarrow 0\)</span>);<br />
+</li>
+<li><span
+class="math inline">\(\qquad\qquad\qquad\qquad\qquad\qquad\)</span> else
+predict <span class="math inline">\(1\)</span> (<span
+class="math inline">\(p_A^t \leftarrow 1\)</span>).<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> Reveal <span
+class="math inline">\(X_t\)</span>.<br />
+</li>
+<li><span class="math inline">\(\qquad\)</span> For each expert <span
+class="math inline">\(i \in [n]\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\)</span> If it predicts
+wrong then <span class="math inline">\(w_i^{t + 1} \leftarrow w_i^t /
+2\)</span><br />
+</li>
+<li><span class="math inline">\(\qquad\qquad\)</span> <span
+class="math inline">\(\qquad\qquad\qquad\quad\)</span> else <span
+class="math inline">\(w_i^{t + 1} \leftarrow w_i^t\)</span></li>
+</ol>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(W^t = \sum_{i
+\in [n] } w_i^t\)</span>. Each round <span
+class="math inline">\(t\)</span> the algorithms make a mistake, the sum
+of weights of experts who predict wrong is at least <span
+class="math inline">\(0.5 \cdot W^t\)</span>. Such weights halve at this
+round. Hence <span class="math display">\[
+    W^{t + 1}
+        \le W^t \left( 1 - \frac{1}{2} \cdot \frac{1}{2} \right)
+        = \frac{3}{4} W^t.
+\]</span></p>
+<p>Fix an <span class="math inline">\(i \in [n]\)</span>. Recall <span
+class="math inline">\(L_i\)</span> is the number of mistakes experts
+<span class="math inline">\(i\)</span> makes throughout the <span
+class="math inline">\(T\)</span> rounds. It follows that, <span
+class="math display">\[
+    w_i^T  = \left( \frac{1}{2} \right)^{L_i}
+        \le W^T
+        \le \left( \frac{3}{4} \right)^{L_A} W^0
+        = \left( \frac{3}{4} \right)^{L_A} \cdot n,  
+\]</span> which implies <span class="math display">\[
+    L_A \le  \frac{1}{ \log \frac{4}{3} } ( L_i + \log n) \le 2.41 \cdot
+(L_i + \log n).
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p><strong>Remark.</strong> It is not necessary to halve an expert's
+weight when it makes a mistake. We can decrease it by any factor <span
+class="math inline">\((1 - \epsilon)\)</span> for <span
+class="math inline">\(\epsilon \in (0, 1)\)</span>. In such case, we get
+<span class="math display">\[
+    \begin{aligned}
+        &amp;\qquad (1- \epsilon)^{L_i} \le \left( 1 - \frac{1 - (1 -
+\epsilon)}{2} \right)^{L_A} n \\
+        &amp;\implies L_i \cdot \ln (1 -\epsilon) \le L_A \cdot \ln
+\left( 1 - \frac{\epsilon}{ 2 } \right) + \ln n \\
+        &amp;\implies L_i \cdot \ln (1 -\epsilon) \le L_A \cdot \left( -
+\frac{\epsilon}{ 2 } \right) + \ln n \\
+        &amp;\implies L_i \cdot \left( -\epsilon - \epsilon^2 \right)
+\le L_A \cdot \left( - \frac{\epsilon}{ 2 } \right) + \ln n \\
+        &amp;\implies L_A \le 2 \left( 1 + \epsilon \right) \cdot L_i +
+\frac{2}{\epsilon} \cdot \ln n.
+        % &amp;\implies L_A \le \frac{ L_i \ln 1 / (1 - \epsilon) + \ln
+n}{ \ln 2 / ( 2 - \epsilon ) }.
+    \end{aligned}
+\]</span></p>
+<p>We have used the fact that <span class="math inline">\(\ln(1 -
+\epsilon ) \ge - \epsilon - \epsilon^2\)</span> for <span
+class="math inline">\(\epsilon \in [0, 2 / 3]\)</span></p>
+<!-- 
+Let $x = 1 / (1 - \epsilon) > 0$, then $1 - \epsilon = 1 / x$ and $2 - \epsilon = (x + 1) / x$. Define 
+$$
+    y = \frac{ L_i \ln x + \ln n}{ \ln 2x - \ln ( x + 1  ) }.
+$$
+
+Then 
+$$
+    \begin{aligned}
+        y' \ge 0 
+            &\implies  \frac{L_i}{x} (\ln 2x - \ln ( x + 1  ) ) - \left( \frac{1}{x} - \frac{1}{x + 1} \right) (L_i \ln x + \ln n ) \ge 0 \\
+            &\implies  L_i(x + 1) (\ln 2x - \ln ( x + 1  ) ) - (L_i \ln x + \ln n ) \ge 0 \\
+            &\implies  (x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x \ge \frac{\ln n}{L_i}
+    \end{aligned}
+$$
+
+It is not easy to compute a closed-form solution for $x$. But observe that the function $(x + 1) (\ln 2x - \ln ( x + 1  ) ) - \ln x$ equals to $0$ for $x = 1$ and is increasing for $x > 1$. Hence, there exists some $x > 1$, s.t., the value of the functions equal to $\frac{ \ln n }{ L_i }$. 
+
+![](https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/MultiplicativeWeightUpdate/MultiplicativeWeightUpdate.png?raw=true)
+ -->
+<h2 id="multiplicative-weight-updates">Multiplicative Weight
+Updates</h2>
+<p>We are in good shape so far. Let's extend the problem to more general
+settings. In this cases, the experts interact with the environment in
+round-robin fashion. At each round <span
+class="math inline">\(t\)</span>,</p>
+<ol type="1">
+<li>The expert <span class="math inline">\(i\)</span> performs action,
+termed <span class="math inline">\(a_i^t\)</span>.</li>
+<li>The environment returns the loss of performing <span
+class="math inline">\(a_i^t\)</span>, denoted as <span
+class="math inline">\(\ell_i^t \in [0, 1]\)</span>.</li>
+</ol>
+<p>Note that there is no restriction of the experts' actions and their
+losses (as long as they are within <span class="math inline">\([0,
+1]\)</span>). We will present an algorithm, called <em>Multiplicative
+Weight Update</em>, which is almost as good as the best expert.</p>
+<blockquote>
+<p><strong>Theorem.</strong> The algorithm <em>Multiplicative Weight
+Update</em> achieves <span class="math display">\[
+L_A \le \min_{i \in [n] } L_i + 2 \sqrt{ T \ln n },
+\]</span> where <span class="math inline">\(L_i \doteq \sum_{t \in [T] }
+\ell_i^t\)</span> is the loss of expert <span
+class="math inline">\(i\)</span>.</p>
+</blockquote>
+<p>This implies that the average expected loss converges at a rate of
+<span class="math inline">\(\sqrt{1 / T}\)</span> to the best one.</p>
+<blockquote>
+<p><strong>Algorithm 4. Multiplicative Weight Update</strong><br />
+1. Set <span class="math inline">\(w_i^1 \leftarrow 1, \forall i \in
+[n]\)</span>.<br />
+2. For <span class="math inline">\(t \leftarrow 1\)</span> to <span
+class="math inline">\(T\)</span><br />
+3. <span class="math inline">\(\qquad\)</span> Let <span
+class="math inline">\(W^t = \sum_{i \in [n] } w_i^t\)</span>.<br />
+4. <span class="math inline">\(\qquad\)</span> Follow action <span
+class="math inline">\(a_i^t\)</span> with probability <span
+class="math inline">\(w_i^t / W^t\)</span>. 8. <span
+class="math inline">\(\qquad\)</span> For each expert <span
+class="math inline">\(i \in [n]\)</span>:<br />
+9. <span class="math inline">\(\qquad\qquad\)</span> <span
+class="math inline">\(w_i^{t + 1} \leftarrow w_i^t \cdot (1 - \epsilon
+\cdot \ell_i^t)\)</span></p>
+</blockquote>
+<p>At a high level, at each round,</p>
+<ol type="1">
+<li>the algorithm follows expert <span class="math inline">\(i\)</span>
+with probability proportional to <span
+class="math inline">\(w_i^t\)</span>.<br />
+</li>
+<li>the weight <span class="math inline">\(w_i^t\)</span> is decreased
+proportionally to <span class="math inline">\(\ell_i^t\)</span>.</li>
+</ol>
+<p><strong>Proof.</strong> Let <span
+class="math inline">\(\ell_A^t\)</span> be the loss of the algorithm at
+round <span class="math inline">\(t\)</span>, and <span
+class="math inline">\(L_A \doteq \sum_{t \in [T] }
+\ell_A^t\)</span>.</p>
+<blockquote>
+<p><strong>Claim 1.</strong> <strong><span class="math inline">\(\,\ln
+W^{T + 1}\)</span> is inversely proportional to <span
+class="math inline">\(\mathbb{E} \big[ L_A \big]\)</span>.</strong></p>
+</blockquote>
+<p>Observe <span class="math display">\[
+    \mathbb{E} \big[ \ell_A^t \big] = \sum_{i \in [n] } \frac{ w_i^t }{
+W^t } \cdot \ell_i^t.
+\]</span></p>
+<p>By the update rule of the <span class="math inline">\(w_i\)</span>'s,
+we see <span class="math display">\[
+    W^{t + 1} = \sum_{i \in [n] } w_i^t (1 - \epsilon \ell_i^t) = W^t
+\cdot \left( 1 - \epsilon \cdot \mathbb{E} \big[ \ell_A^t \big] \right)
+\le W^t \cdot \exp \left( - \epsilon \cdot \mathbb{E} \big[ \ell_A^t
+\big] \right).
+\]</span></p>
+<p>By induction and noting that <span class="math inline">\(W^1 =
+n\)</span>, we have <span class="math display">\[
+    W^{T + 1}
+        \le W^1 \cdot \exp \Big( - \sum_{t \in [T] } \epsilon \cdot
+\mathbb{E} \big[ \ell_A^t \big] \Big)
+        = n \cdot \exp \Big( - \epsilon \cdot \mathbb{E} \big[ L_A \big]
+\Big).
+\]</span></p>
+<blockquote>
+<p><strong>Claim 2.</strong> <strong><span class="math inline">\(\,\ln
+W^{T + 1}\)</span> is lower bounded by <span
+class="math inline">\(\sum_{t \in [T] } \ln (1 - \epsilon \cdot
+\ell_i^t)\)</span>.</strong></p>
+</blockquote>
+<p>For each expert <span class="math inline">\(i \in [n]\)</span>, its
+final weight is given by <span class="math display">\[
+    w_i^{T + 1} = \prod_{t \in [T] } (1 - \epsilon \cdot \ell_i^t)
+    % \ge 1 - \sum_{t \in [T] } \epsilon \cdot \ell_i^t,
+\]</span> <!-- 
+where the inequality follows from union bound that 
+$$
+    1 - \prod_{t \in [T] } (1 - \epsilon \cdot \ell_i^t) \le \sum_{t \in [T] } \epsilon \cdot \ell_i^t.
+$$ 
+--></p>
+<p>Noting that <span class="math inline">\(w_i^{T + 1} \le W^{T +
+1}\)</span> proves the claim.</p>
+<p><strong>Putting the Claims Together.</strong> For each <span
+class="math inline">\(i \in [n]\)</span>, we have <span
+class="math display">\[
+    \begin{aligned}
+        % \ln \left( 1 - \epsilon \cdot L_i \right)
+        % \le
+        \sum_{t \in [T] } \ln (1 - \epsilon \cdot \ell_i^t)
+        \le
+        - \epsilon \cdot \mathbb{E} \big[ L_A \big] + \ln n.  
+    \end{aligned}
+\]</span> Therefore, <span class="math display">\[
+    \epsilon \cdot \mathbb{E} \big[ L_A \big] \le - \sum_{t \in [T] }
+\ln (1 - \epsilon \cdot \ell_i^t)  + \ln n.
+\]</span></p>
+<p>Via the fact that <span class="math inline">\(\ln(1 - \epsilon ) \ge
+- \epsilon - \epsilon^2\)</span> for <span
+class="math inline">\(\epsilon \in [0, 2 / 3]\)</span>, we know that
+<span class="math inline">\(\forall i \in [n]\)</span>, <span
+class="math display">\[
+    \begin{aligned}
+        \epsilon \cdot \mathbb{E} \big[ L_A \big]
+            &amp;\le \epsilon \cdot \sum_{t \in [T] } \ell_i^t  +
+\epsilon^2 \cdot \sum_{t \in [T] } \big( \ell_i^t \big)^2  + \ln n \\
+            &amp;= \epsilon \cdot L_i  + \epsilon^2 \cdot \sum_{t \in
+[T] } \big( \ell_i^t \big)^2  + \ln n.
+    \end{aligned}
+\]</span></p>
+<p>Dividing both sides by <span class="math inline">\(\epsilon\)</span>,
+<span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} \big[ L_A \big]
+            &amp;\le L_i  + \epsilon \cdot \sum_{t \in [T] } \big(
+\ell_i^t \big)^2  + \frac{1}{\epsilon} \cdot \ln n.
+    \end{aligned}
+\]</span></p>
+<p>There are various ways to upper bound <span
+class="math inline">\(\sum_{i \in [T] } (\ell_i^t)^2\)</span>. Naively,
+we observe that <span class="math inline">\((\ell_i^t)^2 \le
+\ell_i^t\)</span>, since <span class="math inline">\(\ell_i^t \in [0,
+1]\)</span>. Therefore, <span class="math display">\[
+    \mathbb{E} \big[ L_A \big]
+    \le L_i  + \epsilon \cdot L_i + \frac{1}{\epsilon} \cdot \ln n
+\]</span></p>
+<p>Setting <span class="math inline">\(\epsilon = \sqrt{ (\ln n) / T
+}\)</span>, we get <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E} \big[ L_A \big]
+        &amp;\le L_i  + \sqrt{\frac{L_i \cdot \ln n}{T}} + \sqrt{ T
+\cdot \ln n} \\
+        &amp;\le L_i + 2 \sqrt{ T \cdot \ln n}.
+    \end{aligned}
+\]</span></p>
+<p><strong>Remark</strong>: if we know the value of <span
+class="math inline">\(\min_{i \in [n]} L_i\)</span>, or we can guess
+<span class="math inline">\(\Theta \left( \min_{i \in [n]} L_i
+\right)\)</span>, then we can achieve<br />
+<span class="math display">\[
+    \mathbb{E} \big[ L_A \big] \le \min_{i \in [n]} L_i + \Theta \left(
+\sqrt{ \min_{i \in [n]} L_i \cdot \ln n } \right).   
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h1 id="reference">Reference</h1>
+<p>[1]. <a
+target="_blank" rel="noopener" href="http://www.theoryofcomputing.org/articles/v008a006/v008a006.pdf"><em>Arora,
+Sanjeev, Elad Hazan, and Satyen Kale. "The multiplicative weights update
+method: a meta-algorithm and applications." Theory of computing 8, no. 1
+(2012): 121-164.</em></a></p>
+<p>[2] <em>Aaron Roth, “The Polynomial Weights Algorithm”, NETS 412:
+Algorithmic Game Theory</em></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/24/Monotone-Class/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/24/Monotone-Class/" class="post-title-link" itemprop="url">Monotone Class</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-03-24 06:06:49" itemprop="dateCreated datePublished" datetime="2019-03-24T06:06:49+01:00">2019-03-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-04-01 17:14:05" itemprop="dateModified" datetime="2019-04-01T17:14:05+02:00">2019-04-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="theorem">Theorem</h1>
+<p>If <span class="math inline">\(M\)</span> is a monotone class and
+<span class="math inline">\(R \subset M\)</span> is a ring, then <span
+class="math inline">\(M\)</span> contains the <span
+class="math inline">\(\sigma\)</span>-ring <span
+class="math inline">\(\sigma(R)\)</span> generated by <span
+class="math inline">\(R\)</span> and use the following lemma.</p>
 <p><strong>Proof:</strong></p>
+<p>Consider the monotone class <span class="math inline">\(M_0\)</span>
+generated by <span class="math inline">\(R\)</span>. By definition <span
+class="math inline">\(M_0 \subset M\)</span>. The goal is show that
+<span class="math inline">\(M_0\)</span> is a ring that contains <span
+class="math inline">\(R\)</span>.</p>
+<h2 id="lemma">Lemma</h2>
+<p>If <span class="math inline">\(M_0\)</span> is a ring, then it must
+be a <span class="math inline">\(\sigma\)</span>-ring.</p>
+<p><em>Pf:</em> For each countable collection of sets <span
+class="math inline">\(( E_n )\)</span>, <span
+class="math inline">\(\cup_{n} E_n = \cup_{n} (\cup_{k = 1}^n
+E_k)\)</span>. Denote <span class="math inline">\(F_n = \cup_{k = 1}^n
+E_n\)</span>, and <span class="math inline">\(F = \cup_{n} E_n\)</span>.
+Clearly <span class="math inline">\(F_n \uparrow F\)</span>, which
+implies that <span class="math inline">\(F \subset M_0\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>It immediately follows that <span class="math inline">\(M_0 \supset
+\sigma(R)\)</span>. Indeed, as <span
+class="math inline">\(\sigma(R)\)</span> itself is a monotone class and
+<span class="math inline">\(M_0\)</span> is the smallest monotone class
+that contains <span class="math inline">\(R\)</span>, we have <span
+class="math inline">\(\sigma(R) \supset M_0\)</span>. It concludes that
+<span class="math inline">\(M_0 = \sigma(R)\)</span>.</p>
+<p>To show <span class="math inline">\(M_0\)</span> is a ring, we need
+to verify that <span class="math inline">\(E, F \in M_0\)</span>, <span
+class="math inline">\(E \cup F = M_0\)</span> and <span
+class="math inline">\(E \setminus F \in M_0\)</span>.</p>
+<p>Define <span class="math inline">\(S_E = \{ F \in M_0 : E \cup F \in
+M_0, E \setminus F \in M_0 \}\)</span>, the collection of sets that
+satisfies the conditions. Note that <span
+class="math inline">\(S_E\)</span> is a monotone class.</p>
 <ol type="1">
-<li><p>As <span class="math inline">\(f\)</span> is bounded, we assume
-that <span class="math inline">\(\sup_{t \in [a, b]} |f(t)| \le
-M\)</span>. For any <span class="math inline">\(x \in [a, b]\)</span>
-and <span class="math inline">\(x + h \in [a, b]\)</span>,</p>
-<p><span class="math display">\[
-\left| F(x + h) - F(x) \right| = \left| \int_x^{x + h} f(t) \ dt \right|
-\le M|h|
-\]</span></p>
-<p>This show that <span class="math inline">\(F(x)\)</span> is uniformly
-continuous.</p>
-<p>Now, assume that <span class="math inline">\(f(x)\)</span> is
-continuous at point <span class="math inline">\(x\)</span>. <span
-class="math inline">\(\forall \epsilon &gt; 0\)</span>, <span
-class="math inline">\(\exists \delta &gt; 0\)</span>, s.t., <span
-class="math inline">\(\forall t \in (x \pm \delta)\)</span>, <span
-class="math inline">\(|f(t) - f(x)| \le \epsilon\)</span>. We see
-that</p>
-<p><span class="math display">\[
-\begin{aligned}
-\left| F(x + h) - F(x) - f(x) h  \right|  
-&amp;= \left| \int_x^{x + h} f(t) \ dt - \int_x^{x + h} f(x) \ dt
-\right| \\
-&amp;= \left| \int_x^{x + h} [f(t) - f(x)] \ dt \right| \\
-&amp;\le \int_x^{x + h} \left| f(t) - f(x) \right| \ dt \\
-&amp;\le \epsilon h
-\end{aligned}
-\]</span></p>
-<p>As desired.</p></li>
-<li><p>For partition <span class="math inline">\(P = \{ a = x_0 &lt; x_1
-&lt; x_2 &lt; ... &lt; x_n = b \}\)</span> of <span
-class="math inline">\([a, b]\)</span>, apply the mean value theorem to
-<span class="math inline">\(F\)</span> on a sub-interval. <span
-class="math display">\[
-F(x_k) - F(x_{k - 1}) = F&#39;(t_k) (x_k - x_{k -1})  \quad t_k \in
-[x_{k - 1}, x_k] \quad \forall \ 1 \le k \le n,
-\]</span> Let <span class="math inline">\(U(f, P), L(f, )\)</span> be
-the upper sum and lower sum of the partition respectively, <span
-class="math display">\[
-\begin{aligned}
-F(b) - F(a)  
-&amp;= \sum_{k = 1}^n F(x_k) - F(x_{k - 1}) \\
-&amp;= \sum_{k = 1}^n F&#39;(t_k) (x_k - x_{k -1}) \\
-&amp;= \sum_{k = 1}^n f(t_k) (x_k - x_{k -1}) \\
-&amp;\in [L(f, P), U(f, P)]
-\end{aligned}
-\]</span> This is independent of the choice of <span
-class="math inline">\(P\)</span>. Taking the limit of upper sum and
-lower sum, we conclude that <span class="math inline">\(F(b) - F(a) \in
-[\sup_P L(f, P), \inf_P U(f, P)] = \left[ \int_a^b f(t) \ dt, \int_a^b
-f(t) \ dt \right]\)</span>.</p></li>
+<li><p><span class="math inline">\((F_n) \subset S_E\)</span>, and <span
+class="math inline">\((F_n) \uparrow F\)</span>, then <span
+class="math inline">\(E \cup F = E \cup [\cup_n F_n] = \cup_n [E \cup
+F_n]\)</span>. By definition of <span
+class="math inline">\(S_E\)</span>, <span class="math inline">\(E \cup
+F_n \in M_0\)</span>. As <span class="math inline">\(F_n
+\uparrow\)</span> and <span class="math inline">\(M_0\)</span> is
+monotone, <span class="math inline">\(E \cup F \in M_0\)</span>. Hence
+<span class="math inline">\(F \in M_0\)</span>.</p></li>
+<li><p><span class="math inline">\((F_n) \subset S_E\)</span>, and <span
+class="math inline">\((F_n) \uparrow F\)</span>, then <span
+class="math inline">\(E \setminus F = E \setminus [\cup_n F_n] = \cap_n
+[E \cap F_n] \in M_0\)</span>.</p></li>
 </ol>
+<p>We claim that for each <span class="math inline">\(E \in
+M_0\)</span>, it holds that <span class="math inline">\(F \in
+S_E\)</span> for any <span class="math inline">\(F \in M_0\)</span>,
+i.e., <span class="math inline">\(M_0 \subset S_E\)</span>. But this is
+equivalent to show <span class="math inline">\(E \in S_F\)</span>. Since
+<span class="math inline">\(M_0\)</span> is the smallest monotone class
+that contains <span class="math inline">\(R\)</span>, it suffices to
+prove <span class="math inline">\(R \subset S_F\)</span>. We need to
+utilize the following observation.</p>
+<p><em>Let <span class="math inline">\(O \subset R\)</span>, then <span
+class="math inline">\(S_O \supset R\)</span>, which implies that <span
+class="math inline">\(S_O \supset M_0\)</span>, as <span
+class="math inline">\(S_O\)</span> is a monotone class.</em></p>
+<p>Therefore, <span class="math inline">\(\forall F \in M_0\)</span>,
+<span class="math inline">\(R \subset S_F\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span>.</p>
 
       
     </div>
@@ -294,7 +786,7 @@ f(t) \ dt \right]\)</span>.</p></li>
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/14/Radon-Nikodym-Theorem/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/21/Partial-Derivatives/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -308,7 +800,7 @@ f(t) \ dt \right]\)</span>.</p></li>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2019/03/14/Radon-Nikodym-Theorem/" class="post-title-link" itemprop="url">Radon Nikodym Theorem</a>
+            <a href="/2019/03/21/Partial-Derivatives/" class="post-title-link" itemprop="url">Partial Derivatives</a>
         </h2>
 
         <div class="post-meta">
@@ -318,14 +810,14 @@ f(t) \ dt \right]\)</span>.</p></li>
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-03-14 20:17:37" itemprop="dateCreated datePublished" datetime="2019-03-14T20:17:37+11:00">2019-03-14</time>
+              <time title="Created: 2019-03-21 09:14:45" itemprop="dateCreated datePublished" datetime="2019-03-21T09:14:45+01:00">2019-03-21</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-09-29 15:23:08" itemprop="dateModified" datetime="2022-09-29T15:23:08+10:00">2022-09-29</time>
+                <time title="Modified: 2020-01-08 04:53:45" itemprop="dateModified" datetime="2020-01-08T04:53:45+01:00">2020-01-08</time>
               </span>
 
           
@@ -339,1565 +831,104 @@ f(t) \ dt \right]\)</span>.</p></li>
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>We consider a measure space <span class="math inline">\((\Omega,
-\mathcal{F}, \mu)\)</span>, where <span
-class="math inline">\(\Omega\)</span> is a set of elements, <span
-class="math inline">\(\mathcal{F}\)</span> is a <span
-class="math inline">\(\sigma\)</span>-field, and <span
-class="math inline">\(\mu : \mathcal{F} \rightarrow R\)</span> a <span
-class="math inline">\(\sigma\)</span>-finite measure defined on <span
-class="math inline">\(\mathcal{F}\)</span>.</p>
-<blockquote>
-<p><strong>Definition (Mutually Singular).</strong> Measures <span
-class="math inline">\(\mu\)</span> and <span
-class="math inline">\(\nu\)</span> on a measurable space <span
-class="math inline">\((\Omega, \mathcal{F})\)</span> are by definition
-mutually singular if they have disjoint supports, i.e., if <span
-class="math display">\[
-\exists S_\mu, S_\nu \in \mathcal{F},\,
-\text{ s.t. }\,
-\begin{cases}
-S_\mu \cap S_\nu = \emptyset,\, \\
-\mu(\bar S_\mu) = \nu(\bar S_\nu) = 0.
-\end{cases}
-\]</span></p>
-<p><strong>Definition (Absolute Continuous).</strong> Measure <span
-class="math inline">\(\nu\)</span> is <em>absolute continuous</em> with
-<span class="math inline">\(\mu\)</span> (or <em>dominated</em> by <span
-class="math inline">\(\mu\)</span>), denoted as <span
-class="math inline">\(\nu \ll \mu\)</span>, if<br />
+          <h1 id="theorem-the-mix-derivative">Theorem The Mix Derivative</h1>
+<p><em>Theorem (Symmetry of Second Partial Derivative)</em>: If the
+function <span class="math inline">\(f : R^2 \rightarrow R\)</span> has
+continuous derivatives <span class="math inline">\(f_{xy}\)</span> and
+<span class="math inline">\(f_{yx}\)</span> at some point <span
+class="math inline">\((a, b)\)</span>, then<br />
 <span class="math display">\[
-\mu(E) = 0 \implies \nu(E) = 0, \qquad \forall E \in \mathcal{F}.
+f_{xy}(a, b) = f_{yx}(a, b)
 \]</span></p>
-</blockquote>
-<p><em>Motivation.</em> Let <span class="math inline">\(f\)</span> be a
-nonnegative and measurable function. Then the measure defined by <span
-class="math display">\[
-    \nu(E) = \int_E f \, d \mu, \qquad \forall E \in \mathcal{F},
-\]</span> is absolutely continuous with respect to <span
-class="math inline">\(\mu\)</span>. The <em>The Radon-Nikodym
-Theorem</em> establishes the opposite direction.</p>
-<blockquote>
-<p><strong>The Radon-Nikodym Theorem</strong>.<br />
-Let <span class="math inline">\(\mu, \nu\)</span> be <span
-class="math inline">\(\sigma\)</span>-finite measures such that <span
-class="math inline">\(\nu \ll \mu\)</span>. There exists a nonnegative
-measurable function <span class="math inline">\(f\)</span>, a density,
-such that<br />
+<p><strong>Proof:</strong></p>
+<p>W.L.O.G, for <span class="math inline">\(h &gt; 0, k &gt; 0\)</span>,
+define<br />
 <span class="math display">\[
-\nu(E) = \int_E f \, d \mu, \qquad \forall E \in \mathcal{F}.
-\]</span> For two such function <span class="math inline">\(f\)</span>
-and <span class="math inline">\(f&#39;\)</span>, <span
-class="math inline">\(\mu[ f \neq f&#39; ] = 0\)</span>. <span
-class="math inline">\(f\)</span> is called the <em>Radon-Nikodym
-derivative</em> of <span class="math inline">\(\nu\)</span> with respect
-to <span class="math inline">\(\mu\)</span> and is denoted <span
-class="math inline">\(d \mu / d \nu\)</span>.</p>
-</blockquote>
-<p>The proof of the Theorem relies on the following lemma, the proof of
-which is deferred to the end of the article.</p>
-<blockquote>
-<p><strong>Lemma.</strong> Let <span class="math inline">\(\mu\)</span>
-and <span class="math inline">\(\nu\)</span> be two finite measures that
-are not mutually singular. Then there exits <span
-class="math inline">\(A \in \mathcal{F}\)</span> and <span
-class="math inline">\(\epsilon &gt; 0\)</span>, such that <span
-class="math inline">\(\mu(A) &gt; 0\)</span>, and for each measurable
-set <span class="math inline">\(E\)</span> in <span
-class="math inline">\(A\)</span>, it holds that <span
-class="math inline">\(\epsilon \cdot \mu(E) \le \nu(E)\)</span>.</p>
-</blockquote>
-<p><strong>Proof of the Theorem:</strong></p>
-<p>Since both <span class="math inline">\(\mu\)</span> and <span
-class="math inline">\(\nu\)</span> are <span
-class="math inline">\(\sigma\)</span>-finite, there is a disjoint
-sequence <span class="math inline">\(E_n \in \mathcal{F}\)</span> such
-that <span class="math inline">\(\cup_{n \ge 1} E_n = \Omega\)</span>
-and that <span class="math inline">\(\mu(E_n) &lt; \infty\)</span>,
-<span class="math inline">\(\nu(E_n) &lt; \infty\)</span> for each <span
-class="math inline">\(n \in \mathbb{N}^+\)</span>.</p>
-<p>Define finite measures <span class="math inline">\(\mu_n\)</span> and
-<span class="math inline">\(\nu_n\)</span> by <span
-class="math display">\[
-    \mu_n (E) = \mu(E \cap E_n),\quad
-    \nu_n (E) = \nu(E \cap E_n),\quad
-    \forall E \in \mathcal{F}.
+\Delta = [f(a + h, b + k) - f(a + h, b)] - [f(a, b + h) - f(a, b)]
 \]</span></p>
-<p>Suppose that we can find densities <span class="math inline">\(f_n, n
-\in \mathbb{N}^+\)</span>, such that <span
-class="math inline">\(\nu_n(E) = \int_E f_n \, d \mu_n\)</span>. As
-<span class="math inline">\(\mu_n\)</span> has density <span
-class="math inline">\(\mathbf{1}_{E_n}\)</span>, for each <span
-class="math inline">\(E \in \mathcal{F}\)</span>, it holds that <span
-class="math inline">\(\int_E f_n \, d \mu_n = \int_E f_n \cdot
-\mathbf{1}_{E_n} \, d \mu\)</span>. Via monotone convergence theorem,
-<span class="math display">\[
-    \begin{aligned}
-        \mu(E)
-        &amp;= \sum_{n \ge 1} \mu_n(E)
-        = \sum_{n \ge 1} \int_E f_n \, d \mu_n \\
-        &amp;= \sum_{n \ge 1} \int_E f_n \cdot \mathbf{1}_{E_n} \, d \mu
-        = \int_E \sum_{n \ge 1}  f_n \cdot \mathbf{1}_{E_n} \, d \mu.
-    \end{aligned}
-\]</span></p>
-<p>WLOG, we can assume that both <span
-class="math inline">\(\mu\)</span> and <span
-class="math inline">\(\nu\)</span> are finite.</p>
-<p>Define the collection of functions<br />
-<span class="math display">\[
-    \mathcal{G} = \left\{ g \text{ is nonnegative, measurable and }
-\int_E g \, d \mu \le \nu(E),  \quad \forall E \in \mathcal{F} \right\}.
-\]</span></p>
-<p>Note that <span class="math inline">\(\mathcal{G}\)</span> is
-non-empty, since at least <span class="math inline">\(g \equiv
-0\)</span> satisfies the conditions and belongs to <span
-class="math inline">\(\mathcal{G}\)</span>. Moreover,</p>
-<ul>
-<li><p><span class="math inline">\(\mathcal{G}\)</span> is closed under
-finite maxima: let <span class="math inline">\(g_1, g_2 \in
-\mathcal{G}\)</span>, then for each <span class="math inline">\(E \in
-\mathcal{F}\)</span>, <span class="math display">\[    
-      \begin{aligned}
-          \int_E \max (g_1, g_2) \, d \mu
-              &amp;= \int_{E \cap [g_1 \ge g_2]} g_1 \, d \mu
-              + \int_{E \cap [g_1 &lt; g_2]} g_2 \, d \mu \\
-              &amp;\le \nu \big( E \cap [g_1 \ge g_2] \big)
-              + \nu \big( E \cap [g_1 &lt; g_2] \big)
-              = \nu (E).
-      \end{aligned}
-  \]</span></p></li>
-<li><p><span class="math inline">\(\mathcal{G}\)</span> is closed under
-non-decreasing limit: let <span class="math inline">\(g_n \in
-\mathcal{G}\)</span> such that <span class="math inline">\(g_n \uparrow
-g\)</span>, then by monotone convergence theorem it holds for each <span
-class="math inline">\(E \in \mathcal{F}\)</span> that <span
-class="math display">\[
-      \lim_n \int_E g_n  \, d \mu = \int_E \lim_n g_n \, d \mu  \le
-\nu(E).
-  \]</span></p></li>
-</ul>
-<p>Next, consider the supremum of integrals of function in <span
-class="math inline">\(\mathcal{G}\)</span>:<br />
-<span class="math display">\[
-    \alpha \doteq \sup_{g \in \mathcal{G} } \int g \ d \mu \le
-\nu(\Omega) &lt; \infty.
-\]</span></p>
-<p>Let <span class="math inline">\(g_n \in \mathcal{G}, n \in
-\mathbb{N}^+\)</span> be a sequence of functions such that $ _n g_n  d =
-. $</p>
-<p>For each <span class="math inline">\(n \in \mathbb{N}^+\)</span>,
-define <span class="math inline">\(f_n = \max_{i \in [n]} g_i\)</span>.
-Then the <span class="math inline">\(f_n\)</span> is a non-decreasing
-sequence of functions in <span
-class="math inline">\(\mathcal{G}\)</span>. Denote <span
-class="math inline">\(f = \lim_n f_n\)</span>. We have <span
-class="math inline">\(f \in \mathcal{G}\)</span>, and <span
-class="math display">\[
-    \int f \, d \mu = \lim_n \int g_n \ d \mu  = \alpha.
-\]</span></p>
-<p>It is left to show that <span class="math inline">\(\lambda(E) =
-\int_E f\)</span> for each measurable set <span
-class="math inline">\(E\)</span>. Define function <span
-class="math inline">\(\lambda : \mathcal{F} \rightarrow R\)</span>
-as<br />
-<span class="math display">\[
-    \lambda(E) = \nu(E) - \int_E f \ d \mu  
-\]</span></p>
-<p>We complete the proof by showing that <span
-class="math inline">\(\lambda(E) \equiv 0\)</span>.</p>
-<p>It is easy to verify that <span
-class="math inline">\(\lambda\)</span> is a measure (<span
-class="math inline">\(\lambda \ge 0\)</span>) as <span
-class="math inline">\(\nu(E) \ge \int_E f d \mu\)</span>. Further, <span
-class="math inline">\(\int_E f \ d \mu \ll \mu\)</span> and <span
-class="math inline">\(\nu \ll \mu\)</span> imply that <span
-class="math inline">\(\lambda \ll \mu\)</span>.</p>
-<p>Suppose <span class="math inline">\(\lambda \ne 0\)</span>. By
-assumption <span class="math inline">\(\mu(\Omega) &lt; \infty\)</span>,
-then there exists <span class="math inline">\(\epsilon &gt; 0\)</span>,
-such that <span class="math inline">\(\lambda(\Omega) - \epsilon
-\mu(\Omega) &gt; 0\)</span>. Let <span class="math inline">\(\{ A,
-B\}\)</span> be the Hahn decomposition of <span
-class="math inline">\(\lambda - \epsilon \mu\)</span> such that <span
-class="math inline">\(A\)</span> is positive. Let <span
-class="math inline">\(g = f + \epsilon \chi_{A}\)</span>. It
-satisfies</p>
-<ol type="1">
-<li><p><span class="math inline">\(g \in \mathcal{G}\)</span>, since
-<span class="math inline">\(\forall E \in \mathcal{F}\)</span>,<br />
-<span class="math display">\[
-     \lambda(E) - \int_E g \ d  \mu = \lambda(E) - \int_E f \ d \mu -
-\int_E \epsilon \chi_{A} \ d \mu \ge 0
-\]</span></p></li>
-<li><p><span class="math inline">\(\int g \ d \mu \ge
-\alpha\)</span>,<br />
-<span class="math display">\[
-     \int g \ d \mu = \int f + \epsilon \chi_{A} \ d \mu = \int f \ d
-\mu + \int \epsilon \chi_A \ d \mu = \alpha + \epsilon \mu(A) \ge \alpha
-\]</span></p></li>
-</ol>
-<p>If follows that <span class="math inline">\(\mu(A) = 0\)</span>. Now
-<span class="math inline">\(0 &lt; (\lambda - \epsilon \mu)(\Omega) =
-(\lambda - \epsilon \mu)(A) + (\lambda - \epsilon \mu)(B) = 0 + (\lambda
-- \epsilon \mu)(B) \le 0\)</span>. Contradiction. We thus have proved
-that <span class="math inline">\(\lambda = 0\)</span>.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<p><strong>Proof of the Lemma.</strong></p>
-<p>For each <span class="math inline">\(n \in \mathbb{N}^+\)</span>,
-<span class="math inline">\(\nu - (1 / n) \cdot \mu\)</span> is a signed
-measure. Let <span class="math inline">\(S_n^+, S_n^-\)</span> be its
-Hahn decomposition. Define <span class="math inline">\(S^+ = \cup_{n \ge
-1} S_n^+\)</span>, and <span class="math inline">\(S^- = \cap_{n \ge 1}
-S_n^-\)</span>. Since <span class="math inline">\(S^- \subset
-S_n^-\)</span>, we have <span class="math display">\[
-    \nu(S^-) \le \frac{1}{n} \cdot \mu(S^-), \qquad  \forall n \in
-\mathbb{N}^+.
-\]</span> It follows that <span class="math inline">\(\nu(S^-) =
-0\)</span>. Since <span class="math inline">\(\mu\)</span> and <span
-class="math inline">\(\nu\)</span> are not mutually singular, <span
-class="math inline">\(S^-\)</span> does not support <span
-class="math inline">\(\mu\)</span>. Hence <span
-class="math inline">\(\mu(S^+) &gt; 0\)</span>. There exits some <span
-class="math inline">\(n \in \mathbb{N}^+\)</span>, such that <span
-class="math inline">\(\mu(S_n^+) &gt; 0\)</span>. But <span
-class="math display">\[
-    \nu(E) \ge \frac{1}{n} \cdot \mu(E), \qquad \forall E \subset S_n^+,
-E \in \mathcal{F}.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Theorem (Chain Rule).</strong> Let <span
-class="math inline">\(\mu_1, \mu_2, \mu_3\)</span> be <span
-class="math inline">\(\sigma\)</span>-finite measures on <span
-class="math inline">\((\Omega, \mathcal{F})\)</span>, s.t., <span
-class="math inline">\(\mu_1 \ll \mu_2\)</span>, <span
-class="math inline">\(\mu_2 \ll \mu_3\)</span>. Prove that <span
-class="math inline">\(\mu_1 \ll \mu_3\)</span>, and <span
-class="math display">\[
-\frac{d \mu_1}{d \mu_3} (\omega)
-= \frac{d \mu_1}{d \mu_2} (\omega) \cdot \frac{d \mu_2}{d \mu_3}
-(\omega)
-\qquad \text{a.e. with respect to }\, \mu_3.  
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math inline">\(\mu_1 \ll
-\mu_3\)</span> is straightforward.</p>
-<p>Next, to ease the notations, denote <span class="math display">\[
-    f = \frac{d \mu_1}{d \mu_3}, \quad
-    h = \frac{d \mu_1}{d \mu_2}, \quad
-    \delta = \frac{d \mu_2}{d \mu_3}, \quad
-    g = h \cdot \delta.
-\]</span> Via Radon-Nikodym theorem, for each <span
-class="math inline">\(E \in \mathcal{F}\)</span>, it holds that <span
-class="math display">\[
-    \mu_1(E) = \int_E f \, d \mu_3, \quad
-    \mu_1(E) = \int_E h \, d \mu_2, \quad
-    \mu_2(E) = \int_E \delta \, d \mu_3.
-\]</span></p>
-<p>The goal is to prove that &gt; <strong>Lemma.</strong> &gt; <span
-class="math display">\[
-    \int_E f \, d \mu_3 = \mu_1(E) = \int_E h \cdot \delta \, d \mu_3,
-\quad \forall E \in \mathcal{F}.
-&gt; \]</span></p>
-<p>Define <span class="math inline">\(E^+_n \doteq \{ f - h \cdot \delta
-\ge 1 / n \}, \forall n \in \mathbb{N}^+\)</span>. Then <span
-class="math display">\[
-    0 = \int_{E^+_n} (f - h \cdot \delta) \, d \mu_3 \ge \frac{1}{n}
-\cdot \mu_3 (E^+_n)
-    \implies
-    \mu_3 (E^+_n) = 0.
-\]</span> Let <span class="math inline">\(E^+ \doteq \{ f &gt; h \cdot
-\delta \}\)</span>. Since <span class="math inline">\(E_n^+ \nearrow
-E\)</span>, we get <span class="math inline">\(\mu_3 (E^+) = \lim_n
-\mu_3 (E^+_n) = 0\)</span>.</p>
-<p>In the same vein one can prove that <span class="math inline">\(\mu_3
-( f &lt; h \cdot \delta ) = 0\)</span>. It concludes that <span
-class="math inline">\(f = h \cdot \delta\)</span> almost everywhere
-respect to <span class="math inline">\(\mu_3\)</span>.</p>
-<p><em>Proof of the Lemma.</em></p>
-<p>Consider a fixed <span class="math inline">\(E \in
-\mathcal{F}\)</span>.</p>
-<p><strong>Case One.</strong> <span class="math inline">\(h =
-\mathbb{I}_S, S \in \mathcal{F}\)</span> is an indicator random
-variable. Then <span class="math display">\[
-    \int_E \mathbb{I}_S \, d \mu_2
-    =
-    \mu_2(E \cap S)
-    = \int_{E \cap S} \delta \, d \mu_3
-    = \int_E \mathbb{I}_S \cdot \delta \, d \mu_3.
-\]</span></p>
-<p><strong>Case Two.</strong> <span class="math inline">\(h\)</span> is
-a simple function. The claim follows from the linearity of
-expectation.</p>
-<p><strong>Case Two.</strong> <span class="math inline">\(h\)</span> is
-a non-negative function. One can construct a sequence of simple
-functions which increases to <span class="math inline">\(h\)</span>. The
-claim follows from the monotone convergence theorem.</p>
-<p><span class="math inline">\(\square\)</span></p>
-<h1 id="reference">Reference</h1>
-<p>[1]. <em>Billingsley. Patrick, Probability and measure</em></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/03/Integral/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/03/03/Integral/" class="post-title-link" itemprop="url">Integral</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-03-03 21:15:57" itemprop="dateCreated datePublished" datetime="2019-03-03T21:15:57+11:00">2019-03-03</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-06-19 18:10:51" itemprop="dateModified" datetime="2021-06-19T18:10:51+10:00">2021-06-19</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>We consider a measure space <span class="math inline">\((X, \Omega,
-\mu)\)</span>, where <span class="math inline">\(X\)</span> is a set of
-elements, <span class="math inline">\(\Omega\)</span> is a collection of
-measurable sets and <span class="math inline">\(\mu : \Omega \rightarrow
-R\)</span> a measure defined on <span
-class="math inline">\(\mu\)</span>. Note that by definition <span
-class="math inline">\(\Omega\)</span> is a <span
-class="math inline">\(\sigma\)</span> algebra and <span
-class="math inline">\(\mu\)</span> satisfies</p>
-<ol type="1">
-<li>(Zero element) <span class="math inline">\(\mu(\emptyset) =
-0​\)</span>,<br />
-</li>
-<li>(Non negativity) <span class="math inline">\(\mu(E) \ge 0​\)</span>
-for all <span class="math inline">\(E \in \Omega\)</span>,<br />
-</li>
-<li>(<span class="math inline">\(\sigma\)</span>-additivity) <span
-class="math inline">\(\mu( \cup_{i \ge 1} E_i) = \sum_{i = 1}^\infty
-\mu(E_i)\)</span> for a countable sequence of mutually disjoint sets
-<span class="math inline">\(\{E_i\}\)</span>.</li>
-</ol>
-<h1 id="simple-function">Simple Function</h1>
-<p><em>A characteristic function <span class="math inline">\([ \cdot ]
-\rightarrow \{0, 1\}​\)</span> is a function that takes value 1 if its
-argument is true and zero otherwise. A characteristic function <span
-class="math inline">\(\chi_E : X \rightarrow \{0, 1\}​\)</span> for a set
-<span class="math inline">\(E \subset X​\)</span> is denoted as <span
-class="math inline">\(\chi_E \doteq [x \in E]​\)</span></em>.</p>
-<p><em>A simple function <span class="math inline">\(f : X \rightarrow
-R\)</span> is summation of finite terms:</em><br />
-<span class="math display">\[
-f = \sum_{i \in [n] } a_i \chi_{E_i}
-\]</span></p>
-<p><em>where <span class="math inline">\(\{E_1, E_2,... E_n \}\)</span>
-are measurable sets and constitute a partition of <span
-class="math inline">\(X\)</span>, i.e., <span
-class="math inline">\(\cup_{i \in [n] } E_i = X\)</span> and <span
-class="math inline">\(E_i \cap E_j = \emptyset\)</span> for <span
-class="math inline">\(i \neq j\)</span></em>.</p>
-<h1 id="simple-integrable-function">Simple Integrable Function</h1>
-<p><em>A simple function <span class="math inline">\(f=\sum_{ i \in [n]
-} a_i \chi_{E_i }\)</span> is said to be integrable if <span
-class="math inline">\(\mu(E_i ) &lt; \infty\)</span> for all the indices
-<span class="math inline">\(i\)</span> for which <span
-class="math inline">\(a_i \neq 0\)</span>, i.e., <span
-class="math inline">\(a_i \neq 0 \rightarrow \mu(E_i) &lt;
-\infty\)</span>.<br />
-The integral of <span class="math inline">\(f\)</span> is the real
-number <span class="math inline">\(\sum_{ i \in [n] } a_i
-\mu(E_i)\)</span>, where we agree to take <span
-class="math inline">\(a_i \mu(E_i ) = 0\)</span> for all the indices
-<span class="math inline">\(i\)</span> for which <span
-class="math inline">\(a_i=0, \mu(E_i )= \infty\)</span>. We denote this
-sum by</em><br />
-<span class="math display">\[
-\int f= \sum_{ i \in [n] } a_i \mu(E_i )
-\]</span></p>
-<blockquote>
-<p><strong>Theorem</strong> <em>The integration is well defined and
-independent of the representation of <span
-class="math inline">\(f\)</span>.</em></p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(f = \sum_{i
-\in [n] } a_i \chi_{E_i}\)</span> and <span class="math inline">\(g =
-\sum_{j = 1}^m b_j \chi_{F_j}\)</span>. Suppose that <span
-class="math inline">\(f \equiv g\)</span>, the goal is to show that
-<span class="math inline">\(\int f = \int g\)</span>. Define <span
-class="math inline">\(S_{ij} = E_i \cap F_j\)</span>. If <span
-class="math inline">\(S_{ij} \neq \emptyset\)</span>, we must have <span
-class="math inline">\(a_i = b_j\)</span>. To see this, let <span
-class="math inline">\(s \in S_{i,j}\)</span>. Since <span
-class="math inline">\(\{E_1, E_2,... E_n \}\)</span> is a partition of
-<span class="math inline">\(X\)</span>,only one of the value <span
-class="math inline">\(\{ \chi_{E_i} (s) : i \in [n] \}\)</span> takes
-value 1 and <span class="math inline">\(f(s) = \sum_{i \in [n] } a_i
-\chi_{E_i}(x) = a_i \chi_{E_i}(x) = a_i\)</span>. Similarly, <span
-class="math inline">\(g(s) = b_j\)</span>. We have <span
-class="math inline">\(a_i = b_j\)</span> as <span
-class="math inline">\(f \equiv g\)</span>.</p>
-<p>Now, let <span class="math inline">\(c_{i,j} = a_i = b_j\)</span> if
-<span class="math inline">\(S_{i,j} \neq \emptyset\)</span> and <span
-class="math inline">\(c_{i,j}= 0\)</span> otherwise. Using the fact that
-<span class="math inline">\(\{ F_1, ..., F_m \}\)</span> also
-constitutes a partition of <span class="math inline">\(X\)</span>, we
-have <span class="math inline">\(E_i = \cup_{j = 1}^m E_i \cap
-F_j\)</span> for <span class="math inline">\(i \in [1, n]\)</span>. By
-finite additivity of measure,<br />
-<span class="math display">\[
-\begin{aligned}
-\int f  
-&amp;= \sum_{ i \in [n] } a_i \mu (E_i ) \\
-&amp;= \sum_{ i \in [n] } a_i \mu (\cup_{j=1}^m E_i \cap F_j) \\
-&amp;= \sum_{ i \in [n] } a_i \sum_{j = 1}^m \mu (E_i \cap F_j) \\
-&amp;= \sum_{ i \in [n] } \sum_{j=1}^m c_{i,j} \mu( S_{i,j} )
-\end{aligned}
-\]</span></p>
-<p>By symmetry, we can show <span class="math inline">\(\int g = \sum_{
-i \in [n] } \sum_{j=1}^m c_{i,j} \mu( S_{i,j} )\)</span>, which implies
-that <span class="math inline">\(\int f = \int g\)</span>, as
-desired.</p>
-<p>NOTE: in the proof we see that <span class="math inline">\(\sum_{ i
-\in [n] } \sum_{j=1}^m c_{i,j} \mu( S_{i,j} ) = \int f &lt;
-\infty\)</span>. It follows that <span class="math inline">\(\mu(S_{i,
-j}) = \infty \rightarrow c_{i,j} = 0\)</span></p>
-<p><span class="math inline">\(\blacksquare​\)</span></p>
-<blockquote>
-<p><strong>Theorem. (Integration on a measurable set).</strong> <em>If
-<span class="math inline">\(E\)</span> is any measurable set and <span
-class="math inline">\(f\)</span> is an integrable simple function, then
-<span class="math inline">\(\chi_E f \doteq \chi_{E} \sum_{i \in [n] }
-a_i \chi_{E_i}\)</span> is also an integrable simple function.</em></p>
-</blockquote>
-<p><strong>Proof.</strong> <span class="math display">\[
-\chi_E f = \chi_{E} \sum_{i \in [n] } a_i \chi_{E_i} = \sum_{i \in [n] }
-a_i \chi_{E_i \cap E}
-\]</span> By monotonicity of measure, if <span class="math inline">\(a_i
-\neq 0\)</span>, then <span class="math inline">\(\mu(E_i \cap E) \le
-\mu(E_i) &lt; \infty\)</span>. Therefore, <span
-class="math inline">\(\chi_E f\)</span> is integrable.</p>
-<p><span class="math inline">\(\blacksquare​\)</span></p>
-<blockquote>
-<p><strong>Definition</strong> The integration of <span
-class="math inline">\(\chi_E f\)</span> is abbreviated as<br />
-<span class="math display">\[
-\int_E f = \int \chi_E f.
-\]</span></p>
-</blockquote>
-<p>Now we show some basic properties of simple integration. These
-properties really inherit from the non-negativity and complete
-additivity of measure <span class="math inline">\(\mu\)</span>.</p>
-<h2 id="basic-properties"><strong>Basic Properties</strong></h2>
-<p>Let <span class="math inline">\(f=\sum_{ i \in [n] } a_i \chi_{E_i
-}\)</span> and <span class="math inline">\(g=\sum_{j=1}^m b_j \chi_{F_j
-}\)</span> be two integrable simple functions, and <span
-class="math inline">\(\alpha, \beta \in R\)</span> two real values.</p>
-<ol type="1">
-<li><p><strong>Linearity.</strong> <em>Integrable simple functions forms
-a vector space, i.e., <span class="math inline">\(\int \alpha f + \beta
-g =a \int f + \beta \int g​\)</span></em><br />
-<strong>Proof.</strong> Define <span class="math inline">\(S_{ij} = E_i
-\cap F_j​\)</span>. Now <span class="math inline">\(\{ S_{i,j}
-\}​\)</span> is a partition of <span class="math inline">\(X​\)</span>.
-Let <span class="math inline">\(c_{i,j} = a_i = b_j​\)</span> if <span
-class="math inline">\(S_{i,j} \neq \emptyset​\)</span> and <span
-class="math inline">\(c_{i,j}= 0​\)</span> otherwise. Moreover, we have
-<span class="math inline">\(c_{i,j} \neq 0 \implies \mu(S_{i,j} ) =
-0​\)</span>.<br />
-<span class="math display">\[
-     \begin{aligned}
-         \alpha f + \beta g  
-         &amp;= \alpha \sum_{i \in [n] } a_i \chi_{E_i} + \beta \sum_{j
-= 1}^m b_j \chi_{F_j}
-         = \sum_{i,j} (\alpha + \beta) c_{i,j} \chi_{S_{i,j} } \,, \\
-         \int \alpha f + \beta g  
-         &amp;= \sum_{i,j} (\alpha + β) c_{i,j} \mu(S_{i,j}) \\
-         &amp;= \alpha \sum_{i,j} c_{i,j} \mu(S_{i,j} ) + β \sum_{i,j}
-c_{i,j} \mu( S_{i,j} ) \\
-         &amp;= \alpha \int f + \beta \int g \qquad \qquad \qquad \qquad
-\qquad \blacksquare
-     \end{aligned}
-\]</span></p></li>
-<li><p><em>If <span class="math inline">\(f \ge 0 \ a.e.\)</span>, then
-<span class="math inline">\(\int f \ge 0\)</span>.</em><br />
-<strong>Proof.</strong> Let <span class="math inline">\(f = \sum_{i \in
-[n] } a_i \chi_{E_i}\)</span>. We claim that <span
-class="math inline">\(a_i \mu(E_i) \ge 0\)</span> for all <span
-class="math inline">\(i \ge 1\)</span>.</p>
-<ul>
-<li><p>If <span class="math inline">\(\mu(E_i) = \infty\)</span>, then
-<span class="math inline">\(a_i = 0\)</span>, since <span
-class="math inline">\(f\)</span> is measurable.</p></li>
-<li><p>If <span class="math inline">\(\mu(E_i) &gt; 0\)</span>, then
-<span class="math inline">\(a_i \ge 0\)</span>. Otherwise, we have <span
-class="math inline">\(f &lt; 0\)</span> on a set <span
-class="math inline">\(E_i\)</span> with positive measure, contradicting
-<span class="math inline">\(f \ge 0 \ a.e.\)</span>.</p></li>
-<li><p>If <span class="math inline">\(\mu(E_i) = 0\)</span>, the claim
-is trivially true.<br />
-Therefore, <span class="math inline">\(\int f = \sum_i a_i \mu(E_i )
-\ge0\)</span>.</p></li>
-</ul>
-<p><span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em>If <span class="math inline">\(f \ge g \ a.e\)</span>, then
-<span class="math inline">\(\int f \ge \int g\)</span>.</em><br />
-<strong>Proof.</strong> Observe that<br />
-<span class="math display">\[
-     \begin{aligned}
-         \int f - \int g
-             &amp;= \sum_{i \in [n] } a_i \mu(E_i ) -\sum_{j \in [m] }
-b_j \mu(F_j ) \\
-             &amp;= \sum_{i \in [n], j \in [m] } (a_i - b_j )
-\mu(E_i  \cap  F_j)
-     \end{aligned}
-\]</span><br />
-and that <span class="math display">\[
-     a_i-b_j &lt; 0 \implies \mu(E_i  \cap  F_j ) = 0
-\]</span></p>
-<p>NOTE: Another way to prove this is by defining <span
-class="math inline">\(h \doteq f - g\)</span> which if non-negative
-almost everywhere and use conclusion of (1).<br />
-<span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em><span class="math inline">\(|f|\)</span> is an integrable
-simple function, and <span class="math inline">\(|\int f|\le \int
-|f|\)</span>.</em><br />
-<strong>Proof.</strong> Let <span class="math inline">\(|f|=\sum_i |a_i
-| \chi_{E_i }\)</span>. Therefore, <span class="math inline">\(|a_i| ≠ 0
-\implies \mu(E_i )=0\)</span>. <span class="math inline">\(|f|\)</span>
-is simple and integrable.<br />
-<span class="math display">\[
-     \int|f| =\sum_i |a_i |\mu(E_i ) \ge \left| \sum_i a_i \mu(E_i )
-\right| = \left| \int f \right|. \qquad \blacksquare
-\]</span></p></li>
-<li><p><em><span class="math inline">\(\int|f+g | \le \int |f| + \int
-|g|\)</span>.</em><br />
-<strong>Proof.</strong><br />
-<span class="math display">\[
-     \int|f+g| \le \int(|f|+|g|) =\int|f| +\int|g|. \qquad \blacksquare
-\]</span></p></li>
-<li><p><em>If <span class="math inline">\(m \le f \le M \ a.e.\)</span>
-on a measurable set <span class="math inline">\(E\)</span> with <span
-class="math inline">\(\mu(E) &lt; \infty\)</span>, then <span
-class="math inline">\(m \mu(E) \le \int_E f \le M
-\mu(E)\)</span>.</em><br />
-<strong>Proof.</strong> The condition <span class="math inline">\(\mu(E)
-&lt; \infty\)</span> ensures that <span class="math inline">\(m \cdot
-\mu(E) &lt; \infty\)</span>. Note that <span class="math display">\[
-     \int_E f=\sum_i a_i \mu(E_i  \cap  E)
-\]</span><br />
-and that<br />
-<span class="math display">\[
-     a_i &lt; m  \implies  \mu(E_i  \cap E) = 0  \implies  \sum_i
-(a_i-m) \mu(E_i  \cap E) \ge 0.
-\]</span> In a similar manner we can prove the other inequality.</p>
-<p>NOTE: another way is to utilize that <span class="math inline">\(\mu
-\chi_E\)</span> is simple, integrable <span class="math inline">\(\mu
-\chi_E \le f\)</span> almost everywhere.<br />
-<span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p>If <span class="math inline">\(f \ge 0,\ a.e.\)</span>, and if
-<span class="math inline">\(E\)</span> and <span
-class="math inline">\(F\)</span> are measurable sets with <span
-class="math inline">\(E⊂F\)</span>, then <span
-class="math inline">\(\int_E f \le \int_F f\)</span>.<br />
-<strong>Proof.</strong><br />
-<span class="math display">\[
-     \int_E f = \sum_i a_i \mu(E_i  \cap  E) \le \sum_i a_i
-\mu(E_i  \cap  F) =\int_F f.
-\]</span> Then inequality holds since it is always true that <span
-class="math display">\[
-     a_i \mu(E_i \cap E) \le a_i \mu(F_i  \cap  E).
-\]</span></p>
-<ul>
-<li>If <span class="math inline">\(\mu(E_i \cap E) \le \mu(E_i \cap F) =
-\infty\)</span>, then <span class="math inline">\(a_i =
-0\)</span>.<br />
-</li>
-<li>If <span class="math inline">\(0 &lt; \mu(E_i \cap E) \le \mu(E_i
-\cap E) &lt; \infty\)</span>, then <span class="math inline">\(a_i \ge
-0\)</span>.<br />
-</li>
-<li>If <span class="math inline">\(0 = \mu(E_i \cap E) = \mu(E_i \cap
-E)\)</span>, then it is trivially true.</li>
-</ul>
-<p>NOTE: another way is to utilize that <span
-class="math inline">\(\chi_E f \le \chi_F f\)</span> almost
-everywhere.<br />
-<span class="math inline">\(\blacksquare​\)</span></p></li>
-<li><p><strong>Monotone convergence.</strong> If <span
-class="math inline">\(F = +_{m \ge 1} F_m\)</span> is a disjoint union
-of measurable sets, then <span class="math display">\[
-     \int_F f = \int f \cdot \Big( \sum_{m \ge 1} \chi_{ F_m } \Big) =
-\sum_{m \ge 1} \int f \cdot \chi_{ F_m }  = \sum_{m \ge 1} \int_{F_m} f
-\]</span><br />
-<strong>Proof.</strong> This is a consequence of <span
-class="math inline">\(\sigma\)</span>-additivity of measure. Let <span
-class="math inline">\(f = \sum_{i \in [n] } a_i \chi_{E_i}\)</span>,
-<span class="math display">\[
-\begin{aligned}
-     \int_F f  
-     &amp;= \sum_{ i \in [n] } a_i \mu(E_i \cap F) \\
-     &amp;=\sum_{ i \in [n] }  a_i \mu(E_i \cap  ( +_{m \ge 1} F_m
-))  \\
-     &amp;=\sum_{ i \in [n] }  a_i \mu( +_{m \ge 1} E_i  \cap  F_m )  \\
-     &amp;=\sum_{ i \in [n] }  a_i \sum_{m \ge 1} \mu(E_i  \cap  F_m)
-&amp; \text{ by $\sigma$-additivity of measure }\\
-     &amp;=\sum_{ i \in [n] }  a_i   \lim_{k \rightarrow \infty}
-⁡\sum_{m=1}^k \mu(E_i \cap F_m) \\
-     &amp;= \lim_{k \rightarrow \infty} ⁡\sum_{ i \in [n] }   a_i
-\sum_{m=1}^k  \mu(E_i \cap F_m) &amp; \text{ exchange order of limit and
-finite summation} \\
-     &amp;= \lim_{k \rightarrow \infty} ⁡ \sum_{m=1}^k  \sum_{ i \in [n]
-}   a_i \mu(E_i \cap F_m)  \\
-     &amp;= \lim_{k \rightarrow \infty} ⁡\sum_{i=1}^k \int_{F_m} f \qquad
-\blacksquare
-\end{aligned}
-\]</span></p></li>
-<li><p><strong>Monotone convergence.</strong> <em>If <span
-class="math inline">\(F_1 \subset F_2 \subset F_3 \subset ...​\)</span>
-is a sequence of increasing measurable sets and let <span
-class="math inline">\(F = \cup_{n} F_n​\)</span>, then <span
-class="math inline">\(\lim_n \int_{F_n} f = \int_F
-f​\)</span>.</em><br />
-<strong>Proof.</strong> Let <span class="math inline">\(F_n&#39; = F_n -
-F_{n - 1}​\)</span>. The result follows immediately from the previous
-property.<br />
-<span class="math inline">\(\blacksquare​\)</span></p></li>
-<li><p><em>If <span class="math inline">\(F_1 \supset F_2 \supset F_3
-\supset ...\)</span> is a sequence of decreasing measurable sets and let
-<span class="math inline">\(F = \cap_{n} F_n\)</span>, then <span
-class="math inline">\(\lim_n \int_{F_n} f = \int_F f\)</span>.</em></p>
-<p><strong>Proof.</strong> Let <span class="math inline">\(f = \sum_{i =
-1}^N a_i \chi_{E_i}\)</span>. It follow that <span
-class="math display">\[
-    a_i \neq 0 \implies \mu(E_i \cap F_1) &lt; \mu(E_i) &lt; \infty.
-\]</span> Using continuity of measure <span
-class="math inline">\(\mu\)</span>, <span class="math display">\[
-    \lim_n \mu(E_i \cap F_n) = \mu(E_i \cap \lim_n F_n) = \mu (E_i \cap
-F),
-\]</span> which implies that <span class="math inline">\(\lim_n
-\int_{F_n} f = \int_F f\)</span>.</p>
-<p><strong>Remark.</strong> Since <span class="math inline">\(f\)</span>
-is integrable, it has nonzero values on a finite support. We don't even
-require that <span class="math inline">\(\mu(F_1) &lt;
-\infty\)</span>.<br />
-<span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em>Let <span class="math inline">\(f = \sum_{i \in [n] } a_i
-\chi_{E_i}\)</span> and define the support <span
-class="math inline">\(N(f)\)</span> of simple integrable function <span
-class="math inline">\(f\)</span> to be the set of elements with non-zero
-values <span class="math inline">\(N(f) = \{ x \in X : f(x) \neq 0 \} =
-\cup_{i, a_i \neq 0} E_i\)</span>, then <span class="math inline">\(\mu(
-N(f) ) \le \infty\)</span>.</em></p>
-<p><strong>Proof.</strong> Since <span class="math inline">\(f\)</span>
-is integrable, <span class="math inline">\(a_i \neq 0\)</span> implies
-<span class="math inline">\(\mu(E_i) &lt; \infty\)</span>. Now <span
-class="math display">\[
-\mu( N(F) ) = \sum_{1 \le i \le n, a_i \neq 0} \mu(E_i) &lt; \infty
-\qquad \qquad \blacksquare
-\]</span></p></li>
-</ol>
-<p>With simple integrable functions as building blocks, we are ready to
-define integration for functions in general.</p>
-<p>Fist we introduce a notation of convergence we need in the following
-discussion.</p>
-<h1 id="cauchy-in-mean">Cauchy In Mean</h1>
-<blockquote>
-<p><strong>Definition.</strong> A sequence <span
-class="math inline">\(\{ f_n \}​\)</span> of simple functions is called
-Cauchy in mean if<br />
-<span class="math display">\[
-\lim_{n, m} \int |f_n - f_m| = 0
-\]</span></p>
-</blockquote>
-<p>Cauchy in mean does not implies Cauchy almost everywhere. Consider
-the sequence of functions</p>
-<ol type="1">
-<li><span class="math inline">\(\chi_{[0, 1/2]}, \chi_{[1 / 2,
-1]}\)</span>,<br />
-</li>
-<li><span class="math inline">\(\chi_{ [0, 1 / 4 ] }, \chi_{ [1 / 4, 1 /
-2] }, \chi_{ [ 1 / 2, 3 / 4 ] }, \chi_{ [3 / 4, 1] }\)</span>,<br />
-</li>
-<li>...</li>
-<li><span class="math inline">\(... \chi_{ [ i / 2^n, (i + 1) / 2^n ] }
-...,(i \in \{0, 1, 2, ..., 2^{n} - 1 \} )\)</span></li>
-</ol>
-<p>They are Cauchy in mean but don's Cauchy almost everywhere. But it is
-Cauchy in measure.</p>
-<blockquote>
-<p><strong>Theorem</strong> <em>If a sequence <span
-class="math inline">\(\{ f_n \}​\)</span> of simple functions is Cauchy
-in mean, it is Cauchy in measure.</em></p>
-</blockquote>
-<p><strong>Proof.</strong> Let <span class="math inline">\(h_{n, m} =
-|f_n - f_m|​\)</span>. As <span class="math inline">\(f_n​\)</span> and
-<span class="math inline">\(f_m​\)</span> are simple and integrable,
-<span class="math inline">\(h_{n, m}​\)</span> is simple and integrable.
-Moreover, it is non-negative. We write it as <span
-class="math inline">\(h_{n,m} = \sum_{j \in [k] } b_j
-\chi_{F_j}​\)</span>, where <span class="math inline">\(b_j \ge
-0​\)</span>. For all <span class="math inline">\(\delta &gt; 0​\)</span>,
-<span class="math inline">\(b_j \ge \delta &gt; 0​\)</span> implies that
-<span class="math inline">\(\mu(F_j) &lt; \infty​\)</span>. Now <span
-class="math display">\[
-    \begin{aligned}
-        \delta \cdot \mu( \{ x \in X: h_{n,m}(x)
-        \ge \delta\} )
-        &amp;= \sum_{j \in [k], b_j \ge \delta} \delta \cdot \mu(F_j) \\
-        &amp;\le  \sum_{j \in [k], b_j \ge \delta} b_j \mu(F_j)  \\
-        &amp;\le \int h_{n,m} \\
-        &amp;= \int |f_n - f_m|.
-    \end{aligned}
-\]</span> Hence, <span class="math inline">\(\mu( \{ x \in X: h_{n,m}(x)
-\ge \delta\} ) \le \frac{ \int |f_n - f_m| }{ \delta }\)</span>. For any
-fix <span class="math inline">\(\delta\)</span>, this can be arbitrary
-small as <span class="math inline">\(n, m \rightarrow
-\infty\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p>NOTE: the converse is not true.</p>
-<blockquote>
-<p><strong>Example</strong> Consider this sequence of functions:<br />
-<span class="math display">\[
-\{ n \cdot \chi_{[0, 1 / n] } : n \in \mathbf{N} \}
-\]</span></p>
-</blockquote>
-<p>It converges in measure to <span class="math inline">\(f \equiv
-0\)</span>. But <span class="math inline">\(\int n \cdot \chi_{[0, 1 /
-n] } = 1\)</span> for all <span class="math inline">\(n\)</span>. <span
-class="math inline">\(\lim_n \int n \cdot \chi_{[0, 1 / n] } \neq \int
-f\)</span>.</p>
-<p>The implication here is that we need additional condition more than
-converge in mean to define the integral for a general function <span
-class="math inline">\(f​\)</span>. We need to connect the sequence <span
-class="math inline">\(\{ f_n \}​\)</span> with <span
-class="math inline">\(f​\)</span>, the function we want to define
-integral. Can we say something like <span class="math inline">\(\{ f_n
-\}​\)</span> converges to <span class="math inline">\(f​\)</span> in mean,
-i.e., <span class="math inline">\(\lim_n \int |f_n - f| = 0​\)</span>?
-But we have not define integral of non-simple function yet. Here is how
-we establish the connection.</p>
-<h1 id="general-integrable-functions">General Integrable Functions</h1>
-<blockquote>
-<p><strong>Definition.</strong> <em>An extended real-valued, measurable
-function <span class="math inline">\(f\)</span>, on a measure space
-<span class="math inline">\((X, \Omega, \mu)\)</span> is said to be
-integrable if there exists a sequence <span class="math inline">\(\{ f_n
-\}\)</span> of integrable simple functions having the following
-properties:</em></p>
-<ol type="1">
-<li><span class="math inline">\(\{ f_n \}​\)</span> <em>is a Cauchy
-sequence in the mean.</em><br />
-</li>
-<li><span class="math inline">\(\lim_{n} f_n (x) = f(x) \quad
-a.e.​\)</span>.</li>
-</ol>
-<p>The integral <span class="math inline">\(\int f​\)</span> of <span
-class="math inline">\(f​\)</span> is defined as <span
-class="math display">\[
-\int f = \lim_{n} \int f_n.
-\]</span></p>
-</blockquote>
-<p>There are two issues we need to answer for the definition to be
-well-defined. The first one is that the limit of <span
-class="math inline">\(\int f_n​\)</span> indeed exists. Second, we need
-to show that for any sequence satisfying condition (1) and (2), their
-integral converges to the same limit.</p>
-<blockquote>
-<p><strong>Theorem (Existence of Limit).</strong> <span
-class="math inline">\(\lim_n \int f_n\)</span> exists.</p>
-</blockquote>
-<p><strong>Proof.</strong><br />
-<span class="math display">\[
-    \left| \int f_n - \int f_m \right| \le \int | f_n - f_m
-|  \rightarrow 0 \qquad as \quad n, m \rightarrow \infty
-\]</span> Therefore, <span class="math inline">\(\{ \int f_n : n \in
-\mathbf{N} \}\)</span> (note that each element in this set is a real
-number) is a Cauchy sequence and its limit exists.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<blockquote>
-<p><strong>Theorem (Uniqueness of Limit).</strong> Let <span
-class="math inline">\(\{ f_n \}\)</span> and <span
-class="math inline">\(\{ g_n \}\)</span> be two Cauchy sequences in the
-mean of integrable simple functions, such that <span
-class="math display">\[
-\lim_n f_n = \lim_n g_n = f \qquad a.e.
-\]</span> Then<br />
-<span class="math display">\[
-\lim_n \int f_n = \lim_n \int g_n.
-\]</span></p>
-</blockquote>
-<p><strong>Proof.</strong> Define <span class="math inline">\(h_n \doteq
-f_n - g_n\)</span> for <span class="math inline">\(n \in
-\mathbf{N}\)</span>. As <span class="math inline">\(f_n\)</span> and
-<span class="math inline">\(g_n\)</span> are simple and integrable,
-<span class="math inline">\(h_n\)</span> is simple and integrable.</p>
-<p><strong>Step 1.</strong></p>
-<p>We claim that</p>
-<ol type="1">
-<li><span class="math inline">\(\{ h_n \}\)</span> is Cauchy in
-mean.</li>
-<li><span class="math inline">\(\lim_n h_n = 0 \quad a.e.\)</span>.</li>
-</ol>
-<p>By monotonicity and linearity of integration of simple functions,
-<span class="math display">\[
-    \begin{aligned}
-        \int |h_n - h_m|
-        &amp;= \int | f_n - g_n - (f_m - g_m)| \\
-        &amp;\le \int |f_n - f_m| + |g_n - g_m| \\
-        &amp;= \int |f_n - f_m| + \int |g_n - g_m|  
-    \end{aligned}
-\]</span></p>
-<p>The integral can be arbitrary small as <span class="math inline">\(n,
-m \rightarrow \infty\)</span>.</p>
-<p>The second claim results from the <span class="math inline">\(\lim_n
-f_n = f​\)</span> and <span class="math inline">\(\lim_n g_n = f​\)</span>
-<span class="math inline">\(a.e.​\)</span>.</p>
-<p>We are going to prove <span class="math inline">\(\lim_n \int h_n =
-0​\)</span>, which then implies<br />
-<span class="math display">\[
-    \lim_n \int (f_n - g_n) =\lim_n \left( \int f_n - \int g_n \right) =
-\lim_n \int f_n - \lim_n \int g_n = 0​.
-\]</span></p>
-<p><strong>Step 2.</strong></p>
-<p>Our goal is to prove that <span class="math inline">\(\int h_n
-\rightarrow 0\)</span>. Specifically,</p>
-<ul>
-<li><span class="math inline">\(\forall \epsilon &gt; 0\)</span>, <span
-class="math inline">\(\exists N &gt; 0\)</span>, s.t., <span
-class="math inline">\(\forall n &gt; N, | \int h_n | &lt;
-O(\epsilon)\)</span>.</li>
-</ul>
-<p>The trick here is to restrict the discussion of <span
-class="math inline">\(\int h\)</span> on a <span
-class="math inline">\(\sigma\)</span>-finite measurable set. Define the
-support <span class="math inline">\(\mathbb{Supp} ( f_n )​\)</span> of
-<span class="math inline">\(f_n​\)</span> to be the set with non-zero
-values: <span class="math display">\[
-    \mathbb{Supp} ( f_n ) = \{ x \in X : f_n(x) \neq 0\}
-\]</span></p>
-<p>As <span class="math inline">\(f_n​\)</span> is a simple integrable
-function, <span class="math inline">\(\mu( \mathbb{Supp} ( f_n )) &lt;
-\infty​\)</span>. Let <span class="math inline">\(E_n = \cup_{ k \in [n]
-} \Big( \mathbb{Supp} (f_k) \cup \mathbb{Supp} (g_k)​ \Big)\)</span> and
-<span class="math inline">\(E = \cup_n E_n​\)</span>. We have <span
-class="math inline">\(\mu(E_n) &lt; \infty​\)</span>, <span
-class="math inline">\(E_n \uparrow E​\)</span> and <span
-class="math inline">\(E​\)</span> is <span
-class="math inline">\(\sigma​\)</span>-finite. By monotone convergence
-property of simple integrable functions, we have, <span
-class="math inline">\(\forall n\)</span>, <span class="math display">\[
-    \int h_n = \int_{E} h_n​
-\]</span></p>
-<p>First, as <span class="math inline">\(\{ h_n \}\)</span> is Cauchy in
-mean, for <span class="math inline">\(\epsilon &gt; 0\)</span>, <span
-class="math inline">\(\exists N_1 &gt; 0\)</span>, s.t, for <span
-class="math inline">\(n, k &gt; N_1\)</span>, we have <span
-class="math inline">\(\int |h_n - h_k| \le \epsilon\)</span> . We choose
-an integer <span class="math inline">\(k &gt; N_1\)</span>. As <span
-class="math inline">\(h_k\)</span> is a simple integrable function, and
-as <span class="math inline">\(E_m \uparrow E\)</span>, it holds
-that<br />
-<span class="math display">\[
-\lim_m \int_{E_m} h_k = \int_E h_k = \int h_k
-\]</span></p>
-<p>For fix <span class="math inline">\(k\)</span>, we choose an integer
-<span class="math inline">\(m\)</span>, s..t, <span
-class="math inline">\(\left| \int h_k - \int_{E_m} h_k \right| \le
-\epsilon\)</span>.</p>
-<p>For a fix <span class="math inline">\(k &gt; N_1\)</span>, we claim
-that for any <span class="math inline">\(n &gt; N_1​\)</span>, we have
-<span class="math inline">\(| \int h_n - \int_{E_m} h_n | &lt;
-3\epsilon​\)</span>,<br />
-<span class="math display">\[
-\begin{aligned}
-\left| \int h_n  - \int_{E_m} h_n \right|  
-&amp;= \left| \int h_n - \int  h_k  + \int h_k  - \int_{E_m} h_k
-+  \int_{E_m} h_k - \int_{E_m} h_n\right|  \\
-&amp;\le \left| \int h_n - \int  h_k \right| + \left| \int h_k  -
-\int_{E_m} h_k \right| + \left| \int_{E_m} h_k - \int_{E_m} h_n \right|
-\\
-&amp;\le \epsilon + \epsilon + \int_{E_m} |h_k - h_n| \\
-&amp;\le 3\epsilon
-\end{aligned}
-\]</span></p>
-<p>We have successfully restrict our discussion on a set with finite
-measure. The key here is that <span class="math inline">\(\int_{E_m}
-h_n\)</span> converges uniformly to <span class="math inline">\(\int
-h_n\)</span>, as <span class="math inline">\(m\)</span> increases,
-independent of the choice of <span class="math inline">\(n\)</span>, as
-long as <span class="math inline">\(\{ h_n \}\)</span> is Cauchy in
-mean.</p>
-<p>Indeed, what we have shown here is that <span class="math display">\[
-    \lim_n \lim_m \int_{E_m} h_n = \lim_m \lim_n \int_{E_m} h_n.
-\]</span></p>
-<p>Second, we prove that <span class="math display">\[
-    \int_{E_m} h_n​ \rightarrow 0.
-\]</span></p>
-<p>So far we have not consider the condition <span
-class="math inline">\(\lim_n h_n = 0 \ a.e.​\)</span> It is time to turn
-to it. Define<br />
-<span class="math display">\[
-    S_n = \{ x  \in E_m :  |h_n(x)| &gt; \epsilon / \mu(E_m) \}
-\]</span></p>
-<p>Observe that <span class="math inline">\(\lim_n \cup_{i \ge n} S_n
-\downarrow\)</span>. As <span class="math inline">\(\mu( \cup_{i \ge 1}
-S_n) \le \mu (E_m) &lt; \infty\)</span>, by continuity of <span
-class="math inline">\(\mu\)</span>, <span class="math display">\[
-    \lim_n \mu( \cup_{i \ge n} S_n) = \mu( \lim_n \cup_{i \ge n} S_n) =
-0.
-\]</span></p>
-<p>As <span class="math inline">\(h_k\)</span> is a simple function, it
-is bounded by some integer <span class="math inline">\(K \
-a.e.\)</span>. As <span class="math inline">\(\mu(E_m) &lt;
-\infty\)</span>, <span class="math inline">\(\exists N_2 &gt;
-N_1\)</span>, s.t., for <span class="math inline">\(n &gt; N_2\)</span>,
-we have <span class="math inline">\(\mu(S_n) \le \mu(\cup_{i \ge n} S_n
-) \le \epsilon / K\)</span>. Now, <span class="math display">\[
-    \begin{aligned}
-        \left| \int_{E_m} h_n \right|  
-        &amp;\le \left| \int_{S_n} h_n \right| + \left| \int_{E_m
-\setminus S_n} h_n \right| \\
-        &amp;\le \left| \int_{S_n} h_n \right| + \frac{\epsilon}{
-\mu(E_m) }  \mu(E_m) \\
-        &amp;\le \left| \int_{S_n} h_n \right| + \epsilon  
-    \end{aligned}
-\]</span></p>
-<p>Finally, we argue that <span class="math inline">\(\left| \int_{S_n}
-h_n \right|​\)</span> is small enough.<br />
-<span class="math display">\[
-    \left| \int_{S_n} h_n \right| \le \left| \int_{S_n} h_n - h_k  + h_k
-\right| \le \int |h_n - h_k| + \int_{S_n} |h_k| \le \epsilon + K \cdot
-\mu(S_n) \le 2 \epsilon
-\]</span></p>
-<p>Indeed, the technique demonstrated here shows that <span
-class="math inline">\(\{ \int_E h_n \}\)</span> is uniformly absolutely
-continuous with respect to <span
-class="math inline">\(\mu(E)\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<blockquote>
-<p><strong>Corollary 1</strong> Let <span class="math inline">\(\{ h_n
-\}\)</span> be a sequence of simple integrable function that are Cauchy
-in mean and <span class="math inline">\(E_1 \subset E_2 \subset E_3
-...\)</span> a sequence of increasing measurable sets that converge to
-<span class="math inline">\(E = \cup_{i \ge 1} E_i\)</span>. Then <span
-class="math inline">\(\int_{E_m} h_n \rightarrow \int_{E} h_n\)</span>
-uniformly, i.e., <span class="math inline">\(\forall \epsilon &gt; 0,
-\exists M &gt; 0\)</span>, s.t., for <span class="math inline">\(m &gt;
-M\)</span>, we have <span class="math display">\[
-\left| \int_{E_m} h_n - \int_E h_n \right| \le \epsilon
-\]</span></p>
-</blockquote>
-<blockquote>
-<p><strong>Corollary 2</strong> Let <span class="math inline">\(\{ h_n
-\}\)</span> be a sequence of simple integrable function that are Cauchy
-in mean. <span class="math inline">\(\forall \epsilon &gt; 0, \exists
-\delta &gt; 0\)</span>, s.t, for any measurable set <span
-class="math inline">\(E\)</span> with <span class="math inline">\(\mu(E)
-&lt; \delta\)</span>, we have <span class="math inline">\(|\int_E h_n|
-&lt; \epsilon\)</span> independent of <span
-class="math inline">\(n\)</span>.</p>
-</blockquote>
-<h1 id="definition"><strong>Definition</strong></h1>
-<p>Let <span class="math inline">\(f\)</span> be an integrable function
-and <span class="math inline">\(E\)</span> be a measurable set. Then
-<span class="math inline">\(\chi_E f\)</span> is integrable and its
-integral is denoted as<br />
-<span class="math display">\[
-    \int \chi_E f = \int_E f
-\]</span></p>
-<p><strong>Remark:</strong><br />
-If <span class="math inline">\(f\)</span> is integrable, then there is a
-sequence simple, integrable function <span class="math inline">\(\{f_n
-\}\)</span> that are Cauchy in mean and converges to <span
-class="math inline">\(f\)</span> almost every. It is easy to see that
-<span class="math inline">\(\{ \chi_E f_n \}\)</span> is simple,
-integrable, Cauchy in mean and converges to <span
-class="math inline">\(\chi_E f\)</span> almost everywhere, therefore
-<span class="math inline">\(\chi_E f\)</span> is integrable. An
-immediately consequence is the following lemma</p>
-<h1 id="lemma-1"><strong>Lemma 1</strong></h1>
-<p><span class="math inline">\(\int_E f_n\)</span> converges to <span
-class="math inline">\(\int_E f\)</span> uniformly irrespective of <span
-class="math inline">\(E\)</span>.<br />
-<strong>Proof.</strong> It suffices to show the sequence <span
-class="math inline">\(\{ \int_E f_n : n \in \mathbf{N} \}\)</span> is a
-uniformly Cauchy irrespectively of <span
-class="math inline">\(E\)</span>,<br />
-<span class="math display">\[
-    \left| \int_E f_n - \int_E f_m \right| \le \int_E |f_n - f_m| \le
-\int |f_n - f_m| \rightarrow 0
-\]</span> Therefore, for <span class="math inline">\(\forall E \subset
-\Omega\)</span>, <span class="math inline">\(\exists N &gt; 0\)</span>,
-for all <span class="math inline">\(n，m &gt; N\)</span>, we have<br />
-<span class="math display">\[
-    \left| \int_E f_n - \int_E f_m \right| \le \epsilon
-\]</span> Taking limit with respect to <span
-class="math inline">\(m\)</span>, we get <span
-class="math inline">\(\lim_m \int_E f_m - \epsilon \le \int_E f_n \le
-\lim_m \int_E f_m + \epsilon\)</span>, i.e.,<br />
-<span class="math display">\[
-    \left| \int_E f_n - \int_E f \right| \le \epsilon
-\]</span> as desired.</p>
-<p>Combining Corollary 2 and Lemma 1, we have the following theorem.</p>
-<h1
-id="theorem.-integration-as-finite-signed-measure"><strong>Theorem.</strong>
-Integration as Finite Signed Measure</h1>
-<p>If <span class="math inline">\(f\)</span> is integrable, then<br />
-<span class="math display">\[
-    \lambda(E) = \int_E f
-\]</span> is absolute continuous.</p>
-<p><strong>Proof.</strong> Let <span class="math inline">\(\{ f_n
-\}\)</span> as defined before. For <span class="math inline">\(\forall
-\epsilon &gt; 0\)</span>, <span class="math inline">\(\exists N_1 &gt;
-0\)</span>, for all <span class="math inline">\(n &gt; N_1\)</span>, we
-have <span class="math inline">\(| \int_E f - \int_E f_n | \le
-\epsilon\)</span>. On the other hand, For <span
-class="math inline">\(\forall \epsilon &gt; 0\)</span>, <span
-class="math inline">\(\exists \delta &gt; 0\)</span>, for all <span
-class="math inline">\(E\)</span> with <span class="math inline">\(\mu(E)
-&lt; \delta\)</span>, we have <span class="math inline">\(|\int_E f_n|
-&lt; \epsilon\)</span>. In combination,<br />
-<span class="math display">\[
-    \left| \int_E f \right| \le \left| \int_E f - f_n \right| + \int_E
-|f_n| \le 2\epsilon  
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p>Next we discussion the convergence behavior of a sequence of
-integrable functions.</p>
-<h1 id="lemma">Lemma</h1>
-<p>If <span class="math inline">\(\{ f_k \}\)</span> is a sequence of
-simple, integrable function that are</p>
-<ol type="1">
-<li>Cauchy in the mean,<br />
-</li>
-<li>Converge to <span class="math inline">\(f\)</span> almost
-everywhere.</li>
-</ol>
-<p>Then<br />
-<span class="math display">\[
-\lim_k \int |f_k - f| = 0
-\]</span></p>
-<p><strong>Proof.</strong><br />
-Note that <span class="math inline">\(|f_k - f |\)</span> may not be a
-simple function. To investigate the value of its integral, we need to
-characterize it according to the definition of integral for general
-functions. Here is how we do it. For a fix <span
-class="math inline">\(k\)</span>, the sequence <span
-class="math inline">\(\{ |f_k - f_n| : n \in \mathbf{N} \}\)</span> is
-simple, integrable, and converges to <span class="math inline">\(|f_k -
-f |\)</span> almost everywhere. Moreover, as <span
-class="math inline">\(\{ f_k \}\)</span> itself is Cauchy in mean, for
-<span class="math inline">\(\forall \epsilon &gt; 0\)</span>, <span
-class="math inline">\(\exists N &gt; 0\)</span>, s.t., <span
-class="math inline">\(\forall k, n, m &gt; N\)</span>,<br />
-<span class="math display">\[
-    \int \left| |f_k - f_n| - |f_k - f_m| \right| \le \int |f_k - f_n -
-(f_k - f_m)| = \int |f_m - f_n| \le \epsilon
-\]</span></p>
-<p>As a consequence <span class="math inline">\(\{|f_k - f_n| : n \in
-\mathbf{N} \}\)</span> is Cauchy in the mean. <span
-class="math inline">\(|f_k - f|\)</span> is integrable and <span
-class="math inline">\(\int |f_k - f| = \lim_n \int |f_k - f_n|\)</span>.
-But for <span class="math inline">\(k, n, m &gt; N\)</span>,<br />
-<span class="math display">\[
-    \int |f_k - f| = \lim_m \int |f_k - f_m| \le \int |f_k - f_n| +
-\epsilon \le 2\epsilon
-\]</span></p>
-<p>As <span class="math inline">\(\epsilon\)</span> could be arbitrary
-small, we have <span class="math inline">\(\lim_k \int |f_k - f| =
-0\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h1 id="theorem"><strong>Theorem</strong></h1>
-<p><em>If <span class="math inline">\({g_k}\)</span> is a sequence of
-integrable functions satisfying the conditions</em></p>
-<ol type="1">
-<li><span class="math inline">\({g_k}\)</span> is a Cauchy sequence in
-the mean.<br />
-</li>
-<li><span class="math inline">\({g_k}\)</span> converges in measure to
-<span class="math inline">\(f\)</span>.</li>
-</ol>
-<p>then <span class="math inline">\(f\)</span> is integrable and <span
-class="math inline">\(\int f = \lim⁡_k \int g_k\)</span>.</p>
-<p><strong>Proof.</strong> For each <span
-class="math inline">\(g_k\)</span>, there is a sequence <span
-class="math inline">\(\{ g_{km} : m ∈ \mathbf{N} \}\)</span> simple
-integrable functions,</p>
-<ol type="1">
-<li><p><span class="math inline">\(\{ g_{km} \}\)</span> is a Cauchy
-sequence in the mean.</p></li>
-<li><p><span class="math inline">\(\{ g_{km} \}\)</span> converges in
-measure to <span class="math inline">\(g_k\)</span>.</p></li>
-<li><p><span class="math inline">\(\int g_k = \lim_m ⁡\int
-g_{km}\)</span></p></li>
-</ol>
-<p>For fix <span class="math inline">\(k​\)</span>, we choose such an
-integer <span class="math inline">\(m​\)</span>, such that <span
-class="math inline">\(\int |g_k - \int g_{k m} |\le 1 / k​\)</span> and
-<span class="math inline">\(\mu(\{ x:|g_k (x) - g_{km} (x) | \ge 1 / k
-\} ) \le 1 / k​\)</span>. For convenience, denote <span
-class="math inline">\(g_{k m}​\)</span> as <span
-class="math inline">\(f_k​\)</span>. Now we claim the sequence <span
-class="math inline">\(\{ f_{k} \}​\)</span> of simple integrable
-functions satisfies</p>
-<ol type="1">
-<li>is a Cauchy sequence in the mean.<br />
-</li>
-<li>converges to <span class="math inline">\(f​\)</span> in measure.</li>
-</ol>
-<p>The first one result from the fact <span class="math inline">\(\{ g_k
-\}\)</span> is Cauchy sequence in the mean and triangle inequality<br />
-<span class="math display">\[
-\begin{aligned}
-\int | f_{m} - f_{n} |  
-&amp;\le \int | f_{m} - g_m | +| g_m - g_n |+| g_n - f_n | \\
-&amp;\le \int | f_{m} - g_m | + \int | g_m - g_n | + \int | g_n - f_n |
-\\
-&amp;\le \frac{1}{m} + \int | g_m - g_n | + \frac{1}{n} \\
-&amp;\rightarrow 0 \quad \text{as } n, m \rightarrow \infty
-\end{aligned}
-\]</span></p>
-<p>The second claim also results from triangle inequality. For any <span
-class="math inline">\(\delta &gt; 0\)</span>, <span
-class="math inline">\(\exists 1 / k \le \delta​\)</span>, s.t.,<br />
-<span class="math display">\[
-\begin{aligned}
-\mu(\{ x \in X: |f_k - f | \ge \delta \} )  
-&amp;\le \mu(\{ x \in X: |f_k - g_k | \ge \delta \} ) + \mu(\{ x \in X:
-|g_k - f | \ge \delta \} ) \\
-&amp;\le 1/k + \mu(\{ x \in X: |g_k - f | \ge \delta \} ) \\
-&amp;\rightarrow 0 \quad \text{as } k \rightarrow \infty
-\end{aligned}
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h1 id="theorem.-lebesgues-bounded-convergence-theorem">Theorem.
-Lebesgue's Bounded Convergence Theorem</h1>
-<p>Let <span class="math inline">\(\{ f_n \}\)</span> be a sequence of
-integrable functions that converges either in measure or a.e. to a
-measurable function <span class="math inline">\(f\)</span>. If <span
-class="math inline">\(|f_n(x)| \le g(x) \ a.e.\)</span> for all <span
-class="math inline">\(n\)</span>, where <span
-class="math inline">\(g\)</span> is an integrable function, then <span
-class="math inline">\(f\)</span> is integrable.</p>
-<p>Note: compared to definition of <span
-class="math inline">\(f\)</span> being integrable,</p>
-<ol type="1">
-<li>We no longer require <span class="math inline">\(\{ f_n \}​\)</span>
-to be simple functions.<br />
-</li>
-<li>We no longer require <span class="math inline">\(\{ f_n \}\)</span>
-to be Cauchy in mean.</li>
-</ol>
-<p><strong>Proof.</strong></p>
-<p>It suffices to show <span class="math inline">\(\{ f_n \}\)</span> is
-a Cauchy sequence in mean.</p>
-<ol type="1">
-<li><p>Each <span class="math inline">\(\{ f_n \}\)</span> can be
-approximated by a sequence of simple functions. Therefore, we can find a
-<span class="math inline">\(\sigma\)</span>-finite measurable set <span
-class="math inline">\(F_n\)</span> such that <span
-class="math inline">\(\int_{F_n} f_n = \int f_n\)</span>. Similarly, we
-can find a <span class="math inline">\(\sigma\)</span> finite measurable
-set <span class="math inline">\(G\)</span> such that <span
-class="math inline">\(\int_G g = \int g\)</span>.</p></li>
-<li><p>The measurable set <span class="math inline">\(E = (\cup_n F_n)
-\cup G\)</span> is <span class="math inline">\(\sigma\)</span> finite.
-There exists a sequence of increasing, finite measurable set <span
-class="math inline">\(E_1 \subset E_2 \subset E_3 ...\)</span> which
-satisfies <span class="math inline">\(E_n \uparrow E\)</span>.</p></li>
-<li><p>As <span class="math inline">\(\int_E g &lt; \infty​\)</span>, and
-<span class="math inline">\(\lim_m \int_{E_m} g = \int_E g​\)</span>,
-<span class="math inline">\(\forall \epsilon &gt; 0, \exists m &gt;
-0​\)</span>, s.t., <span class="math inline">\(|\int_{E \setminus E_m} g
-| \le \epsilon​\)</span>.</p></li>
-<li><p>The integral of <span class="math inline">\(|f_n - f_m|​\)</span>
-outside <span class="math inline">\(E_m​\)</span> is small: <span
-class="math inline">\(\int_{E \setminus E_m} |f_n - f_m| \le \int_{E
-\setminus E_m} |f_n| + |f_m| \le 2 \int_{E \setminus E_m} g \le 2
-\epsilon​\)</span>.</p></li>
-<li><p>Consider the integral inside the finite set <span
-class="math inline">\(E_m\)</span>. Define <span
-class="math inline">\(S_k \doteq \{ x \in E_m : |f_i(x) - f_j(x)| \ge
-\epsilon / \mu(E_m) \text{ for all } i, j \ge k\}\)</span>. As <span
-class="math inline">\(\{ f_n \}\)</span> converges to <span
-class="math inline">\(f\)</span> in measure or a.e., and <span
-class="math inline">\(\mu(E_m) &lt; \infty\)</span>, <span
-class="math inline">\(\mu(S_k) \rightarrow \mu(E_m)\)</span>. We can
-choose an <span class="math inline">\(k\)</span>, s.t., <span
-class="math inline">\(\mu(E_m \setminus S_k) \le \delta\)</span>, where
-<span class="math inline">\(\delta\)</span> is chosen with <span
-class="math inline">\(\int_{E_m \setminus S_k} g &lt; \epsilon\)</span>.
-Such <span class="math inline">\(\delta\)</span> exists because <span
-class="math inline">\(g\)</span> is integrable, therefore <span
-class="math inline">\(\int_{E_m \setminus S_k} g\)</span> absolute
-continuous with respect to <span class="math inline">\(\mu(E_m \
-S_k)\)</span>. Now, for <span class="math inline">\(n, m \ge
-k\)</span>,</p></li>
-<li><p><span class="math inline">\(\int_{E_m} | f_n - f_m | = \int_{S_k}
-|f_n - f_m| + \int_{E_m \setminus S_k} |f_n - f_m| \le
-\frac{\epsilon}{\mu(E_m) }\mu(E_m) + 2 \int_{E_m \setminus S_k} g \le 3
-\epsilon​\)</span></p></li>
-<li><p><span class="math inline">\(\int_E |f_n - f_m| = \int_{E
-\setminus E_m} |f_n - f_m| + \int_{E_m} | f_n - f_m| \le 2 \epsilon + 3
-\epsilon = 5 \epsilon​\)</span>.</p></li>
-</ol>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h1 id="theorem.-lebesgues-monotone-convergence-theorem">Theorem.
-Lebesgue's Monotone Convergence Theorem</h1>
-<p>Let <span class="math inline">\(\{ f_n \}\)</span> be a monotone
-increasing sequence of non-negative integrable functions that converges
-almost everywhere to <span class="math inline">\(f\)</span>. Then</p>
+<p>Define <span class="math inline">\(F(x) = f(x, b + k) - f(x,
+b)\)</span>, which is continuous and differentiable (since <span
+class="math inline">\(f_x\)</span> exists on <span
+class="math inline">\(R\)</span>). By mean value theorem, <span
+class="math inline">\(\exists a_1 \in [a, a + h]\)</span> for which</p>
 <p><span class="math display">\[
-    \lim_n \int f_n = \int f
+\Delta = F(a + h) - F(a) = F&#39;(a_1) h = [f_x(a_1, b + k) - f_x(a_1,
+b)] h
 \]</span></p>
-<p>Note: compared to the definition of integral of <span
-class="math inline">\(f\)</span></p>
-<ol type="1">
-<li>We no longer require <span class="math inline">\(\{ f_n \}\)</span>
-to be simple functions.<br />
-</li>
-<li><span class="math inline">\(\int f_n\)</span> might diverge to <span
-class="math inline">\(\infty\)</span>. In this case, <span
-class="math inline">\(f\)</span> is not integrable as <span
-class="math inline">\(\int f = \infty\)</span>. But the equation still
-holds.</li>
-</ol>
-<p><strong>Proof.</strong><br />
-First consider the case <span class="math inline">\(\int f_n\)</span> is
-unbounded. Then <span class="math inline">\(\int f = \int_n f_n =
-\infty\)</span> by definition.</p>
-<p>Otherwise, suppose <span class="math inline">\(\lim_n \int
-f_n\)</span> is bounded. Then <span class="math inline">\(\int
-f_n\)</span> is an increasing sequence that converges to a real number.
-It follows that for <span class="math inline">\(n &gt; m\)</span>, then
-<span class="math inline">\(f_n &gt; f_m\)</span>. Consequently<br />
-<span class="math display">\[
-    \int |f_n - f_m| = \int f_n - f_m = \int f_n - \int f_m  \rightarrow
-0 \qquad \text{ as } n, m \rightarrow \infty
+<p>Apply again mean value theorem, <span class="math inline">\(\exists
+b_1 \in [b, b + k]\)</span>, s.t.,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\Delta &amp;= f_{xy}(a_1, b_1) k h
+\end{aligned}
 \]</span></p>
-<p>Thus, <span class="math inline">\(\{ f_n \}\)</span> is a Cauchy
-sequence in the mean. Hence, <span class="math inline">\(f\)</span> is
-integrable and <span class="math inline">\(\lim_n \int f_n = \int
-f\)</span>.</p>
-<h1 id="theorem.-fatou-s-lemma">Theorem. Fatou 's Lemma</h1>
-<p>Let <span class="math inline">\(\{ f_n \}\)</span> be a sequence of
-non-negative and integrable functions. Then<br />
-<span class="math display">\[
-    \int \liminf_n f_n \le \liminf_n \int f_n
+<p>We can also define <span class="math inline">\(G(y) = f(a + h, y) -
+f(a, y)\)</span> and rewrite</p>
+<p><span class="math display">\[
+\Delta = G(b + h) - G(b)
 \]</span></p>
-<p><strong>Proof.</strong> Let <span class="math inline">\(h_n = \inf_{k
-\ge n} f_k\)</span>. Then <span class="math inline">\(h_n\)</span> is a
-sequence of monotone increasing measurable functions that converges to
-<span class="math inline">\(\liminf_n h_n\)</span>. By monotone
-convergence theorem,<br />
-<span class="math display">\[
-\int \lim_n h_n = \lim_n \int h_n  
-\]</span> On the other hand, <span class="math inline">\(h_n = \inf_{k
-\ge n} f_k \le f_m\)</span> for all <span class="math inline">\(m \ge
-n\)</span>. It follows that<br />
-<span class="math display">\[
-    \begin{aligned}
-        \int h_n        &amp;\le \inf_{m \ge n} \int f_m \\
-        \lim_n \int h_n &amp;\le \lim_n \inf_{m \ge n} \int f_m =
-\liminf_n \int f_n
-    \end{aligned}
-\]</span> Combining the two equations we obtain the Fatou 's lemma.</p>
-<h1 id="basic-properties-1"><strong>Basic Properties</strong></h1>
-<p>Let <span class="math inline">\(f\)</span> and <span
-class="math inline">\(g\)</span> be two integrable functions, and <span
-class="math inline">\(\alpha, \beta \in R\)</span> two real values.</p>
-<ol type="1">
-<li><p><strong>Linearity.</strong> Integrable functions forms a vector
-space, i.e., <span class="math inline">\(\int \alpha f + \beta g =
-\alpha \int f + \beta \int g\)</span><br />
-<strong>Proof.</strong> Let <span class="math inline">\(\{ f_n
-\}\)</span> and <span class="math inline">\(\{ g_n \}\)</span> be two
-sequence of simple, integrable functions that define the integral of
-<span class="math inline">\(f\)</span> and <span
-class="math inline">\(g\)</span> respectively.<br />
-Then <span class="math inline">\(\{ \alpha f_n + \beta g_n \}\)</span>
-is a sequence of simple, integrable functions that are Cauchy in the
-mean and converges to <span class="math inline">\(\alpha f + \beta
-g\)</span> almost everywhere (assuming that <span
-class="math inline">\(\lim_n f_n = f \ a.e.\)</span> and <span
-class="math inline">\(\lim_n g_n = g \ a.e.\)</span>).<br />
-<span class="math display">\[
-     \begin{aligned}
-         \int \alpha f + \beta g
-             &amp;= \lim_n \int \alpha f_n + \beta g_n \\
-             &amp;= \alpha \lim_n \int f_n + \beta \lim_n \int g_n =
-\alpha \int f + \beta \int g.
-     \end{aligned}
-\]</span> <span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em>If <span class="math inline">\(f \ge 0 \ a.e.​\)</span>, then
-<span class="math inline">\(\int f \ge 0​\)</span>.</em><br />
-<strong>Proof.</strong> Let <span class="math inline">\(\{ f_n
-\}​\)</span> be a sequence of simple, integrable function that are Cauchy
-in mean and <span class="math inline">\(\lim_n f_n = f \ a.e.​\)</span>.
-Then <span class="math inline">\(\lim_n \int f_n = \int
-f​\)</span>.<br />
-As <span class="math inline">\(f \ge 0 \ a.e.​\)</span>, <span
-class="math inline">\(\{ |f_n| \}​\)</span> converges to <span
-class="math inline">\(f​\)</span> almost everywhere.<br />
-Moreover, <span class="math inline">\(\{ |f_n| \}​\)</span> is simple,
-integrable and Cauchy in the mean.<br />
-Therefore, we also have<br />
-<span class="math display">\[
-     \int f = \lim_n \int |f_n| \ge 0
-\]</span> <span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em>If <span class="math inline">\(f \ge g \ a.e\)</span>, then
-<span class="math inline">\(\int f \ge \int g\)</span>.</em><br />
-<strong>Proof.</strong> Let <span class="math inline">\(h = f -
-g\)</span>, then <span class="math inline">\(h \ge 0 \ a.e.\)</span>. By
-property 2 and 1, we obtain<br />
-<span class="math display">\[
-     \int h = \int f - g = \int f - \int g \ge 0
+<p>Similarly, by applying mean value theorem twice, <span
+class="math inline">\(\exists b_2 \in [b, b + k], a_2 \in [a, a +
+h]\)</span>, s.t,</p>
+<p><span class="math display">\[
+\Delta = f_{yx}(a_2, b_2)hk
 \]</span></p>
-<p>NOTE: it is also possible to prove this from scratch. Let <span
-class="math inline">\(\{ f_n \}\)</span> and <span
-class="math inline">\(\{ g_n \}\)</span> be two sequence of simple,
-integrable functions that define the integral of <span
-class="math inline">\(f\)</span> and <span
-class="math inline">\(g\)</span> respectively. Define <span
-class="math inline">\(h_n = f_n - g_n\)</span> be a sequence of simple,
-integrable functions that are Cauchy in the mean. Moreover, we have
-<span class="math inline">\(\lim h_n \ge 0 \ a.e.\)</span>. We need to
-show that <span class="math inline">\(\int h = \lim_n \int h_n \ge
+<p>Putting together</p>
+<p><span class="math display">\[
+\Delta = f_{xy}(a_1, b_1) k h = f_{yx}(a_2, b_2)hk
+\]</span></p>
+<p>Because both <span class="math inline">\(f_{xy}\)</span> and <span
+class="math inline">\(f_{yx}\)</span> are continuous, as <span
+class="math inline">\(h \rightarrow 0\)</span> and <span
+class="math inline">\(k \rightarrow 0\)</span>, <span
+class="math inline">\(f_{xy}(a_1, b_1) \rightarrow f_{xy}(a, b)\)</span>
+and <span class="math inline">\(f_{yx}(a_2, b_2) \rightarrow f_{yx}(a,
+b)\)</span>, as desired.</p>
+<p><span class="math inline">\(\blacksquare\)</span>.</p>
+<h1 id="theorem-the-increment">Theorem The Increment</h1>
+<p>If function <span class="math inline">\(f : R^2 \rightarrow
+R\)</span> has continuous derivative <span
+class="math inline">\(f_x\)</span> and <span
+class="math inline">\(f_y\)</span> at some point <span
+class="math inline">\((a, b)\)</span>, then</p>
+<p><span class="math display">\[
+f(a + h, b + k) - f(a, b) = f_x(a, b) h + f_y(a, b)k + \epsilon_1 h +
+\epsilon_2 k
+\]</span></p>
+<p>where <span class="math inline">\(\epsilon_1, \epsilon_2 \rightarrow
+0\)</span> as <span class="math inline">\(h,k \rightarrow
 0\)</span>.</p>
-<p>As before, we would like to restrict our discussion on a <span
-class="math inline">\(\sigma\)</span>-finite measurable set. Define
-<span class="math inline">\(F_m = \cup_{i = 1}^m N(f_i) \cup \cup_{i =
-1}^m N(g_i)\)</span> and <span class="math inline">\(F = \cup_{m =
-1}^\infty F_m\)</span>. Clearly <span class="math inline">\(F_m \uparrow
-F\)</span> and <span class="math inline">\(\int h = \int_{F}
-h\)</span>.</p>
-<p>On the other hand,<br />
-<span class="math display">\[
-     \begin{aligned}
-     \int h  
-         &amp; \ge \int h_n - \left| \int h_n - \int h \right| \\
-         &amp;=  \int_{F_m} h_n - \int_{F_m} h_n + \int_{F_m} h_k -
-\int_{F_m} h_k + \int h_k - \int h_k + \int h_n - |\int h_n - \int
-h|  \\
-         &amp;\ge \int_{F_m} h_n - \left| \int_{F_m} h_n - \int_{F_m}
-h_k \right| - \left| \int_{F_m} h_k - \int h_k \right| - \left| \int h_k
-- \int h_n \right|  - \left| \int h_n - \int h \right| \\
-         &amp;\ge \int_{F_m} h_n - \int \left| h_n - h_k \right| -
-\left| \int_{F_m} h_k - \int h_k \right| - \int \left|  h_k - h_n
-\right|  - \int \left|  h_k - h_n \right|
-     \end{aligned}
-\]</span> Since <span class="math inline">\(\{h_n\}\)</span> is Cauchy
-in mean, we can take sufficient large <span
-class="math inline">\(N\)</span>, s.t., for <span
-class="math inline">\(n, k \ge N\)</span>, <span
-class="math inline">\(\int |h_k - h_n| \le \epsilon\)</span>. Now we
-choose an <span class="math inline">\(k \ge N\)</span> and fix its
-value. Further, as <span class="math inline">\(F_m \uparrow F\)</span>,
-we can choose an <span class="math inline">\(m\)</span>, s.t., <span
-class="math inline">\(|\int_{F_m} h_k - \int h_k| \le \epsilon\)</span>.
-It follow <span class="math display">\[
-\int h \ge \int_{F_m} h_n - 3 \epsilon
-\]</span> It suffice to show <span class="math inline">\(\int_{F_m}
-h_n\)</span> is sufficient large on a measurable set <span
-class="math inline">\(F_m\)</span> with finite measure for large enough
-<span class="math inline">\(n\)</span>. Define <span
-class="math inline">\(S_n \doteq \{ x \in F_m : h_i (x) \ge - \epsilon /
-\mu(F_m) \text{ for all } i \ge n \}\)</span>. As <span
-class="math inline">\(\lim_n h \ge 0 \ a.e.\)</span>, <span
-class="math inline">\(S_n \uparrow\)</span> and <span
-class="math inline">\(\exists n\)</span> s.t., <span
-class="math inline">\(\mu(F_m \setminus S_n) \le \delta\)</span>, where
-<span class="math inline">\(\delta\)</span> is chosen s.t., <span
-class="math inline">\(\int_{F_m \setminus S_n} |h_k| \le
-\epsilon\)</span>. Such <span class="math inline">\(\delta\)</span>
-exists since <span class="math inline">\(h_k\)</span> is simple and
-integrable. For such an <span class="math inline">\(n\)</span>,<br />
-<span class="math display">\[
-     \begin{aligned}
-         \int h  
-         &amp; \ge \int_{S_n} h_n + \int_{F_m \setminus S_n} h_n - 3
-\epsilon \\
-         &amp;\ge \frac{-\epsilon}{\mu(F_m)}\mu(F_m) + \int_{F_m
-\setminus S_n} h_k - \int_{F_m \setminus S_n} h_k + \int_{F_m \setminus
-S_n} h_n - 3 \epsilon \\
-         &amp;\ge -4 \epsilon - \left| \int_{F_m \setminus S_n} h_k
-\right| - \int |h_k - h_n| \\
-         &amp;\ge -6 \epsilon
-     \end{aligned}
-\]</span> As <span class="math inline">\(\epsilon\)</span> could be
-arbitrary value, it must be true that <span class="math inline">\(\int h
-\ge 0\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em><span class="math inline">\(|f|\)</span> is an integrable
-function, and <span class="math inline">\(|\int f| \le \int
-|f|\)</span>.</em><br />
-<strong>Proof.</strong> Let <span class="math inline">\(\{ f_n
-\}\)</span> be a sequence of simple, integrable function that are Cauchy
-in mean and <span class="math inline">\(\lim_n f_n = f \ a.e.\)</span>
-Then Let <span class="math inline">\(\{ |f_n| \}\)</span> be a sequence
-of simple, integrable function that are Cauchy in mean and <span
-class="math inline">\(\lim_n |f_n| = |f| \ a.e.​\)</span><br />
-<span class="math display">\[
-     \int|f| = \lim_n \int |f_n| \ge \pm \lim_n \int f_n = \pm \int f
+<p><strong>Proof:</strong></p>
+<p>By mean value theorem, <span class="math inline">\(\exists
+a_1\)</span> between <span class="math inline">\(a\)</span> and <span
+class="math inline">\(a + h\)</span>, <span
+class="math inline">\(\exists b_1\)</span> between <span
+class="math inline">\(b\)</span> and <span class="math inline">\(b +
+k\)</span>, s.t.,</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(a + h, b + k) - f(a, b)  
+&amp;= f(a + h, b + k) - f(a + h, b) + f(a + h, b) - f(a, b) \\
+&amp;= f_y(a + h, b_1)k + f_x(a_1, b)h
+\end{aligned}
 \]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em><span class="math inline">\(\int | f + g | \le \int |f| +
-\int |g|\)</span>.</em><br />
-<strong>Proof.</strong> <span class="math inline">\(\int|f+g| \le
-\int(|f|+|g|) =\int|f| +\int|g|. \qquad \blacksquare\)</span></p></li>
-<li><p><em>If <span class="math inline">\(m \le f \le M \ a.e.\)</span>
-on a measurable set <span class="math inline">\(E\)</span> with <span
-class="math inline">\(\mu(E) &lt; \infty\)</span>, then <span
-class="math inline">\(m \mu(E) \le \int_E f \le M
-\mu(E)\)</span>.</em><br />
-<strong>Proof.</strong> The condition <span class="math inline">\(\mu(E)
-&lt; \infty\)</span> ensures that <span class="math inline">\(m \mu(E)
-&lt; \infty\)</span>.<br />
-Then utilize that <span class="math inline">\(\mu \chi_E\)</span> is
-simple, integrable <span class="math inline">\(\mu \chi_E \le f \cdot
-\chi_E\)</span> almost everywhere.<br />
-<span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p>If <span class="math inline">\(f \ge 0,\ a.e.\)</span>, and if
-<span class="math inline">\(E\)</span> and <span
-class="math inline">\(F\)</span> are measurable sets with <span
-class="math inline">\(E⊂F\)</span>, then <span
-class="math inline">\(\int_E f \le \int_F f\)</span>.<br />
-<strong>Proof.</strong><br />
-Utilize that <span class="math inline">\(\chi_E f \le \chi_F f\)</span>
-almost everywhere.<br />
-<span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em>If <span class="math inline">\(F = +_{m \ge 1} F_n\)</span>
-is a disjoint union of measurable sets, then<br />
-<span class="math inline">\(\int_F f=\sum_{m \ge 1} \int_{F_m}
-f\)</span>.</em><br />
-<strong>Proof.</strong> Let <span class="math inline">\(\{ f_n
-\}\)</span> be a sequence of simple, integrable function that are Cauchy
-in mean and <span class="math inline">\(\lim_n f_n = f \ a.e.\)</span>.
-What we are going to prove is<br />
-<span class="math display">\[
-\lim_n \lim_k \int_{\cup_{m = 1}^k F_m} f_n = \lim_k \lim_n
-\int_{\cup_{m = 1}^k F_m} f_n = \lim_k \sum_{m = 1}^k \int_{F_m} f
-\]</span> The exchange order of limit is justified as <span
-class="math inline">\(\{f_n\}​\)</span> is a sequence that is Cauchy in
-mean:<br />
-<span class="math display">\[
-     \begin{aligned}
-         \left| \int_F f \right|
-         &amp;= \left| \int_F f_n \right| + \left| \int_F f_n - \int f
-\right| \\
-         &amp;\le \left| \int_{\cup_{m=1}^k F_m} f_n \right| + \left|
-\int_{\cup_{m=1}^k F_m} f_n -  \int_F f_n \right| + \left| \int_F f_n -
-\int f \right| \\
-         &amp;\le \left| \int_{\cup_{m=1}^k F_m} f \right| + \left|
-\int_{\cup_{m=1}^k F_m} f - \int_{\cup_{m=1}^k F_m} f_n \right| + \left|
-\int_{\cup_{m=1}^k F_m} f_n -  \int_F f_n \right| + \left| \int_F f_n -
-\int f \right| \\
-         &amp;\le \left| \sum_{m=1}^k \int_{F_m} f \right| + \epsilon +
-\left| \int_{\cup_{m=1}^k F_m} f_n -  \int_F f_n \right| + \epsilon
-     \end{aligned}
-\]</span> for large enough <span class="math inline">\(n\)</span>. The
-conclusion follows as <span class="math inline">\(m \rightarrow
-\infty\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span>.</p></li>
-<li><p><em>If <span class="math inline">\(F_1 \subset F_2 \subset F_3
-\subset ...\)</span> is a sequence of increasing measurable sets and let
-<span class="math inline">\(F = \cup_{n} F_n\)</span>, then <span
-class="math inline">\(\lim_n \int_{F_n} f = \int_F
-f\)</span>.</em><br />
-<strong>Proof.</strong> Let <span class="math inline">\(F_n&#39; = F_n -
-F_{n - 1}\)</span>. The result follows immediately from the previous
-property.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p><em>If <span class="math inline">\(F_1 \supset F_2 \supset F_3
-\supset ...\)</span> is a sequence of decreasing measurable sets and let
-<span class="math inline">\(F = \cap_{n} F_n\)</span>, then <span
-class="math inline">\(\lim_n \int_{F_n} f = \int_F
-f\)</span>.</em><br />
-<strong>Proof.</strong><br />
-Let <span class="math inline">\(F_n = F_{n} - F_{n + 1}\)</span> for
-<span class="math inline">\(n \ge 1\)</span> and <span
-class="math inline">\(F = \cap_n F_n\)</span>. Then <span
-class="math inline">\(F_1 = (\cup_{n} F_n&#39;) \cup F\)</span> <span
-class="math display">\[
-\sum_{n = 1}^\infty \int_{F_n&#39;} f + \int_F f = \int_{F_1} f
-\]</span> The fact that <span class="math inline">\(f\)</span> is
-integrable implies <span class="math inline">\(\int_{F_1} f &lt;
-\infty\)</span>. Hence <span class="math display">\[
-    \int_F f = \int_{F_1} f - \sum_{n = 1}^\infty \int_{F_n&#39;} f =
-\lim_k \left(\int_{F_1} f - \sum_{n = 1}^k \int_{F_n&#39;} f \right) =
-\lim_k \int_{F_{k + 1} } f
-\]</span> <span class="math inline">\(\blacksquare\)</span></p></li>
-<li><p>Let <span class="math inline">\(f\)</span> be an integrable
-function. Then for <span class="math inline">\(\forall \epsilon &gt;
-0\)</span>, the set <span class="math inline">\(E = \{ x \in X : f(x)
-&gt; \epsilon \}\)</span> has finite measure and <span
-class="math inline">\(\mu(E) \le \frac{\int_E
-f}{\epsilon}\)</span>.<br />
-<strong>Proof.</strong> Clearly <span class="math inline">\(E\)</span>
-is measurable. Further, consider the set <span class="math inline">\(F =
-\{ x \in X : f(x) \neq 0 \}\)</span>, which is <span
-class="math inline">\(\sigma\)</span> finite. We can rewrite it as an
-increasing sequence of finite measurable set <span
-class="math inline">\(F_1 \subset F_2 \subset F_3 ...\)</span>, s.t.,
-<span class="math inline">\(F_n \uparrow F\)</span>. As <span
-class="math inline">\(\mu(E \cap F_n) \le \infty\)</span>, <span
-class="math inline">\(\epsilon \chi_{E \cap F_n}\)</span> is integrable.
-By monotonicity of integration,<br />
-<span class="math display">\[
-    \epsilon \mu(E \cap F_n) = \int \epsilon \chi_{E \cap F_n} \le \int
-f \chi_{E \cap F_n} \le \int_E f &lt; \infty
-\]</span> Now we see that <span class="math inline">\(\mu(E \cap F_n)
-\le \frac{\int f}{\epsilon }\)</span>. Taking the limit of <span
-class="math inline">\(n \rightarrow \infty\)</span>, we obtain the
-desired result.<br />
-<span class="math inline">\(\blacksquare\)</span></p></li>
-</ol>
+<p>Define <span class="math inline">\(\epsilon_1 = f_x(a_1, b) - f_x(a,
+b)\)</span> and <span class="math inline">\(\epsilon_2 = f_y(a + h, b_1)
+- f_y(a, b)\)</span>, we infer that</p>
+<p><span class="math display">\[
+f(a + h, b + k) - f(a, b) = f_x(a, b) h + f_y(a, b)k + \epsilon_1 h +
+\epsilon_2 k
+\]</span></p>
+<p>The claim <span class="math inline">\(\epsilon_1, \epsilon_2
+\rightarrow 0\)</span> as <span class="math inline">\(h,k \rightarrow
+0\)</span> results from the continuity of <span
+class="math inline">\(f_x\)</span> and <span
+class="math inline">\(f_y\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span>.</p>
 <h1 id="reference">Reference</h1>
 <ol type="1">
-<li>AVNER FRIEDMAN, <em>Foundations of Modern Analysis</em></li>
+<li>George B. Thomas, Jr., Maurice D. Weir, Joel Hass, <em>THOMAS’
+CALCULUS</em></li>
 </ol>
 
       
@@ -1917,7 +948,7 @@ desired result.<br />
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/47/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><span class="page-number current">48</span><a class="page-number" href="/page/49/">49</a><span class="space">&hellip;</span><a class="page-number" href="/page/64/">64</a><a class="extend next" rel="next" href="/page/49/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/47/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/47/">47</a><span class="page-number current">48</span><a class="page-number" href="/page/49/">49</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/49/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1983,12 +1014,12 @@ desired result.<br />
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">192</span>
+          <span class="site-state-item-count">196</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
@@ -2015,7 +1046,7 @@ desired result.<br />
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

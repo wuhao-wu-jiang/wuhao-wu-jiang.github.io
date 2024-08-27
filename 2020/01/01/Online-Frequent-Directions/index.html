@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="ProblemOne scenario is to approximate $A \in \mathbb{R}^{n \times d}$ in an online fashion, i.e., the rows of $A$ comes on by one (no missing values).Denote the $i$-th row of $A$ as $a_i$.We">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Online Frequent Directions">
+<meta property="og:url" content="http://example.com/2020/01/01/Online-Frequent-Directions/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="ProblemOne scenario is to approximate $A \in \mathbb{R}^{n \times d}$ in an online fashion, i.e., the rows of $A$ comes on by one (no missing values).Denote the $i$-th row of $A$ as $a_i$.We">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-01-01T20:04:12.000Z">
+<meta property="article:modified_time" content="2024-08-27T13:56:25.145Z">
+<meta property="article:author" content="WOW">
+<meta property="article:tag" content="Heavy Hitter">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2020/01/01/Online-Frequent-Directions/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Online Frequent Directions | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/01/Online-Frequent-Directions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Online Frequent Directions
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-01-01 21:04:12" itemprop="dateCreated datePublished" datetime="2020-01-01T21:04:12+01:00">2020-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-08-27 15:56:25" itemprop="dateModified" datetime="2024-08-27T15:56:25+02:00">2024-08-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <!-- 
+# Background
+
+Given a matrix $A \in \mathbb{R}^{m \times n}$, the goal of low rank matrix approximation is to find a matrix $B \in \mathbb{R}^{m \times n}$ with rank at most $k$ that approximates $A$ as well as possible. 
+This can be measured by $2$-norm, i.e., 
+$$
+     \Vert A - B \Vert_2  = \max_{x \in \mathbb{R}^n,  \Vert x \Vert_2  = 1} \Vert (A - B) x \Vert_2 
+$$
+
+If we know the entire matrix $A$, its best approximation is given by the singular vector decomposition, 
+$$
+    B \doteq \sum_{i = 1}^k \sigma_i u_i v_i^T
+$$
+where $\sigma_i \in \mathbb{R}$, $u_i \in \mathbb{R}^m$ and $v_i \in \mathbb{R}^n$ are the $i$-th largest singular value, left singular vector and right singular vector of $A$, respectively. 
+
+When some elements of $A$ are missing, finding such a matrix $B$ to approximate $A$ as well as to predict the missing entries of $A$ is known as collaborative filtering, which is used in recommendation system. 
+-->
+<!-- 
+# Problem 
+
+One scenario is to approximate $A \in \mathbb{R}^{m \times n}$ in an online fashion, i.e., the rows of $A$ comes on by one (no missing values). 
+Denote the $i$-th row of $A$ as $a_i$. 
+We need to maintain a smaller matrix $B \in \mathbb{R}^{\ell \times n}$ ($\ell \ll m$), termed the matrix sketch of $A$, trying to minimize
+$$
+    \begin{aligned}
+        \max_{x \in \mathbb{R}^n,  \Vert x \Vert_2  = 1} 
+            \Big| \Vert A x \Vert_2^2 - \Vert B x \Vert_2^2 \Big|
+        &= \max_{x \in \mathbb{R}^n,  \Vert x \Vert_2  = 1} 
+            \Big|  x^T (A^T A - B^T B) x \Big| 
+        = \Vert  A^T A - B^T B  \Vert_2,
+    \end{aligned}
+$$
+where the last equality holds, since for each symmetric matrix $S = V_S \Sigma_S V_S^T$ (where $V_S \Sigma_S V_S^T$ is the eigenvalue decomposition of $S$), it holds that
+$$
+    |x^T S x|
+        = \big| (V_S^T x)^T \Sigma_S (V_S^T x) \big|
+        = \big| \sum \lambda_i \big( (V_S^T x)_i \big)^2 \big|
+        \le \max | \lambda_i |. 
+$$ -->
+<!-- # Algorithm
+
+We will present an algorithm, which achieves an error of 
+$$
+    \Vert  A^T A - B^T B  \Vert_2  \le \min_{k \in [\ell]} \frac{\Vert A - A_{[k]} \Vert _F^2}{ \ell - k },
+$$
+where $\Vert  A  \Vert _F \doteq \sqrt{ \sum_{ i, j \in [n] } A_{i,j}^2 }$ is the Frobenius norm of $A$. 
+
+
+>  **Algorithm** [1]   
+> 1. $B_0 \leftarrow$ ${\ell \times n}$ all zero matrix.   
+> 2. For $i \in [m]$:   
+> 3. $\qquad$ $C_i \leftarrow$ matrix obtained by inserting $a_i$ into a zero row of $B_{i - 1}$.   
+> 4. $\qquad$ If $C_i$ has no zero row after insertion:   
+> 5. $\qquad$ $\qquad$ $U_i, \Sigma_{C_i}, V_i \leftarrow \text{SVD} (C_i)$, such that $C_i = U_i \Sigma_{C_i} V_i^T$.    
+> 6. $\qquad$ $\qquad$ $\Sigma_{B_i} \leftarrow \sqrt{ \max \{ \Sigma_{C_i}^2 - \sigma_{i, \ell}^2 I, 0 \} }$   
+> 7. $\qquad$ $\qquad$ $B_i \leftarrow \Sigma_{B_i} V_i^T$.    
+> 8. $\qquad$ Else    
+> 9. $\qquad$ $\qquad$ $B_i \leftarrow C_i$.   
+
+Here $\sigma_{i, \ell}$ is the $\ell$-th largest singular value of $\Sigma_{C_i}$. 
+The line 6 throws away all singular values that are less than $\sigma_{i, \ell}$, and then subtract the squares of all singular values that are greater by $\sigma_{i, \ell}^2$. 
+
+
+For the convenience of discussion, at each iteration, if there is empty row after inserting $a_i$ into $B_{i - 1}$, we define 
+$$
+    U_i, \Sigma_{C_i}, V_i \leftarrow \text{SVD} (C_i) , 
+    \, 
+    \text{ and }
+    \, 
+    \Sigma_{B_i} = \Sigma_{C_i}. 
+$$
+Note that the SVD decomposition of $C_i$ always exists, even though the algorithm does not perform it at some iteration.
+
+> **Lemma.** For each $j \in [m]$, and each vector $x \in \mathbb{R}^n$, it holds that
+> $$
+    \begin{aligned}
+        \Vert A x  \Vert_2^2 -  \Vert B_j x \Vert_2^2 
+        = \sum_{i = 1}^j \left( \Vert \Sigma_{C_i} V_i^T  x  \Vert_2^2 -  \Vert \Sigma_{B_i} V_i^T  x  \Vert_2^2 \right). 
+    \end{aligned}
+> $$
+
+**Proof.**
+Assuming $B_0 = 0$, we have
+$$
+\begin{aligned}
+    \Vert A x  \Vert_2^2 -  \Vert B_j x \Vert_2^2 
+    = \sum_{i = 1}^j \left( \left\langle a_i, x \right\rangle ^2  +  \Vert B_{i - 1}  x  \Vert_2^2 -  \Vert B_{i} x  \Vert_2^2 \right) 
+    = \sum_{i = 1}^j \left( \Vert \Sigma_{C_i} V_i^T  x  \Vert_2^2 -  \Vert \Sigma_{B_i} V_i^T  x  \Vert_2^2 \right). 
+\end{aligned}
+$$
+$\square$
+
+> **Corollary.** $B_j^T B_j \preccurlyeq A^T A$ for $\ell \in [m]$. 
+
+**Proof:** 
+The claim follows as $\Sigma_{B_i} \preccurlyeq \Sigma_{C_i}$ for each $i \in [m]$. 
+
+$\square$ -->
+<!-- 
+To show $A^T A - B_j^T B_j$ is semi-positive definitive, we need to show that $\forall x \in \mathbb{R}^n$, we have 
+$$
+    x^T A^T A x - x^T B_j^T B_j  x \ge 0
+    \Longleftrightarrow  \Vert Ax \Vert_2^2 \ge  \Vert B_j x \Vert_2^2. 
+$$
+
+To prove this, we are going to show that 
+$$
+    \Vert Ax \Vert_2^2 = \sum_{i \in [m] } \left\langle a_i, x \right\rangle ^2 \ge \sum_{i \in [k] } \left\langle a_i, x \right\rangle ^2 \ge \Vert B_j x \Vert_2^2.
+$$
+
+To prove the last inequality, we will prove that for $i \in [m]$, 
+$$
+     \Vert C_i \Vert_2^2 = \Vert B_{i - 1} x \Vert_2^2 + \left\langle a_i, x \right\rangle ^2 \ge  \Vert B_i x \Vert_2^2.
+$$
+
+There are two possible cases. 
+
+1.  If $C_i$ contains empty row, then the inequality holds with equality as $B_i \leftarrow C_i$.
+
+2.  Otherwise, as $B_i = \Sigma_{B_i} V_i^T$,
+    $$
+    \begin{aligned}
+            \Vert B_i x \Vert_2^2  
+                &=  \Vert \Sigma_{B_i} V_i^T x \Vert_2^2. \\
+            \Vert C_i x \Vert_2^2 
+                &= \Vert U_i \Sigma_{C_i} V_i^T x \Vert_2^2 
+                = \Vert \Sigma_{C_i} V_i^T x \Vert_2^2 . 
+    \end{aligned}
+    $$
+
+    On the other hand,
+    $$
+        \begin{aligned}
+            \Vert C_i x \Vert_2^2 
+                = \Vert U_i \Sigma_{C_i} V_i^T x \Vert_2^2 
+                = x^T V_i \Sigma_{C_i}^T U_i^T U_i \Sigma_{C_i} V_i^T x 
+                = x^T V_i \Sigma_{C_i}^T \Sigma_{C_i} V_i^T x 
+                = \Vert \Sigma_{C_i} V_i^T x \Vert_2^2 . 
+        \end{aligned}
+    $$
+    Since $U_i$ is an orthogonal matrix and corresponds to a left rotation, it should not change the $\ell_2$-norm of $\Sigma_{C_i} V_i^T x$.
+
+    By the transformation performed by the algorithm, we have $\Sigma_{C_i}^T \Sigma_{C_i} \preccurlyeq \Sigma_{B_i}^T  \Sigma_{B_i}$, therefore, 
+    $$
+        \Vert C_i x \Vert_2^2 \ge \Vert B_i x \Vert_2^2.
+    $$ 
+-->
+<!-- > **Theorem.** 
+> $$
+    \Vert A^T A - B_m^T B_m \Vert_2  \le 2 \frac{ \Vert A \Vert _F^2 }{ k }. 
+> $$
+
+**Proof:**  -->
+<!-- 
+First, we show that for a positive semi-definite matrix $S$, we have 
+$$
+     \Vert S \Vert_2  = \max_{ x \in \mathbb{R}^n,  \Vert x \Vert  = 1}  \Vert S x \Vert_2  = \lambda_1 = v_1^T S v_1,
+$$
+
+where $\lambda_1$ is the largest eigenvalue of $S$ and $v_1$ is the corresponding eigenvector. To see this, let $S = V_S \Sigma_S V_S^T$ be the singular value decomposition of $S$. Then 
+$$
+    \Vert S x \Vert_2^2 
+        = (V_S^T x)^T \Sigma_S (V_S^T x) 
+        = \sum \lambda_i \big( (V_S^T x)_i \big)^2 
+        \le \sum \lambda_1 \big( (V_S^T x)_1 \big)^2.
+$$
+
+For $x \in \mathbb{R}^n,  \Vert x \Vert_2  = 1$, this is maximized when $x = v_1$.  
+ -->
+<!-- In the previous section, we have proven that $B_m^T B_m \preccurlyeq A^T A$. Hence, $S \doteq A^T A - B_m^T B_m$ is a positive semi-definite matrix. Let $v$ be its unit eigenvector associated with the largest eigenvalue. Then 
+$$
+\begin{aligned}
+ \Vert A^T A - B_m^T B_m \Vert_2
+    &=  v ^TA^T A  v -  v ^T B_m^T B_m v  \\
+    &=  \Vert A v  \Vert_2^2 -  \Vert B_m v  \Vert_2^2 \\
+    % &= \sum_{i = 1}^m \left( \left\langle a_i, v \right\rangle ^2  +  \Vert B_{i - 1}  v  \Vert_2^2 -  \Vert B_{i}  v  \Vert_2^2 \right) \\
+    &= \sum_{i = 1}^m \left( \Vert \Sigma_{C_i} V_i^T  v  \Vert_2^2 -  \Vert \Sigma_{B_i} V_i^T  v  \Vert_2^2 \right) \\
+    % &= \sum_{i = 1}^m \left( v_1^T V_i \Sigma_{C_i}^T \Sigma_{C_i} V_i^T v_1 - v_1^T V_i \Sigma_{B_i}^T \Sigma_{B_i} V_i^T v_1 \right) \\
+    &= \sum_{i = 1}^m (V_i^T v)^T \left( \Sigma_{C_i}^T \Sigma_{C_i} - \Sigma_{B_i}^T \Sigma_{B_i} \right) (V_i^T v) \\
+    &\le \sum_{i = 1}^m  \left\Vert \Sigma_{C_i}^T \Sigma_{C_i}  - \Sigma_{B_i}^T \Sigma_{B_i}  \right\Vert_2  \\
+    &= \sum_{i = 1}^m \sigma_{i, \ell }^2.
+\end{aligned}
+$$
+
+It is left to bound the size of $\sum_{i = 1}^m \sigma_{i, \ell }^2$:
+$$
+\begin{aligned}
+ \Vert A \Vert^2_F -  \Vert B_m \Vert^2_F
+    &= \sum_{i = 1}^m  \left( \Vert a_i \Vert_2^2  +  \Vert B_{i - 1} \Vert^2_F -  \Vert B_{i} \Vert^2_F \right) \\
+    &= \sum_{i = 1}^m  \left( \Vert C_i \Vert_2^2  -  \Vert B_{i} \Vert^2_F \right) 
+    % &= \sum_{i = 1}^m  \left( \Vert U_i \Sigma_{C_i} V_i^T \Vert^2_F -  \Vert \Sigma_{B_i} V_i^T \Vert^2_F \right) \\
+    % &= \sum_{i = 1}^m  \left( \Vert \Sigma_{C_i} V_i^T \Vert^2_F -  \Vert \Sigma_{B_i} V_i^T \Vert^2_F \right) \\
+    = \sum_{i = 1}^m \left( \Vert \Sigma_{C_i} \Vert^2_F -  \Vert \Sigma_{B_i} \Vert^2 _F \right) 
+    \ge \ell \cdot \sum_{i = 1}^m \sigma_{i, \ell }^2.
+\end{aligned}
+$$
+
+Finally, let $u_1, \ldots, u_d \in \mathbb{R}^n$ be the right singular vectors of $A$.
+Then for each $k \in [\ell - 1]$, it holds that 
+$$
+\begin{aligned}
+ \Vert A \Vert^2_F -  \Vert B_m \Vert^2_F
+    &= \sum_{i = 1}^k  \Vert A u_i \Vert_2^2  +  \sum_{i = k + 1}^d  \Vert A u_i \Vert_2^2 -  \Vert B_m \Vert^2_F \\
+    &= \sum_{i = 1}^k  \Vert A u_i \Vert_2^2  +  \Vert A - A_{[k]} \Vert_2^2 -  \Vert B_m \Vert^2_F \\
+    &\le \sum_{i = 1}^k  \big( \Vert A u_i \Vert_2^2 - \Vert B_m u_i \Vert_2^2 \big)  +  \Vert A - A_{[k]} \Vert_2^2  & \qquad \Vert B_m \Vert^2_F \ge \sum_{i = 1}^k  \Vert B_m u_i \Vert_2^2 \\
+    &\le \sum_{i = 1}^k  \big( \Vert A u_i \Vert_2^2 - \Vert B_m u_i \Vert_2^2 \big)  +  \Vert A - A_{[k]} \Vert_2^2  \\
+    &\le k \cdot \Vert A^T A - B_m^T B_m \Vert_2 +  \Vert A - A_{[k]} \Vert_2^2. 
+\end{aligned}
+$$
+
+In conclusion, we have 
+$$
+    \ell \cdot \Vert A^T A - B_m^T B_m \Vert_2
+        \le  k \cdot \Vert A^T A - B_m^T B_m \Vert_2 +  \Vert A - A_{[k]} \Vert_2^2,
+$$
+which proves the theorem. -->
+<!-- The last inequality holds by the definition of $\Sigma_{C_i}$ and $\Sigma_{B_i}$.  -->
+<!-- **Remark:** In the proof we apply the fact that the squared Frobenius norm of a matrix $M$ equals the sum of the squares of its singular values. 
+Let $M = \sum_{j = 1}^n \sigma_j u_j v_j^\top$, then 
+$$
+\begin{align}
+  \Vert M \Vert_{\mathrm{F}}^2 
+  &= \operatorname{tr}(M^\top M) \\
+  &= \operatorname{tr} \Bigg( \Big( \sum_{i = 1}^n \sigma_i v_i^\top u_i \Big) \Big( \sum_{j = 1}^n \sigma_j u_j v_j^\top \Big) \Bigg) \\
+  &= \operatorname{tr}\Bigg( \sum_{i,j} \sigma_i \sigma_j v_i u_i^\top u_j v_j^\top \Bigg) \\
+  &= \operatorname{tr} \Bigg( \sum_{i} \sigma_i^2 v_i v_i^\top \Bigg) \\
+  &= \sum_{i} \sigma_i^2 \cdot \operatorname{tr} \Bigg( v_i v_i^\top \Bigg) \\
+  &= \sum_{i} \sigma_i^2.
+\end{align}
+$$
+
+
+In conclusion, 
+$$
+\begin{aligned}
+    \frac{ \Vert A^T A - B_m^T B_m \Vert_2 }{ \Vert A \Vert^2_F} \le \frac{ \Vert A^T A - B_m^T B_m \Vert_2 }{ \Vert A \Vert^2_F -  \Vert B_m \Vert^2_F} \le \frac{2}{k}.
+\end{aligned}
+$$
+
+$\square$ -->
+<h1 id="Problem"><a href="#Problem" class="headerlink" title="Problem"></a>Problem</h1><p>One scenario is to approximate $A \in \mathbb{R}^{n \times d}$ in an online fashion, i.e., the rows of $A$ comes on by one (no missing values).<br>Denote the $i$-th row of $A$ as $a_i$.<br>We need to maintain a smaller matrix $B \in \mathbb{R}^{\ell \times d}$ ($\ell \ll n$), termed the matrix sketch of $A$, trying to minimize</p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        \max_{x \in \mathbb{R}^d,  \Vert x \Vert_2  = 1} 
+            \Big| \Vert A x \Vert_2^2 - \Vert B x \Vert_2^2 \Big|
+        &= \max_{x \in \mathbb{R}^d,  \Vert x \Vert_2  = 1} 
+            \Big|  x^T (A^T A - B^T B) x \Big| 
+        = \Vert  A^T A - B^T B  \Vert_2.
+    \end{aligned}</script><h1 id="Algorithm"><a href="#Algorithm" class="headerlink" title="Algorithm"></a>Algorithm</h1><p>We will present an algorithm, which achieves an error of </p>
+<script type="math/tex; mode=display">
+    \Vert  A^T A - B^T B  \Vert_2  \le \min_{k \in [\ell]} \frac{\Vert A - A_{[k]} \Vert _F^2}{ \ell - k },</script><p>where $\Vert  A  \Vert <em>F \doteq \sqrt{ \sum</em>{ i \in [n], j \in [d] } A_{i,j}^2 }$ is the Frobenius norm of $A$. </p>
+<blockquote>
+<p> <strong>Algorithm</strong> [1]   </p>
+<ol>
+<li>$B \leftarrow$ empty matrix.   </li>
+<li>For $i \in [n]$:   </li>
+<li>$\qquad$ $B \leftarrow [B ; a_i]$ matrix obtained by inserting $a_i$ after the last row $B$   </li>
+<li>$\qquad$ $B$ has $\ell$ rows:   </li>
+<li>$\qquad$ $\qquad$ $U_i, \Sigma_i, V_i \leftarrow \text{SVD} (B)$, such that $B = U_i \Sigma_i V_i^T$.    </li>
+<li>$\qquad$ $\qquad$ $\overline{\Sigma<em>i} \leftarrow \sqrt{ \max { \Sigma_i^2 - \sigma</em>{i, \ell}^2 I, 0 } }$   </li>
+<li>$\qquad$ $\qquad$ $B \leftarrow \overline{\Sigma_i} V_i^T$</li>
+</ol>
+</blockquote>
+<p>Here $\sigma<em>{i, \ell}$ is the $\ell$-th largest singular value of $\Sigma_i$.<br>The line 6 throws away all singular values that are less than $\sigma</em>{i, \ell}$, and then subtract the squares of all singular values that are greater by $\sigma_{i, \ell}^2$. </p>
+<p>For the convenience of discussion, at each iteration, if $B$ has less than $\ell$ rows after insertion, we still define </p>
+<script type="math/tex; mode=display">
+    U_i, \Sigma_i, V_i \leftarrow \text{SVD} (B) , 
+    \, 
+    \text{ and }
+    \, 
+    \overline{\Sigma_i} = \Sigma_i.</script><p>To analyze the error, first observe that, when the algorithm stops,  </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        A^T A - B^T B
+            &= \sum_{i \in [n]} \left( A_i^T A_i + B_{i - 1}^T B_{i - 1} - B_i^T B_i \right).
+    \end{aligned}</script><p>Therefore, for an arbitrary unit vector $x \in \R^d$, </p>
+<script type="math/tex; mode=display">
+    \begin{aligned}
+        x^T A^T A x - x ^T B^T B x
+            &= \sum_{i \in [n]} \left( x^T A_i^T A_i x + x^T B_{i - 1}^T B_{i - 1} x - x^T B_i^T B_i x \right) \\
+            &= \sum_{i = 1}^j \left( \left\langle A_i, x \right\rangle ^2  +  \Vert B_{i - 1}  x  \Vert_2^2 -  \Vert B_{i} x  \Vert_2^2 \right) \\
+            &= \sum_{i = 1}^n \left( \Vert \Sigma_i V_i^T  v  \Vert_2^2 -  \Vert \overline{\Sigma_i} V_i^T  v  \Vert_2^2 \right) \\
+            &\le \sum_{i = 1}^n \sigma_{i, \ell }^2. 
+    \end{aligned}</script><p>The last inequality holds since $V<em>i^T x$ is a unit vector, and $\Sigma_i^T \Sigma_i - \overline{\Sigma_i}^T \overline{\Sigma_i}$ is a diagonal matrix whose elements are bounded by $\sigma</em>{i, \ell}^2$. </p>
+<p>It is left to bound the size of $\sum<em>{i = 1}^n \sigma</em>{i, \ell }^2$:</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    \ell \cdot \sum_{i = 1}^n \sigma_{i, \ell }^2
+    &\le \sum_{i = 1}^n \left( \Vert \Sigma_i \Vert^2_F -  \Vert \overline{\Sigma_i} \Vert^2 _F \right) \\
+    &= \sum_{i = 1}^n  \left( \Vert C_i \Vert_F^2  -  \Vert B_{i} \Vert^2_F \right) \\
+    &= \sum_{i = 1}^n  \left( \Vert a_i \Vert_2^2  +  \Vert B_{i - 1} \Vert^2_F -  \Vert B_{i} \Vert^2_F \right) \\
+    &= \Vert A \Vert^2_F -  \Vert B \Vert^2_F.
+\end{aligned}</script><p>Finally, let $u_1, \ldots, u_d \in \mathbb{R}^d$ be the right singular vectors of $A$.<br>Then for each $k \in [\ell]$, it holds that </p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+ \Vert A \Vert^2_F -  \Vert B \Vert^2_F
+    &= \sum_{i = 1}^k  \Vert A u_i \Vert_2^2  +  \sum_{i = k + 1}^d  \Vert A u_i \Vert_2^2 -  \Vert B \Vert^2_F \\
+    &= \sum_{i = 1}^k  \Vert A u_i \Vert_2^2  +  \Vert A - A_{[k]} \Vert_2^2 -  \Vert B \Vert^2_F \\
+    &\le \sum_{i = 1}^k  \big( \Vert A u_i \Vert_2^2 - \Vert B u_i \Vert_2^2 \big)  +  \Vert A - A_{[k]} \Vert_2^2  & \qquad \Vert B \Vert^2_F = \Vert B V\Vert^2_F \ge \sum_{i = 1}^k  \Vert B u_i \Vert_2^2 \\
+    &\le \sum_{i = 1}^k  \big( \Vert A u_i \Vert_2^2 - \Vert B u_i \Vert_2^2 \big)  +  \Vert A - A_{[k]} \Vert_2^2  \\
+    &\le k \cdot \Vert A^T A - B^T B \Vert_2 +  \Vert A - A_{[k]} \Vert_2^2. 
+\end{aligned}</script><p>In conclusion, we have </p>
+<script type="math/tex; mode=display">
+    \ell \cdot \Vert A^T A - B^T B \Vert_2
+        \le  k \cdot \Vert A^T A - B^T B \Vert_2 +  \Vert A - A_{[k]} \Vert_2^2,</script><p>which proves the theorem.</p>
+<p><strong>Remark:</strong> In the proof we apply the fact that the squared Frobenius norm of a matrix $M$ equals the sum of the squares of its singular values.<br>Let $M = \sum_{j = 1}^d \sigma_j u_j v_j^\top$, then </p>
+<script type="math/tex; mode=display">
+\begin{align}
+    \Vert M \Vert_{\mathrm{F}}^2 
+    = \Vert U \Sigma V^T \Vert_{\mathrm{F}}^2 
+    = \Vert \Sigma \Vert_{\mathrm{F}}^2.
+\end{align}</script><p>The last inequality holds since $U$ and $V^T$ are rotations which does not change the Frobenius norm. </p>
+<p>In conclusion, </p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    \frac{ \Vert A^T A - B^T B \Vert_2 }{ \Vert A \Vert^2_F} \le \frac{ \Vert A^T A - B^T B \Vert_2 }{ \Vert A \Vert^2_F -  \Vert B \Vert^2_F} \le \frac{2}{k}.
+\end{aligned}</script><p>$\square$</p>
+<h1 id="A-Counterpart-For-Heavy-Hitters"><a href="#A-Counterpart-For-Heavy-Hitters" class="headerlink" title="A Counterpart For Heavy Hitters"></a>A Counterpart For Heavy Hitters</h1><p>We apply similar idea for the heavy hitter problem in streaming model. </p>
+<h2 id="Problem-1"><a href="#Problem-1" class="headerlink" title="Problem"></a>Problem</h2><p>There is a streaming $S = { a_1, …, a_m }$ of $m$ elements each from a finite domain $[d]$. Given a parameter $k$, we want to find the elements in $[d]$ whose frequencies, i.e., the number of times they appear in $S$, are at least $k$.     </p>
+<h2 id="Algorithm-1"><a href="#Algorithm-1" class="headerlink" title="Algorithm"></a>Algorithm</h2><p>The following algorithm will provide under-estimates of elements’ frequencies, with space usage $2k$ and error $m / k$.  </p>
+<blockquote>
+<p><strong>Processing Stream</strong>    </p>
+<ol>
+<li>$B_0 \leftarrow$ an empty (element, frequency) list of capacity $2k$.     </li>
+<li>For $t \in [m]$:   </li>
+<li>$\qquad$ $C<em>t \leftarrow$ list obtained by inserting ${ a_t, 1 }$ into $B</em>{t - 1}$.   </li>
+<li>$\qquad$ If $C_t$ has size $2k$:   </li>
+<li>$\qquad$ $\qquad$ $B_t \leftarrow$ list obtained from $C_t$ by merging frequencies.    </li>
+<li>$\qquad$ $\qquad$ // each element in $[d]$ now appears in $B_t$ at most once.      </li>
+<li>$\qquad$ $\qquad$ $\sigma_t \leftarrow$ the $k$-th largest frequency in $B_t$.      </li>
+<li>$\qquad$ $\qquad$ Subtract the frequency of each element in $B_t$ by $\sigma_t$.        </li>
+<li>$\qquad$ $\qquad$ Remove elements with non-positive frequencies.         </li>
+<li>$\qquad$ Else      </li>
+<li>$\qquad$ $\qquad$ $\sigma_t \leftarrow 0;$      </li>
+<li>$\qquad$ $\qquad$ $B_t \leftarrow C_t$.   </li>
+</ol>
+<p><strong>QUERY</strong><br><strong>Input: $B_t$ for some $t \in [m]$, $v \in [d].$</strong><br><strong>Output: frequency estimation of $v$ in ${a_1, …., a_t }$</strong>      </p>
+<ol>
+<li>$\hat f_{B_t}[v] \leftarrow 0;$    </li>
+<li>for $(v_i,  f_i) \in B_t$ do    </li>
+<li>$\qquad$ if $v_i = v$ then    </li>
+<li>$\qquad$ $\qquad$ $\hat f<em>{B_t} [ v ] \leftarrow \hat f</em>{B_t} [v] + f_i;$           </li>
+<li><strong>Return</strong> $\hat f_{B_t} [v]$.     </li>
+</ol>
+</blockquote>
+<p>Observe that for $v \in [d]$, if $v$ does not appears in $B_t$, then the algorithm returns 0. </p>
+<h2 id="Time"><a href="#Time" class="headerlink" title="Time"></a>Time</h2><blockquote>
+<p>The amortized time for each update is $O(1)$.   </p>
+</blockquote>
+<ol>
+<li>Inserting ${a<em>i, 1}$ into $B</em>{i - 1}$ takes $O(1)$ time.   </li>
+<li>Merging $C_i$, subtracting elements’ frequencies by $\sigma_i$ and removing non-positive elements take $O(k)$ time. But this happens only every $k / 2$ updates. Hence the amortized time is $O(1)$.    </li>
+</ol>
+<h2 id="Error"><a href="#Error" class="headerlink" title="Error"></a>Error</h2><blockquote>
+<p><strong>Theorem 1.</strong> $\forall t \in [m], v \in [d]$, $\hat f_{B_t} [v]$ is an underestimate of $v$’s frequency in ${a_1, … a_t }$.    </p>
+</blockquote>
+<p><strong>Proof.</strong> Obviously true by how the algorithm works. </p>
+<blockquote>
+<p><strong>Theorem 2.</strong> $\forall v \in [d], t \in [m]$, let $f_t [v]$ be the number of times $v$ appears in ${a_1, …, a_t }$. We have that </p>
+<script type="math/tex; mode=display">
+    f_t[v] - \hat f_{B_t} [v] < \frac{t}{k}.</script></blockquote>
+<p><strong>Proof.</strong> For each $i \in {0, 1, …, m }$, define $\Vert B<em>i \Vert_1 = \left( \sum</em>{ (v<em>j, f_j) \in B_i } f_j \right)$ and for each $i \in [m]$, let $\Vert C_i \Vert_1 = \left( \sum</em>{ (v_j, f_j) \in C_i } f_j \right)$. Observe that</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+    f_t[v]- \hat f_{B_t} [v] \le \sum_{i \in [t] } \sigma_i.
+\end{aligned}</script><p>On the other hand, </p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+ t -  \Vert B_m \Vert_1
+    &= \sum_{i \in [t] }  \left( 1  +  \Vert B_{i - 1} \Vert_1 -  \Vert B_i \Vert_1 \right) \\
+    &= \sum_{i \in [t] }  \left( \Vert C_i \Vert_1  -  \Vert B_i \Vert_1 \right) \\
+    &\ge k \cdot \sum_{i \in [t] } \sigma_i.
+\end{aligned}</script><p>Combined, we get $f<em>t[v]- \hat f</em>{B_t} [v] \le \frac{t - \Vert B_t \Vert_1}{k}$.   </p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1]. Edo, Liberty. “Simple and deterministic matrix sketching.” In Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining, pp. 581-588. ACM, 2013.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Heavy-Hitter/" rel="tag"># Heavy Hitter</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/13/Polyhydra-and-Polytope/" rel="prev" title="Polyhydra and Polytopes">
+      <i class="fa fa-chevron-left"></i> Polyhydra and Polytopes
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/02/Newton-s-Method/" rel="next" title="Newton's Method">
+      Newton's Method <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Algorithm"><span class="nav-number">2.</span> <span class="nav-text">Algorithm</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#A-Counterpart-For-Heavy-Hitters"><span class="nav-number">3.</span> <span class="nav-text">A Counterpart For Heavy Hitters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Problem-1"><span class="nav-number">3.1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Algorithm-1"><span class="nav-number">3.2.</span> <span class="nav-text">Algorithm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Time"><span class="nav-number">3.3.</span> <span class="nav-text">Time</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Error"><span class="nav-number">3.4.</span> <span class="nav-text">Error</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
