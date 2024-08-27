@@ -146,292 +146,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2016/08/29/SimRank/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2016/08/29/SimRank/" class="post-title-link" itemprop="url">SimRank</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2016-08-29 12:38:54" itemprop="dateCreated datePublished" datetime="2016-08-29T12:38:54+02:00">2016-08-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-04-26 06:15:49" itemprop="dateModified" datetime="2022-04-26T06:15:49+02:00">2022-04-26</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="simrank">SimRank</h1>
-<blockquote>
-<p>Given a directed graph <span class="math inline">\(G = \left&lt; V, E
-\right&gt;\)</span>, the SimRank score <span
-class="math inline">\(s(i,j)\)</span> for each <span
-class="math inline">\(i, j \in V\)</span> measures the similarity
-between vertices <span class="math inline">\(i\)</span> and <span
-class="math inline">\(j\)</span>, defined as thus <span
-class="math display">\[
-s(i,j) =
-\begin{cases}
-1, &amp;\text{ if } i = j \\
-\frac{c}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)} s(a,b),
-&amp;\text{otherwise}
-\end{cases}
-\]</span> where <span class="math inline">\(I(i)\)</span> is the set of
-in-neighbors of <span class="math inline">\(i \in V\)</span>, and <span
-class="math inline">\(c \in (0, 1)\)</span>.</p>
-</blockquote>
-<h1 id="interpretations">Interpretations</h1>
-<h2 id="first-meeting-time-of-non-stop-random-walks">First Meeting Time
-of Non-Stop Random Walks</h2>
-<p><span class="math inline">\(s(i,j)\)</span> can be interpreted as the
-value of <span class="math display">\[
-    \mathbb{E}\left[ c^{T_{i,j}} \right],
-\]</span> where <span class="math inline">\(T_{i,j}\)</span> is the
-random variable of the first time that a reverse random walk (a random
-walk that travel along the incoming edges of a vertex uniformly at
-random) from <span class="math inline">\(i\)</span> and a reverse random
-walk from <span class="math inline">\(j\)</span> meets. Note that <span
-class="math display">\[
-    T_{i,j} =
-        \begin{cases}
-            0, &amp;\text{ if } i = j \\
-            \frac{1}{|I(i)| |I(j)|} \sum_{a \in I(i), b \in I(j)}
-T_{a,b}, &amp;\text{otherwise}
-        \end{cases}.
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-    \begin{aligned}
-    \mathbb{E}\left[ c^{T_{i,j}} \right]
-        &amp;= c^0 \cdot \Pr[T_{i,j} = 0] + \frac{1}{|I(i)| |I(j)|}
-\sum_{a \in I(i), b \in I(j)} \mathbb{E}\left[c^{1 + T_{a, b}} \right]
-\\
-        &amp;= \mathbb{I}_{i = j} +  \frac{c}{|I(i)| |I(j)|} \sum_{a \in
-I(i), b \in I(j)} \mathbb{E}\left[c^{ T_{a, b}} \right] \\
-        &amp;= \mathbb{I}_{i = j} +  \frac{c}{|I(i)| |I(j)|} \sum_{a \in
-I(i), b \in I(j)} s(a, b).
-    \end{aligned}
-\]</span></p>
-<h2 id="meeting-probability-of-sqrtc-random-walks">Meeting Probability
-of <span class="math inline">\(\sqrt{c}\)</span>-Random Walks</h2>
-<p>There is another random walk interpretation fo SimRank:</p>
-<ol type="1">
-<li><p>First, notice that when <span class="math inline">\(i \neq
-j\)</span>, [TX16] rewrites the SimRank as <span class="math display">\[
-s(i,j) = \frac{ \sqrt c \sqrt c} {|I(i)| |I(j)|} \sum_{a \in I(i), b \in
-I(j)} s(a,b)
-\]</span></p></li>
-<li><p>Second, [TX16] defines the <span class="math inline">\(\sqrt
-c\)</span>-random walk as</p>
-<ul>
-<li>In any step, the walk stops with probability <span
-class="math inline">\(1 - \sqrt c\)</span>.</li>
-<li>With the other <span class="math inline">\(\sqrt c\)</span>
-probability, the walk chose the in-neighbors of the current vertex
-uniformly at random.</li>
-</ul></li>
-<li><p>Finally <span class="math inline">\(s(i,j)\)</span> is
-interpreted as</p>
-<blockquote>
-<p>The probability of two <span class="math inline">\(\sqrt c\)</span>
-random walks ever meet, such that one of the random walks starts at
-vertex <span class="math inline">\(i\)</span> and the other starts at
-<span class="math inline">\(j\)</span>.</p>
-</blockquote></li>
-</ol>
-<h1 id="computation">Computation</h1>
-<h2 id="monte-carlo">Monte Carlo</h2>
-<p>A straightforward solution is to perform Monte Carlo simulation to
-calculate <span class="math inline">\(s(i,j)\)</span>--we initialize two
-<span class="math inline">\(\sqrt{c}\)</span>-random walks from <span
-class="math inline">\(i\)</span> and <span
-class="math inline">\(j\)</span> respectively, and simulate the two
-walks until they meet, or either walk stops.</p>
-<p>We need not to worry about that this process continues forever. Since
-the expected number of steps of a <span class="math inline">\(\sqrt
-c\)</span> random walk is given by <span class="math display">\[
-    \sqrt c + \sqrt c^2 + \sqrt c^3 + ...... = \frac{ \sqrt c}{ 1 -
-\sqrt c}
-\]</span> which is a constant.</p>
-<h3 id="chernoff-bound">Chernoff Bound</h3>
-<p>We repeat this process <span class="math inline">\(t\)</span> times.
-Let <span class="math inline">\(X_k\)</span> be indicate for the event
-that the two walks meet in the <span class="math inline">\(k\)</span>-th
-trial. It is easy to see that <span class="math inline">\(X_k, k \in
-[t]\)</span> is a sequence of i.i.d random variables with <span
-class="math inline">\(\mathbb{E}[ X_k ] = s(i, j)\)</span>.</p>
-<p>Let <span class="math inline">\(\bar{X} \doteq (1 / t) \cdot \sum_{k
-\in [t]} X_k\)</span> and <span class="math inline">\(\mu \doteq
-s(i,j)\)</span>. By <strong>Chernoff Bound</strong>, <span
-class="math display">\[
-    \Pr \left[ {| \bar{X} - \mu | &gt; (1 + \lambda) \mu } \right]
-    \le
-    2 \exp \left(- \frac{t \mu \lambda^2}{3} \right) = \delta,
-\]</span> where <span class="math inline">\(\lambda\)</span> is relative
-error ratio and <span class="math inline">\(\delta\)</span> the error
-probability we would like to achieve.</p>
-<h3 id="time-complexity">Time Complexity</h3>
-<p>The previous section implies <span class="math inline">\(t = \frac{3
-}{ \mu \lambda ^2}\log \frac{ 2 }{ \delta }\)</span>. By setting <span
-class="math inline">\(\epsilon = (1 + \lambda) \mu \Leftrightarrow
-\lambda = \frac{\epsilon}{\mu} - 1\)</span>, we get</p>
-<p><span class="math display">\[
-    t
-    = \frac{ 3 }{ \mu \left( \frac{\epsilon}{\mu}^2
--  2\frac{\epsilon}{\mu}  + 1 \right) }\log \frac{ 2 }{ \delta }
-    =
-    O \left( \frac{ \mu }{ \epsilon^2 }\log \frac{ 1 }{ \delta }
-\right).
-\]</span></p>
-<p>Notice that when <span class="math inline">\(\epsilon\)</span> is
-small, say <span class="math inline">\(0.01\)</span>, <span
-class="math inline">\(\frac{1}{\epsilon^2}\)</span> is large thus can
-not be neglected. The problem remains whether we could reduce the number
-of random walks.</p>
-<h2 id="index">Index</h2>
-<p>Another acute observation from [TX16] is that if two walks reach the
-same vertex, their following behavior follows the same probability
-distribution (since the walks are memoryless).</p>
-<p>Motivated by this, define <span
-class="math inline">\(h_i^\ell(k)\)</span> as the <em>hitting
-probability</em> such that a walk begins at vertex <span
-class="math inline">\(i\)</span> and reaches vertex <span
-class="math inline">\(j\)</span> at the <span
-class="math inline">\(\ell\)</span>-th step. <span
-class="math inline">\(h_i^\ell(k)\)</span> can be updated iteratively
-using <span class="math display">\[
-h_i^\ell(k) = \frac{ \sqrt c }{ |I(i) |  } \sum_{j \in I(i)} h_j^{\ell
--1}(k)
-\]</span></p>
-<h3 id="simrank-and-hitting-probability">SimRank and Hitting
-Probability</h3>
-<p>Now we consider about bridging the gap between SimRank score and
-hitting probability.</p>
-<p>For each <span class="math inline">\(i, j \in V\)</span>, define the
-indicator <span class="math inline">\(\mathbb{I} (i,j)\)</span> for the
-event that two <span class="math inline">\(\sqrt{c}\)</span>-random
-walks starting from <span class="math inline">\(i\)</span> and <span
-class="math inline">\(j\)</span> respectively ever meet. <span
-class="math display">\[
-    \mathbb{E}[\mathbb{I} (i,j)] = s(i,j).
-\]</span></p>
-<p><span class="math inline">\(\mathbb{I} (i, j, k, \ell)\)</span> the
-indicator the event that two random walks, starting from <span
-class="math inline">\(i\)</span> and <span
-class="math inline">\(j\)</span> respectively, meet at <span
-class="math inline">\(\ell\)</span>-th step at <span
-class="math inline">\(k\)</span> and this is the last time they meet. In
-other word, these two walk never meet again after <span
-class="math inline">\(\ell\)</span>-th step at <span
-class="math inline">\(k\)</span>. It is easy to see that for different
-<span class="math inline">\(k\)</span> and <span
-class="math inline">\(\ell\)</span>, the events indicated by the <span
-class="math inline">\(\mathbb{I} (i, j, k, \ell)\)</span>'s are mutually
-disjoint. Therefore, <span class="math display">\[
-    \mathbb{I} (i,j) = \sum_k \sum_\ell \mathbb{I} (i, j, k, \ell).
-\]</span></p>
-<p>Let <span class="math inline">\(d_k\)</span> be the probability that
-two walks from <span class="math inline">\(k\)</span> never meet except
-for the first step. Then <span class="math display">\[
-    \mathbb{E} \left[\mathbb{I} (i, j, k, \ell) \right] = h_i^\ell(k)
-h_j^\ell(k) d_k,
-\]</span> and <span class="math display">\[
-    \begin{aligned}
-        \mathbb{E} \left[ \mathbb{I} (i,j) \right]
-        &amp;=
-        \mathbb{E} \left[\sum_k \sum_\ell \mathbb{I} (i, j, k, \ell)
-\right]  \\
-        &amp;= \sum_{\ell = 0}^{\infty}  \sum_{k = 1}^{n} \mathbb{E}
-\left[\mathbb{I} (i, j, k, \ell) \right] \\
-        &amp;= \sum_{\ell = 0}^{\infty}  \sum_{k = 1}^{n} h_i^\ell(k)
-h_j^\ell(k) d_k.
-    \end{aligned}
-\]</span></p>
-<h3 id="truncation">Truncation</h3>
-<p>Notice that for a given <span class="math inline">\(i\)</span>, there
-infinity many <span class="math inline">\(h_i^\ell(k)\)</span>'s we need
-to kept, which is unfeasible. To get around this, we only keep the <span
-class="math inline">\(h_i^\ell(k)\)</span>'s greater than <span
-class="math inline">\(\epsilon_h\)</span>, where <span
-class="math inline">\(\epsilon_h = O(\epsilon)\)</span>.</p>
-<p>The probability that the <span class="math inline">\(\sqrt
-c\)</span>-random walk does not to stop before <span
-class="math inline">\(\ell\)</span>-th step is <span
-class="math inline">\(\sqrt c ^\ell\)</span>, i.e., <span
-class="math display">\[
-    \sum_{k = 1}^n h_i^\ell(k) = \sqrt c^\ell.
-\]</span></p>
-<p>For a fixed <span class="math inline">\(\ell\)</span>, at most <span
-class="math inline">\(\sqrt c ^\ell / \epsilon_h\)</span> number of
-<span class="math inline">\(h_i^\ell(k)\)</span>'s are kept. So the
-total number of <span class="math inline">\(h_i^\ell(k)\)</span>'s kept
-is bounded by <span class="math display">\[
-    \frac{1}{\epsilon_h} (\sqrt c + \sqrt c^2 + \sqrt c^3 + ......  )
-    = O \left( \frac{1}{\epsilon_h} \right)
-    = O \left( \frac{1}{\epsilon} \right).
-\]</span></p>
-<p>On the other hand, estimation of <span
-class="math inline">\(d_k\)</span> could be done by monte carlo
-simulation. By Chernoff bound, we can show that with <span
-class="math display">\[
-    O \left( \frac{1}{\epsilon_d^2} \log \frac{1}{\delta_d} \right)
-\]</span> samples, <span class="math inline">\(d_k\)</span> could be
-estimated by <span class="math inline">\(\bar{d_k}\)</span> such that
-<span class="math inline">\(| \bar{d_k} - d_k| &lt; \epsilon_d\)</span>
-holds with at least <span class="math inline">\(1 - \delta_d\)</span>
-probability, where <span class="math inline">\(\epsilon_d =
-O(\epsilon)\)</span>.</p>
-<h1 id="reference">Reference</h1>
-<p>[TX16] Boyu. Tian and Xiaokui. Xiao SLING: A Near-Optimal Index
-Structure for SimRank. <em>SIGMOD'16</em></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2015/12/01/Random%20Sampling%20and%20Cuts%20II/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -880,10 +594,130 @@ class="math display">\[
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/10/16/Connectivity%20of%20a%20Graph/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/10/16/Connectivity%20of%20a%20Graph/" class="post-title-link" itemprop="url">Connectivity of a Graph</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2015-10-16 03:33:46" itemprop="dateCreated datePublished" datetime="2015-10-16T03:33:46+02:00">2015-10-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-09-26 01:47:43" itemprop="dateModified" datetime="2021-09-26T01:47:43+02:00">2021-09-26</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Suppose the edge connectivity of a graph <span
+class="math inline">\(G\)</span> is <span
+class="math inline">\(c\)</span>. In the previous article we know that
+the number of cuts with weight up to <span
+class="math inline">\(kc\)</span> is bounded by <span
+class="math inline">\(O((2n)^{2k})\)</span>, where <span
+class="math inline">\(k\)</span> is a real number and <span
+class="math inline">\(n\)</span> is the number of vertices in <span
+class="math inline">\(G\)</span>.</p>
+<p>Let <span class="math inline">\(f(x)\)</span> to be the number of cut
+with value <span class="math inline">\(xc\)</span> and define <span
+class="math inline">\(F(k) = \Sigma_{x \le k} f(x)\)</span>. From the
+discussion above, <span class="math inline">\(F(k) \le \lambda
+(2n)^{2k}\)</span> for some constant <span
+class="math inline">\(\lambda\)</span>.</p>
+<p>If we remove each edge with probability <span
+class="math inline">\(p\)</span>, then the graph becomes disconnected
+with probability at most <span class="math display">\[
+    \Pr[\text{Disconnected}] = \Sigma_{x} f(x)p^{xc}.
+\]</span></p>
+<p>To maximize <span
+class="math inline">\(\Pr[\text{Disconnected}]\)</span>, we take <span
+class="math inline">\(F(k) = \lambda (2n)^{2k}\)</span> for every <span
+class="math inline">\(k\)</span>.</p>
+<p>By the definition of <span class="math inline">\(F(k)\)</span>, <span
+class="math inline">\(f(k) = \lambda ((2n)^{2k} -
+(2n)^{2(k-1)})\)</span>.</p>
+<p>Then, for <span class="math inline">\(k \ge 2\)</span>, <span
+class="math display">\[
+\begin{aligned}
+    f(k) p^{kc}
+        &amp;= \lambda ((2n)^{2k} - (2n)^{2(k-1)}) p^{kc} \\
+        &amp;= \lambda  \left( \int_{k -1}^{k} {\partial (2n)^{2x} \over
+\partial x} dx \right) \cdot p^{kc} \\
+        &amp;\le \lambda \int_{k -1}^{k} {\partial(2n)^{2x} \over
+\partial x} p^{xc}dx
+    \end{aligned}
+\]</span></p>
+<p>Sum up this inequality over <span class="math inline">\(k\)</span>,
+<span class="math display">\[
+\begin{aligned}
+    \Pr[\text{Disconnected}]
+        &amp;\le f(1)p^c + \lambda  \int_1^\infty {\partial (2n)^{2x}
+\over \partial x} p^{xc} dx \\
+        &amp; = \lambda (2n)^2 p^c - \lambda  {2\ln 2n \over 2 \ln 2n +
+c \ln p} (2n)^2 p^c
+\end{aligned}
+\]</span></p>
+<p>If <span class="math inline">\(p = (2n)^{-{a \over c} }\)</span> for
+some parameter <span class="math inline">\(a\)</span>, then <span
+class="math inline">\(\Pr[\text{Disconnected}] = O(n^2 p^c / (a - 2)) =
+O(n^{2 - a} / (a -2))\)</span>. When <span class="math inline">\(a =
+3\)</span>, the graph is disconnected with probability <span
+class="math inline">\(O(1/n)\)</span>. (p.s: for large <span
+class="math inline">\(c\)</span>, <span class="math inline">\(p \approx
+1 - {a \ln 2n \over c}\)</span>)</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/63/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/63/">63</a><span class="page-number current">64</span><a class="page-number" href="/page/65/">65</a><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/65/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/63/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/63/">63</a><span class="page-number current">64</span><a class="page-number" href="/page/65/">65</a><a class="extend next" rel="next" href="/page/65/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -949,7 +783,7 @@ class="math display">\[
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-count">195</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

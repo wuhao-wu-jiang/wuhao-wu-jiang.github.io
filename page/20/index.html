@@ -146,392 +146,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/31/Sparse-Recovery/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/03/31/Sparse-Recovery/" class="post-title-link" itemprop="url">Sparse Recovery</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-03-31 00:45:57" itemprop="dateCreated datePublished" datetime="2021-03-31T00:45:57+02:00">2021-03-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2021-04-08 15:55:01" itemprop="dateModified" datetime="2021-04-08T15:55:01+02:00">2021-04-08</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="model">Model</h1>
-<p>The focus of this article is recovering a sparse vector <span
-class="math inline">\(x \in \mathbb{R}^n\)</span> in the streaming
-setting. Initially, <span class="math inline">\(x = 0\)</span>. Then we
-see a sequence of updates <span class="math inline">\((i,
-\Delta)\)</span> each causing the change <span class="math inline">\(x_i
-\leftarrow x_i + \Delta\)</span>. There are three popular studied
-models</p>
-<ol type="1">
-<li><strong>insertion only:</strong> <span class="math inline">\(\Delta
-= 1\)</span> for each update.<br />
-</li>
-<li><strong>strict turnstile:</strong> <span
-class="math inline">\(\Delta\)</span> can be negative, but it is
-guaranteed that <span class="math inline">\(x \ge 0\)</span> all the
-time.<br />
-</li>
-<li><strong>general turnstile:</strong> <span
-class="math inline">\(\Delta\)</span> can be negative, and entries of
-<span class="math inline">\(x\)</span> can be negative.</li>
-</ol>
-<p>Let <span class="math inline">\(\text{supp}(x) \subset [n]\)</span>
-be the set of nonzero indices of <span class="math inline">\(x\)</span>.
-The vector <span class="math inline">\(x\)</span> is called <span
-class="math inline">\(k\)</span> sparse if <span
-class="math inline">\(\text{supp}(x) \le k\)</span>.</p>
-<blockquote>
-<p><strong>Goal.</strong> Given an integer <span
-class="math inline">\(k\)</span>, design a data structure such that, if
-<span class="math inline">\(x\)</span> is <span
-class="math inline">\(k\)</span> sparse, the structure returns <span
-class="math inline">\(x\)</span> exactly; otherwise, the return can be
-arbitrary.</p>
-</blockquote>
-<p>As we can't actually store real numbers, we use the following
-assumption:</p>
-<blockquote>
-<p>The updates are integers and the entries of <span
-class="math inline">\(x\)</span> are bounded by <span
-class="math inline">\(\pm M\)</span>.</p>
-</blockquote>
-<p>With this restriction, it suffices to solve this problem in a finite
-field <span class="math inline">\(\mathbb{F}_p\)</span> where <span
-class="math inline">\(p \ge \max \{ n, M \}\)</span>. As opposed to the
-naive solution that keeps all entries of <span
-class="math inline">\(x\)</span> and uses <span
-class="math inline">\(O(n \log M)\)</span> bits of memory, we show that
-the memory can be reduced to <span class="math inline">\(O( k \log (nM)
-)\)</span> bits.</p>
-<h1 id="algorithm">Algorithm</h1>
-<p>The problem is easy to solve in the insertion only model. We can use
-a hash set that keeps the first <span class="math inline">\(k\)</span>
-occurrence of the indices. If the we detect the <span
-class="math inline">\(k + 1\)</span> new index, we can just report
-error.</p>
-<p>The scenario is a little more complicated for the other two models.
-E.g., let <span class="math inline">\(n = 4\)</span> and <span
-class="math inline">\(k = 1\)</span>. Consider the following stream
-<span class="math display">\[
-    (1, 1), (2, 1), (3, -1), (4, 1), (1, -1), (2, -1), (3, 1).
-\]</span></p>
-<p>The vector <span class="math inline">\(x\)</span> is finally <span
-class="math inline">\(1\)</span>-sparse and the only non-zero index is
-revealed at the end of the stream.</p>
-<h2 id="solution-1">Solution 1</h2>
-<h3 id="encode">Encode</h3>
-<p>In the first approach, we use a matrix <span class="math inline">\(H
-\in \mathbb{F}_p^{m \times n}\)</span> (<span
-class="math inline">\(m\)</span> to be determined) and encode <span
-class="math inline">\(x\)</span> as <span
-class="math inline">\(\mathbb{Enc}(x) = H x\)</span>. If the following
-property holds, we are guaranteed to recover <span
-class="math inline">\(x\)</span> if it is <span
-class="math inline">\(k\)</span> sparse.</p>
-<blockquote>
-<p>For every <span class="math inline">\(k\)</span> sparse <span
-class="math inline">\(x, x&#39; \in \mathbb{F}_p^n\)</span>, if <span
-class="math inline">\(x \neq x&#39;\)</span>, then <span
-class="math inline">\(Hx \neq H x&#39;\)</span>.</p>
-</blockquote>
-<p>If <span class="math inline">\(H x \neq Hx&#39;\)</span>, then <span
-class="math inline">\(H (x - x&#39;) \neq 0\)</span>. Observe that <span
-class="math inline">\(x - x&#39;\)</span> is a <span
-class="math inline">\(2k\)</span> sparse vector. This is equivalent to
-that <span class="math inline">\(H z \neq 0\)</span> for every nonzero
-<span class="math inline">\(2k\)</span> sparse vector <span
-class="math inline">\(z \in \mathbb{F}_p^n\)</span>.</p>
-<p>Such <span class="math inline">\(H\)</span> does exists, with <span
-class="math inline">\(m = 2k\)</span>. Let <span
-class="math inline">\(a_1, a_2, ..., a_n \in \mathbb{F}_p\)</span> be
-different integers. Then <span class="math inline">\(H\)</span> is given
-as <span class="math display">\[
-    H = \begin{bmatrix}
-        1   &amp;1  &amp;...    &amp;1  &amp;...    &amp;1 \\
-        a_1
-&amp;a_2    &amp;...    &amp;a_i    &amp;...    &amp;a_n    \\
-        a_1^2   &amp;a_2^2  &amp;...    &amp;a_i^2  &amp;...    &amp;a_n^2  \\
-        ...\\
-        a_1^{2k - 1}    &amp;a_2^{2k - 1}   &amp;...    &amp;a_i^{2k -
-1}   &amp;...    &amp;a_n^{2k - 1}
-    \end{bmatrix}
-\]</span></p>
-<p>Let <span class="math inline">\(S = \text{supp}(z) \subset
-[n]\)</span> be a set of size <span class="math inline">\(2k\)</span>.
-Denote <span class="math inline">\(z_S\)</span> be the vector by keeping
-only the nonzero dimensions of <span class="math inline">\(z\)</span>
-and <span class="math inline">\(H_S\)</span> be an <span
-class="math inline">\(2k \times 2k\)</span> matrix by keeping only
-columns indexed by <span class="math inline">\(S\)</span>. Then <span
-class="math inline">\(H z = H_S z_S\)</span>. We show that the rows of
-<span class="math inline">\(H_S\)</span> are linearly independently,
-hence its columns. It follows that if <span class="math inline">\(z_S
-\neq 0 \Longrightarrow H_S z_S \neq 0\)</span>.</p>
-<p>It is left to show that <span class="math inline">\(\forall c \in
-\mathbb{F}_p^{2k}\)</span>, <span class="math inline">\(c \neq 0
-\rightarrow H_S^T c \neq 0\)</span>. Define the polynomial in <span
-class="math inline">\(\mathbb{F}_p\)</span> <span
-class="math display">\[
-    f(x) = c_{2k} x^{2k - 1} + c_{2k - 1} x^{2k - 1} + ... + c_1.
-\]</span></p>
-<p>Then <span class="math inline">\(H_S^T c = ( f(a_i ) )_{i \in [S]
-}\)</span>. As <span class="math inline">\(f(x)\)</span> has at most
-<span class="math inline">\(2k - 1\)</span> distinct roots, and the
-<span class="math inline">\((a_i)_{i \in [S] }\)</span> are different,
-there exists some <span class="math inline">\(i \in [S]\)</span> such
-that <span class="math inline">\(f(a_i) \neq 0\)</span>.</p>
-<h3 id="decode">Decode</h3>
-<p>Given <span class="math inline">\(y = \mathbb{Enc}(x) = H x\)</span>,
-how can we recover <span class="math inline">\(x\)</span>? We can loop
-over every subset <span class="math inline">\(S \subset [n ]\)</span> of
-size <span class="math inline">\(2k\)</span> and compute <span
-class="math inline">\(x&#39; = H_S^{-1} y\)</span>. If <span
-class="math inline">\(x&#39;\)</span> is <span
-class="math inline">\(k\)</span> sparse, by the property of <span
-class="math inline">\(H\)</span>, it is the unique <span
-class="math inline">\(k\)</span>-sparse vector such that <span
-class="math inline">\(H_S x&#39; = y\)</span>.</p>
-<p><strong>Remark:</strong> The proposed method is exponential respect
-to <span class="math inline">\(k\)</span>. However, there is an
-algorithm (called <em>syndrome decoding</em>) to perform the recovery in
-<span class="math inline">\(O(k^2 poly(\log p))\)</span> time.</p>
-<h4 id="space-and-time">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span
-class="math inline">\(O(k \log (nM))\)</span> bits.</p>
-</blockquote>
-<p>This is because we don't store <span
-class="math inline">\(H\)</span>. For the finite field <span
-class="math inline">\(\mathbb{F}_p\)</span>, there exists at least one
-primitive element whose powers give all nonzero elements. We can pick
-such a primitive element <span class="math inline">\(a\)</span>, and set
-<span class="math inline">\(a_1 = a\)</span>, <span
-class="math inline">\(a_2 = a^2\)</span>, ..., <span
-class="math inline">\(a_n = a^n\)</span>. Storing <span
-class="math inline">\(y = Hx\)</span> requires only <span
-class="math inline">\(O(k \log (nM))\)</span> bits.</p>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span
-class="math inline">\((i, \Delta)\)</span> in the stream takes <span
-class="math inline">\(O(k)\)</span> time.</p>
-</blockquote>
-<h2 id="solution-2">Solution 2</h2>
-<p>We first show how to recover an <span
-class="math inline">\(1\)</span> sparse vector when negative updates are
-allowed, then use it as a black box to recover <span
-class="math inline">\(k\)</span> sparse vector.</p>
-<h3 id="sparse-recovery">1 sparse recovery</h3>
-<p>We show an algorithm that successes with probability <span
-class="math inline">\(n / p\)</span>.</p>
-<p>First, we pick a non-zero integer <span
-class="math inline">\(z\)</span> uniformly at random from <span
-class="math inline">\(\mathbb{F}_p\)</span>. Let <span
-class="math display">\[
-    H = \begin{bmatrix}
-        1   &amp;1  &amp;1  &amp;...    &amp;1  \\
-        1   &amp;2  &amp;3  &amp;...    &amp;n  \\
-        z   &amp;z^2    &amp;z^3    &amp;...    &amp;z^n
-    \end{bmatrix}.
-\]</span></p>
-<p>The algorithm consists of 3 parts.</p>
-<blockquote>
-<p><strong>Initialize:</strong><br />
-<span class="math inline">\(\qquad\)</span> <span
-class="math inline">\(w \leftarrow \{ 0 \}^3\)</span><br />
-<span class="math inline">\(\qquad\)</span> Sample <span
-class="math inline">\(z\)</span> uniformly from <span
-class="math inline">\(1, ..., p - 1\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Updates</strong>: <span class="math inline">\((i,
-\Delta)\)</span><br />
-<span class="math inline">\(\qquad\)</span> <span
-class="math inline">\(w \leftarrow w + \Delta \cdot H_i\)</span>, where
-<span class="math inline">\(H_i\)</span> is the <span
-class="math inline">\(i\)</span>th column of <span
-class="math inline">\(H\)</span>.</p>
-</blockquote>
-<blockquote>
-<p><strong>Output:</strong><br />
-<span class="math inline">\(\qquad\)</span> If <span
-class="math inline">\(w_1 = 0\)</span> or <span
-class="math inline">\(w_3 \neq w_1 \cdot z^{w_2 / w_1}\)</span>:<br />
-<span class="math inline">\(\qquad\qquad\)</span>
-<strong>Return</strong> <span class="math inline">\(x\)</span> is not
-<span class="math inline">\(1\)</span> sparse;<br />
-<span class="math inline">\(\qquad\)</span> Else:<br />
-<span class="math inline">\(\qquad\qquad\)</span>
-<strong>Return</strong> <span class="math inline">\(j \doteq w_2 /
-w_1\)</span></p>
-</blockquote>
-<h4 id="failure-analysis">Failure Analysis</h4>
-<blockquote>
-<p><strong>Theorem.</strong> The algorithm fails with probability <span
-class="math inline">\(n / p\)</span>.</p>
-</blockquote>
-<p>Observe that <span class="math display">\[
-    w_1 = \sum_{i \in [n] } x_i, \qquad
-    w_2 = \sum_{i \in [n] } i \cdot x_i, \qquad
-    w_3 = \sum_{i \in [n] } z^i \cdot x_i.
-\]</span></p>
-<p>If <span class="math inline">\(w_1 = 0\)</span>, either <span
-class="math inline">\(x = 0\)</span> or there is cancellation.
-Conditioned on <span class="math inline">\(w_1 \neq 0\)</span>, if <span
-class="math inline">\(x\)</span> is <span
-class="math inline">\(1\)</span> sparse, then <span
-class="math display">\[
-    w_1 = x_j, \qquad w_2 = j \cdot x_j, \qquad w_3 = z^j \cdot x_j.
-\]</span></p>
-<p>Hence, <span class="math inline">\(j = w_2 / w_1\)</span> is exactly
-the non-zero index, and <span class="math inline">\(w_3 = w_1 \cdot
-z^{j}\)</span>.</p>
-<p>If <span class="math inline">\(x\)</span> is not <span
-class="math inline">\(1\)</span> sparse, then <span
-class="math display">\[
-    w_3 - w_1 \cdot z^{j}
-\]</span> is a polynomial of degree at most <span
-class="math inline">\(n\)</span>. It has at most <span
-class="math inline">\(n\)</span> distinct roots with one of them being
-<span class="math inline">\(0\)</span>. The probability that <span
-class="math inline">\(z\)</span> being a root is at most <span
-class="math inline">\((n - 1) / (p - 1) \le n / p\)</span>.</p>
-<h4 id="space-and-time-1">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span
-class="math inline">\(O(\log (nM))\)</span> bits.</p>
-</blockquote>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span
-class="math inline">\((i, \Delta)\)</span> takes <span
-class="math inline">\(O(1)\)</span> time.</p>
-</blockquote>
-<h3 id="k-sparse-recovery"><span class="math inline">\(k\)</span> sparse
-recovery</h3>
-<p>To apply the <span class="math inline">\(1\)</span> sparse recovery
-data structure, we partition <span class="math inline">\(x\)</span> into
-<span class="math inline">\(2k\)</span> subsets randomly. In particular,
-we use a pairwise hash function that maps each <span
-class="math inline">\(i \in [n]\)</span> to <span
-class="math inline">\([2k]\)</span> uniformly at random. For <span
-class="math inline">\(\ell \in [2k]\)</span>, let <span
-class="math inline">\(S_\ell\)</span> be the set of indices mapped to
-<span class="math inline">\(\ell\)</span>: <span class="math display">\[
-    S_\ell \doteq \{ i \in [n]: h(i) = \ell \}.
-\]</span></p>
-<p>Then we run <span class="math inline">\(1\)</span> sparse recovery on
-each partition. If some partition contains only one nonzero index, then
-we recover it successfully.</p>
-<blockquote>
-<p><strong>Theorem.</strong> If <span class="math inline">\(x\)</span>
-is <span class="math inline">\(k\)</span> sparse, an nonzero dimension
-<span class="math inline">\(i\)</span> is recovered with probability
-<span class="math inline">\(1 / 2\)</span>.</p>
-</blockquote>
-<p><strong>Proof.</strong> It suffices to prove that <span
-class="math inline">\(i\)</span> is the only nonzero index in <span
-class="math inline">\(S_{h (i) }\)</span>. For <span
-class="math inline">\(j \in \text{supp}(x)\)</span>, define the
-indicator variable <span class="math inline">\(X_j\)</span> which equals
-<span class="math inline">\(1\)</span> if <span
-class="math inline">\(h(j) = h(i)\)</span> and equals 0 otherwise. By
-Markov's inequality and linearity of expectation, <span
-class="math display">\[
-    \Pr\left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \ge 1 \right] \le
-\mathbb{E} \left[ \sum_{ i \neq j \in \text{supp}(x) } X_j \right] =
-\sum_{ i \neq j \in \text{supp}(x) } \mathbb{E} \left[  X_j \right] \le
-\frac{k - 1}{2k} \le \frac{1}{2}.  
-\]</span></p>
-<p><strong>Remark.</strong> The Markov's inequality is rather tight
-here. Even if we have a fully independent hash function <span
-class="math inline">\(h\)</span>, the probability that none of the
-nonzero indices collides with <span class="math inline">\(i\)</span> is
-given by <span class="math display">\[
-    \left( 1 - \frac{1}{2k} \right)^{k - 1} \lessapprox \exp \left( -
-\frac{k - 1}{2k} \right) \approx \exp \left( - \frac{1}{2} \right)
-\approx 0.60653.
-\]</span></p>
-<p><span class="math inline">\(\square\)</span></p>
-<blockquote>
-<p><strong>Corollary.</strong> Running <span class="math inline">\(\log
-(k / \delta)\)</span> independent copies of the above structure reduce
-the failure probability to <span
-class="math inline">\(\delta\)</span>.</p>
-</blockquote>
-<h4 id="space-and-time-2">Space and Time</h4>
-<blockquote>
-<p><strong>Space.</strong> The algorithm uses <span
-class="math inline">\(O(k (\log (k / \delta)) \log (nM))\)</span>
-bits.</p>
-</blockquote>
-<blockquote>
-<p><strong>Time.</strong> Processing each update <span
-class="math inline">\((i, \Delta)\)</span> takes <span
-class="math inline">\(O(\log (k / \delta))\)</span> time.</p>
-</blockquote>
-<h1 id="reference">Reference</h1>
-<p>[1]. Jelani Nelson, Chapter 4, <a
-target="_blank" rel="noopener" href="https://www.sketchingbigdata.org/fall20/lec/notes.pdf">Sketching
-Algorithms</a>, 2020.</p>
-<p>[2]. Moses Charikar, <a
-target="_blank" rel="noopener" href="http://web.stanford.edu/class/cs369g/files/lectures/lec11.pdf"><span
-class="math inline">\(\ell_{0}\)</span> Sampling and Sketching
-Distances</a>, CS369G: Algorithmic Techniques for Big Data, 2016</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/27/Norm-of-Random-Variables/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -939,10 +553,294 @@ class="math display">\[
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/22/The-Poisson-Approximation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/22/The-Poisson-Approximation/" class="post-title-link" itemprop="url">The Poisson Approximation</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-22 01:37:19" itemprop="dateCreated datePublished" datetime="2021-03-22T01:37:19+01:00">2021-03-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-02-11 01:10:41" itemprop="dateModified" datetime="2022-02-11T01:10:41+01:00">2022-02-11</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="poisson-distribution">Poisson Distribution</h1>
+<p>A discrete random variable <span class="math inline">\(X\)</span>
+follows Poisson (<span class="math inline">\(ˈ\)</span>pwɑːsɒn)
+distribution, with a parameter <span
+class="math inline">\(\lambda\)</span>, if its probability mass function
+is given by <span class="math display">\[
+    \Pr[ X = k ] = e^{ - \lambda } \frac{ \lambda^k }{ k! }, \qquad
+\forall k \in \mathbb{N}.
+\]</span></p>
+<p>We can verify that the definition is valid: <span
+class="math display">\[
+    \sum_{ k \in \mathbb{N} } \Pr[ X = k ] = e^{ - \lambda } \sum_{ k
+\in \mathbb{N} }  \frac{ \lambda^k }{ k! } = e^{ - \lambda } e^{ \lambda
+} = 1.
+\]</span></p>
+<p>We use <span class="math inline">\(\text{Pois}(\lambda)\)</span> to
+denote a Poisson distribution with parameter <span
+class="math inline">\(\lambda\)</span>.</p>
+<h2 id="mean">Mean</h2>
+<blockquote>
+<p><strong>Property.</strong> <span class="math inline">\(\mathbb{E}[X]
+= \lambda\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \sum_{ k \in \mathbb{N} } k\Pr[ X = k ] = e^{ - \lambda } \lambda
+\sum_{ 1 \le k \in \mathbb{N} }  \frac{ \lambda^{k - 1} }{ (k - 1)! } =
+e^{ - \lambda } \lambda \sum_{ k \in \mathbb{N} }  \frac{ \lambda^k }{
+k! } = \lambda.
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="variance">Variance</h2>
+<blockquote>
+<p><strong>Property.</strong> <span
+class="math inline">\(\mathbb{Var}[X] = \lambda\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \sum_{ k \in \mathbb{N} } k(k - 1)\Pr[ X = k ] = e^{ - \lambda }
+\lambda^2 \sum_{ 2 \le k \in \mathbb{N} }  \frac{ \lambda^{k - 2} }{ (k
+- 2)! } = e^{ - \lambda } \lambda^2 \sum_{ k \in \mathbb{N} }  \frac{
+\lambda^k }{ k! } = \lambda^2.
+\]</span></p>
+<p>Hence, <span class="math display">\[
+    \begin{aligned}
+        \mathbb{Var}[X] &amp;= \sum_{ k \in \mathbb{N} } k^2 \Pr[ X = k
+] -  (\mathbb{E}[X] )^2 \\
+                &amp;= \sum_{ k \in \mathbb{N} } ( k (k - 1) + k ) \Pr[
+X = k ] -  (\mathbb{E}[X] )^2 \\
+                &amp;= \lambda^2 + \lambda - \lambda^2 \\
+                &amp;= \lambda.
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<h2 id="sum-of-two-independent-poisson-variable">Sum of Two Independent
+Poisson Variable</h2>
+<blockquote>
+<p><strong>Property.</strong> If <span class="math inline">\(X_1 \sim
+\text{Pois}(\lambda_1)\)</span> and <span class="math inline">\(X_2 \sim
+\text{Pois}(\lambda_2)\)</span>, then <span class="math inline">\(X_1 +
+X_2 \sim \text{Pois} (\lambda_1 + \lambda_2)\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> For every <span class="math inline">\(k \in
+\mathbb{N}\)</span>, <span class="math display">\[
+    \begin{aligned}
+        \Pr[X_1 + X_2 = k]
+            &amp;= \sum_{a, b \in \mathbb{N}, a + b = k} \left( e^{-
+\lambda_1 } \frac{ \lambda_1^{a} }{ a! } \right) \left( e^{-\lambda_2 }
+\frac{ \lambda_2^b }{ b! } \right) \\
+            &amp;= e^{- (\lambda_1 + \lambda_2) } \frac{1}{k!} \sum_{a,
+b \in \mathbb{N}, a + b = k} \frac{ k! }{ a! b! } \lambda_1^{a}
+\lambda_2^b \\
+            &amp;= e^{- (\lambda_1 + \lambda_2) } \frac{ (\lambda_1 +
+\lambda_2)^k }{k!}.
+    \end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Corollary.</strong> If <span class="math inline">\(X_i \sim
+\text{Pois}(\lambda_i)\)</span> for every <span class="math inline">\(i
+\in [n]\)</span>, then <span class="math inline">\(\sum_{i \in [n] } X_i
+\sim \text{Pois} \left( \sum_{i \in [n] } \lambda_i
+\right)\)</span>.</p>
+</blockquote>
+<h1 id="poisson-approximation">Poisson Approximation</h1>
+<h2 id="binomial-distribution">Binomial Distribution</h2>
+<p>The Poisson distribution can be used to approximate the limit of the
+binomial distribution, under some condition.</p>
+<blockquote>
+<p><strong>Poisson Limit Theorem.</strong> Suppose that <span
+class="math inline">\(\forall n \in \mathbb{N}^+\)</span>, the random
+variable <span class="math inline">\(Y_n\)</span> follows binomial
+distribution <span class="math inline">\(\text{B}(n, p_n)\)</span> and
+that <span class="math inline">\(n p_n = \lambda\)</span>. Let <span
+class="math inline">\(X \sim \text{Pois}(\lambda)\)</span>, then <span
+class="math display">\[
+\lim_n \Pr[ Y_n  = k ] = \Pr[ X = k ].
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> <span class="math display">\[
+    \begin{aligned}
+        \Pr[ Y_n = k ]
+            &amp;= \binom{n}{k } p_n^k (1 - p_n)^{n - k} \\
+            &amp;= \frac{ n (n - 1) ... (n - k + 1) }{ k !} p_n^k ( 1 -
+p_n )^{n - k} \\
+            &amp;= \frac{ n^k + O(n^{k - 1} ) }{ k !} \frac{ \lambda^k
+}{ n^k } \left( 1 - \frac{ \lambda }{ n } \right)^{n - k} \\
+            &amp;= \frac{ \lambda^k \left( 1 + O( n^{-1} ) \right) }{ k
+!} \left( 1 - \frac{ \lambda }{ n } \right)^{n - k}
+    \end{aligned}
+\]</span></p>
+<p>For fixed <span class="math inline">\(k\)</span>, taking <span
+class="math inline">\(n \rightarrow \infty\)</span>, we have <span
+class="math display">\[
+    \frac{ \lambda^k \left( 1 + O( n^{-1} ) \right) }{ k !} \left( 1 -
+\frac{ \lambda }{ n } \right)^{n - k} \rightarrow \frac{\lambda^k}{ k !}
+e^{-\lambda }.
+\]</span></p>
+<h2 id="balls-and-bins">Balls and Bins</h2>
+<p>We study the problem of throwing <span
+class="math inline">\(m\)</span> balls into <span
+class="math inline">\(n\)</span> bins randomly. For every <span
+class="math inline">\(i \in [n]\)</span>, let <span
+class="math inline">\(Y_i\)</span> denote the number of balls in the
+<span class="math inline">\(i\)</span>th bin, which follows binomial
+distribution <span class="math inline">\(\text{B}(m, 1 / m)\)</span>. We
+have shown that <span class="math inline">\(Y_i\)</span> can be
+approximated by <span class="math inline">\(X_i \sim \text{Pois}(m /
+n)\)</span>. In this section, we show a stronger result that the joint
+distribution of <span class="math inline">\((Y_1, ..., Y_n)\)</span> can
+be approximated by the joint distribution of Poisson random
+variables.</p>
+<blockquote>
+<p><strong>Theorem.</strong> <span class="math inline">\(\forall \lambda
+&gt; 0\)</span>, let <span class="math inline">\(X_i \sim
+\text{Pois}(\lambda)\)</span> be independent random variables. Then the
+joint distribution of <span class="math inline">\((X_1, ...,
+X_n)\)</span> conditioned on <span class="math inline">\(\sum_{i \in
+[n]} X_i = m\)</span> is the same as <span class="math inline">\((Y_1,
+..., Y_n)\)</span>.</p>
+</blockquote>
+<p><strong>Remark:</strong> <em>the theorem holds for <span
+class="math inline">\(\forall \lambda &gt; 0\)</span> and does not
+require that <span class="math inline">\(\lambda = m /
+n\)</span></em>.</p>
+<p><strong>Proof.</strong> Let <span class="math inline">\(X = \sum_{i
+\in [n] } X_i\)</span>. We have proven that <span
+class="math inline">\(X \sim \text{Pois}( n \lambda)\)</span>. Hence,
+<span class="math inline">\(\forall k_1, ..., k_n \ge 0\)</span>, s.t.
+<span class="math inline">\(\sum_{i \in [n] } k_i = m\)</span>, we have
+<span class="math display">\[
+    \begin{aligned}
+        \Pr[ X_1 = k_1, X_2 = k_2, ..., X_n = k_n \mid X = m ]
+            &amp;= \left( \prod_{i \in [n] } e^{-\lambda} \frac{
+\lambda^{k_i} }{ k_i! }  \right) / \left( e^{ - n\lambda} \frac{
+(n\lambda)^m }{ m! } \right) \\
+            &amp;= \frac{ e^{ - n \lambda} \lambda^{ \sum_{i \in [n] }
+k_i} }{ e^{ - n\lambda} (n\lambda)^m } \frac{ m! }{ \prod_{i \in [n] }
+k_i ! } \\
+            &amp;= \binom{ m! }{ k_1; k_2; ...; k_n } \frac{1}{ n^m }.
+    \end{aligned}
+\]</span> <span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Theorem [1]</strong>. <span class="math inline">\(\forall i
+\in [n]\)</span>, <span class="math inline">\(X_i \sim \text{Pois}(m /
+n)\)</span>. Let <span class="math inline">\(f(y_1, ..., y_n)\)</span>
+be a nonnegative function. Then <span class="math display">\[
+\mathbb{E}[ f(Y_1, ..., Y_n) ] \le e \sqrt{m} \mathbb{E}[ f(X_1, ...,
+X_n) ].  
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(X = \sum_{i
+\in [n] } X_i\)</span>. Then <span class="math inline">\(X \sim
+\text{Pois}(m)\)</span>. As <span class="math inline">\(f\)</span> is
+nonnegative, it holds that <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E}[ f(X_1, ..., X_n) ]
+            &amp;= \sum_{ k \in \mathbb{N} } \mathbb{E}[ f(X_1, ...,
+X_n)  \mid X = k] \cdot \Pr[ X = k ] \\              
+            &amp;\ge  \mathbb{E}[ f(X_1, ..., X_n)  \mid X = m] \cdot
+\Pr[ X = m ] \\
+            &amp;=  \mathbb{E}[ f(Y_1, ..., Y_n) ] \cdot e^{ - m }
+\frac{ m^m }{ m! } \\
+            &amp;\ge \mathbb{E}[ f(Y_1, ..., Y_n) ] \cdot e^{ - m }
+(m)^m \left( \frac{e}{m} \right)^m \frac{1}{ e \sqrt{m} } \\
+            &amp;= \mathbb{E}[ f(Y_1, ..., Y_n) ] \cdot \frac{1}{ e
+\sqrt{m} },  
+    \end{aligned}
+\]</span> and the theorem is proven. The last inequality follows from
+Stirling's formula that <span class="math inline">\(m! \le e \sqrt{m} (m
+/ e)^m\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<blockquote>
+<p><strong>Corollary.</strong> If some event happens with probability
+<span class="math inline">\(p\)</span> with <span
+class="math inline">\(X_1, ..., X_n\)</span>, then it happens with
+probability at most <span class="math inline">\(e\sqrt{m} \cdot
+p\)</span> with <span class="math inline">\(Y_1, ..., Y_n\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(f\)</span> be
+the indicator variable of the event that takes 1 if the event occurs and
+0 otherwise. Then by the previous theorem, <span class="math display">\[
+    \Pr[ f(Y_1, ..., Y_n) ] \le e \sqrt{m} \Pr[ f(X_1, ..., X_n) ].
+\]</span></p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>The analysis makes some analysis simpler since the <span
+class="math inline">\(X_i\)</span>'s are independent random
+variables.</p>
+<p>In some special cases, the theorem can be strengthened.</p>
+<blockquote>
+<p><strong>Theorem [1].</strong> Let <span class="math inline">\(f(y_1,
+..., y_n)\)</span> be a nonnegative function such that <span
+class="math inline">\(\mathbb{E} [ f(Y_1, ..., Y_n) ]\)</span> is either
+monotonically increasing or decreasing in <span
+class="math inline">\(m\)</span>. Then <span class="math display">\[
+\mathbb{E}[ f(Y_1, ..., Y_n) ] \le 2 \mathbb{E}[ f(X_1, ..., X_n) ].  
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> Refer to [1]. Omitted.</p>
+<h1 id="reference">Reference</h1>
+<p>[1] M. Mitzenmacher and E. Upfal, “Probability and Computing,” p.
+490.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/19/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/65/">65</a><a class="extend next" rel="next" href="/page/21/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1008,7 +906,7 @@ class="math display">\[
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-count">195</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

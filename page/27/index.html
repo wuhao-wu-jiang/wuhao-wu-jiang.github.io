@@ -146,137 +146,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/23/Propose-Test-Release/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/11/23/Propose-Test-Release/" class="post-title-link" itemprop="url">Propose-Test-Release</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-11-23 21:53:14" itemprop="dateCreated datePublished" datetime="2020-11-23T21:53:14+01:00">2020-11-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-10-17 16:33:07" itemprop="dateModified" datetime="2023-10-17T16:33:07+02:00">2023-10-17</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Let $(\mathcal{X}, d)$ be a metric space and $q : \mathcal{X} \rightarrow \mathbb{R}$ be a function defined on $\mathcal{X}$. The metric $d: \mathcal{X} \rightarrow \mathbb{N}$ takes only integer values. For an $x \in \mathcal{X}$, it neighbors an $x’ \in \mathcal{X}$, termed $x \sim x’$, if $d(x, x’) = 1$. </p>
-<p>Further, define the global sensitivity $\Delta$ of $q$ as: </p>
-<script type="math/tex; mode=display">
-    \Delta \doteq \max_{x \sim x' } | q(x) - q(x') |</script><p>The Laplace mechanism $M$ of $q$ adds random noise $N \sim \mathbb{Lap}(\frac{\Delta}{\varepsilon})$ to the output of $q$: </p>
-<script type="math/tex; mode=display">
-    M(x) \doteq q(x) + N</script><p>where $\mathbb{Lap}(\frac{\Delta}{\varepsilon})$ is the Laplacian distribution with parameter $\frac{\Delta}{\varepsilon}$.<br>It guarantees that if $x \sim x’$, the output distributions of $M(x)$ and $M(x’)$ are indistinguishable in the sense that for all $S \subset \mathbb{R}$, s.t. $S$ is measurable, it holds that</p>
-<script type="math/tex; mode=display">
-    \Pr[ M(x) \in S] \in [ e^{ - \varepsilon }, e^{ \varepsilon } ] \cdot \Pr[ M(x') \in S]</script><p>The value of $\Delta$ could be large and is independent of an $x \in \mathcal{X}$. We would like to investigate the possibility of adding a smaller noise than $\mathbb{Lap}(\frac{\Delta}{\varepsilon})$. </p>
-<p>For a fixed $x$, we can define the local sensitivity with respect to $x$ as </p>
-<script type="math/tex; mode=display">
-    \delta(x) \doteq \max_{x' \sim x} | q(x) - q(x') |.</script><p>Here the maximum is over the neighbors of a fixed $x$. The value between $\Delta$ and $\delta(x)$ is quite different. </p>
-<blockquote>
-<p>Example. Let </p>
-<ul>
-<li>$\mathcal{X} \doteq [0, 100]^3$.   </li>
-<li>$d(x, x’)\doteq #\text{ different values between } x \text{ and } x’$. </li>
-<li><p>$q(x) \doteq \min_{1 \le i &lt; j \le 3} |x_i - x_j|$, where $x_i$ is the $i$-dimension of $x$.    </p>
-<p>Then for the point $x = (0, 0, 0) \in [0, 100]^3$, if $x’ \sim x$, $x’$ contains at least two zeros in some of its dimensions. Therefore, $q(x’) = 0$ and $\delta(x) = 0$. But for $x = (0, 0, 100)$, it has a neighbor $x’ = (0, 50, 100)$. Now $q(x) = 0$ but $q(x’) = 50$. So $\Delta \ge \delta(x) \ge 50$. </p>
-</li>
-</ul>
-</blockquote>
-<p>We are interested in whether adding smaller noise $N \sim \mathbb{Lap}(\frac{\delta(x) }{\varepsilon})$ to the output of $q(x)$ would preserve privacy: </p>
-<script type="math/tex; mode=display">
-  M(x) = q(x) + N.</script><p>However, this approach is not private.<br>In the previous example, $(0, 0, 0)$ and $(0, 0, 100)$ are neighbors.<br>But for the former we add noise $N \sim \mathbb{Lap}(0)$ and for the latter we add noise $N \sim \mathbb{Lap}(\frac{50}{\varepsilon})$.<br>So the output distributions of them are very different and this would violate privacy protection.</p>
-<p>Perhaps, we should propose some fixed parameter $\beta &gt; 0$ (which could be much smaller than $\Delta$), and add a noise $N \sim \mathbb{Lap}(\frac{\beta}{\varepsilon})$ for whatever $x \in \mathcal{X}$.<br>For a pair of neighboring $x, x’$, when $|q(x) - q(x’)| \le \beta$, then the distributions of $q(x) + N$ and $q(x’) + N$ are indeed $(\varepsilon, 0)$ indistinguishable.<br>The only concern is for the case where $|q(x) - q(x’)| &gt; \beta$ and adding a noise $N \sim \mathbb{Lap}(\frac{\beta}{\varepsilon})$ fails to protect the privacy. </p>
-<p>One simple remedy is simply to refuse to output $q(x) + N$ (or $q(x) + N’$). This should be done in a differentially private manner. Let </p>
-<script type="math/tex; mode=display">
-\{ y \in \mathcal{X} : \delta(y) > \beta \}</script><p>be the set of points with local sensitivity greater than $\beta$. For a fixed $x$, define $d(x, { y : \delta(y) &gt; \beta })$ be its distance to the set. It follows that for $x \sim x’$, </p>
-<script type="math/tex; mode=display">
-|d(x, \{ y \in \mathcal{X} : \delta(y) > \beta \}) - d(x', \{ y \in \mathcal{X} : \delta(y) > \beta \})| \le 1.</script><p>This motivates the following <em>propose-test-release</em> algorithm. </p>
-<blockquote>
-<ol>
-<li>Propose a bound $\beta$ on local sensitivity.   </li>
-<li>Compute $\hat d \doteq d(x, { y \in \mathcal{X} : \delta(y) &gt; \beta }) + \mathbb{Lap}(1 / \varepsilon)$.   </li>
-<li>If $\hat d \le \frac{1}{\varepsilon} \ln \frac{1}{\gamma}$ then<br>$\qquad$ output $\bot$.</li>
-<li>Else<br>$\qquad$ output $q(x) + \mathbb{Lap}(\beta / \varepsilon)$.  </li>
-</ol>
-</blockquote>
-<p><strong>Theorem.</strong> The algorithm is $(2\varepsilon, \gamma / 2)$ differentially private. </p>
-<p><em>Proof.</em>  </p>
-<p>First observe that for two neighboring $x, x’$, their probabilities of outputting $\bot$ are similar. </p>
-<script type="math/tex; mode=display">
- \Pr[ M(x) = \bot ] \le e^{ \varepsilon} \cdot \Pr[ M(x') = \bot ] \\
- \Pr[ M(x) \neq \bot ] \le e^{ \varepsilon} \cdot \Pr[ M(x') \neq \bot ]</script><p>Now consider a measurable set $S \subset \mathbb{R}$. $M(x) \in S$ is only possible when $\hat d &gt; \frac{1}{\varepsilon} \ln \frac{1}{\gamma}$:  </p>
-<script type="math/tex; mode=display">
-    \begin{aligned}
-        \Pr[M(x) \in S] 
-            &= \Pr[ M(x) \in S \mid M(x) \neq \bot ] \cdot \Pr[ M(x) \neq \bot]
-    \end{aligned}</script><p>We consider two cases. </p>
-<ul>
-<li><p>Case 1. When $\delta(x) &gt; \beta$, then $d(x, { y \in \mathcal{X} : \delta(y) &gt; \beta }) = 0$. It follows that </p>
-<script type="math/tex; mode=display">
-  \Pr[M(x) \in S] \le \Pr[M(x) \neq \bot ]  \le \frac{\gamma}{2}</script></li>
-<li><p>Case 2. When $\delta(x) \le \beta$, it holds that $|q(x) - q(x’) |\le \beta$ and </p>
-<script type="math/tex; mode=display">
-      \Pr[ M(x) \in S \mid M(x) \neq \bot ] \le e^\varepsilon \cdot \Pr[ M(x') \in S \mid M(x') \neq \bot ]</script><p>  Therefore, </p>
-<script type="math/tex; mode=display">
-  \begin{aligned}
-      \Pr[M(x) \in S] 
-          &= \Pr[ M(x) \in S \mid M(x) \neq \bot ] \cdot \Pr[ M(x) \neq \bot] \\
-          &\le \Pr[ M(x) \in S \mid M(x) \neq \bot ] \cdot e^\varepsilon \cdot \Pr[ M(x') \neq \bot] \\
-          &\le e^\varepsilon \cdot \Pr[ M(x') \in S \mid M(x') \neq \bot ] \cdot e^\varepsilon \cdot \Pr[ M(x') \neq \bot] \\
-          &= e^{2\varepsilon} \Pr[ M(x') \in S].
-  \end{aligned}</script></li>
-</ul>
-<p>$\blacksquare$</p>
-<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] S. Vadhan, “The Complexity of Differential Privacy,” in Tutorials on the Foundations of Cryptography, Y. Lindell, Ed. Cham: Springer International Publishing, 2017, pp. 347–450.</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/19/PAC-Learning-From-Countable-Hypothesis-Family/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1240,10 +1109,285 @@ Science, vol. 9, no. 3–4, pp. 211–407, 2013</p>
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/11/12/PAC-learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/12/PAC-learning/" class="post-title-link" itemprop="url">PAC Learning Basic</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-12 06:06:55" itemprop="dateCreated datePublished" datetime="2020-11-12T06:06:55+01:00">2020-11-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-09 11:28:44" itemprop="dateModified" datetime="2021-11-09T11:28:44+01:00">2021-11-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>We discuss a toy model of probably approximately correct (PAC)
+learning [1]. The setting focuses on a <span
+class="math inline">\(d\)</span>-dimension Boolean hypercube <span
+class="math inline">\(\{0, 1\}^d\)</span> and a set of functions <span
+class="math inline">\(\mathcal{H} = \{ h : \{0, 1\}^d \rightarrow \{0, 1
+\} \}\)</span>. A function <span class="math inline">\(h \in
+\mathcal{H}\)</span> is called a hypothesis or a concept, which assigns
+each vertex in the hypercube a label 0 or 1.</p>
+<p>The goal of PAC learning is to learn an unknown hypothesis, denoted
+as <span class="math inline">\(h^* \in \mathcal{H}\)</span>, from a
+dataset, which consists of <span class="math inline">\(n\)</span> points
+<span class="math inline">\(X_1, X_2, \ldots, X_n \in \{0,
+1\}^n\)</span> sampled independently from an unknown distribution <span
+class="math inline">\(D\)</span> (over the hypercube), as well as their
+labels <span class="math inline">\(Y_1 = h^*(X_1), Y_2 = h^*(X_2),
+\ldots, Y_n = h^*(X_n)\)</span>.</p>
+<p>We can state the algorithm for PAC learning in just one sentence.</p>
+<blockquote>
+<p>Output any hypothesis <span class="math inline">\(h&#39; \in
+\mathcal{H}\)</span> that is consistent with the sampled dataset, i.e.,
+<span class="math display">\[
+h&#39;(X_i) = Y_i, \qquad \forall i \in [n]
+\]</span></p>
+</blockquote>
+<p>Such an hypothesis always exists, as <span
+class="math inline">\(h^*\)</span> satisfies this constraint. We have
+the classic PAC learning theorem.</p>
+<blockquote>
+<p><strong><em>Theorem.</em></strong> Let <span class="math inline">\(X
+\in \{0, 1\}^n\)</span> be a random point sampled from the unknown
+distribution, then for a given <span class="math inline">\(\delta \in
+(0, 1)\)</span>, <span class="math display">\[
+\Pr[ h&#39;(X) \neq h^*(X)] \ge \sqrt{ \log |\mathcal{H}| + \log \frac{
+1 }{ \delta } \over 2n}
+\]</span> with probability at most <span
+class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<p>The PAC learning theorem states that the probability that <span
+class="math inline">\(h&#39;\)</span> mislabels a point is bounded by
+<span class="math inline">\(\sqrt{ \log |\mathcal{H}| + \log ( 1 /
+\delta ) \over 2n}\)</span>.</p>
+<p><em>Proof.</em> Consider some fixed <span class="math inline">\(h \in
+\mathcal{H}\)</span>. For convenience, we rewrite <span
+class="math display">\[
+    \Pr[ h(X) \neq h^*(X)] = \mu_h.
+\]</span></p>
+<p>Denote <span class="math inline">\(Z_i\)</span> the indicator
+variable of whether <span class="math inline">\(h\)</span> mislabels
+<span class="math inline">\(X_i\)</span>, i.e., <span
+class="math display">\[
+    Z_i = \begin{cases}
+        0, \qquad \text{ if } h(X_i) = Y_i \\
+        1, \qquad \text{ if } h(X_i) \neq Y_i
+    \end{cases}
+\]</span></p>
+<p>By definition, <span class="math inline">\(\mathbb{E}[Z_i]\)</span>
+is an unbiased estimator of <span class="math inline">\(\mu_h\)</span>.
+Further, denote <span class="math inline">\(\hat \mu_h\)</span> the
+empirical mean of <span class="math inline">\(Z_i\)</span>'s <span
+class="math display">\[
+    \hat \mu_h \doteq \frac{1}{n} \sum_{i \in [n] } Z_i.
+\]</span></p>
+<p>Note that for the outputted <span
+class="math inline">\(h&#39;\)</span>, <span class="math inline">\(\hat
+\mu_{h&#39;} = 0\)</span>.</p>
+<p>By Hoeffding inequality, for any <span
+class="math inline">\(\delta&#39; &gt; 0\)</span>, <span
+class="math display">\[
+    \Pr \left[ \hat \mu_h \le \mu_h - \sqrt{ \frac{ \log ( 1 /
+\delta&#39;) }{2n} } \right] \le \delta&#39;.
+\]</span></p>
+<p>By union bound, the probability that <span class="math display">\[
+    \exists h \in \mathcal{H}, \hat \mu_h \ge \mu_h - \sqrt{ \frac{ \log
+( 1 / \delta&#39;) }{2n} }
+\]</span></p>
+<p>is bounded by <span class="math inline">\(| \mathcal{H} |
+\delta&#39;\)</span>. By setting <span class="math inline">\(\delta&#39;
+= \frac{\delta}{ | \mathcal{H} | }\)</span>, it is guaranteed that with
+probability at most <span class="math inline">\(\delta\)</span>, <span
+class="math display">\[
+    0 = \hat \mu_{h&#39; } \le \mu_{h&#39;} -  \sqrt{ \log |\mathcal{H}|
++ \log ( 1 / \delta) \over 2n}.
+\]</span></p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p>The previous theorem can be improved with the <span
+class="math inline">\(\sqrt{ \cdot }\)</span> removed. The key here is
+that the selected <span class="math inline">\(h&#39;\)</span> is
+error-free on the samples.</p>
+<blockquote>
+<p><strong><em>Theorem.</em></strong> Let <span class="math inline">\(X
+\in \{0, 1\}^n\)</span> be a random point sampled from the unknown
+distribution, then for a given <span class="math inline">\(\delta \in
+(0, 1)\)</span>, <span class="math display">\[
+\Pr[ h&#39;(X) \neq h^*(X)] \ge { \log |\mathcal{H}| + \log \frac{ 1 }{
+\delta } \over n}
+\]</span> with probability at most <span
+class="math inline">\(\delta\)</span>.</p>
+</blockquote>
+<p><em>Proof.</em> Consider some fixed <span class="math inline">\(h \in
+\mathcal{H}\)</span>. For convenience, we rewrite <span
+class="math display">\[
+    \Pr[ h(X) \neq h^*(X)] = \mu_h.
+\]</span></p>
+<p>We will prove that if <span class="math inline">\(\mu_h \ge { \log
+|\mathcal{H}| + \log \frac{ 1 }{ \delta } \over n}\)</span>, then <span
+class="math inline">\(h\)</span>'s probability of being selected is very
+low.</p>
+<p>Denote <span class="math inline">\(Z_i\)</span> the indicator
+variable of whether <span class="math inline">\(h\)</span> mislabels
+<span class="math inline">\(X_i\)</span>, i.e., <span
+class="math display">\[
+    Z_i = \begin{cases}
+        0, \qquad \text{ if } h(X_i) = Y_i \\
+        1, \qquad \text{ if } h(X_i) \neq Y_i
+    \end{cases}
+\]</span></p>
+<p>By definition, <span class="math inline">\(\Pr[Z_i = 1] =
+\mu_h\)</span>. Therefore, <span class="math display">\[
+    \begin{aligned}
+        \Pr[ Z_1 = 0 \wedge Z_2 = 0 \wedge \ldots \wedge Z_n = 0] = (1 -
+\mu_h)^n \le \exp(- \mu_h n) = \frac{\delta}{ |\mathcal{H} | }
+    \end{aligned}
+\]</span></p>
+<p>Taking union bound over all possible <span
+class="math inline">\(h\)</span> gives the desired result.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<p><strong><em>Caveat.</em></strong> <em>In both theorem, we see a <span
+class="math inline">\(\log \mathcal{H}\)</span> term in the failure
+probability, which is due to the use of union bound and can be roughly
+considered as the complexity of the hypothesis family. It is tempting to
+think that this could be avoid as follows.</em></p>
+<blockquote>
+<p>For the outputted <span class="math inline">\(h&#39;\)</span>, <span
+class="math inline">\(Z_1, \ldots, Z_n\)</span> are i.i.d samples.
+Therefore, the probability of all of them being <span
+class="math inline">\(0\)</span> is give by<br />
+<span class="math display">\[
+(1 - \mu_{h&#39;} )^n \le \exp( - \mu_{h&#39;} n).
+  \]</span><br />
+Bounding this probability by <span class="math inline">\(\delta\)</span>
+gives <span class="math inline">\(\mu_{h&#39;} \le \frac{ \log ( 1 /
+\delta ) } {n}\)</span>.</p>
+</blockquote>
+<p><em>The argument is wrong. For the outputted <span
+class="math inline">\(h&#39;\)</span>, the <span
+class="math inline">\(Z_1, \ldots, Z_n\)</span> are not i.i.d samples,
+as <span class="math inline">\(h&#39;\)</span> is selected according to
+<span class="math inline">\(Z_1, \ldots, Z_n\)</span> and depends on
+them.</em></p>
+<p><em>To make it more concrete, suppose that there is an <span
+class="math inline">\(h\)</span>, such that <span
+class="math inline">\(\mu_h = \frac{ \log ( 1 / \delta ) } {n}\)</span>.
+Consider the following experiment</em></p>
+<blockquote>
+<ol type="1">
+<li>Sample <span class="math inline">\(n\)</span> points independently
+the distribution <span class="math inline">\(D\)</span>.<br />
+</li>
+<li>Pick an <span class="math inline">\(h&#39;\)</span> that makes no
+prediction error on the samples.</li>
+</ol>
+</blockquote>
+<p><em>If we repeat the experiment <span
+class="math inline">\(N\)</span> times for some positive integer <span
+class="math inline">\(N\)</span>, then the fixed <span
+class="math inline">\(h\)</span> makes no mistake in roughly <span
+class="math inline">\((1 - \delta) N\)</span> of the experiments and
+constitutes an candidate of <span class="math inline">\(h&#39;\)</span>.
+However, on the other roughly <span class="math inline">\(\delta
+N\)</span> experiments, where <span class="math inline">\(h\)</span>
+makes prediction error, it is no longer considered as the candidate of
+<span class="math inline">\(h&#39;\)</span>. The selection procedure of
+<span class="math inline">\(h&#39;\)</span> ignores bad event of <span
+class="math inline">\(h\)</span> automatically.</em></p>
+<p><em>We could also investigate the following example. Let <span
+class="math inline">\(h^* = h_0\)</span>. There are also other two
+hypothesis <span class="math inline">\(h_1\)</span> and <span
+class="math inline">\(h_2\)</span>. Let <span
+class="math inline">\(S\)</span> be the sample space. It holds that</em>
+<span class="math display">\[
+    |h_1(x) - h^*(x) | = \begin{cases}
+        2 \epsilon, \forall x \in S \setminus S_{h_1} \\
+        0,\ \       \forall x \in S_{h_1}
+    \end{cases}
+\]</span> <span class="math display">\[
+    |h_2(x) - h^*(x) | = \begin{cases}
+        2 \epsilon, \forall x \in S \setminus S_{h_2} \\
+        0,\ \       \forall x \in S_{h_2}
+    \end{cases}
+\]</span> <em>Moreover, <span class="math inline">\(\Pr[S_{h_1}] =
+\Pr[S_{h_2} ] = \delta\)</span>. How, if we get a sample in <span
+class="math inline">\(S_{h_1}\)</span>, then we can output <span
+class="math inline">\(h&#39;\)</span> as <span
+class="math inline">\(h_0\)</span> or <span
+class="math inline">\(h_1\)</span>, since both of them make no error
+when <span class="math inline">\(x \in S_{h_1}\)</span>. Similarly, if
+<span class="math inline">\(x \in S_{h_2}\)</span>, we can output either
+<span class="math inline">\(h_0\)</span> or <span
+class="math inline">\(h_2\)</span>. We call <span
+class="math inline">\(S_{h_1}\)</span> and <span
+class="math inline">\(S_{h_2}\)</span> the bad areas. When <span
+class="math inline">\(x\)</span> is in the bad area of any hypothesis,
+we can't distinguish this hypothesis from the true hypothesis. That is
+why we need to use union bound to bound the total probabilities of these
+bad areas.</em></p>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/blob/master/PAC-Learning.png?raw=true" width="400" height="340" /></p>
+</div>
+<h3 id="reference">Reference</h3>
+<p>[1] Leslie G. Valiant. A theory of the learnable. Communications of
+the ACM, 27(11):1134-1142, 1984. 6</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/26/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><span class="page-number current">27</span><a class="page-number" href="/page/28/">28</a><span class="space">&hellip;</span><a class="page-number" href="/page/66/">66</a><a class="extend next" rel="next" href="/page/28/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/26/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/26/">26</a><span class="page-number current">27</span><a class="page-number" href="/page/28/">28</a><span class="space">&hellip;</span><a class="page-number" href="/page/65/">65</a><a class="extend next" rel="next" href="/page/28/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1309,7 +1453,7 @@ Science, vol. 9, no. 3–4, pp. 211–407, 2013</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-count">195</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
