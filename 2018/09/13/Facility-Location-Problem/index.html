@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Problem Suppose we have a set of facilities \(F\) and a set of clients \(C\), and would like to open a subset of facilities to serve the clients. The cost consists of two parts:  one for opening t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Facility Location Problem">
+<meta property="og:url" content="http://example.com/2018/09/13/Facility-Location-Problem/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Problem Suppose we have a set of facilities \(F\) and a set of clients \(C\), and would like to open a subset of facilities to serve the clients. The cost consists of two parts:  one for opening t">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-09-14T00:58:58.000Z">
+<meta property="article:modified_time" content="2022-07-13T12:57:38.000Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2018/09/13/Facility-Location-Problem/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Facility Location Problem | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/09/13/Facility-Location-Problem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Facility Location Problem
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-09-13 20:58:58" itemprop="dateCreated datePublished" datetime="2018-09-13T20:58:58-04:00">2018-09-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-07-13 08:57:38" itemprop="dateModified" datetime="2022-07-13T08:57:38-04:00">2022-07-13</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="problem">Problem</h1>
+<p>Suppose we have a set of facilities <span
+class="math inline">\(F\)</span> and a set of clients <span
+class="math inline">\(C\)</span>, and would like to open a subset of
+facilities to serve the clients. The cost consists of two parts:</p>
+<ol type="1">
+<li>one for opening the selected facilities;</li>
+<li>one for connecting each client to its nearest facility.</li>
+</ol>
+<p>Formally, denote <span class="math inline">\(f_i\)</span> the cost of
+facility <span class="math inline">\(i \in F\)</span> and <span
+class="math inline">\(d_{u,i}\)</span> the distance from a client <span
+class="math inline">\(u \in C\)</span> to a facility <span
+class="math inline">\(i \in F\)</span>. Further, we assume that the
+distances satisfy the following constraint: <span
+class="math display">\[
+    d_{v, i} \le d_{v, j} + d_{u, j} + d_{u, i},
+    \qquad
+    \forall  u, v \in C,\quad i, j \in F.
+\]</span></p>
+<p>Let <span class="math inline">\(S \subseteq F\)</span> be a subset of
+facilities. The cost of <span class="math inline">\(S\)</span> is given
+by <span class="math display">\[
+    \sum_{i \in S} f_i + \sum_{u \in C} \min_{i \in S} d_{u,i}
+\]</span></p>
+<p>The problem is to find a set <span class="math inline">\(S\)</span>
+that minimizes this cost.</p>
+<h1 id="linear-programming">Linear Programming</h1>
+<p>The linear program for the problem is given as follows: <span
+class="math display">\[
+    \begin{array}{lrrlr}
+        \min  &amp; \sum_{i \in F} f_i y_i + \sum_{u \in C, i \in F}
+d_{u, i} x_{u, i} &amp; &amp;  \\
+        \text{s.t.} &amp; \sum_{i \in F} x_{u, i} \ge 1  &amp; \forall u
+\in C  &amp; (1) \\
+        &amp; y_i - x_{u, i} \ge 0           &amp; \forall i \in F, u
+\in C &amp; (2) \\
+        &amp; x_{u, i} \ge 0                 &amp; \forall i \in F, u
+\in C \\
+        &amp; y_i \ge 0                     &amp; \forall i \in F \\
+    \end{array}
+\]</span></p>
+<p>The first constraint says that each client is assigned to at least
+one facility. The second one says that a facility must be (fractionally)
+open if there is a client assigned to it.</p>
+<h1 id="weak-duality-implies-dual-program">Weak Duality <span
+class="math inline">\(\implies\)</span> Dual Program</h1>
+<p>Let <span class="math inline">\(\alpha_u\)</span> be the dual
+variable associated with constraint (1) and <span
+class="math inline">\(\beta_{u, i}\)</span> be the one with constraint
+(2). We want the following inequalities, called <em>weak duality</em>,
+to hold: <span class="math display">\[
+    \begin{aligned}
+        \sum_{u \in C} \alpha_u
+            &amp;= \sum_{u \in C} \alpha_u \cdot 1 + \sum_{i \in F, u
+\in C} \beta_{u, i} \cdot 0 \\
+            &amp;\le \sum_{u \in C} \alpha_u \cdot \left( \sum_{i \in F}
+x_{u, i} \right) + \sum_{i \in F, u \in C} \beta_{u, i} \cdot (y_i -
+x_{u, i}) \\
+            &amp;= \sum_{i \in F, u \in C} (\alpha_u - \beta_{u, i})
+\cdot x_{u, i}  + \sum_{i \in F} \left( \left( \sum_{u \in C} \beta_{u,
+i} \right) \cdot y_i \right) \\
+            &amp;\le \sum_{i \in F, u \in C} d_{u, i} x_{u, i} + \sum_{i
+\in F} f_i y_i
+    \end{aligned}
+\]</span></p>
+<p>When such inequalities hold, <span class="math inline">\(\sum_{u \in
+C} \alpha_u\)</span> constitutes a lower bound for cost of the primal
+program. The problem of obtaining a tightest such lower bound, under the
+constraints under which the above inequalities hold, gives the <em>dual
+program</em>: <span class="math display">\[
+    \begin{array}{rrrr}    
+        \max &amp; \sum_{u \in C} \alpha_u \\
+        \text{s.t.}&amp; \alpha_u - \beta_{u, i} \le d_{u,i} &amp;
+\forall i \in F, \forall u \in C\\
+        &amp; \sum_{u \in C} \beta_{u, i} \le f_i  &amp; \forall i \in F
+\\
+        &amp; \alpha_u \ge 0,   &amp; \forall u \in C \\
+        &amp; \beta_{u, i} \ge 0.   &amp; \forall u \in C, i \in F
+    \end{array}
+\]</span></p>
+<h2 id="intuitive-explanation">Intuitive Explanation</h2>
+<p>Here we give a more intuitive way of deriving the dual. First,
+observe that <span class="math inline">\(\sum_{u \in C} \min_{i \in F}
+d_{u,i}\)</span> is a trivial lower bound of the primal programming. In
+this case, each client is assigned to its nearest facility. However we
+ignore facility cost entirely.</p>
+<p>To incorporate the facility cost, for each facility <span
+class="math inline">\(i\)</span> we divide its cost <span
+class="math inline">\(f_i\)</span> among the clients, such that client
+<span class="math inline">\(u\)</span> needs to pay <span
+class="math inline">\(\beta_{u, i}\)</span> if it is assigned facility
+<span class="math inline">\(i\)</span>. Note that <span
+class="math inline">\(\beta_{u, i}\)</span> can be arbitrary
+non-negative number as long as it satisfies that <span
+class="math inline">\(\sum_{u \in C} \beta_{u, i} = f_i\)</span> for all
+<span class="math inline">\(i \in F\)</span>.</p>
+<blockquote>
+<p><strong>Theorem.</strong> For each subset <span
+class="math inline">\(S \subseteq F\)</span>, let <span
+class="math inline">\(\mu : C \rightarrow S\)</span> be the function
+defined by <span class="math display">\[
+\mu_S (u) \doteq \underset{i \in S}{\arg \min}\, d_{u,i} \,.
+\]</span></p>
+<p>We have <span class="math display">\[
+\begin{aligned}
+\sum_{u \in C}
+\left( d_{u, \mu_S (u)} + \beta_{u, \mu_S (u)} \right)
+\le
+\sum_{i \in S} f_i + \sum_{u \in C} d_{u, \mu_S (u)}
+\end{aligned}
+\]</span></p>
+</blockquote>
+<p><strong>Proof.</strong> It suffices to show that <span
+class="math display">\[
+    \sum_{u \in C} \beta_{u, \mu_S (u)} \le \sum_{i \in S} f_i.
+\]</span> But this is obviously true, since <span
+class="math display">\[
+    \sum_{u \in C} \beta_{u, \mu_S (u)}
+        \le \sum_{u \in C} \left( \sum_{i \in S} \beta_{u, i} \right)
+        = \sum_{i \in S} \left( \sum_{u \in C} \beta_{u, i} \right)
+        = \sum_{i \in S} f_i.
+\]</span> <span class="math inline">\(\square\)</span></p>
+<p>If we define <span class="math display">\[
+    \alpha_u = \min_{i \in F} (d_{u,i} + \beta_{u, i}),
+\]</span></p>
+<p>Then <span class="math inline">\(\sum_{u \in C} \alpha_u\)</span>
+constitutes a lower bound for the cost of each solution for the primal
+LP. In particular, it is a lower bound of the cost of the optimal
+integral solution <span class="math inline">\(S^*\)</span> (its
+corresponding assignment function is denoted as <span
+class="math inline">\(\mu^*\)</span>):</p>
+<p><span class="math display">\[
+    \begin{aligned}
+        \sum_{u \in C} \alpha_u
+            \le \sum_{i \in S^*} f_i + \sum_{u \in S^*} \min_{i \in S}
+d_{u,i}.
+    \end{aligned}
+\]</span></p>
+<p>The problem of determining a set of <span
+class="math inline">\(\beta_{u, i}\)</span>'s that maximizes the lower
+bound <span class="math inline">\(\sum_{u \in C} \alpha_u\)</span> gives
+the dual program.</p>
+<h1 id="complementary-slackness">Complementary Slackness</h1>
+<p><span class="math display">\[
+    \begin{array}{rrrr}
+        \min  &amp; \sum_{i \in F, u \in C} d_{u, i} x_{u, i} + \sum_{i
+\in F} f_i y_i &amp; &amp;  \\
+        \text{s.t.} &amp; \sum_{i \in F} x_{u, i} \ge 1  &amp; \forall u
+\in C  \\
+        &amp; y_i - x_{u, i} \ge 0           &amp; \forall i \in F, u
+\in C \\
+        &amp; x_{u, i} \ge 0                 &amp; \forall i \in F, u
+\in C \\
+        &amp; y_i \ge 0                     &amp; \forall i \in F \\
+    \\
+    \max &amp; \sum_{u \in C} \alpha_u \\
+        \text{s.t.}&amp; \alpha_u - \beta_{u, i} \le d_{u,i} &amp;
+\forall i \in F, \forall u \in C\\
+        &amp; \sum_{u \in C} \beta_{u, i} \le f_i  &amp; \forall i \in
+F\\
+        &amp; \alpha_u \ge 0,   &amp; \forall u \in C \\
+        &amp; \beta_{u, i} \ge 0, &amp; \forall u \in C, i \in F.
+    \end{array}
+\]</span></p>
+<p>Let <span class="math inline">\(x^*, y^*\)</span> and <span
+class="math inline">\(\alpha^*, \beta^*\)</span> be the optimal primal
+and dual solutions, respectively. For these set of variables, weak
+duality holds with equalities. By complementary slackness, it holds
+that</p>
+<ol type="1">
+<li><span class="math inline">\(\alpha^*_u = 0\)</span> or <span
+class="math inline">\(\sum_{i \in F} x^*_{u, i} = 1\)</span></li>
+<li><span class="math inline">\(\beta^*_{u, i} = 0\)</span> or <span
+class="math inline">\(y^*_i - x^*_{u, i} = 0\)</span></li>
+</ol>
+<p>and</p>
+<ol start="3" type="1">
+<li><span class="math inline">\(\alpha^*_u - \beta^*_{u, i} =
+d_{u,i}\)</span> or <span class="math inline">\(x^*_{u, i} =
+0\)</span></li>
+<li><span class="math inline">\(\sum_{u \in C} \beta^*_{u, i} =
+f_i\)</span> or <span class="math inline">\(y^*_i = 0\)</span></li>
+</ol>
+<h1 id="deterministic-rounding-1">Deterministic Rounding [1]</h1>
+<h2 id="approximation-algorithm"><span
+class="math inline">\(4\)</span>-Approximation Algorithm</h2>
+<p>We show how to pick a good subset <span class="math inline">\(S
+\subset F\)</span> based on the optimal solutions <span
+class="math inline">\(x^*, y^*\)</span>, <span
+class="math inline">\(\alpha^*\)</span> and <span
+class="math inline">\(\beta^*\)</span>.</p>
+<p>First we construct a graph <span class="math inline">\(G = (V,
+E)\)</span> based on the <span class="math inline">\(x^*\)</span>.</p>
+<blockquote>
+<p><strong>Definition.</strong> A derived graph from the optimal LP
+consists of the follows: 1. The vertex set <span class="math inline">\(V
+= F \cup C\)</span>; 2. The undirected edge set <span
+class="math inline">\(E = \{ (u, i) : x^*_{u, i} &gt; 0, \forall i \in
+F, u \in C\}\)</span>, i.e., the edge set <span
+class="math inline">\(E\)</span> consists of client-facility pairs <span
+class="math inline">\((u, i)\)</span> for which <span
+class="math inline">\(x^*_{u, i} &gt; 0\)</span>.</p>
+</blockquote>
+<p>In the graph <span class="math inline">\(G\)</span>, the neighbors a
+client <span class="math inline">\(u \in C\)</span> can only be
+facilities.</p>
+<blockquote>
+<p><strong>Definition.</strong> For each <span class="math inline">\(u
+\in C\)</span>, let <span class="math inline">\(N(u)\)</span> be the set
+of facilities adjacent to <span class="math inline">\(u\)</span> in
+<span class="math inline">\(G\)</span>.</p>
+</blockquote>
+<p>Similarly, we define two-hop neighbors of a client <span
+class="math inline">\(C\)</span>, as the client who connects to <span
+class="math inline">\(u\)</span> via a intermediate facility.</p>
+<blockquote>
+<p><strong>Definition.</strong> For a client <span
+class="math inline">\(u \in C\)</span>, its two hop neighbors are the
+set of clients <span class="math inline">\(v\)</span> whose distance to
+<span class="math inline">\(u\)</span> is at most <span
+class="math inline">\(2\)</span>: <span class="math display">\[
+N^2(u) = \{ v \in C: N(u) \cap N(v) \neq \emptyset \}.
+\]</span> Note that <span class="math inline">\(u \in
+N^2(u)\)</span>.</p>
+</blockquote>
+<p>Below is an example. The cycles represent clients and the squares are
+for facilities. Associated each client and each facility are the <span
+class="math inline">\(\alpha_u^*\)</span> value and opening cost
+respectively.</p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FacilityLocation/algorithm1.1.png" /></p>
+<p>An important property of this graph is that</p>
+<blockquote>
+<p><strong>Property.</strong> If <span class="math inline">\((u, i) \in
+E\)</span>, then <span class="math inline">\(x^*_{u, i} &gt;0\)</span>,
+which implies that <span class="math inline">\(\alpha^*_u =d_{u,i} +
+\beta^*_{u, i}\)</span> by complementary slackness. It concludes that
+<span class="math inline">\(\alpha^*_u \ge d_{u,i}\)</span> if there is
+an edge <span class="math inline">\((u, i)\)</span> in <span
+class="math inline">\(G\)</span>.</p>
+</blockquote>
+<p>The following is the first constant factor approximation algorithm
+for the un-capacitated facility location problem, proposed in 1997
+[1].</p>
+<blockquote>
+<p><strong>Algorithm 1</strong><br />
+1. <span class="math inline">\(S \leftarrow \emptyset\)</span><br />
+2. <span class="math inline">\(U \leftarrow C;\, B \leftarrow
+\emptyset\)</span><br />
+3. <strong>while</strong> <span class="math inline">\(U \neq
+\emptyset\)</span> <strong>do</strong><br />
+4. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(u \leftarrow \underset{v \in U}{\arg \min \,}
+\,\alpha^*_v\)</span><br />
+5. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(i_u \leftarrow \underset{i \in N(u)}{\arg \min \,}
+\,f_i\)</span><br />
+6. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(U \leftarrow U \setminus N^2(u)\)</span> 7. <span
+class="math inline">\(\quad\)</span> <span class="math inline">\(B
+\leftarrow B \cup \{ u \}\)</span><br />
+8. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(S \leftarrow S \cup \{ i_u \}\)</span></p>
+</blockquote>
+<p>It is important that at each iteration, when a client <span
+class="math inline">\(u\)</span> is chosen, all vertices clients in
+<span class="math inline">\(N^2(u)\)</span> are removed from <span
+class="math inline">\(U\)</span>. This guarantees that clients in <span
+class="math inline">\(B\)</span> has non-overlapping neighbors, i.e.,
+<span class="math display">\[
+    N(u) \cap N(v) = \emptyset,\, \quad  \forall u, v \in B.
+\]</span></p>
+<p>Consider the assignment scheme in which, instead of assigning each
+client to its nearest facility in <span
+class="math inline">\(S\)</span>, at each iteration, we assign clients
+in <span class="math inline">\(N^2(u)\)</span> to the chosen facility
+<span class="math inline">\(i_u\)</span>. Then each iteration of the
+algorithm creates a clusters, which contains three kinds of
+vertices:</p>
+<ol type="1">
+<li>The selected client <span class="math inline">\(u\)</span> with
+minimum <span class="math inline">\(\alpha^*_u\)</span>.</li>
+<li>All <span class="math inline">\(u\)</span>'s neighboring
+facilities.<br />
+</li>
+<li>All un-assigned clients neighboring to these facilities.</li>
+</ol>
+<p>Such clusters are non-overlapping.</p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FacilityLocation/algorithm1.2.png" /></p>
+<p>The example above shows one iteration of the algorithm. The vertex
+with minimum value of <span class="math inline">\(\alpha^*_u\)</span>
+(i.e. 1) is opened, highlighted by the red cycle. There are two
+facilities connected to it, the cheap opening cost of which is <span
+class="math inline">\(1\)</span>. Then all un-assigned clients
+neighboring these two facilities are assigned to the cost 1 facility, as
+shown by the purple dashed arrows.</p>
+<p>It is left to analyze the cost of the solution returned.</p>
+<blockquote>
+<p><strong>Theorem.</strong> The facility cost of Algorithm <span
+class="math inline">\(1\)</span> is at most OPT.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>At each iteration, a client <span class="math inline">\(u\)</span> is
+selected. In the primal LP, constraint (1) requires that <span
+class="math display">\[
+    \sum_{i \in F} x^*_{u, i} \ge 1
+\]</span></p>
+<p>Note that although <span class="math inline">\(u\)</span> can
+assigned to a facility fractionally, the total amount of assignment must
+be at least <span class="math inline">\(1\)</span>. Further, although a
+facility can be fractionally open in primal LP, the constraint (2) <span
+class="math display">\[
+    y^*_i \ge x^*_{u, i}
+\]</span> implies that the open amount must be at least the amount a
+client assign to it. We conclude that <span class="math display">\[
+    \begin{array}{llr}
+        \min_{i \in N(u)} f_i
+            &amp;\le \big( \min_{i \in N(u)} f_i \big) \cdot \sum_{i \in
+N(u)} x^*_{u, i} \\
+            &amp;\le \sum_{i \in N(u)} x^*_{u, i} \cdot f_i \\
+            &amp;\le \sum_{i \in N(u)} y^*_{i} \cdot f_{i}.
+    \end{array}
+\]</span></p>
+<p>The neighbor sets <span class="math inline">\(N(u)\)</span>'s of the
+selected clients <span class="math inline">\(u \in B\)</span> are
+disjoint.</p>
+<p>Therefore, summing over <span class="math inline">\(u \in B\)</span>,
+the total facility cost is bounded by <span class="math display">\[
+    \sum_{u \in B} \sum_{i \in N(u)} y^*_{i} f_{i} \le \sum_{i \in F}
+y^*_i f_i \le OPT.
+\]</span></p>
+<blockquote>
+<p><strong>Theorem.</strong> The connection cost of Algorithm <span
+class="math inline">\(1\)</span> is at most <span
+class="math inline">\(3 \cdot\)</span>OPT.</p>
+</blockquote>
+<p><strong>Proof.</strong> Now we analyze the assignment cost.</p>
+<p><strong>Case One.</strong> If <span class="math inline">\(u \in
+B\)</span>, then it is selected by the algorithm, and <span
+class="math inline">\(i_u \doteq \arg \min_{i \in N(u)} f_i\)</span>
+belongs to <span class="math inline">\(S\)</span>. Therefore, <span
+class="math display">\[
+    d_{u, S} \doteq \arg \min_{i \in S} d_{u, i} \le d_{i, i_u} \le
+\alpha_u^*.
+\]</span></p>
+<p><strong>Case Two.</strong> If <span class="math inline">\(v \notin
+B\)</span>, then <span class="math inline">\(v \in N^2(u)\)</span> for
+some <span class="math inline">\(u \in B\)</span>. Since <span
+class="math inline">\(v \in N^2(u)\)</span>, there exists some facility
+<span class="math inline">\(j \in N(v) \cap N(u)\)</span>. By triangle
+inequality, we have <span class="math display">\[
+    d_{v , i_u}
+    \le d_{v, j} + d_{u, j} + d_{v, i_u}
+    \le \alpha^*_v + \alpha^*_u + \alpha^*_u \le 3 \alpha^*_v
+\]</span> The last inequality holds since <span
+class="math inline">\(\alpha^*_u \le \alpha^*_v\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Combing assignment cost and facility cost, Algorithm <span
+class="math inline">\(1\)</span> is <span
+class="math inline">\(4\)</span>-approximation.</p>
+<p>How happy are we with the <span
+class="math inline">\(4\)</span>-approximation algorithm? Probably not.
+In the previous example, when a facility is opened, only one client
+contributes to its opening cost. However, in the primal solution, many
+other clients assigned to it do not contribute to the opening cost,
+which implies that the current analysis may not be tight.</p>
+<h1 id="randomized-rounding-3">Randomized Rounding [3]</h1>
+<h2 id="approximation-rounding"><span
+class="math inline">\(3\)</span>-Approximation Rounding</h2>
+<p>In the section, we improve the approximation ratio of <span
+class="math inline">\(4\)</span> to an expected value of <span
+class="math inline">\(3\)</span>. In the previous rounding, we bound the
+opening cost as <span class="math display">\[
+    \sum_{u \in B} \min_{i \in N(u) } f_i \le OPT
+\]</span> which is not tight.</p>
+<p>Define the assignment cost for client <span
+class="math inline">\(u\)</span> in the optimal primal LP solution as
+<span class="math inline">\(A_u = \sum_{i \in F} x^*_{u, i}
+d_{u,i}\)</span>. Indeed, it is affordable to bound <span
+class="math display">\[
+    \sum_{u \in B} \sum_{i \in N(u) } x^*_{u, i} f_i +  \sum_{u \in B}
+A_u \le OPT
+\]</span></p>
+<p>It is possible to devise a randomized rounding algorithm that
+incorporates this cost and improve the approximation ratio to <span
+class="math inline">\(3\)</span>. The only differences compared to the
+first rounding algorithm are</p>
+<ol type="1">
+<li>We pick a client that minimize <span
+class="math inline">\(\alpha^*_u + A_u\)</span>;</li>
+<li>We pick a facility with probability <span
+class="math inline">\(x^*_{u, i}\)</span>.</li>
+</ol>
+<p>Below is the algorithm.</p>
+<blockquote>
+<p><strong>Algorithm 2</strong><br />
+1. <span class="math inline">\(S \leftarrow \emptyset\)</span><br />
+2. <span class="math inline">\(U \leftarrow C;\, B \leftarrow
+\emptyset\)</span><br />
+3. <strong>while</strong> <span class="math inline">\(U \neq
+\emptyset\)</span> <strong>do</strong><br />
+4. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(u \leftarrow \underset{v \in U}{\arg \min \,}
+\,\big( \alpha^*_v + A_v \big)\)</span><br />
+5. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(\Pr[ i_u \leftarrow i ] = x^*_{u, i}, \quad
+\forall i \in N(u)\)</span><br />
+6. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(U \leftarrow U \setminus N^2(u)\)</span> 7. <span
+class="math inline">\(\quad\)</span> <span class="math inline">\(B
+\leftarrow B \cup \{ u \}\)</span><br />
+8. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(S \leftarrow S \cup \{ i_u \}\)</span></p>
+</blockquote>
+<h3 id="facility-cost">Facility Cost</h3>
+<p>The analysis of expected facility cost is almost the same as before.
+It is guaranteed that <span class="math display">\[
+    N(u) \cap N(v) = \emptyset, \qquad \forall u, v \in N(u).
+\]</span> Therefore, the expected opening cost is bounded by<br />
+<span class="math display">\[
+    \sum_{u \in B} \sum_{i \in N(u) } x^*_{u, i} \cdot f_i
+    \le
+    \sum_{u \in B} \sum_{i \in N(u) } y^*_i \cdot f_i
+    \le
+    \sum_{i \in F} y_i^* f_i.
+\]</span></p>
+<h3 id="connection-cost">Connection Cost</h3>
+<p>Now we analyze the assignment cost.</p>
+<p><strong>Case One.</strong> If <span class="math inline">\(u \in
+B\)</span>, then <span class="math display">\[
+    \mathbb{E}[ \min_{i \in S} d_{u, i} ]
+    \le \mathbb{E}[ d_{u, i_u} ]
+    = \sum_{i \in N(u)} x^*_{u, i} \cdot d_{u, i}.
+\]</span> <strong>Case One.</strong> If <span class="math inline">\(v
+\notin B\)</span>, then there exists <span class="math inline">\(u \in
+B\)</span>, s.t., <span class="math inline">\(v \in N^2(u)\)</span>.
+Then there exists some facility <span class="math inline">\(j \in N(u)
+\cap N(v)\)</span>. By triangle inequality, the expected connection cost
+is at most <span class="math display">\[
+    \begin{aligned}
+        \mathbb{E}[ \min_{i \in S} d_{v, i} ]
+        &amp;\le
+        \mathbb{E}[ d_{v, i_u} ]
+        \le \mathbb{E}[ d_{u, i_u} + d_{u, j} + d_{v, j} ] \\
+        &amp;= \sum_{i \in N(u)} x^*_{u, i} \cdot d_{u, i} + d_{u, j} +
+d_{v, j} \\
+        &amp;\le A_u + \alpha^*_{u} + \alpha^*_v
+        \le A_u + 2 \alpha^*_v.
+    \end{aligned}
+\]</span></p>
+<h3 id="total-cost">Total Cost</h3>
+<p>The cost is at most <span class="math display">\[
+    \sum_{i \in F} y_i^* f_i + \sum_{i \in F, u \in C} d_{u, i} \cdot
+x^*_{u, i} + 2\sum_{u \in C} \alpha^*_u \le 3 \cdot OPT
+\]</span></p>
+<p><strong><em>Remark</em></strong>: there is still room for
+improvement. When a client <span class="math inline">\(u\)</span> is
+selected and a facility <span class="math inline">\(i\)</span> is
+sampled, <span class="math inline">\(v \in N^2(u)\)</span> is assigned
+to <span class="math inline">\(i\)</span>. On the other hand, <span
+class="math inline">\(v\)</span> itself may contributes to the opening
+cost of some other facility not open. To make the expected opening cost
+tight, we may consider opening facilities directly with respect to
+probability <span class="math inline">\(y^*_i\)</span>.</p>
+<h2 id="e-approximation-rounding-3"><span class="math inline">\((1 +
+3/e)\)</span>-Approximation Rounding [3]</h2>
+<!-- To have an intuition of the rounding technique, we illustrate a wrong but instructive rounding technique. Here we assume that $x^*_{u, i} = y^*_i$ for all $i \in F, u \in C$. If we select each facility $i$ independently with probability $y^*_i$, then for a client $u$, the probability that none of its neighbor is selected is 
+$$
+\prod_{i \in N(u) } (1 - y^*_i) \le e^{-\sum_{i \in N(u) } y^*_i} \le e^{ - \sum_{i \in N(u) } x^*_{u, i} } = e^{-1}
+$$
+
+The problem here is that, if none of $j$'s neighbors is sampled, the connection cost of $j$ might be unacceptable large. We need some backup mechanism. For example, if we can somehow combine Algorithm 1 and bound the connection cost to $3 \alpha^*_u$ for this bas case. Let $Z$ be the random variable that represents connection cost for $j$ and $Y_i$ ($i \in N(u)$) indicator random variable of whether $i$ is sampled.
+$$
+Z \le Z' \doteq \min_{i \in N(u), Y_i = 1} \{ d_{u,i} Y_i \} + 3 \alpha^*_u \cdot \mathbb{I}_{[ X_i = 0, \forall i \in N(u)] }
+$$
+
+
+Therefore, 
+$$
+\begin{aligned}
+    \mathbb{E}[z] 
+    &\le E[Z'] \\
+    &\le E \left[ \sum_{i \in N(u)}  d_{u,i} Y_i  + 3 \alpha^*_u \cdot \mathbb{I}_{[ X_i = 0, \forall i \in N(u)] } \right] \\
+    &= \sum_{i \in N(u)}  d_{u,i} E[Y_i]  + 3 \alpha^*_u \cdot E\left[ \mathbb{I}_{[ X_i = 0, \forall i \in N(u)] } \right] \\
+    &\le \sum_{i \in N(u) } d_{u,i} x^*_{u, i} + \frac{3}{e} \alpha^*_u
+\end{aligned}
+$$
+
+The third equality does not even require that $Y_i$'s are independent. Then the total cost is bounded by 
+$$
+\begin{aligned}
+    &\sum_{i \in F} y^*_i f_i + \sum_{u \in C}  x^*_{u, i} d_{u,i} + \frac{3}{e} \sum_{u \in C} \alpha^*_u \\
+    =& (1 + \frac{3}{e} ) \cdot  OPT
+\end{aligned}
+$$
+
+
+Below we show the actual algorithm that achieves this expected approximation ratio. The facilities are no longer sampled independently. However, we will see that, for facility $i$, it is still selected with probability $y^*_i$. Therefore, the expected cost of opening the facilities is still $\sum_{i \in F} y^*_i f_i$.  -->
+<!-- 
+> Algorithm 3:     
+> 1. $S \leftarrow \emptyset$.  
+> 2. $B \leftarrow \emptyset$.  
+> 3. $T \leftarrow F$.   
+> 2. While there exists un-assigned client   
+> 3. $\quad$ Let $j$ be the unassigned one with smallest $\alpha^*_u$, add $j$ to $B$.      
+> 5. $\quad$ Sample a facility $i$ in $N(u)$ with probability $x^*_{u, i}$, add it to $S$.    
+> 6. $\quad$ $T \leftarrow T \setminus N(u)$.
+> 6. $\quad$ Assign $j$ to $i$:  $\mu(j) \leftarrow i$  
+> 6. $\quad$ For each un-assigned client $j' \in N^2(u)$ do  
+> 8. $\quad$ $\quad$ $\quad$ Assign $j'$ to $i$: $\mu(j')   \leftarrow i$
+> 9. Sample each facility $i \in T$ independently with probability $y^*_i$. 
+-->
+<p>In the previous analysis, we see that a facility may be
+under-sampled. There are two reasons for this:</p>
+<ol type="1">
+<li><p>For a facility <span class="math inline">\(i\)</span>, <span
+class="math inline">\(\exists u \in N(i)\)</span> such that <span
+class="math inline">\(u \in B\)</span>. When <span
+class="math inline">\(u\)</span> is selected, facility <span
+class="math inline">\(i\)</span> is sampled with probability <span
+class="math inline">\(x^*_{u, i}\)</span>, which might be smaller than
+<span class="math inline">\(y^*_i\)</span>.</p></li>
+<li><p>For a facility <span class="math inline">\(i\)</span>, none of
+its clients <span class="math inline">\(u \in N(i)\)</span> is selected,
+therefore <span class="math inline">\(i\)</span> is never
+sampled.</p></li>
+</ol>
+<p>To fix theses issues and based on <strong>Algorithm</strong> <span
+class="math inline">\(2\)</span>, we have the following algorithm. The
+algorithm presented here is a modified version of the one proposed in
+[3], but guided the same philosophy.</p>
+<blockquote>
+<p><strong>Algorithm 3</strong>:<br />
+1. <span class="math inline">\(T \leftarrow F\)</span><br />
+2. <span class="math inline">\(k \leftarrow 0\)</span><br />
+3. <span class="math inline">\(S_1, S_2, S_3 \leftarrow
+\emptyset\)</span><br />
+2. <strong>while</strong> there exists un-assigned client
+<strong>do</strong><br />
+4. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(k \leftarrow k + 1\)</span><br />
+3. <span class="math inline">\(\quad\)</span> Let <span
+class="math inline">\(u_k\)</span> be the unassigned one with smallest
+<span class="math inline">\(\alpha^*_u\)</span><br />
+5. <span class="math inline">\(\quad\)</span> Open exactly one facility
+<span class="math inline">\(i_k \in N( u_k )\)</span> with probability
+<span class="math inline">\(x^*_{u, i}\)</span><br />
+6. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(S_1 \leftarrow S_1 \cup \{ i_k \}\)</span><br />
+6. <span class="math inline">\(\quad\)</span> For each <span
+class="math inline">\(i \in N(u_k) - \{ i_k \}\)</span> 7. <span
+class="math inline">\(\qquad\)</span> Open <span
+class="math inline">\(i\)</span> with probability <span
+class="math inline">\((y^*_{i} - x^*_{u, i} ) / ( 1- x^*_{u, i}
+)\)</span><br />
+8. <span class="math inline">\(\qquad \quad\)</span> <span
+class="math inline">\(S_2 \leftarrow S_2 \cup \{ i \}\)</span> 6. <span
+class="math inline">\(\quad\)</span> <span class="math inline">\(T
+\leftarrow T - N(u_k)\)</span><br />
+6. <span class="math inline">\(\quad\)</span> Assign <span
+class="math inline">\(v\)</span> to <span
+class="math inline">\(i_k\)</span>, for each <span
+class="math inline">\(v \in N^2( u_k )\)</span><br />
+9. <strong>for</strong> each facility <span class="math inline">\(i \in
+T\)</span> 10. <span class="math inline">\(\quad\)</span> Open <span
+class="math inline">\(i\)</span> with probability <span
+class="math inline">\(y^*_i\)</span><br />
+10. <span class="math inline">\(\qquad\)</span> <span
+class="math inline">\(S_3 \leftarrow S_3 \cup \{ i \}\)</span> 10.
+Re-assign each <span class="math inline">\(u \in C\)</span> to its
+nearest open facility.</p>
+</blockquote>
+<p>When the algorithm stops, denote <span class="math inline">\(S = S_1
+\cup S_2 \cup S_3\)</span> the set of open facilities and <span
+class="math inline">\(B = \{u_1, u_2, ..., u_{|B| } \}\)</span> the set
+of selected clients by line <span class="math inline">\(6\)</span>. The
+following lemma shows that Algorithm <span
+class="math inline">\(3\)</span> fully samples each facility and
+therefore never loses to Algorithm <span
+class="math inline">\(1\)</span>.</p>
+<h2 id="facility-cost-1">Facility Cost</h2>
+<blockquote>
+<p><strong>Lemma 1.</strong> For each <span class="math inline">\(i \in
+F\)</span>, it is opened with probability <span
+class="math inline">\(y^*_i\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Note the facilities are not open
+independently. The claim is trivially true if a facility is is sampled
+in line 10. Otherwise, <span class="math inline">\(\exists u \in
+B\)</span>, s.t., <span class="math inline">\(i \in N(u)\)</span>. The
+probability of <span class="math inline">\(i\)</span> being open is
+<span class="math display">\[
+    x^*_{u, i} + ( 1 - x^*_{u, i} ) \cdot \frac{y^*_{i} - x^*_{u, i} }{
+1- x^*_{u, i} } = y^*_i.
+\]</span> <span class="math inline">\(\blacksquare\)</span></p>
+<blockquote>
+<p><strong>Corollary.</strong> By linearity of expectation, the expected
+facility opening cost is <span class="math inline">\(\sum_{i \in F}
+y^*_i f_i\)</span>.</p>
+</blockquote>
+<h2 id="connection-cost-1">Connection Cost</h2>
+<p>What is not trivial is the analysis of the assignment cost. Given
+<span class="math inline">\(S\)</span>, assigning <span
+class="math inline">\(u \in C\)</span> to its nearest facility in <span
+class="math inline">\(S\)</span> minimizes the assignment cost. To bound
+this cost, we investigate a sub-optimal assignment based on <span
+class="math inline">\(S\)</span>. For each <span class="math inline">\(u
+\in C\)</span> we select a subset <span class="math inline">\(S(u)
+\subseteq S\)</span> and assign it to a closest facility in <span
+class="math inline">\(S(u)\)</span>. This leads to a possibly increase
+in the expected assignment cost.</p>
+<p>Let <span class="math inline">\(Z\)</span> be the random variable of
+the assignment cost for client <span class="math inline">\(u\)</span>
+and <span class="math inline">\(X_i\)</span> (<span
+class="math inline">\(i \in N(u)\)</span>) be the indicator random
+variable of <span class="math inline">\(i\)</span> being in <span
+class="math inline">\(S(u)\)</span>. As when none of the facility in
+<span class="math inline">\(N(u)\)</span> is selected into <span
+class="math inline">\(S(u)\)</span>, then assignment cost is bounded by
+<span class="math inline">\(3 \cdot \alpha^*_u\)</span>, the value of
+<span class="math inline">\(Z\)</span> is therefore at most <span
+class="math display">\[
+    Z \le \min_{i \in N(u), X_i = 1} \{ d_{u, i} \cdot X_i \} + 3
+\alpha^*_u \cdot \mathbb{I}_{[ X_i = 0, \forall i \in N(u)] }
+\]</span></p>
+<p>The goal is to provide a method for generating <span
+class="math inline">\(S(u)\)</span>, such that</p>
+<ol type="1">
+<li><span class="math inline">\(\Pr[X_i = 1] = x^*_{u, i}\)</span>, for
+<span class="math inline">\(\forall i \in N(u)\)</span>;</li>
+<li><span class="math inline">\(\Pr[\mathbb{I}_{[ X_i = 0, \forall i \in
+N(u)]} = 1 ] \le 1/e\)</span>.</li>
+</ol>
+<p>Any such generation method satisfies to bound the assignment cost of
+client <span class="math inline">\(u\)</span>: <span
+class="math display">\[
+    \begin{aligned}
+        \mathbb{E}[Z]
+            &amp;\le \mathbb{E} \left[ \sum_{i \in N(u)}  d_{u, i}
+X_i  + 3 \alpha^*_u \cdot \mathbb{I}_{[ X_i = 0, \forall i \in N(u)] }
+\right] \\
+            &amp;= \sum_{i \in N(u)}  d_{u, i} \mathbb{E}[X_i]  + 3
+\alpha^*_u \cdot \mathbb{E}\left[ \mathbb{I}_{[ X_i = 0, \forall i \in
+N(u)] } \right] \\
+            &amp;\le \sum_{i \in N(u) } d_{u, i} x^*_{u, i} +
+\frac{3}{e} \alpha^*_u
+    \end{aligned}
+\]</span></p>
+<p>Note that the inequality here may not be tight, as we replace the
+<span class="math inline">\(\min\)</span> operation into <span
+class="math inline">\(\sum\)</span>. But it suffices to prove the
+expected approximation ratio. When combined with the expected facility
+opening cost, we know that total expected cost is bounded by <span
+class="math display">\[
+    \sum_{i \in F} y^*_i f_i + \sum_{u \in C} \sum_{i \in N(u) } d_{u,
+i} x^*_{u, i} + \frac{3}{e} \alpha^*_u = \left( 1 + \frac{3}{e} \right)
+\cdot OPT
+\]</span></p>
+<p>The <span class="math inline">\(S(u)\)</span> is generated as
+follows. If <span class="math inline">\(u \in B\)</span>, then we let
+<span class="math inline">\(S(u) = S\)</span>. Otherwise, we initialize
+<span class="math inline">\(S(u)\)</span> with <span
+class="math inline">\(S - N(u)\)</span>, and for facility <span
+class="math inline">\(i \in N(u) \cap S\)</span>, we perform some
+carefully designed operations to ensure that <span
+class="math inline">\(\Pr[i \in S(u) ]= x^*_{u, i}\)</span>.</p>
+<ol type="1">
+<li>If <span class="math inline">\(i \in S_3\)</span>, we keep it in
+<span class="math inline">\(S(u)\)</span> with probability <span
+class="math inline">\(\frac{x^*_{u, i} } {y^*_i}\)</span>. Therefore,
+<span class="math display">\[
+     \Pr[i \in S(u)] = \Pr[i \in S(u) \mid i \in S] \cdot \Pr[i \in S] =
+x^*_{u, i}
+\]</span></li>
+<li>Otherwise, <span class="math inline">\(\exists u_k \in B\)</span>,
+such that <span class="math inline">\(i \in N(u_k)\)</span>. There are
+two possible cases
+<ol type="1">
+<li><p>Case 1: <span class="math inline">\(x^*_{i,u_k} \ge x^*_{u,
+i}\)</span>, the probability of selecting <span
+class="math inline">\(i\)</span> is defined as follows: <span
+class="math display">\[
+     \Pr[i \in S(u) \mid i \in S] =
+         \begin{cases}
+             \begin{array}{lr}
+                 {x^*_{u, i} } / { x^*_{i,u_k} },   &amp;i \in S_1 \\
+                 0,                                 &amp;
+                 i \in S_2
+             \end{array}
+         \end{cases}
+\]</span> Therefore, <span class="math display">\[
+     \begin{array}{ll}
+         \Pr[i \in S(u)]
+             &amp;= \Pr[i \in S(u) |i \in S_1 ] \cdot \Pr[ i \in S_1 ] +
+\Pr[i \in S(u) |i \in S_2 ] \cdot \Pr[ i \in S_2 ] \\
+             &amp;= x^*_{u, i}  /  x^*_{i,u_k}  \cdot  x^*_{i,u_k}  \\
+             &amp;= x^*_{u, i}
+     \end{array}
+\]</span></p></li>
+<li><p>Case 2: <span class="math inline">\(x^*_{i,u_k} &lt; x^*_{u,
+i}\)</span>, the probability of selecting <span
+class="math inline">\(i\)</span> is defined as follows: <span
+class="math display">\[
+     \Pr[i \in S(u) \mid i \in S] =
+     \begin{cases}
+         \begin{array}{lr}
+             1,   &amp;i \in S_1 \\
+             (x^*_{u, i} - x^*_{i, u_k}  ) \cdot ( 1 - x^*_{i,u_k } ) /
+(y^*_{i} - x^*_{i,u_k } ),                                 &amp; i \in
+S_2
+         \end{array}
+     \end{cases}
+\]</span></p>
+<p>The probability is well defined as <span class="math inline">\(y^*_i
+\ge x^*_{u, i}\)</span>. It follows <span class="math display">\[
+\begin{array}{ll}
+     \Pr[i \in S(u)]
+         &amp;= \Pr[i \in S(u) |i \in S_1 ] \cdot \Pr[ i \in S_1 ]  +
+\Pr[i \in S(u) |i \in S_2 ] \cdot \Pr[ i \in S_2  ] \\
+         &amp;=  x^*_{i,u_k}  +  (x^*_{u, i} - x^*_{i, u_k}  ) \cdot ( 1
+- x^*_{i,u_k } ) / (y^*_{i} - x^*_{i,u_k } ) \cdot (y^*_{i} - x^*_{i,u_k
+} ) / (x^*_{u, i} - x^*_{i, u_k}  )\\
+         &amp;= x^*_{u, i}
+\end{array}
+\]</span></p></li>
+</ol></li>
+</ol>
+<p>It is left to show that <span class="math inline">\(\Pr[\mathbb{I}_{[
+X_i = 0, \forall i \in N(u)]} = 1 ] \le 1/e\)</span>. For <span
+class="math inline">\(u \in B\)</span>, this holds trivially. If not, we
+prove the following lemma.</p>
+<blockquote>
+<p><strong>Lemma 2.</strong> For any client <span
+class="math inline">\(u \in C \setminus B\)</span>, the probability that
+none of facility in <span class="math inline">\(N(u)\)</span> belongs to
+<span class="math inline">\(S(u)\)</span> is bounded by <span
+class="math inline">\(1/ e\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>Observe that <span class="math display">\[
+    N(j_1) \cup N(j_2) \cup ... \cup N(j_{|B| } ) \cup T = F
+\]</span> constitutes a partition of <span
+class="math inline">\(F\)</span>. For any client <span
+class="math inline">\(u\)</span>, define <span class="math inline">\(R_k
+= N(u_k) \cap N(u)\)</span>, where <span class="math inline">\(1 \le k
+\le |B|\)</span>. Further, let <span class="math inline">\(R_{|B| + 1} =
+T \cap N(u)\)</span>. Then <span class="math inline">\(\{ R_k \}_{k \in
+[|B| + 1]}\)</span> is a partition of <span
+class="math inline">\(N(u)\)</span>.</p>
+<p>Consider facilities in <span class="math inline">\(N(u_k)\)</span>
+(<span class="math inline">\(k \in [|B|]\)</span>). The probability of
+none of them being in <span class="math inline">\(S(u)\)</span> is <span
+class="math display">\[
+    \begin{aligned}
+        &amp;\left( 1 - \sum_{i \in R_k \wedge x^*_{i, u_k} &lt; x^*_{u,
+i} } x^*_{i, u_k}   - \sum_{i \in R_k \wedge x^*_{i, u_k} \ge x^*_{u, i}
+} x^*_{i, u_k} \cdot \frac{x^*_{u, i} }{ x^*_{i, u_k} }     \right)
+        \cdot \prod_{i \in R_k \wedge x^*_{i, u_k} &lt; x^*_{u, i} }
+\left(1 - \frac{y^*_{i} - x^*_{u, i} }{ 1- x^*_{u, i}}
+        \frac{ 1- x^*_{u, i}}{y^*_{i} - x^*_{u, i} } (x^*_{u, i} -
+x^*_{i, u_k}  )
+        \right) \\
+        &amp;\le \exp \left( - \sum_{i \in R_k \wedge x^*_{i, u_k} &lt;
+x^*_{u, i} } x^*_{i, u_k}  - \sum_{i \in R_k \wedge x^*_{i, u_k} \ge
+x^*_{u, i} } x^*_{u, i}\right)
+        \cdot \prod_{i \in R_k \wedge x^*_{i, u_k} &lt; x^*_{u, i} }
+\left(1 -  (x^*_{u, i} - x^*_{i, u_k}  )
+        \right) \\
+        &amp;\le \exp \left( - \sum_{i \in R_k \wedge x^*_{i, u_k} &lt;
+x^*_{u, i} } x^*_{i, u_k}  - \sum_{i \in R_k \wedge x^*_{i, u_k} \ge
+x^*_{u, i} } x^*_{u, i}\right)
+        \cdot \exp \left( -\sum_{i \in R_k \wedge x^*_{i, u_k} &lt;
+x^*_{u, i} } (x^*_{u, i} - x^*_{i, u_k}  )
+        \right) \\
+        &amp;= \exp \left( { - \sum_{i \in R_k} x^*_{u, i} } \right)
+    \end{aligned}
+\]</span></p>
+<p>The relation holds even if <span class="math inline">\(R_k =
+\emptyset\)</span>, in which <span class="math inline">\(\sum_{i \in
+R_k} x^*_{u, i} = 0\)</span>.</p>
+<p>For <span class="math inline">\(k = |B| + 1\)</span>, the probability
+that none of the facility in <span class="math inline">\(R_k\)</span> is
+sampled is given by <span class="math display">\[
+    \prod_{i \in R_{k + 1} } \left( 1 - y^*_i \frac{x^*_{u, i} }
+{y^*_i}  \right)
+    \le \exp \left( - \sum_{i \in R_{k + 1} } x^*_{u, i} \right)
+\]</span></p>
+<p>Therefore, taking product over all the events, we know that <span
+class="math display">\[
+    \begin{aligned}
+        \prod_{k \in [|B| + 1] } \exp \left( - \sum_{i \in R_k } x^*_{u,
+i} \right)
+        = \exp \left(  - \sum_{i \in N(u) } x^*_{u, i}  \right)
+        = \frac{1}{e}
+    \end{aligned}
+\]</span> <span class="math inline">\(\blacksquare\)</span></p>
+<h1 id="primal-dual-algorithm-2">Primal-Dual Algorithm [2]</h1>
+<p>In this section we show a primal-dual algorithm that is purely
+combinatorial.</p>
+<ol type="1">
+<li><p>Initially we have a set of dual variables <span
+class="math inline">\(\alpha_u, u \in C\)</span> and <span
+class="math inline">\(\beta_{u,i}, u \in C, i \in F\)</span> that are
+set to <span class="math inline">\(0\)</span>. Note that they are
+feasible.</p></li>
+<li><p>Then we try to optimize this set of variables by increasing all
+<span class="math inline">\(\alpha_u, u \in C\)</span> in parallel until
+some <span class="math inline">\(\alpha_u\)</span>'s are
+blocked.</p></li>
+</ol>
+<p>Why are they blocked? Because the dual constraint <span
+class="math display">\[
+    \alpha_u \le d_{u,i} + \beta_{u,i}
+\]</span> becomes tight for some client <span class="math inline">\(u
+\in C\)</span>. If we increase <span
+class="math inline">\(\alpha_u\)</span> further, the variables are no
+longer dual feasible. However, we can modify our strategy by increasing
+these <span class="math inline">\(\beta_{u,i}\)</span> simultaneously
+with <span class="math inline">\(\alpha_u\)</span> until facility <span
+class="math inline">\(i\)</span> is <em>blocked</em>, i.e., <span
+class="math display">\[
+    \sum_{u \in C} \beta_{u,i} = f_i.
+\]</span></p>
+<blockquote>
+<p><strong>Definition.</strong> For each facility <span
+class="math inline">\(i \in F\)</span>, define its neighbors <span
+class="math inline">\(N(i)\)</span> as to be the clients such that <span
+class="math inline">\(\alpha_u \ge d_{u,i}\)</span>.</p>
+</blockquote>
+<p>The algorithm for constructing the dual variables are given as
+follows.</p>
+<blockquote>
+<p><strong>Algorithm.</strong> Increasing the Dual<br />
+1. <span class="math inline">\(U \leftarrow C\)</span>: the set of
+un-blocked clients.<br />
+2. <span class="math inline">\(B \leftarrow \emptyset\)</span>: the set
+of blocked facilities.<br />
+3. <em>while</em> <span class="math inline">\(U \neq \emptyset\)</span>
+<em>do</em><br />
+4. <span class="math inline">\(\quad\)</span> <em>For</em> <span
+class="math inline">\(\forall u \in U\)</span><br />
+5. <span class="math inline">\(\qquad\)</span> Increase all <span
+class="math inline">\(\alpha_u\)</span> (if necessary, <span
+class="math inline">\(\beta_{u,i}\)</span> for some <span
+class="math inline">\(i\)</span> ) simultaneously<br />
+6. <span class="math inline">\(\quad\)</span> <em>Until</em>
+either<br />
+7. <span class="math inline">\(\qquad\)</span> some facility <span
+class="math inline">\(i \notin B\)</span> is blocked:<br />
+8. <span class="math inline">\(\qquad\quad\)</span> <span
+class="math inline">\(B \leftarrow B \cup \{i \}\)</span><br />
+9. <span class="math inline">\(\qquad\quad\)</span> <span
+class="math inline">\(U \leftarrow U \setminus N(i)\)</span><br />
+10. <span class="math inline">\(\qquad\)</span> some client <span
+class="math inline">\(u\)</span> neighbors a blocked facility <span
+class="math inline">\(i \in B\)</span>:<br />
+11. <span class="math inline">\(\qquad\quad\)</span> <span
+class="math inline">\(U \leftarrow U \setminus \{ u \}\)</span></p>
+</blockquote>
+<blockquote>
+<p><strong>Question to Ponder.</strong> What is the running time for the
+<em>Dual Variable Increment</em> algorithm.</p>
+</blockquote>
+<p>After running the algorithm above, we get a set of maximal variables
+which we can't simultaneously increase any more. It has the following
+property</p>
+<blockquote>
+<p><strong>Property.</strong> Each client <span class="math inline">\(u
+\in C\)</span> neighbors at least one block facility.</p>
+</blockquote>
+<p>If not, the algorithm will not stop since <span
+class="math inline">\(U\)</span> is not empty.</p>
+<p>Next, we show how to construct an approximate solution from the
+maximal dual variables. First we construct a graph <span
+class="math inline">\(G = (V, E)\)</span> based on the dual LP.</p>
+<ol type="1">
+<li>The vertex set <span class="math inline">\(V = B \cup
+C\)</span>.</li>
+<li>The edge set <span class="math inline">\(E = \{ (u, i) : \alpha_u
+\ge d_{u,i}, u \in C, \forall i \in B \}\)</span>.</li>
+</ol>
+<p>Moreover, if <span class="math inline">\(\beta_{u,i} &gt; 0\)</span>
+for some <span class="math inline">\(i \in F\)</span>, <span
+class="math inline">\(u \in C\)</span>, we say that <span
+class="math inline">\(u\)</span> contributes to <span
+class="math inline">\(i\)</span>.</p>
+<blockquote>
+<p><strong>Definition.</strong> For each facility <span
+class="math inline">\(i \in F\)</span>, let <span
+class="math inline">\(N^+(i)\)</span> be set of clients contributing to
+it.</p>
+</blockquote>
+<blockquote>
+<p><strong>Algorithm.</strong> Facility Selection<br />
+1. <span class="math inline">\(S \leftarrow \emptyset\)</span>.<br />
+2. <strong>while</strong> <span class="math inline">\(B \neq
+\emptyset\)</span> <em>do</em><br />
+3. <span class="math inline">\(\quad\)</span> Let <span
+class="math inline">\(i \in B\)</span> be the earliest blocked
+facility.<br />
+4. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(S \leftarrow S \cup \{ i \}\)</span><br />
+8. <span class="math inline">\(\quad\)</span> // Remove all facilities
+<span class="math inline">\(i&#39;\)</span> if <span
+class="math inline">\(\exists u \in C\)</span> that contributes to both
+<span class="math inline">\(i\)</span> and <span
+class="math inline">\(i&#39;\)</span>.<br />
+9. <span class="math inline">\(\quad\)</span> <span
+class="math inline">\(B \leftarrow B \setminus \{ i&#39; \in B : N^+(i)
+\cap N^+(i&#39;) \neq \emptyset \}\)</span>.<br />
+<!-- 
+5.    $\quad$ $B \leftarrow B \setminus \{ i \}$  
+8.    $\quad$ // Assign all $u \in C$ that contributes to both $i$.         
+8.    $\quad$ $\mu_s(u) \leftarrow i$ for all $u \in N^+(i)$.      
+10. Assign each unassigned client to its closest facility in $S$.    
+--></p>
+</blockquote>
+<p>The figure below shows an example of dual variable increment
+algorithm. <img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FacilityLocation/algorithm2.2.png" /></p>
+<p>The figure below shows the corresponding derived graph. <img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FacilityLocation/algorithm2.3.png" /></p>
+<p>The figure below shows an example of facility selection. The selected
+facilities are marked with dark green. The clients contributing to
+theses facilities are connected to them red lines. <img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FacilityLocation/algorithm2.4.png" /></p>
+<h2 id="facility-cost-2">Facility Cost</h2>
+<p>We can show by induction that when a blocked facility is selected,
+its opening cost is fully covered by all clients contributing to this
+facility. Note that if any other blocked facility is connected to any of
+these clients, it is removed from the candidate set. Therefore, when a
+new blocked facility <span class="math inline">\(i\)</span> is selected,
+the clients in <span class="math inline">\(N^+(i)\)</span> can not
+contribute to any previous selected facility.</p>
+<p>The cost of open facilities in <span
+class="math inline">\(S\)</span>, plus the cost of connecting clients in
+<span class="math inline">\(N^+(i)\)</span> for <span
+class="math inline">\(i \in S\)</span>, is given by <span
+class="math display">\[
+    \sum_{i \in S} \left( f_i + \sum_{u \in N^+(i)} d_{u,i} \right) =
+    \sum_{i \in S} \left( \sum_{u \in N^+(i)} \beta_{i,j} + \sum_{u \in
+N^+(i)} d_{u,i} \right)
+    = \sum_{i \in S} \sum_{u \in N^+(i)} \alpha_u
+\]</span></p>
+<h2 id="connection-cost-2">Connection Cost</h2>
+<p>It is left to consider a client <span
+class="math inline">\(u\)</span> not in <span
+class="math inline">\(N^+(i)\)</span> for any <span
+class="math inline">\(i \in S\)</span>.</p>
+<p><strong>Case One.</strong> <span class="math inline">\(u \in
+N(i)\)</span> for some <span class="math inline">\(i \in S\)</span>,
+then the connection cost is <span class="math display">\[
+    d_{u,i} = \alpha_u
+\]</span></p>
+<p><strong>Case Two.</strong> Otherwise, by the property of the
+algorithm, <em>we know that there exists a facility <span
+class="math inline">\(i\)</span> that stops <span
+class="math inline">\(\alpha_u\)</span> from increasing</em>. The reason
+that <span class="math inline">\(i\)</span> is not selected is that when
+some other facility <span class="math inline">\(i&#39;\)</span> is
+selected into <span class="math inline">\(S\)</span>, <span
+class="math inline">\(i\)</span> is removed from the candidate set <span
+class="math inline">\(B\)</span> because <span
+class="math inline">\(N^+(i) \cap N^+(i&#39;) \neq
+\emptyset\)</span>.</p>
+<blockquote>
+<p><strong>Lemma.</strong> Let <span class="math inline">\(v \in N^+(i)
+\cap N^+(i&#39;)\)</span>. Then <span class="math inline">\(\alpha_{v}
+\le \alpha_u\)</span></p>
+</blockquote>
+<p><strong>Proof.</strong></p>
+<p>When <span class="math inline">\(i\)</span> stops <span
+class="math inline">\(\alpha_u\)</span>, since <span
+class="math inline">\(v\)</span> also contributes to <span
+class="math inline">\(i\)</span>,</p>
+<ol type="1">
+<li>either <span class="math inline">\(\alpha_{v}\)</span> has stopped
+from increasing or</li>
+<li><span class="math inline">\(\alpha_v\)</span> stops simultaneously
+with <span class="math inline">\(u\)</span>.</li>
+</ol>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Therefore, the cost of assigning <span
+class="math inline">\(u\)</span> to <span
+class="math inline">\(i&#39;\)</span> is at most <span
+class="math display">\[
+    d_{u, i&#39;}
+        \le d_{u,i} + d_{v, i} + d_{v, i&#39;}
+        \le \alpha_u + 2 \alpha_{v}
+        \le 3 \alpha_u.
+\]</span></p>
+<blockquote>
+<p><strong>Question to Ponder.</strong> What is the running time of the
+algorithm?</p>
+</blockquote>
+<p>Finally we show another example where the edge weight between <span
+class="math inline">\((b,y)\)</span> is changed to 1.</p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FacilityLocation/algorithm2.5.png" /></p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FacilityLocation/algorithm2.6.png" /></p>
+<p>Note that compared to the previous example, only facility <span
+class="math inline">\(x\)</span> is selected (marked by dark green),
+because we can use <span class="math inline">\(b\)</span> to contribute
+only one facility. Now facility <span class="math inline">\(y\)</span>
+is the one that stops <span class="math inline">\(\alpha_c\)</span> and
+<span class="math inline">\(\alpha_d\)</span> from increasing.</p>
+<p><img
+src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/FacilityLocation/algorithm2.7.png" /></p>
+<h1 id="reference">Reference</h1>
+<p>[1] <em>Shmoys DB, Tardos É, Aardal K. Approximation algorithms for
+facility location problems. InProceedings of the twenty-ninth annual ACM
+symposium on Theory of computing 1997 May 4 (pp. 265-274).</em></p>
+<p>[2] <em>Jain K, Vazirani VV. Primal-dual approximation algorithms for
+metric facility location and k-median problems. In 40th annual symposium
+on foundations of computer science (Cat. No. 99CB37039) 1999 Oct 17 (pp.
+2-13). IEEE.</em></p>
+<p>[3] <em>Chudak FA, Shmoys DB. Improved approximation algorithms for
+the uncapacitated facility location problem. SIAM Journal on Computing.
+2003;33(1):1-25.</em></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/09/11/Confidence-Interval-of-Berstein-Inequality/" rel="prev" title="Confidence Interval of Berstein Inequality">
+      <i class="fa fa-chevron-left"></i> Confidence Interval of Berstein Inequality
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/09/16/Max-Cut/" rel="next" title="Max Cut">
+      Max Cut <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#problem"><span class="nav-number">1.</span> <span class="nav-text">Problem</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#linear-programming"><span class="nav-number">2.</span> <span class="nav-text">Linear Programming</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#weak-duality-implies-dual-program"><span class="nav-number">3.</span> <span class="nav-text">Weak Duality \(\implies\) Dual Program</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#intuitive-explanation"><span class="nav-number">3.1.</span> <span class="nav-text">Intuitive Explanation</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#complementary-slackness"><span class="nav-number">4.</span> <span class="nav-text">Complementary Slackness</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#deterministic-rounding-1"><span class="nav-number">5.</span> <span class="nav-text">Deterministic Rounding [1]</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#approximation-algorithm"><span class="nav-number">5.1.</span> <span class="nav-text">\(4\)-Approximation Algorithm</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#randomized-rounding-3"><span class="nav-number">6.</span> <span class="nav-text">Randomized Rounding [3]</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#approximation-rounding"><span class="nav-number">6.1.</span> <span class="nav-text">\(3\)-Approximation Rounding</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#facility-cost"><span class="nav-number">6.1.1.</span> <span class="nav-text">Facility Cost</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#connection-cost"><span class="nav-number">6.1.2.</span> <span class="nav-text">Connection Cost</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#total-cost"><span class="nav-number">6.1.3.</span> <span class="nav-text">Total Cost</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#e-approximation-rounding-3"><span class="nav-number">6.2.</span> <span class="nav-text">\((1 +
+3&#x2F;e)\)-Approximation Rounding [3]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#facility-cost-1"><span class="nav-number">6.3.</span> <span class="nav-text">Facility Cost</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#connection-cost-1"><span class="nav-number">6.4.</span> <span class="nav-text">Connection Cost</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#primal-dual-algorithm-2"><span class="nav-number">7.</span> <span class="nav-text">Primal-Dual Algorithm [2]</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#facility-cost-2"><span class="nav-number">7.1.</span> <span class="nav-text">Facility Cost</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#connection-cost-2"><span class="nav-number">7.2.</span> <span class="nav-text">Connection Cost</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reference"><span class="nav-number">8.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">196</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
