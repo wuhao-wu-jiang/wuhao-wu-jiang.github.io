@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Secret Sharing Let \(s\) be a secret data from some finite filed \(\mathbb{F}\), which are shared among \(n\) parties \(P &#x3D; \{ P_1, \ldots , P_n \}\), such that party \(P_i\) holds some processed">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Replicated Secret Sharing">
+<meta property="og:url" content="http://example.com/2025/01/05/Replicated-Secret-Sharing/index.html">
+<meta property="og:site_name" content="WOW">
+<meta property="og:description" content="Secret Sharing Let \(s\) be a secret data from some finite filed \(\mathbb{F}\), which are shared among \(n\) parties \(P &#x3D; \{ P_1, \ldots , P_n \}\), such that party \(P_i\) holds some processed">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-01-05T19:40:35.000Z">
+<meta property="article:modified_time" content="2025-01-09T15:55:14.000Z">
+<meta property="article:author" content="WOW">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2025/01/05/Replicated-Secret-Sharing/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Replicated Secret Sharing | WOW</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WOW</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">你生之前悠悠千載已逝<br>未來還會有千年沉寂的期待</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/01/05/Replicated-Secret-Sharing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Replicated Secret Sharing
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2025-01-05 14:40:35" itemprop="dateCreated datePublished" datetime="2025-01-05T14:40:35-05:00">2025-01-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2025-01-09 10:55:14" itemprop="dateModified" datetime="2025-01-09T10:55:14-05:00">2025-01-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="secret-sharing">Secret Sharing</h1>
+<p>Let <span class="math inline">\(s\)</span> be a secret data from some
+finite filed <span class="math inline">\(\mathbb{F}\)</span>, which are
+shared among <span class="math inline">\(n\)</span> parties <span
+class="math inline">\(P = \{ P_1, \ldots , P_n \}\)</span>, such that
+party <span class="math inline">\(P_i\)</span> holds some processed data
+<span class="math inline">\(s_i\)</span>, called shadows, for each <span
+class="math inline">\(i \in [n]\)</span>.</p>
+<p>We require that only qualified subsets of parties can reconstruct the
+original secret <span class="math inline">\(s\)</span>, with their
+process data. The collection of qualified subsets, denoted by <span
+class="math inline">\(\mathcal{A} \subseteq 2^P\)</span>, is called the
+<em>access structure</em>.</p>
+<p>It is easy to see that if <span class="math inline">\(A\)</span> is a
+qualified subset and <span class="math inline">\(A \subseteq
+A&#39;\)</span>, then so is <span
+class="math inline">\(A&#39;\)</span>.</p>
+<blockquote>
+<p><strong>Property (A)</strong>. If <span class="math inline">\(A
+\subseteq \mathcal{A}\)</span> and <span class="math inline">\(A
+\subseteq A&#39;\)</span>, then <span class="math inline">\(A&#39;
+\subseteq \mathcal{A}\)</span>.</p>
+</blockquote>
+<p>The family of maximal sets in <span
+class="math inline">\(\mathcal{A}\)</span> is denoted by <span
+class="math display">\[
+    \partial^+ A \doteq \{ A \in \mathcal{A}:  \nexists A&#39; \in
+\mathcal{A}, \text{ s.t. } A \subseteq A&#39; \} .
+\]</span></p>
+<h2 id="multiple-assignment-scheme">Multiple Assignment Scheme</h2>
+<ol type="1">
+<li><p>Choose two integers <span class="math inline">\(k, m\)</span> and
+a prime number <span class="math inline">\(q\)</span> such that <span
+class="math inline">\(k &lt; m &lt; q\)</span>.</p></li>
+<li><p>Choose <span class="math inline">\(a_1, \ldots, a_{k - 2} \in
+\mathbb{F}_q\)</span> and <span class="math inline">\(a_{k - 1} \in
+\mathbb{F}_q^+\)</span> randomly.</p></li>
+<li><p>Let <span class="math inline">\(f(x) = s + a_1 x + a_2 x^2 +
+\cdots + a_{k - 1} x^{k - 1}\)</span>.</p></li>
+<li><p>Choose distinct elements <span class="math inline">\(x_1, \ldots,
+x_m \in \mathbb{F}_q^+\)</span>, let <span class="math inline">\(y_i =
+f(x_j)\)</span> for <span class="math inline">\(j \in [m]\)</span>, and
+let <span class="math inline">\(S = \{ (x_1, y_1), \ldots , (x_m, y_m)
+\}\)</span>.</p></li>
+<li><p>For each <span class="math inline">\(i \in [n]\)</span>, choose
+<span class="math inline">\(s_i \subseteq S\)</span>, and assign <span
+class="math inline">\(s_i\)</span> to <span
+class="math inline">\(P_i\)</span>.</p></li>
+</ol>
+<p>The multiple assignment scheme has the following access structure
+<span class="math display">\[
+    \mathcal{A} = \{ A \subseteq [n] : | \cup_{i \in A} s_i | \ge k \}.
+\]</span></p>
+<blockquote>
+<p><strong>Theorem.</strong> For each <span
+class="math inline">\(\mathcal{A} \subseteq 2^P\)</span> with Property
+<span class="math inline">\((A)\)</span>, there exists a set <span
+class="math inline">\(S\)</span>, a function <span
+class="math inline">\(g: P \rightarrow 2^S\)</span> and a non-negative
+integer <span class="math inline">\(k\)</span> such that <span
+class="math inline">\(\mathcal{A}(g, k) = \mathcal{A}\)</span>.</p>
+</blockquote>
+<p><strong>Proof.</strong> Let <span class="math inline">\(B = 2^P -
+\mathcal{A}\)</span>. By (A), <span class="math inline">\(B\)</span>
+satisfies the following property:</p>
+<ol start="2" type="A">
+<li><span class="math inline">\(B \in \mathcal{B}\)</span> and <span
+class="math inline">\(B&#39; \subseteq B\)</span> imply <span
+class="math inline">\(B&#39; \in \mathcal{B}\)</span>.</li>
+</ol>
+<p>We now construct a set <span class="math inline">\(S\)</span> so that
+each element of <span class="math inline">\(S\)</span> corresponds
+one-to-one to a maximal set of <span class="math inline">\(B\)</span>.
+That is, we define <span class="math display">\[
+    S = \{ d_s : B \in \partial^+ \mathcal{B} \},
+\]</span> where <span class="math inline">\(d_s \neq d_s&#39;\)</span>
+if <span class="math inline">\(B\)</span> and <span
+class="math inline">\(B&#39; \in \partial^+ \mathcal{B}\)</span> are
+distinct. Define <span class="math inline">\(g: P \rightarrow
+2^S\)</span> by <span class="math display">\[
+    g(p) = \{ d_s: B \in \partial^+ \mathcal{B}, p \notin B \}.
+\]</span> We claim <span class="math inline">\(A(g, k) =
+\mathcal{A}\)</span> if <span class="math inline">\(k = |\partial^+
+\mathcal{B}| = |S|\)</span>.</p>
+<p>We first show <span class="math inline">\(A \subseteq A(g,
+k)\)</span>. Assume to the contrary that there exists <span
+class="math inline">\(Q \in A\)</span> such that <span
+class="math inline">\(Q \nsubseteq A(g, k)\)</span>. Then <span
+class="math inline">\(\bigcup_{p \in Q} g(p) \neq S\)</span> since <span
+class="math inline">\(k = |S|\)</span>. Thus <span
+class="math inline">\(d_B \in S - \bigcup_{p \in Q} g(p)\)</span> for
+some <span class="math inline">\(B \in \partial^+ \mathcal{B}\)</span>.
+Therefore for every <span class="math inline">\(p \in Q, d_B \notin
+g(p)\)</span> and so <span class="math inline">\(p \in B\)</span>. Hence
+<span class="math inline">\(Q \supset B\)</span>. By the property (b)
+<span class="math inline">\(Q \in \mathcal{B}\)</span>. Thus <span
+class="math inline">\(Q \in \mathcal{A} \cap \mathcal{B}\)</span>,
+contradicting the definition of <span
+class="math inline">\(B\)</span>.</p>
+<p>Next, we show that <span class="math inline">\(A(g, k) \subseteq
+\mathcal{A}\)</span>. Assume to the contrary that there exists <span
+class="math inline">\(Q \in A(g, k)\)</span> such that <span
+class="math inline">\(Q \nsubseteq A\)</span>. Since <span
+class="math inline">\(Q (/. A\)</span>, <span class="math inline">\(Q
+EB\)</span> and hence <span class="math inline">\(Q \subseteq B\)</span>
+for some <span class="math inline">\(B \in \partial^+ B\)</span>.</p>
+<p>By the definition of <span class="math inline">\(g\)</span>, <span
+class="math inline">\(d_s (/. g(p)\)</span> for all <span
+class="math inline">\(p \in Q\)</span>. Therefore <span
+class="math inline">\(d_B \notin \bigcup_{p \in Q} g(p)\)</span>, and
+hence <span class="math inline">\(Q \nsubseteq A(g, k)\)</span>, a
+contradiction. <span class="math inline">\(\square\)</span></p>
+<p>Let <span class="math inline">\(\Gamma \subseteq 2^{[n]}\)</span> be
+a (monotone) access structure, and let <span
+class="math inline">\(\mathcal{T}\)</span> include all maximal
+unqualified sets of <span class="math inline">\(\Gamma\)</span>. The
+replicated scheme for <span class="math inline">\(\Gamma\)</span>,
+denoted <span class="math inline">\(\mathcal{R}_\Gamma\)</span>,proceeds
+as follows. To share a secret <span class="math inline">\(s \in
+K\)</span>, the dealer first additively share <span
+class="math inline">\(s\)</span> into <span
+class="math inline">\(|\mathcal{T}|\)</span> shares, each labelled by a
+different set from <span class="math inline">\(\mathcal{T}\)</span>;
+that is, it lets <span class="math inline">\(s =  \sum_{T \in
+\mathcal{T}} r_T\)</span> where the shares <span
+class="math inline">\(r_T\)</span> are otherwise random field elements.
+Then, the dealer distributes to each player <span
+class="math inline">\(P_j\)</span> all shares <span
+class="math inline">\(r_T\)</span> such that <span
+class="math inline">\(j \notin T\)</span>; that is, <span
+class="math inline">\(P_j\)</span>’s share vector is <span
+class="math inline">\((r_T)_{T \notni j}\)</span>. Privacy follows from
+the fact that members of every maximal unqualified set <span
+class="math inline">\(T \in \mathcal{T}\)</span> jointly miss exactly
+one additive share, namely the share <span
+class="math inline">\(r_T\)</span> (hence members of any unqualified set
+miss at least one share).</p>
+<p>On the other hand, since <span class="math inline">\(\Gamma\)</span>
+is monotone, a qualified set <span class="math inline">\(Q \in
+\Gamma\)</span> cannot be contained in any unqualified set; hence,
+members of <span class="math inline">\(Q\)</span> jointly view all
+shares <span class="math inline">\(r_T\)</span> and can thus reconstruct
+<span class="math inline">\(s\)</span>.</p>
+<h2 id="t-private-replicated-secret-sharing-scheme"><span
+class="math inline">\(t\)</span>-private Replicated Secret Sharing
+Scheme</h2>
+<p><span class="math display">\[
+    s = \sum_{A \subseteq [n]: |A| = t} r_A
+\]</span></p>
+<p>In this case, we have</p>
+<ul>
+<li><span class="math inline">\(\Gamma = \{ B \subseteq [n] : |B| &gt;
+t\}\)</span></li>
+<li><span class="math inline">\(\mathcal{T} =  \{ A \subseteq [n]: |A| =
+t \}\)</span></li>
+</ul>
+<p>To locally convert these shares into shares of <span
+class="math inline">\(s\)</span> according to the <span
+class="math inline">\(t\)</span>-private Shamir scheme, we assign to
+player <span class="math inline">\(P_i\)</span> the point <span
+class="math inline">\(i\)</span> in the field. Now, for each set <span
+class="math inline">\(A \subseteq [n]\)</span> of cardinality <span
+class="math inline">\(n - t\)</span>, let <span
+class="math inline">\(f_A\)</span> be the (unique) degree-t polynomial
+such that:</p>
+<ol type="1">
+<li><span class="math inline">\(f_A(0) = 1\)</span> and</li>
+<li><span class="math inline">\(f_A(i) = 0\)</span> for all <span
+class="math inline">\(i \in [n] \setminus A\)</span>.</li>
+</ol>
+<p>Each player <span class="math inline">\(P_j\)</span> can compute a
+share <span class="math inline">\(s_j\)</span> as follows: <span
+class="math display">\[
+    s_j = \sum_{ A \subseteq [n] : |A|=n - t, j \in A} r_A \cdot f_A(j).
+\]</span> We claim that this results in a set of shares from Shamir’s
+scheme, consistent with the original secret <span
+class="math inline">\(s\)</span>. To see this, define a polynomial <span
+class="math display">\[
+    f = \sum_{A \subseteq [n] : |A|=n - t} r_A \cdot f_A.
+\]</span> Clearly, <span class="math inline">\(f\)</span> has degree (at
+most) <span class="math inline">\(t\)</span>, and it is straightforward
+to verify that condition 1) above on the <span
+class="math inline">\(f_A\)</span>’s implies <span
+class="math inline">\(f(0) = s\)</span> and condition 2) implies <span
+class="math inline">\(f(j) = s_j\)</span>.</p>
+<h2 id="applications">Applications</h2>
+<p>A secret <span class="math inline">\(s\)</span> has been shared
+according to the <span class="math inline">\(t\)</span>-private
+replicated scheme, namely <span class="math inline">\(s = A \subseteq
+[n] : |A| = n - t\)</span> <span class="math inline">\(r_A\)</span>
+where <span class="math inline">\(r_A\)</span> has been given to all
+players in <span class="math inline">\(A\)</span>. To locally convert
+these shares into Shamir shares, each player <span
+class="math inline">\(P_j\)</span> computes its share as <span
+class="math inline">\(s_j =  |A| = n - t,j \in A\)</span> <span
+class="math inline">\(r_A \cdot f_A(j)\)</span>, where <span
+class="math inline">\(f_A\)</span> is a degree-<span
+class="math inline">\(t\)</span> polynomial determined by <span
+class="math inline">\(A\)</span>. The main observation is that when the
+secret <span class="math inline">\(s\)</span> is random, all replicated
+shares <span class="math inline">\(r_A\)</span> will be random and
+independent. Hence we may use the initially distributed <span
+class="math inline">\(r_A\)</span> as keys to a PRF <span
+class="math inline">\(\psi (\cdot)\)</span>, and as long as players
+agree on a common input a to the function, all players in A can compute
+<span class="math inline">\(\psi r_A (a)\)</span> and use it in the
+above construction in place of <span class="math inline">\(r_A\)</span>.
+Concretely, we get the following.</p>
+<p><strong>Protocol</strong> Pseudorandom Secret-Sharing (PRSS) Common
+inputs: a value a and independent keys <span class="math inline">\(\{
+r_A \}\)</span> that have been predistributed as above. Each player
+<span class="math inline">\(P_j\)</span> computes his share <span
+class="math inline">\(s_j\)</span> as: <span class="math display">\[
+    s_j =  A \subseteq[n] : |A| = n - t, j \in A \psi r_A (a) \cdot
+f_A(j)
+\]</span></p>
+<p>The technique for pseudo-random secret-sharing can be generalized to
+create sharings of a particular value, such as zero. We explain how this
+is done for the same threshold <span class="math inline">\(t\)</span>
+access structure as before, but for polynomials of degree <span
+class="math inline">\(2t\)</span>, since this is what we need in the
+following. Generalizations to other degrees follow easily. Consider a
+set <span class="math inline">\(A\)</span> of size <span
+class="math inline">\(n - t\)</span> and consider the set of polynomials
+<span class="math display">\[
+    F_A = \{ f | deg(f) \le 2t, f(0) = 0, j \in A \Rightarrow f(j) = 0
+\}.
+\]</span> If we think of the set of all degree-<span
+class="math inline">\(2t\)</span> polynomials as a vector space over
+<span class="math inline">\(K\)</span>, it is easy to see that <span
+class="math inline">\(F_A\)</span> is a subspace of dimension <span
+class="math inline">\(2t + 1 - t - 1 = t\)</span>. So we choose for each
+<span class="math inline">\(A\)</span>, once and for all, a basis for
+<span class="math inline">\(F_A\)</span> consisting of <span
+class="math inline">\(t\)</span> polynomials <span
+class="math display">\[
+    f_A 1 , ..., f_A t
+\]</span></p>
+<p>Finally, we distribute initially <span
+class="math inline">\(t\)</span> keys <span class="math inline">\(r_A 1
+, ..., r_A t\)</span> to every player in <span
+class="math inline">\(A\)</span>. This leads to the following
+protocol:</p>
+<p>Protocol. Pseudorandom Zero-Sharing (PRZS) Common input: a value
+<span class="math inline">\(a\)</span>, keys <span
+class="math inline">\(\{ r_A i |i = 1..t, |A| = n - 1 \}\)</span> that
+have been predistributed as above. Each player <span
+class="math inline">\(P_j\)</span> computes his share <span
+class="math inline">\(s_j\)</span> as: <span class="math display">\[
+    s_j =  A \subseteq[n] : |A|=n - t, j \in A t i=1 \psi r_A  i (a)
+\cdot f_A i (j)
+\]</span> It is straightforward to verify that this results in shares
+consistent with the polynomial <span class="math inline">\(f_0 =  A, |A|
+= n - t, P_j \in A  t i = 1 \psi si A (a) \cdot f_A i\)</span>, that
+<span class="math inline">\(deg(f0) \le 2t\)</span> and that <span
+class="math inline">\(f_0(0) = 0\)</span>.</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/11/16/Secure-Three-Party-Sorting-Protocol/" rel="prev" title="Secure Three Party Sorting Protocol">
+      <i class="fa fa-chevron-left"></i> Secure Three Party Sorting Protocol
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/04/07/Reading-Notes-on-Introduction-to-Complexity-Chapter-Three/" rel="next" title="Turing Machine">
+      Turing Machine <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#secret-sharing"><span class="nav-number">1.</span> <span class="nav-text">Secret Sharing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#multiple-assignment-scheme"><span class="nav-number">1.1.</span> <span class="nav-text">Multiple Assignment Scheme</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#t-private-replicated-secret-sharing-scheme"><span class="nav-number">1.2.</span> <span class="nav-text">\(t\)-private Replicated Secret Sharing
+Scheme</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#applications"><span class="nav-number">1.3.</span> <span class="nav-text">Applications</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WOW</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">205</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WOW</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
