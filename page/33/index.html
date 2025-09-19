@@ -139,7 +139,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">200</span>
+          <span class="site-state-item-count">201</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -161,6 +161,409 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/15/Stochastic-Multi-Armed-Bandits/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WOW">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WOW">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | WOW">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/10/15/Stochastic-Multi-Armed-Bandits/" class="post-title-link" itemprop="url">Stochastic Multi-Armed Bandits</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-10-15 23:26:43" itemprop="dateCreated datePublished" datetime="2020-10-15T23:26:43-04:00">2020-10-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2020-10-21 00:15:01" itemprop="dateModified" datetime="2020-10-21T00:15:01-04:00">2020-10-21</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>The multi-arm bandit problem (MAB) models a casino with <span
+class="math inline">\(k\)</span> machines, where the reward of each
+machine is controlled by a fixed and unknown distribution. The player
+(agent) observes independent random rewards from generated from the
+distribution of a machine each time it pulls its arm. Because of limited
+budget, the player can only play the machines <span
+class="math inline">\(T\)</span> times. The goal of the player is to
+maximize its expected gain.</p>
+<p>There is an inherent exploration-exploitation nature of the problem.
+The player has to explore what is a good machine while simultaneously
+exploits what seems to be a good machine.</p>
+<div style="text-align:center">
+<img src="https://jmichaux.github.io/assets/week6/octopus-bandit.jpeg" />
+</div>
+<h3 id="formulation">Formulation</h3>
+<p>We study the restricted case where the reward distribution of each
+machine is bounded on <span class="math inline">\([0, 1]\)</span>.
+Define</p>
+<ol type="1">
+<li><span class="math inline">\(D_i:\)</span> the reward distribution on
+<span class="math inline">\([0, 1]\)</span> of the <span
+class="math inline">\(i\)</span>-th machine, where <span
+class="math inline">\(i \in [k]\)</span>,</li>
+<li><span class="math inline">\(\mu_i:\)</span> the expected reward of
+the <span class="math inline">\(i\)</span>-th machine, where <span
+class="math inline">\(i \in [k]\)</span>,</li>
+<li><span class="math inline">\(\mu^* = \max_{i \in [k]}
+\mu_i\)</span>,</li>
+<li><span class="math inline">\(i^*:\)</span> the index of the machine
+with highest expected reward,</li>
+<li><span class="math inline">\(\Delta_i = \mu^* - \mu_i\)</span>.</li>
+</ol>
+<p>Let <span class="math inline">\(\vec Y_i\)</span> be the random
+reward vector whose elements are i.i.d. random variables from <span
+class="math inline">\(D_i\)</span>:</p>
+<ol start="6" type="1">
+<li><span class="math inline">\(\vec Y_i = (Y_{i, 1}, Y_{i, 2}, ...,
+Y_{i, T})\)</span></li>
+</ol>
+<p>Denote <span class="math inline">\(Y\)</span> be the matrix of the
+random variables</p>
+<ol start="7" type="1">
+<li><span class="math display">\[
+Y = \begin{bmatrix}
+     \vec Y_1 \\
+     \vec Y_2 \\
+     ... \\
+     \vec Y_k
+\end{bmatrix}
+\]</span></li>
+</ol>
+<p>Each time the player pulls the arm, it observes one random variable
+from the matrix. Specially, let</p>
+<ol start="8" type="1">
+<li><span class="math inline">\(I_t:\)</span> the machine played at the
+<span class="math inline">\(t\)</span>-th trial,</li>
+<li><span class="math inline">\(N_i(t):\)</span> the number of times the
+machine <span class="math inline">\(i\)</span> is played up to trial
+<span class="math inline">\(t\)</span>.</li>
+</ol>
+<p>Before trial <span class="math inline">\(t\)</span>, the number of
+random variables observed in <span class="math inline">\(\vec
+Y_{I_t}\)</span> is <span class="math inline">\(N_{I_t} (t -
+1)\)</span>. At trial <span class="math inline">\(t\)</span>, a new
+random variable in <span class="math inline">\(\vec Y_{I_t}\)</span> is
+observed, and <span class="math inline">\(N_{I_t} (t) = N_{I_t} (t - 1)
++ 1\)</span>. Hence, the newly observed random variable is <span
+class="math inline">\(Y_{I_t, N_{I_t} (t)}\)</span>. For convenience, we
+define</p>
+<ol start="11" type="1">
+<li><span class="math inline">\(X_{t} \doteq Y_{I_t, N_{I_t}
+(t)}:\)</span> the rewards obtained at the <span
+class="math inline">\(t\)</span>-th trial.</li>
+</ol>
+<div style="text-align:center">
+<p><img src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/StochasticMultiArmBandit.png" width="500" height="250" /></p>
+</div>
+<p>When the player chooses a machine <span
+class="math inline">\(I_t\)</span> on trial <span
+class="math inline">\(t\)</span>, it is based on the history of his
+play, which consists of his past decisions, and the corresponding
+observed rewards:</p>
+<ol type="1">
+<li><span class="math inline">\(H_t: \{ (I_1, X_1), (I_2, X_2), ...,
+(I_{t -1}, X_{t - 1}) \}\)</span> the history up to trial <span
+class="math inline">\(t\)</span>.</li>
+</ol>
+<p>The strategy the player uses at trial <span
+class="math inline">\(t\)</span> is considered as a functions from <span
+class="math inline">\(H_t\)</span> to <span
+class="math inline">\([k]\)</span>:</p>
+<ol start="11" type="1">
+<li><span class="math inline">\(\phi_t: H_t \rightarrow [k]\)</span> a
+function that chooses a machine based on the history at trial <span
+class="math inline">\(t\)</span></li>
+</ol>
+<p>We define the policy as the strategies the player uses over all
+trials:</p>
+<ol start="12" type="1">
+<li><span class="math inline">\(\phi = (\phi_1, \phi_2, ...,
+\phi_T):\)</span> policy, the strategy for the pulling arms by the
+player</li>
+</ol>
+<p>The goal is to find a policy that maximizes the expected rewards, or
+equivalently, the one that minimizes the expected regret <span
+class="math display">\[ \small
+\mathbb{R}(\phi) = T \cdot \mu^* - \mathbb{E}[\sum_{t = 1}^T X_t ]
+\]</span></p>
+<p>By definition of <span class="math inline">\(N_i(t)\)</span>'s, we
+have <span class="math inline">\(\sum_{i = 1}^k N_i(T) = T\)</span>.
+Then the regret can be written as <span class="math display">\[
+\mathbb{R}(\phi) = \mathbb{E}[\sum_{i = 1}^k N_i(T)] \cdot \mu^* -
+\sum_{i = 1}^k \mathbb{E}[N_i(T) ] \cdot \mu_i = \sum_{i : \Delta_i &gt;
+0} \mathbb{E}[N_i(T) ] \cdot \Delta_i
+\]</span></p>
+<h3 id="the-upper-confidence-bound-ucb-algorithm">The Upper Confidence
+Bound (UCB) Algorithm</h3>
+<p>When making decision at trial <span class="math inline">\(t\)</span>,
+a good indicator of a machine's performance is its empirical reward:
+<span class="math display">\[
+\hat \mu_{i, N_i(t - 1)} \doteq  \sum_{\tau = 1}^{N_i(t - 1) } \frac{1}{
+N_i(t - 1) } Y_{i, \tau}
+\]</span></p>
+<p>But this might not reflect the true value of its expectation <span
+class="math inline">\(\mu_i\)</span> because of sampling variation. The
+UCB algorithm takes the variation into consideration.</p>
+<p><strong><em>Fact.</em></strong> <em>Hoeffding Inequality.</em>
+<em>Let <span class="math inline">\(Z_1, Z_2, ..., Z_s\)</span> be
+i.i.d. copies of random variable <span class="math inline">\(Z\)</span>
+on <span class="math inline">\([a, b]\)</span>. Then</em> <span
+class="math display">\[
+\Pr[ \frac{1}{s} \sum_{\tau = 1}^s Z_\tau - E[Z] \ge r] \le \exp(-
+\frac{2 s r^2}{(b - a)^2 } )
+\]</span> <em>where r &gt; 0</em>.</p>
+<p>Now, consider a <strong>fixed</strong> <span
+class="math inline">\(s\)</span> (<span class="math inline">\(1 \le s
+\le T\)</span>) and a failure probability <span
+class="math inline">\(\delta &gt; 0\)</span>. Applying Hoeffding
+inequality with <span class="math inline">\(Z_1 = Y_{i, 1}, Z_2 = Y_{i,
+2}, ..., Z_s = Y_{i, s}\)</span>, <span class="math inline">\(a = 0, b =
+1\)</span> and <span class="math inline">\(r = \sqrt { \log
+\frac{1}{\delta} \over 2  s }\)</span>, we get <span
+class="math display">\[ \small
+\Pr \left[ \hat \mu_{i, s} - \mu_i \ge \sqrt { \log \frac{1}{\delta}
+\over 2  s } \right] \le \delta
+\]</span></p>
+<p>Similarly, by applying Hoeffding inequality with <span
+class="math inline">\(Z_1 = -Y_{i, 1}, Z_2 = -Y_{i, 2}, ..., Z_s =
+-Y_{i, s}\)</span>, <span class="math inline">\(a = -1, b = 0\)</span>
+and <span class="math inline">\(r = \sqrt { \log \frac{1}{\delta} \over
+2  s }\)</span>, we have <span class="math display">\[ \small
+\Pr \left[ \mu_i - \hat \mu_{i, s} \ge \sqrt { \log \frac{1}{\delta}
+\over 2  s } \right] \le \delta
+\]</span></p>
+<p>Inspired by this, the UCB defines the upper and lower bounds for the
+expected reward of the <span class="math inline">\(i\)</span>-th machine
+as follows: <span class="math display">\[ \small
+UB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} + \sqrt { \log t^\alpha \over
+2  N_i(t - 1) } \\
+LB_i ( t ) \doteq \hat \mu_{i, N_i(t - 1)} - \sqrt { \log t^\alpha \over
+2  N_i(t - 1) } \\
+\]</span> where <span class="math inline">\(\alpha &gt; 0\)</span> is a
+parameter to be set. By convention here that if <span
+class="math inline">\(N_i(t - 1) = 0\)</span>, <span
+class="math inline">\(\sqrt { \log t^\alpha \over 2  N_i(t - 1) } =
+\infty\)</span>.</p>
+<p>The UCB algorithms chooses just the machine with highest upper bound.
+The lower bound is needed for its analysis.</p>
+<blockquote>
+<p><strong><em>UCB algorithm</em></strong><br />
+1. For <span class="math inline">\(t \leftarrow 1\)</span> to <span
+class="math inline">\(T\)</span> do<br />
+2. <span class="math inline">\(\qquad\)</span> Choose <span
+class="math inline">\(I_t = \arg \max_{i \in [k] } UB_i ( t
+)\)</span><br />
+3. <span class="math inline">\(\qquad\)</span> Observe a reward <span
+class="math inline">\(X_t\)</span></p>
+</blockquote>
+<p>Intuitively, there are two cases when <span
+class="math inline">\(UB_i ( t )\)</span> is high:</p>
+<ol type="1">
+<li>The value <span class="math inline">\(\mu_i\)</span> is high;</li>
+<li>The <span class="math inline">\(i\)</span>-th machine is
+under-explored.</li>
+</ol>
+<p><strong><em>Caveat:</em> <em>The reader might start to think that at
+trial <span class="math inline">\(t\)</span>, it holds that <span
+class="math inline">\(\Pr[\mu_i \ge UB_i(t) ]\)</span> (or <span
+class="math inline">\(\Pr[\mu_i \le LB_i(t) ]\)</span>) is bounded by
+<span class="math inline">\(\frac{1}{t^\alpha}\)</span>, according to
+Hoeffding inequality. It is not. Hoeffding inequality requires the
+number of samples to be a fixed number. On the other hand, <span
+class="math inline">\(N_i(t - 1)\)</span> is a random variable that
+depends on the history of the game. We will discuss this
+later.</em></strong></p>
+<p>The following theorem states that the expected regret of UCB
+algorithm grows logarithmically with <span
+class="math inline">\(T\)</span>.</p>
+<p><strong><em>Theorem.</em></strong> <em>If <span
+class="math inline">\(\alpha &gt; 2\)</span>, the regret of the UCB
+algorithm is bounded by</em> <span class="math display">\[ \small
+\mathbb{R}(\phi) \le  \log T \cdot ( \sum_{i : \Delta_i &gt; 0 } \frac{2
+\alpha }{\Delta_i } ) + \frac{\alpha}{ \alpha - 2 } \sum_{i : \Delta_i
+&gt; 0 } \Delta_i
+\]</span></p>
+<p><em>Proof:</em></p>
+<p>We will show that for <span class="math inline">\(i : \Delta_i &gt;
+0\)</span>, <span class="math display">\[ \small
+\mathbb{E} [n_{i, T}] \le \frac{ \alpha \log T }{ \Delta_i^2} +
+\frac{\alpha}{\alpha - 2}
+\]</span></p>
+<p>The key for the proof relies on a sufficient condition that the <span
+class="math inline">\(i\)</span>-th machine will not be chosen at trial
+<span class="math inline">\(t\)</span>:</p>
+<blockquote>
+<p>if the following events happen at trial <span
+class="math inline">\(t\)</span>, machine <span
+class="math inline">\(i\)</span> will not be chosen: 1. <span
+class="math inline">\(A_t: 2 \sqrt { \alpha \log t \over 2  N_i(t - 1) }
+\le \Delta_i\)</span><br />
+2. <span class="math inline">\(B_t: UB_{ i^* } ( t ) &gt;
+\mu^*\)</span><br />
+3. <span class="math inline">\(C_t: \mu_i &gt; LB_i ( t )\)</span></p>
+</blockquote>
+<p>This condition essentially prevents <span
+class="math inline">\(UB_i(t)\)</span> from exceeding <span
+class="math inline">\(\mu^*\)</span> while assures <span
+class="math inline">\(UB_{i^*}(t)\)</span> is higher than <span
+class="math inline">\(\mu^*\)</span>.</p>
+<p><span class="math display">\[ \small
+UB_i ( t ) = LB_i ( t ) + 2 \sqrt { \alpha \log t \over 2  N_i(t - 1) }
+&lt; \mu_i + \Delta_i = \mu^* &lt; UB_{ i^* } ( t )
+\]</span></p>
+<p>Let <span class="math inline">\(\beta = \lceil \frac{2 \alpha \log
+T}{\Delta_i^2}  \rceil\)</span>. Note that <span
+class="math inline">\(A_t = \{ N_i(t - 1) \ge  \frac{2 \alpha \log
+t}{\Delta_i^2} \}  \subset \{  N_i(t - 1) \ge \beta \}\)</span>. Now,
+<span class="math display">\[
+\{I_t = i \} \subset \overline{ A_t \cap B_t \cap C_t } = \bar A_t \cup
+\bar B_t \cup \bar C_t
+\]</span></p>
+<p>and <span class="math display">\[
+\begin{array}{ll}
+    \mathbb{E}[n_{i, T}]    &amp;=  \mathbb{E}[ \sum_{t = 1}^T
+\mathfrak{1} \{I_t = i\} ]  \\
+                            &amp;=  \mathbb{E} [ \sum_{t = 1}^T
+\mathfrak{1} \{I_t = i, \bar A_t \}+ \sum_{t = 1}^T \mathfrak{1} \{I_t =
+i, A_t \} ]  \\
+                            &amp;\le  \mathbb{E} [ \sum_{t = 1}^T
+\mathfrak{1} \{I_t = i, \  N_i(t) &lt; \beta \} ] + \sum_{t = 1}^T
+\mathbb{E} [\mathfrak{1} \{I_t = i, A_t \} ]  \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T \Pr[
+\{I_t = i\} \cap A_t ] \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T (
+\Pr[ \bar B_t \cap A_t ] + \Pr[ \bar C_t \cap A_t ] ) \\
+                            &amp;\le \beta + \sum_{t = \beta + 1}^T (
+\Pr[ \bar B_t ] + \Pr[ \bar C_t ] ) \\
+\end{array}
+\]</span></p>
+<p>It is non-trivial to bound <span class="math inline">\(\Pr[\bar
+B_t]\)</span>. For a fixed <span class="math inline">\(1 \le s \le t -
+1\)</span>, define the event <span class="math display">\[
+M_s : \frac{1}{s} \sum_{\tau = 1}^s Y_{i^*, \tau} + \sqrt{ \frac{\alpha
+\log t}{2 s} } \le \mu^*
+\]</span></p>
+<p>Since <span class="math inline">\(s\)</span> is fixed, by Hoeffding
+inequality, <span class="math inline">\(\Pr[M_s] \le
+\frac{1}{t^\alpha}\)</span>. Then <span class="math display">\[ \small
+\begin{aligned}
+    \bar B_t = \left\{ \mu_{ {i^*}, N_{i^*} (t - 1)} + \sqrt { \alpha
+\log t \over 2  N_{i^*} (t - 1) }  \le \mu^* \right\} \subset \cup_{s =
+1}^{t - 1} M_s
+\end{aligned}
+\]</span></p>
+<p>and <span class="math display">\[
+\Pr[ \bar B_t ] \le \Pr[ \cup_{s = 1}^{t - 1} M_s ] \le \sum_{s = 1}^{t
+- 1} \Pr[M_s] &lt; t^{\alpha - 1}
+\]</span></p>
+<p>and <span class="math display">\[
+\sum_{t = \beta + 1}^T \Pr[ \bar B_t ] &lt; \sum_{t = \beta + 1}^T
+t^{\alpha - 1} &lt; \int_{t = 1}^\infty \frac{1}{ x^{\alpha - 1} } dx  =
+\frac{1}{\alpha - 2} x^{-(\alpha - 2)} \mid_{t = 1}^\infty  =
+\frac{1}{\alpha - 2}
+\]</span></p>
+<p>Similarly, we have <span class="math display">\[
+\sum_{t = \beta + 1}^T \Pr[ \bar C_t ] &lt; \frac{1}{\alpha - 2}
+\]</span></p>
+<p>Finally, <span class="math display">\[
+\begin{aligned} \small
+    \mathbb{E} [n_{i, T}]
+                &amp;\le \beta + \frac{2}{\alpha - 2} \\
+                &amp;\le \frac{2 \alpha \log T}{\Delta_i^2} + 1 +
+\frac{2}{\alpha - 2} \\
+                &amp;= \frac{2 \alpha \log T}{\Delta_i^2} + \frac{\alpha
+}{\alpha - 2}
+\end{aligned}
+\]</span></p>
+<p><strong><em>Remark:</em></strong> <em>Can we bound <span
+class="math inline">\(\Pr[ \bar B_t ]\)</span> as follows:</em> <span
+class="math display">\[
+\begin{array}{ll}
+    \Pr[\bar B_t] &amp;= \sum_{\tau = 1}^{t - 1} \Pr[UB_{ i^* } ( t )
+&lt; \mu^* \mid n_{i^*, t} = \tau] \cdot \Pr[n_{i^*, t} = \tau]\\
+    &amp;= \sum_{\tau = 1}^{t - 1} \frac{1}{t^\alpha} \cdot \Pr[n_{i^*,
+t} = \tau] \\
+    &amp;= \frac{1}{t^\alpha}
+\end{array}
+\]</span></p>
+<p>When we know <span class="math inline">\(n_{i^*, t} = \tau\)</span>
+for some <span class="math inline">\(\tau\)</span>, the <span
+class="math inline">\(n_{i^*, t}\)</span> rewards from machine <span
+class="math inline">\(i^*\)</span> can't be viewed as independent
+samples. E.g., if <span class="math inline">\(t\)</span> is large, the
+best machines has much larger expected reward than others, and <span
+class="math inline">\(n_{i^*, t}\)</span> is very small compared to
+<span class="math inline">\(t\)</span>. Then it is likely machine <span
+class="math inline">\(i^*\)</span> generates bad rewards in the history.
+The reward sequence of <span class="math inline">\(i^*\)</span> can't be
+viewed as a sequence of independent samples from distribution <span
+class="math inline">\(D_{i^*}\)</span>.</p>
+<p><span class="math inline">\(\blacksquare\)</span></p>
+<h2 id="reference">Reference</h2>
+<p>[1] D. Katselis, B. Miranda, and H. Hu, “Lecture 8: Multi-Armed
+Bandits”, ECE586 MDPs and Reinforcement Learning, Spring 2019,
+University of Illinois at Urbana-Champaign.<br />
+[2] S. Bubeck and N. Cesa-Bianchi, “Regret Analysis of Stochastic and
+Nonstochastic Multi-armed Bandit Problems,” arXiv:1204.5721 [cs, stat],
+Nov. 2012, Accessed: Oct. 19, 2020.</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1232,520 +1635,6 @@ outputs are correct, then the output of <span
 class="math inline">\(A^*\)</span> is correct. This happens with
 probability at least <span class="math inline">\(1 -
 \delta\)</span>.</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/18/Entropy-and-Message-Transmission/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WOW">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WOW">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | WOW">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/06/18/Entropy-and-Message-Transmission/" class="post-title-link" itemprop="url">Entropy and Message Transmission</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-06-18 20:26:03" itemprop="dateCreated datePublished" datetime="2020-06-18T20:26:03-04:00">2020-06-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2020-06-30 21:06:27" itemprop="dateModified" datetime="2020-06-30T21:06:27-04:00">2020-06-30</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>We discuss another application that sheds light on meaning of
-entropy, the message transmission problem. In this model, a sender
-transmits a message to the receiver through a channel. In real world,
-the channel could be an optical fiber, a wireless channel, a hard disk
-etc. In the final application, the computer that writes and reads
-information from the hard disk is both the sender and the receiver.</p>
-<p>In real world the channel is not perfect and the message transmitted
-is distorted by noise. It is natural to ask whether the message can be
-transmitted accurately under the noise, i.e., whether the receiver can
-recover the noisy message.</p>
-<p>To study the problem, we need a mathematical model for both the
-channel and the noise. We focus on the simplest binary channel with bits
-of 0 and 1. The noise causes the bits to flip and is modelled by the
-distribution on the bit-flips. We study the simplest one that flips each
-bit independently with some identical probability <span
-class="math inline">\(p &lt; 0.5\)</span>. For a message with length
-<span class="math inline">\(n\)</span>, the number of bit flips follows
-a Binomial distribution <span class="math inline">\(B(n, p)\)</span>. We
-call such channel a <em>binary symmetric channel</em>.</p>
-<p>To protect the message against noise, a naïve way is to send the each
-bit multiple times. For example, if the sender wants to send a bit 1, it
-sends <span class="math inline">\(10\)</span> copies of <span
-class="math inline">\(1\)</span> as <span
-class="math inline">\(1111111111\)</span>. The receiver decides that the
-bit sent is 1, if the majority of the <span
-class="math inline">\(10\)</span> bits it receives is 1.</p>
-<p>Could it be improved? Repeating each bit may not be the mot efficient
-way against the noise. In general, if the sender wants to send a message
-of <span class="math inline">\(k\)</span> bits, it can convert it into a
-new message of <span class="math inline">\(n\)</span> bits and sends the
-new one. The receiver considers the <span
-class="math inline">\(n\)</span> bits received as a whole, and try to
-recover the <span class="math inline">\(k\)</span>-bit message the
-sender wants to send.</p>
-<p>We call the method used by the sender to convert the original message
-the <em>encoding function</em>, and the one used by the receiver to
-recover the message the <em>decoding function.</em></p>
-<p><strong><em>Definition.</em></strong> A <span
-class="math inline">\((k, n)\)</span> encoding function <span
-class="math inline">\(\text{Enc}: \{0, 1\}^k \rightarrow \{0,
-1\}^n\)</span> and a <span class="math inline">\((k, n)\)</span>
-decoding function <span class="math inline">\(\text{Dec}: \{0, 1\}^n
-\rightarrow \{0, 1\}^k\)</span>, where <span class="math inline">\(n \ge
-k\)</span>.</p>
-<p>Since the noise flips the bits randomly, it is impossible to have an
-encoding function and a decoding function without error (unless <span
-class="math inline">\(p = 0\)</span>). Instead, we aim to control the
-probability of error within some specified threshold <span
-class="math inline">\(\delta\)</span>. To achieve this, we add
-redundancy to the message and encode a <span
-class="math inline">\(k\)</span>-bit one into an <span
-class="math inline">\(n\)</span>-bit one. Now, <span
-class="math inline">\(n - k\)</span> is the amount of redundancy
-introduced. We would like to make <span class="math inline">\(n -
-k\)</span> as small as possible. On the other hand, the value of <span
-class="math inline">\(n-k\)</span> should positively related to <span
-class="math inline">\(p\)</span>. The larger <span
-class="math inline">\(p\)</span> is, the noisier the channel is and the
-larger <span class="math inline">\(n - k\)</span> should be.</p>
-<p>For fixed <span class="math inline">\(\delta\)</span> and <span
-class="math inline">\(p\)</span>, the <em>Shannon's Theorem</em> says
-that the smallest possible value of <span class="math inline">\(n -
-k\)</span> we can achieve is roughly <span
-class="math inline">\(n\mathbf{H}(p)\)</span>. Intuitively, <span
-class="math inline">\(\mathbf{H}(p)\)</span> is the amount of randomness
-the noise exerts on each bit. Therefore <span class="math inline">\(1 -
-\mathbf{H}(p)\)</span> is the maximum amount of information we can
-transmit by one bit.</p>
-<p>Before we proceed, we prove the following lemma.</p>
-<p><strong><em>Lemma 1</em></strong><br />
-For <span class="math inline">\(q \in \mathbb{R}, q \le 1 / 2\)</span>
-and <span class="math inline">\(n \in \mathbb{N}\)</span>, it hold that
-<span class="math display">\[
-\begin{aligned}
-    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i}
-    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }
-\end{aligned}
-\]</span></p>
-<p><strong><em>Proof.</em></strong><br />
-<span class="math display">\[
-\begin{aligned}
-    \sum_{i = 0}^{\lfloor q n \rfloor} \binom{n}{i}
-    &amp;\le \frac{n + 1}{2} \binom{n }{\lfloor q n \rfloor }  \\
-    &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} \left( { \lfloor q n
-\rfloor } / { n } \right) } \\
-    &amp;\le 2^{ n \mathbf{H} ( q)  + \log \frac{n + 1}{2} }
-\end{aligned}
-\]</span></p>
-<p>The first inequality follows from that <span
-class="math inline">\(\binom{n}{i}\)</span> is increasing for <span
-class="math inline">\(i \le n / 2\)</span> and that the summation is
-over at most <span class="math inline">\((n + 1) /2\)</span> terms. The
-last one follows from that <span
-class="math inline">\(\mathbf{H}(x)\)</span> is increasing for <span
-class="math inline">\(x \le 1 / 2\)</span> and that <span
-class="math inline">\({ \lfloor q n \rfloor } / { n } \le {  q n } / { n
-} = q &lt; 1/2\)</span>.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p><strong><em>Shannon's Theorem</em></strong><br />
-Given a binary symmetric channel with flip probability <span
-class="math inline">\(p &lt; 1 / 2\)</span> and for any any <span
-class="math inline">\(\epsilon, \delta &gt; 0\)</span>, when <span
-class="math inline">\(n\)</span> is large enough,</p>
-<ol type="1">
-<li>if <span class="math inline">\(k \le  n (1 - \mathbf{H}(p) -
-\epsilon)\)</span>, there exist <span class="math inline">\((k,
-n)\)</span> encoding and decoding functions such that the receiver fails
-to obtain the correct message with probability at most <span
-class="math inline">\(2\delta\)</span>.<br />
-</li>
-<li><span class="math inline">\(\nexists (k, n)\)</span> encoding and
-decoding functions with <span class="math inline">\(k \ge n (1 -
-\mathbf{H}(p) + \epsilon)\)</span> such that the decoding is correctly
-is at most <span class="math inline">\(\delta\)</span> for a <span
-class="math inline">\(k\)</span>-bit input message chosen uniformly at
-random.</li>
-</ol>
-<p><strong><em>Proof of 1.</em></strong></p>
-<p><strong>Intuition.</strong> When an <span
-class="math inline">\(n\)</span>-bit message <span
-class="math inline">\(s\)</span> is transmitted through the channel, the
-number of flipped bits is roughly <span
-class="math inline">\(np\)</span>. As <span class="math inline">\(p &lt;
-{1} / {2}\)</span>, we can find a <span class="math inline">\(\lambda
-&gt; 0\)</span> such that <span class="math inline">\(p + \lambda &lt;
-{1} / {2}\)</span>. Let <span class="math inline">\(R\)</span> be the
-received <span class="math inline">\(n\)</span>-bit message and define
-<span class="math inline">\(d(s, R)\)</span> the number of different
-bits between <span class="math inline">\(s\)</span> and <span
-class="math inline">\(R\)</span>, i.e., the Hamming distance between
-<span class="math inline">\(s\)</span> and <span
-class="math inline">\(R\)</span>. Given <span
-class="math inline">\(s\)</span> and <span
-class="math inline">\(p\)</span>, let <span
-class="math inline">\(\mathfrak{D}(s, p)\)</span> be the distribution of
-<span class="math inline">\(R\)</span> on <span
-class="math inline">\(\{0, 1\}^n\)</span>.</p>
-<p>By Hoeffding's inequality, it holds that <span
-class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s, p) } [ |d(s, R) - pn | \ge \lambda n] \le
-\exp(- 2 \lambda^2 n).
-\]</span></p>
-<p>Define the <span class="math inline">\((p + \lambda)n\)</span> ball
-centered <span class="math inline">\(s\)</span> as <span
-class="math display">\[
-B_{s, (p + \lambda)n} \doteq \{ r \in \{0, 1\}^n : d(s, r) &lt; (p +
-\lambda)n \}.
-\]</span></p>
-<p>The the Hoeffding's inequality implies that for large enough <span
-class="math inline">\(n\)</span>, we have <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s, p) } [ R \notin B_{s, (p + \lambda)n}] \le
-\delta.
-\]</span></p>
-<p>That is, with probability at most <span
-class="math inline">\(\delta\)</span>, the received message fall outside
-the ball <span class="math inline">\(B_{s, (p + \lambda)n}\)</span>.
-This motivates to decode each message in <span
-class="math inline">\(B_{s, (p + \lambda)n}\)</span> as the original
-message the sender wants to send.</p>
-<p>Further, by Lemma 1, the size of <span class="math inline">\(B_{s, (p
-+ \lambda) n}\)</span> is bounded by <span class="math display">\[
-\begin{aligned}
-    \sum_{i = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{i}
-    &amp;\le 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }
-\end{aligned}
-\]</span></p>
-<p>Therefore, the maximum number of non-overlapped balls we can pack
-into the message space <span class="math inline">\(\{0, 1\}^n\)</span>
-is<br />
-<span class="math display">\[
-\frac{2^n}{ 2^{ n \mathbf{H} ( p + \lambda)  + \log \frac{n + 1}{2} }  }
-= 2^{ n (1 - \mathbf{H} ( p + \lambda) - \frac{1}{n} \log \frac{n +
-1}{2})   }
-\]</span></p>
-<p>When <span class="math inline">\(n\)</span> is large enough, this is
-at least <span class="math inline">\(2^{ n (1 - \mathbf{H} ( p ) -
-\epsilon) }\)</span>.</p>
-<p><em>Remark: Hoeffding's inequality is an overkill. Chebyshev's
-inequality suffices for this proof.</em></p>
-<p><strong>Designing Encoding and Decoding Functions.</strong></p>
-<p><img
-src="https://github.com/wuhao-wu-jiang/BlogImgs/raw/master/Entropy/Balls.png" /></p>
-<p>This motivates one to design of encoding and decoding function as
-follows: find a set of messages <span class="math inline">\(s_1, s_2,
-..., s_{2^k} \in \{0, 1\}^n\)</span>, such that <span
-class="math display">\[
-B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, ..., B_{s_{2^k} , (p +
-\lambda)n}
-\]</span></p>
-<p>are disjoint balls, and assign the messages in <span
-class="math inline">\(\{0, 1\}^k\)</span> to the ones in <span
-class="math inline">\(\{ s_i \}&#39;s\)</span> one by one. If the
-sending want to send <span class="math inline">\(i\)</span>, it sends
-<span class="math inline">\(s_i\)</span>. On receiving a message <span
-class="math inline">\(r\)</span>, the receiver determines which ball
-<span class="math inline">\(r\)</span> belongs to. The probability of
-decoding error is at most <span
-class="math inline">\(\delta\)</span>.</p>
-<p><em>Question to ponder: can we find such a set efficiently, such
-that</em><br />
-<span class="math display">\[
-B_{s_1, (p + \lambda)n}, B_{s_2, (p + \lambda)n}, ..., B_{s_{2^k} , (p +
-\lambda)n}
-\]</span> <em>are disjoint?</em></p>
-<p><strong>Finding the Codewords.</strong></p>
-<p>It is left to find a set of satisfactory <span
-class="math inline">\(s_1, s_2, ..., s_{2^k} \in \{0, 1\}^n\)</span>.
-The method we show here does not find a set of non-overlapped balls.
-Instead it aims to find a set such that</p>
-<blockquote>
-<p>if <span class="math inline">\(s_i\)</span> is transmitted, then the
-probability received message <span class="math inline">\(r\)</span>
-falls into the another ball, i.e., <span class="math inline">\(r \in
-B_{s_{j} , (p + \lambda)n}\)</span> (<span class="math inline">\(j \neq
-i\)</span>), is less than <span
-class="math inline">\(\delta\)</span>.</p>
-</blockquote>
-<p>The property implies that the overlap between <span
-class="math inline">\(B_{s_{i} , (p + \lambda)n}\)</span> and <span
-class="math inline">\(\cup_{j \neq i} B_{s_{j} , (p +
-\lambda)n}\)</span> is less than <span
-class="math inline">\(\delta\)</span> (measured by probability). To
-formalize the statement, define the random variable <span
-class="math inline">\(S\)</span> to be the message sent and <span
-class="math inline">\(R\)</span> to be the one received. Given that
-<span class="math inline">\(S = s_i\)</span> is sent, the conditional
-probability of receiving <span class="math inline">\(R = r\)</span> is
-<span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] = p^{d(s_i,r)}
-(1 - p)^{1 - d(s_i, r)}
-\]</span></p>
-<p>To goal is to prove that it holds for all <span
-class="math inline">\(i\)</span>, <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p
-+ \lambda)n } \mid S = s_i] = \sum_{r \in \cup_{j \neq i} B_{s_{j} , (p
-+ \lambda)n} } p_r \le \delta
-\]</span></p>
-<p>Then , by union bound, it holds that <span class="math display">\[
-\begin{aligned}
-\Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \text{ is not recovered
-correctly} \mid S = s_i]
-    &amp;= \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p +
-\lambda)n}  \vee  R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  \mid
-S = s_i] \\
-    &amp;\le \Pr_{R \sim \mathfrak{D}(s_i, p) }  [ R \notin B_{s_i, (p +
-\lambda)n}   \mid S = s_i]  + \Pr[ R \in \cup_{j \neq i} B_{s_{j} , (p +
-\lambda)n}  \mid S = s_i] \\
-    &amp;\le 2 \delta
-\end{aligned}
-\]</span> That is, <span class="math inline">\(s_i\)</span> is
-transmitted and decoded correctly with probability at least <span
-class="math inline">\(1 - 2 \delta\)</span>.</p>
-<p>In what follows, we will prove the following claim:</p>
-<p><strong>Claim 1</strong>. <em>If we generate <span
-class="math inline">\(2^{k + 1}\)</span> codewords uniformly at random
-from <span class="math inline">\(\{0, 1\}^n\)</span>, then in
-expectation</em> <span class="math display">\[
-\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } }
-{\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim
-\mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n
-} \mid S = s_i] \right] \le  2^k \delta
-\]</span></p>
-<p>Claim 1 implies that there exits a set of codewords <span
-class="math inline">\(s_1, s_2, ..., s_{2^{k + 1} }\)</span> with <span
-class="math display">\[
-\sum_{i = 1}^{2^{k + 1} } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in
-\cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]    \le 2^k
-\delta
-\]</span></p>
-<p>If we send each <span class="math inline">\(s_i\)</span> with
-probability <span class="math inline">\(1 / 2^k\)</span>, then the
-expected error probability is already <span
-class="math inline">\(\delta\)</span>. But we can have a stronger
-result: we can find a set of <span class="math inline">\(2^k\)</span>
-codewords, such that for each <span class="math inline">\(i\)</span>,
-<span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p
-+ \lambda)n } \mid S = s_i] \le 2 \delta
-\]</span></p>
-<p>W.L.O.G., suppose that <span class="math inline">\(s_1, s_2, ...,
-s_{2^k}\)</span> are the ones with the smallest <span
-class="math inline">\(\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j
-\neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i]\)</span> 's, it must
-be that <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p
-+ \lambda)n } \mid S = s_i]  \le \frac{2^k \delta }{2^k } = \delta
-\]</span></p>
-<p><strong><em>Proof of Claim 1</em></strong>. By Lemma 1, for a fixed
-<span class="math inline">\(r\)</span>, the number of strings <span
-class="math inline">\(s \in \{0, 1\}^n\)</span> such that <span
-class="math inline">\(d(s, r) &lt; (p + \lambda) n\)</span> is bounded
-by <span class="math display">\[
-\begin{aligned}
-    \sum_{k = 0}^{\lfloor (p + \lambda) n \rfloor} \binom{n}{k}
-        &amp;\le \frac{n + 1}{2} 2^{ n \mathbf{H} ( p + \lambda) }
-\end{aligned}
-\]</span></p>
-<p>If a message <span class="math inline">\(s\)</span> is picked
-uniformly at random from <span class="math inline">\(\{0,
-1\}^n\)</span>, the probability such that <span class="math display">\[
-\Pr_{s \sim \mathbf{U}(\{0, 1\}^n) } [d(s, r) &lt; (p + \lambda) n ] \le
-\frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H} \left(  p + \lambda \right) }
-\]</span></p>
-<p>By union bound,<br />
-<span class="math display">\[
-\begin{aligned}
-    \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r
-\in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ]
-    &amp;&lt; 2^k \frac{n + 1}{2^{n + 1} } 2^{ n \mathbf{H}( p +
-\lambda) }  \\
-    &amp;= 2^{ k + \log (n + 1) +  n \mathbf{H} ( p + \lambda) - n - 1 }
-\end{aligned}
-\]</span></p>
-<p>As <span class="math inline">\(k \le n(1 - \mathbf{H}(p) -
-\epsilon)\)</span>, when <span class="math inline">\(n\)</span> is
-sufficient large, it follows<br />
-<span class="math display">\[
-\begin{aligned}
-     \Pr_{s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } [ r
-\in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n}  ]
-        &lt; 2^{ \log \frac{n + 1}{2} +  n ( \mathbf{H} ( p + \lambda) -
-\mathbf{H} ( p) - \delta) }
-        \le \frac{\delta}{2}
-\end{aligned}
-\]</span></p>
-<p>Therefore, <span class="math display">\[
-\begin{aligned}
-    &amp;\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0,
-1\}^n) } } {\mathbb{E} } \left[ \Pr_{R \sim \mathfrak{D}(s_i, p) } [R
-\in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n } \mid S = s_i] \right] \\
-    &amp;= \sum_{r \in \{0, 1\}^n }     \Pr_{s_1, s_2, ...,s_{2^{k + 1}
-} \sim \mathbf{U}(\{0, 1\}^n) } [ r \in \cup_{j \neq i} B_{s_{j} , (p +
-\lambda)n}  ] \cdot  \Pr_{R \sim \mathfrak{D}(s_i, p) } [ R = r \mid S =
-s_i] \\
-    &amp;\le \frac{\delta}{2}
-\end{aligned}
-\]</span></p>
-<p>and <span class="math display">\[
-\underset{ {s_1, s_2, ...,s_{2^{k + 1} } \sim \mathbf{U}(\{0, 1\}^n) } }
-{\mathbb{E} }  \left[ \sum_{i = 1}^{2^{k + 1} }  \Pr_{R \sim
-\mathfrak{D}(s_i, p) } [R \in \cup_{j \neq i} B_{s_{j} , (p + \lambda)n
-} \mid S = s_i] \right] \le 2^{k + 1} \frac{\delta}{2} = 2^k \delta
-\]</span></p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<p><strong><em>Proof of 2.</em></strong></p>
-<p>The difficulty here is to prove that the claim holds for arbitrary
-<span class="math inline">\((k, n)\)</span> encoding and decoding
-functions. The proof relies on an important property:</p>
-<blockquote>
-<p>the decoding function <span class="math inline">\(\text{Dec}\)</span>
-is a function on <span class="math inline">\(\{0, 1\}^n\)</span></p>
-</blockquote>
-<p>For any <span class="math inline">\(r \in \{0, 1\}^n\)</span>, there
-is a unique output <span class="math inline">\(\text{Dec}(r) \in \{0,
-1\}^k\)</span>. The decoding function needs to decide the unique message
-<span class="math inline">\(\{0, 1\}^n\)</span> the sender want to
-send.</p>
-<p>Now, define <span class="math display">\[
-S_i \doteq \{ r \in \{0, 1\}^n :  r \text{ is decoded correctly if } s_i
-\text{ is sent}   \}
-\]</span></p>
-<p>The <span class="math inline">\(S_i\)</span>'s are non-overlapped and
-we have, <span class="math display">\[
-\cup_{i = 1}^{2^k} S_i \subset \{0, 1 \}^n
-\]</span></p>
-<p>If <span class="math inline">\(s_i\)</span> is sent, then by
-Hoeffding inequality, with probability at least <span
-class="math inline">\(1 - \exp(- 2\lambda^2 n)\)</span>, the received
-message <span class="math inline">\(R\)</span> is likely to fall into a
-ring centered at <span class="math inline">\(s_i\)</span>: <span
-class="math display">\[
-\text{ring} (s_i) \doteq \{ r \in \{0, 1\}^n : |d(r, s_i) - pn |&lt;
-\lambda n \}
-\]</span></p>
-<p>Finally, if the messages <span class="math inline">\(s_1, s_2, ...,
-s_{2^k}\)</span> are sent uniformly at random, i.e., <span
-class="math inline">\(i \sim \mathbf{U}[1, 2^k]\)</span>, then <span
-class="math display">\[
-\begin{aligned}
-    \Pr[ R \text{ is decoded correctly}]   &amp;=  \sum_{i = 1}^{2^k}
-\sum_{r \in S_i } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S =
-s_i] \Pr_{i \sim \mathbf{U}[1, 2^k]} [ S = s_i] \\
-        &amp;=  \frac{1}{2^k} \sum_{i = 1}^{2^k} \sum_{r \in S_i }
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i]
-\end{aligned}
-\]</span></p>
-<p>Observed that <span class="math inline">\(S_i \subset \text{ring}
-(s_i) \cup (S_i \cap \text{ring} (s_i) )\)</span>, we get</p>
-<p><span class="math display">\[
-\begin{aligned}
-&amp;\Pr[ R \text{ is decoded correctly}] \\
-        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \sum_{r \notin
-\text{ring} (s_i)  } \Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S =
-s_i]  +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim
-\mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right) \\
-        &amp;\le \frac{1}{2^k}  \sum_{i = 1}^{2^k} \left( \exp(
--2\lambda^2n) +\sum_{r \in S_i \cap \text{ring} (s_i) } \Pr_{R \sim
-\mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \right)
-\end{aligned}
-\]</span></p>
-<p>Note that for <span class="math inline">\(r \in S_i \cap \text{ring}
-(s_i)\)</span>, as <span class="math inline">\(p &lt; 1 / 2\)</span>, it
-holds that <span class="math display">\[
-\Pr_{R \sim \mathfrak{D}(s_i, p) } [R = r \mid S = s_i] \le p^{ \lceil(p
-- \lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil }
-\]</span></p>
-<p>We obtain</p>
-<p><span class="math display">\[
-\begin{aligned}
-        &amp;\Pr[ R \text{ is decoded correctly}] \\
-        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i =
-1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ \lceil(p -
-\lambda) n \rceil} (1 - p)^{ n - \lceil(p - \lambda) n \rceil } \\
-        &amp;\le \exp( -2\lambda^2n) +  \frac{1}{2^k}  \sum_{i =
-1}^{2^k} \sum_{r \in S_i \cap \text{ring} (s_i) } p^{ (p - \lambda) n }
-(1 - p)^{ n - (p - \lambda) n  } \\
-        &amp;= \exp( -2\lambda^2n) +  p^{ (p - \lambda) n } (1 - p)^{ n
-- (p - \lambda) n  }  \sum_{i = 1}^{2^k} \sum_{r \in S_i \cap
-\text{ring} (s_i) } \frac{1}{2^k}  \\
-        &amp;= \exp( -2\lambda^2n) +   p^{ pn } (1 - p)^{ n - pn }
-\left(\frac{ 1 - p}{ p} \right)^{\lambda n} 2^{n - k}\\
-        &amp;= \exp( -2\lambda^2n) +  2^{n - k - n
-\mathbf{H}(p)}  \left(\frac{ 1 - p}{ p} \right)^{\lambda n}
-\end{aligned}
-\]</span></p>
-<p>Conditioning on that <span class="math inline">\(k \ge n (1 -
-\mathbf{H}(p) + \delta)\)</span>, <span class="math display">\[
-\Pr[ R \text{ is decoded correctly}] \le \exp( -2\lambda^2n) +  2^{- n
-(\delta + \lambda \log \frac{ 1 - p}{ p} ) }  
-\]</span></p>
-<p>By choosing sufficient small <span
-class="math inline">\(\lambda\)</span> and large enough <span
-class="math inline">\(n\)</span>, <span class="math inline">\(\Pr[ R
-\text{ is decoded correctly}]\)</span> can be arbitrary small.</p>
-<p><span class="math inline">\(\blacksquare\)</span></p>
-<h2 id="reference">Reference</h2>
-<p>[1] M. Mitzenmacher and E. Upfal, Probability and computing: an
-introduction to randomized algorithms and probabilistic analysis. New
-York: Cambridge University Press, 2005.</p>
 
       
     </div>
